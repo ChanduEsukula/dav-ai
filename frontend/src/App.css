@@ -161,6 +161,50 @@ a {
     transform 180ms ease;
 }
 
+.nav-links button {
+  appearance: none;
+  border: 0;
+  outline: 0;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 999px;
+  color: var(--muted);
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 850;
+  line-height: 1;
+  transition:
+    color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.nav-links button:hover {
+  color: var(--clinical-blue);
+  background: rgba(255, 255, 255, 0.88);
+  transform: translateY(-1px);
+}
+
+.nav-links button.active {
+  color: var(--deep-ink);
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(16, 32, 51, 0.08);
+}
+
+.nav-links button.signup-link {
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--clinical-blue), var(--deep-teal));
+  box-shadow: 0 12px 28px rgba(0, 123, 135, 0.22);
+}
+
+.nav-links button.signup-link:hover {
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--clinical-blue), #006c78);
+}
+
+
 .nav-links a:hover {
   color: var(--clinical-blue);
   background: rgba(255, 255, 255, 0.88);
@@ -1040,5 +1084,205 @@ a {
 
   .metadata-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* --- Final MedSignal typography + navigation polish overrides --- */
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px;
+  border-radius: 999px;
+  background: rgba(238, 248, 250, 0.62);
+  border: 1px solid rgba(11, 79, 113, 0.06);
+}
+
+.nav-links a,
+.nav-links button {
+  appearance: none;
+  border: 0;
+  outline: 0;
+  cursor: pointer;
+  padding: 9px 13px;
+  border-radius: 999px;
+  color: var(--muted);
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1;
+  text-decoration: none;
+  transition:
+    color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.nav-links a:hover,
+.nav-links button:hover {
+  color: var(--clinical-blue);
+  background: rgba(255, 255, 255, 0.88);
+  transform: translateY(-1px);
+}
+
+.nav-links a.active,
+.nav-links button.active {
+  color: var(--deep-ink);
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(16, 32, 51, 0.08);
+}
+
+.nav-links a.signup-link,
+.nav-links button.signup-link {
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--clinical-blue), var(--deep-teal));
+  box-shadow: 0 12px 28px rgba(0, 123, 135, 0.22);
+}
+
+.nav-links a.signup-link:hover,
+.nav-links button.signup-link:hover {
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--clinical-blue), #006c78);
+}
+
+.hero h1 {
+  margin: 0;
+  color: var(--deep-ink);
+  font-size: clamp(48px, 5.7vw, 82px);
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+  font-weight: 800;
+  background: linear-gradient(135deg, #061523 0%, #0b4f71 50%, #0f766e 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.section-heading h2 {
+  margin: 0;
+  color: var(--deep-ink);
+  font-size: clamp(36px, 4.4vw, 60px);
+  line-height: 1.06;
+  letter-spacing: -0.04em;
+  font-weight: 800;
+}
+
+.trust h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(38px, 5vw, 64px);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  font-weight: 800;
+}
+
+.signals h2 {
+  letter-spacing: -0.035em;
+  font-weight: 800;
+}
+
+.recall-card-top strong {
+  letter-spacing: -0.035em;
+  font-weight: 800;
+}
+
+.signal-score h2 {
+  letter-spacing: -0.045em;
+  font-weight: 800;
+}
+
+@media (max-width: 960px) {
+  .nav {
+    border-radius: 28px;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    border-radius: 22px;
+    max-width: 520px;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero h1 {
+    font-size: 48px;
+    line-height: 1.06;
+    letter-spacing: -0.04em;
+  }
+
+  .nav {
+    flex-direction: column;
+  }
+
+  .nav-links {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* --- RecallRadar summary card polish --- */
+
+.user-summary {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(241, 250, 251, 0.92));
+  border: 1px solid rgba(11, 79, 113, 0.08);
+  box-shadow: 0 18px 42px rgba(16, 32, 51, 0.06);
+  display: grid;
+  grid-template-columns: 1.1fr auto;
+  gap: 14px 18px;
+  align-items: center;
+}
+
+.user-summary p {
+  margin: 0;
+}
+
+.user-summary > p:first-child {
+  color: var(--deep-ink);
+  font-size: 16px;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+}
+
+.user-summary .summary-score {
+  justify-self: end;
+  padding: 10px 14px;
+  border-radius: 999px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--clinical-blue), var(--deep-teal));
+  box-shadow: 0 12px 28px rgba(0, 123, 135, 0.2);
+  font-size: 14px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.user-summary .safety-note {
+  grid-column: 1 / -1;
+  padding-top: 12px;
+  border-top: 1px solid rgba(11, 79, 113, 0.08);
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.55;
+  max-width: 920px;
+}
+
+@media (max-width: 760px) {
+  .user-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .user-summary .summary-score {
+    justify-self: start;
+    white-space: normal;
   }
 }
