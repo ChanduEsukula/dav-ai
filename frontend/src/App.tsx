@@ -62,7 +62,7 @@ function App() {
   const [error, setError] = useState('')
 
   async function handleSearch() {
-    if (!query.trim()) return
+    if (!query.trim() || loading) return
 
     setLoading(true)
     setError('')
@@ -179,6 +179,11 @@ function App() {
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  handleSearch()
+                }
+              }}
               placeholder="Try: eye drops, insulin, metformin"
             />
             <button onClick={handleSearch} disabled={loading}>
