@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import { searchRecalls, type RecallResult, type RecallSearchResponse } from './api/recalls'
+import AuditPanel from './components/AuditPanel'
 
 const signals = [
   {
@@ -201,6 +202,8 @@ function App() {
             </div>
           )}
 
+          {data && <AuditPanel query={query} response={data} />}
+
           <div className="results-grid">
             {data?.results.map((result) => (
               <article className="recall-card" key={result.recall_number}>
@@ -254,7 +257,7 @@ function App() {
             ))}
           </div>
 
-          {data && <p className="disclaimer">{data.medical_disclaimer}</p>}
+          
         </div>
       </section>
 
