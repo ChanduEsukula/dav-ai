@@ -100,40 +100,6 @@ a {
 }
 
 
-.trust {
-  max-width: 1180px;
-  margin: 64px auto 0;
-  padding: 72px 34px;
-  border-radius: 40px;
-  text-align: center;
-  color: white;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(45, 212, 191, 0.2), transparent 42%),
-    linear-gradient(135deg, #0f172a 0%, #172033 100%);
-  box-shadow: 0 30px 90px rgba(15, 23, 42, 0.18);
-}
-
-.trust .eyebrow {
-  color: #67e8f9;
-}
-
-.trust h2 {
-  margin: 0;
-  color: #ffffff;
-  font-size: clamp(42px, 6vw, 76px);
-  line-height: 0.95;
-  letter-spacing: -0.07em;
-  font-weight: 850;
-}
-
-.trust p:last-child {
-  max-width: 650px;
-  margin: 22px auto 0;
-  color: #dbeafe;
-  font-size: 18px;
-  line-height: 1.58;
-}
-
 .reveal {
   animation: reveal linear both;
   animation-timeline: view();
@@ -239,10 +205,4 @@ a {
   .app {
     padding: 18px 16px 64px;
   }
-
-  .trust {
-    padding: 52px 24px;
-  }
 }
-
-
