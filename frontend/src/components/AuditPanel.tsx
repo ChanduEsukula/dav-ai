@@ -16,12 +16,24 @@ function formatTimestamp(value: string) {
   }
 }
 
+function getScoreVersion(response: RecallSearchResponse) {
+  const firstResult = response.results?.[0]
+
+  return firstResult?.risk_score.score_version ?? 'Not available'
+}
+
+function getEndpoint(response: RecallSearchResponse) {
+  const firstResult = response.results?.[0]
+
+  return firstResult?.source.endpoint ?? 'Not available'
+}
+
 export default function AuditPanel({ query, response }: Props) {
-  const retrieved = response.retrieval_timestamp ?? new Date().toISOString()
+  const retrieved = response.retrieval_timestamp
   const recordCount = response.count ?? response.results?.length ?? 0
-  const scoreVersion = 'recall-risk-v0.1'
-  const dataSource = 'openFDA Drug Enforcement API'
-  const endpoint = '/drug/enforcement.json'
+  const scoreVersion = getScoreVersion(response)
+  const dataSource = response.source_name ?? 'Not available'
+  const endpoint = getEndpoint(response)
   const disclaimer =
     response.medical_disclaimer ?? 'Public-data safety intelligence only. Not medical advice.'
 
@@ -40,7 +52,7 @@ export default function AuditPanel({ query, response }: Props) {
 
         <div>
           <small>Search Query</small>
-          <span>{query}</span>
+          <span>{response.query || query}</span>
         </div>
 
         <div>
