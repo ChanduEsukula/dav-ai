@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Query
+
 from app.schemas.recalls import RecallSearchResponse
 from app.services.openfda_client import OpenFDAClient
 from app.scoring.recall_score import calculate_recall_risk_score
@@ -45,7 +46,9 @@ async def search_recalls(
             "count": len(normalized_results),
             "limit": limit,
             "source_name": payload["source_name"],
+            "endpoint": payload["endpoint"],
             "retrieval_timestamp": payload["retrieval_timestamp"],
+            "score_version": "recall-risk-v0.1",
             "medical_disclaimer": "MedSignal AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.",
             "results": normalized_results,
         }

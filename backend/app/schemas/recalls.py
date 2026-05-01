@@ -39,6 +39,8 @@ class RecallSearchResponse(BaseModel):
     count: int
     limit: int
     source_name: str
+    endpoint: str
     retrieval_timestamp: str
+    score_version: str
     medical_disclaimer: str
     results: list[RecallResult]
