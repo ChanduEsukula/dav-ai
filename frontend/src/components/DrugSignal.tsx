@@ -35,11 +35,13 @@ function DrugSignal() {
   }
 
   const hasNoResults = data && data.top_reactions.length === 0
+  const maxReactionCount =
+    data?.top_reactions.reduce((max, item) => Math.max(max, item.count), 0) ?? 0
 
   return (
     <section className="drugsignal reveal" id="drugsignal">
       <div className="section-heading">
-        <p className="eyebrow">DrugSignal backend module</p>
+        <p className="eyebrow">DrugSignal module</p>
         <h2>Explore public FAERS adverse-event reporting patterns.</h2>
         <p>
           Search a drug or medicinal product to view top reported reactions from
@@ -119,12 +121,23 @@ function DrugSignal() {
           <div className="reaction-list">
             <h3>Top reported reactions</h3>
 
-            {data.top_reactions.map((item) => (
-              <div className="reaction-row" key={item.reaction}>
-                <span>{item.reaction}</span>
-                <strong>{item.count}</strong>
-              </div>
-            ))}
+            {data.top_reactions.map((item) => {
+              const barWidth =
+                maxReactionCount > 0 ? `${(item.count / maxReactionCount) * 100}%` : '0%'
+
+              return (
+                <div className="reaction-row" key={item.reaction}>
+                  <div className="reaction-main">
+                    <span>{item.reaction}</span>
+                    <div className="reaction-bar-track">
+                      <div className="reaction-bar-fill" style={{ width: barWidth }} />
+                    </div>
+                  </div>
+
+                  <strong>{item.count}</strong>
+                </div>
+              )
+            })}
           </div>
         )}
       </div>
