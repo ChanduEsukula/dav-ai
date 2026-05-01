@@ -68,6 +68,8 @@ RecallRadar is the active MVP module. It currently supports:
 - Empty-result handling for searches with no FDA matches
 - Backend scoring tests
 - Backend route tests for success, empty-result, and upstream failure cases
+- Backend response schemas for RecallRadar API responses
+- Top-level audit metadata including source endpoint and score version
 
 Current backend test status:
 
@@ -221,16 +223,17 @@ npm run build
 
 ## Planned Next Phases
 
-1. Move frontend API base URL into environment configuration
-2. Add stronger backend schemas under `backend/app/schemas`
-3. Add richer loading and error states
+1. Add richer frontend loading and error states
+2. Add frontend tests for RecallRadar success, empty, and error states
+3. Add openFDA client tests with mocked HTTP responses
 4. Add a source registry and persistent audit trail
 5. Add Supabase/PostgreSQL persistence
 6. Build DrugSignal adverse-event exploration
 7. Build role-specific Safety Briefing Engine
-8. Add CI/CD and deployment
+8. Add CI/CD with GitHub Actions
 9. Add Docker setup
-10. Add optional NLP, RAG, and OCR/CNN experiments later
+10. Deploy frontend and backend
+11. Add optional NLP, RAG, and OCR/CNN experiments later
 
 ---
 
