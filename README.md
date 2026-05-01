@@ -2,13 +2,13 @@
 
 **Healthcare safety intelligence from public FDA signals.**
 
-MedSignal AI is a full-stack healthcare safety intelligence prototype that turns public recall and adverse-event data into source-aware, explainable safety signals. The current product foundation includes **RecallRadar**, a live FDA recall search workflow powered by the openFDA Drug Enforcement API, and a backend **DrugSignal** skeleton powered by the openFDA Drug Event API.
+MedSignal AI is a full-stack healthcare safety intelligence prototype that turns public recall and adverse-event data into source-aware, explainable safety signals. The current product foundation includes **RecallRadar**, a live FDA recall search workflow powered by the openFDA Drug Enforcement API, and **DrugSignal**, a public FAERS adverse-event reporting pattern explorer powered by the openFDA Drug Event API.
 
 This project is designed as a serious full-stack AI/data product prototype, not a static student demo.
 
 ---
 
-## Current MVP: RecallRadar
+## Current MVP: RecallRadar and DrugSignal
 
 RecallRadar allows a user to search a product, drug, brand, or category and receive:
 
@@ -22,7 +22,17 @@ RecallRadar allows a user to search a product, drug, brand, or category and rece
 - Source timestamp and technical audit details
 - Medical safety disclaimer
 
-RecallRadar is the current frontend MVP. DrugSignal currently exists as a tested backend API skeleton. Briefing Engine, saved monitors, database persistence, and deployment are planned future phases.
+DrugSignal allows a user to search a drug or medicinal product and receive:
+
+- Live public openFDA Drug Event records
+- Top reported FAERS reactions
+- Record count and source metadata
+- Source endpoint and retrieval timestamp
+- FAERS causation disclaimer
+- Medical safety disclaimer
+- Empty-result handling for searches with no FAERS matches
+
+RecallRadar and DrugSignal are now both connected end-to-end through the React frontend and FastAPI backend. Briefing Engine, saved monitors, database persistence, and deployment are planned future phases.
 
 ---
 
@@ -34,12 +44,17 @@ RecallRadar is the current frontend MVP. DrugSignal currently exists as a tested
 - FastAPI backend
 - Backend source registry for FDA source metadata
 - openFDA Drug Enforcement API integration
-- RecallRadar search workflow
+- openFDA Drug Event API integration
+- RecallRadar end-to-end search workflow
+- DrugSignal end-to-end search workflow
 - Rule-based Recall Review Score
-- Source-aware audit panel
+- Source-aware audit panels
 - Medical safety disclaimers
-- Empty-result handling for searches with no FDA matches
-- DrugSignal backend skeleton using openFDA Drug Event API
+- FAERS causation disclaimer for DrugSignal
+- Empty-result handling for searches with no FDA recall matches
+- Empty-result handling for searches with no FAERS drug-event matches
+- DrugSignal frontend page using the openFDA Drug Event API
+- DrugSignal backend module using the openFDA Drug Event API
 - DrugSignal backend tests for route behavior, query validation, and openFDA client behavior
 - Backend unit tests for recall scoring
 - Backend route tests for success, empty-result, upstream failure, and query validation
@@ -51,7 +66,6 @@ RecallRadar is the current frontend MVP. DrugSignal currently exists as a tested
 
 ### Not built yet
 
-- DrugSignal frontend page
 - Database or Supabase persistence
 - User accounts
 - Saved searches or alerts
@@ -66,18 +80,20 @@ RecallRadar is the current frontend MVP. DrugSignal currently exists as a tested
 
 ## Current Engineering Status
 
-RecallRadar is the active frontend MVP module. DrugSignal currently exists as a tested backend module.
+RecallRadar and DrugSignal are the active end-to-end MVP modules.
 
-Current backend support includes:
+Current support includes:
 
 - Live openFDA Drug Enforcement recall search
 - Live openFDA Drug Event adverse-event search
 - Normalized RecallRadar result cards
+- DrugSignal top reported reactions display
 - Transparent rule-based Recall Review Score
 - Source metadata and retrieval timestamps
 - Medical safety disclaimer
 - FAERS causation disclaimer for DrugSignal
 - Empty-result handling for searches with no FDA matches
+- DrugSignal empty-state UI for searches with no FAERS matches
 - Backend scoring tests
 - RecallRadar route tests for success, empty-result, upstream failure, and query validation
 - DrugSignal route tests for success, empty-result, upstream failure, and query validation
@@ -97,6 +113,7 @@ Recent stability improvements:
 
 - No-match openFDA searches now return `count: 0` and `results: []` instead of a false backend error.
 - RecallRadar now displays a clear empty-state message when no FDA recall records match.
+- DrugSignal now displays a clear empty-state message when no FAERS records match.
 - Recall scoring now uses timezone-aware UTC dates.
 - RecallRadar route responses now use backend Pydantic schemas.
 - Audit metadata now includes top-level source endpoint and score version.
@@ -104,6 +121,7 @@ Recent stability improvements:
 - openFDA client behavior is tested with mocked HTTP responses.
 - Query validation is tested for short queries and invalid limits.
 - DrugSignal backend endpoint returns top reported FAERS reactions with a causation disclaimer.
+- DrugSignal frontend page is connected to the tested backend endpoint.
 
 ---
 
@@ -141,11 +159,11 @@ recall-risk-v0.1
 
 ---
 
-## DrugSignal Backend
+## DrugSignal
 
-DrugSignal is the second backend module. It uses the openFDA Drug Event API to retrieve FAERS adverse-event reports for a searched drug or medicinal product.
+DrugSignal is the second MVP module. It uses the openFDA Drug Event API to retrieve FAERS adverse-event reports for a searched drug or medicinal product.
 
-Current DrugSignal backend response includes:
+Current DrugSignal response includes:
 
 - Search query
 - Source name
@@ -305,7 +323,7 @@ npm run build
 
 ## Planned Next Phases
 
-1. Add a frontend DrugSignal page for the existing backend endpoint
+1. Add richer DrugSignal result visualization, such as a compact reaction table or chart
 2. Add richer frontend loading and error states
 3. Add frontend tests for RecallRadar and DrugSignal states
 4. Add a source registry UI / data sources page
