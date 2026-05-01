@@ -1,4 +1,3 @@
-import React from 'react'
 import type { RecallSearchResponse } from '../api/recalls'
 
 type Props = {
@@ -20,7 +19,7 @@ function formatTimestamp(value: string) {
 export default function AuditPanel({ query, response }: Props) {
   const retrieved = response.retrieval_timestamp ?? new Date().toISOString()
   const recordCount = response.count ?? response.results?.length ?? 0
-  const scoreVersion = 'recall-risk-v1'
+  const scoreVersion = 'recall-risk-v0.1'
   const dataSource = 'openFDA Drug Enforcement API'
   const endpoint = '/drug/enforcement.json'
   const disclaimer =
