@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import './App.css'
 import './styles/navbar.css'
+import './styles/hero.css'
+import './styles/recallradar.css'
 import './styles/about.css'
 import './styles/faq.css'
 import { searchRecalls, type RecallResult, type RecallSearchResponse } from './api/recalls'
