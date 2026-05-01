@@ -59,6 +59,8 @@ def test_search_recalls_returns_normalized_results():
     assert body["query"] == "eye drops"
     assert body["count"] == 1
     assert body["source_name"] == "openFDA Drug Enforcement API"
+    assert body["endpoint"] == "https://api.fda.gov/drug/enforcement.json"
+    assert body["score_version"] == "recall-risk-v0.1"
     assert body["medical_disclaimer"]
 
     result = body["results"][0]
@@ -86,6 +88,8 @@ def test_search_recalls_returns_empty_results_for_no_matches():
     assert body["count"] == 0
     assert body["results"] == []
     assert body["source_name"] == "openFDA Drug Enforcement API"
+    assert body["endpoint"] == "https://api.fda.gov/drug/enforcement.json"
+    assert body["score_version"] == "recall-risk-v0.1"
     assert body["medical_disclaimer"]
 
 
@@ -100,3 +104,27 @@ def test_search_recalls_returns_502_for_upstream_failure():
     body = response.json()
     assert body["detail"]["message"] == "Unable to retrieve recall data from openFDA."
     assert "openFDA unavailable" in body["detail"]["error"]
+
+
+def test_search_recalls_rejects_short_query():
+    test_client = TestClient(app)
+
+    response = test_client.get("/api/v1/recalls/search", params={"q": "a", "limit": 5})
+
+    assert response.status_code == 422
+
+
+def test_search_recalls_rejects_limit_below_minimum():
+    test_client = TestClient(app)
+
+    response = test_client.get("/api/v1/recalls/search", params={"q": "eye drops", "limit": 0})
+
+    assert response.status_code == 422
+
+
+def test_search_recalls_rejects_limit_above_maximum():
+    test_client = TestClient(app)
+
+    response = test_client.get("/api/v1/recalls/search", params={"q": "eye drops", "limit": 26})
+
+    assert response.status_code == 422
