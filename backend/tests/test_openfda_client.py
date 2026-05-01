@@ -1,16 +1,14 @@
 import httpx
 import pytest
 
-from app.services.openfda_client import (
-    OPENFDA_DRUG_ENFORCEMENT_URL,
-    OpenFDAClient,
-)
+from app.services.openfda_client import OpenFDAClient
+from app.sources.registry import OPENFDA_DRUG_ENFORCEMENT
 
 
 @pytest.mark.anyio
 async def test_openfda_client_returns_results_for_success_response(monkeypatch):
     async def mock_get(self, url, params=None):
-        assert url == OPENFDA_DRUG_ENFORCEMENT_URL
+        assert url == OPENFDA_DRUG_ENFORCEMENT["endpoint"]
         assert params["search"] == 'product_description:"eye drops"'
         assert params["limit"] == 5
 
@@ -32,8 +30,9 @@ async def test_openfda_client_returns_results_for_success_response(monkeypatch):
     client = OpenFDAClient()
     payload = await client.search_drug_recalls(query="eye drops", limit=5)
 
-    assert payload["source_name"] == "openFDA Drug Enforcement API"
-    assert payload["endpoint"] == OPENFDA_DRUG_ENFORCEMENT_URL
+    assert payload["source_id"] == OPENFDA_DRUG_ENFORCEMENT["source_id"]
+    assert payload["source_name"] == OPENFDA_DRUG_ENFORCEMENT["source_name"]
+    assert payload["endpoint"] == OPENFDA_DRUG_ENFORCEMENT["endpoint"]
     assert payload["query"] == "eye drops"
     assert payload["raw"]["results"][0]["recall_number"] == "D-1234-2026"
     assert payload["retrieval_timestamp"]
@@ -53,8 +52,9 @@ async def test_openfda_client_returns_empty_results_for_404(monkeypatch):
     client = OpenFDAClient()
     payload = await client.search_drug_recalls(query="randomfakeproduct123", limit=5)
 
-    assert payload["source_name"] == "openFDA Drug Enforcement API"
-    assert payload["endpoint"] == OPENFDA_DRUG_ENFORCEMENT_URL
+    assert payload["source_id"] == OPENFDA_DRUG_ENFORCEMENT["source_id"]
+    assert payload["source_name"] == OPENFDA_DRUG_ENFORCEMENT["source_name"]
+    assert payload["endpoint"] == OPENFDA_DRUG_ENFORCEMENT["endpoint"]
     assert payload["query"] == "randomfakeproduct123"
     assert payload["raw"]["results"] == []
 
