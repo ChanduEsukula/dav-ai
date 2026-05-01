@@ -311,3 +311,23 @@
     grid-template-columns: 1fr;
   }
 }
+
+.empty-state {
+  margin-top: 24px;
+  padding: 24px;
+  border-radius: 24px;
+  background: #f8fbfc;
+  border: 1px solid rgba(0, 123, 135, 0.18);
+}
+
+.empty-state h3 {
+  margin: 0 0 8px;
+  color: #102033;
+  font-size: 1.1rem;
+}
+
+.empty-state p {
+  margin: 0;
+  color: #5d6874;
+  line-height: 1.6;
+}

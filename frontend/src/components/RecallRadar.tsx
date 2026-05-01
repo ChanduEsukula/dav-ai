@@ -19,6 +19,8 @@ function RecallRadar({
   error,
   handleSearch,
 }: RecallRadarProps) {
+  const hasNoResults = data && data.results.length === 0
+
   return (
     <section className="recallradar reveal" id="recallradar">
       <div className="section-heading">
@@ -59,58 +61,71 @@ function RecallRadar({
 
         {data && <AuditPanel query={query} response={data} />}
 
-        <div className="results-grid">
-          {data?.results.map((result) => (
-            <article className="recall-card" key={result.recall_number}>
-              <div className="recall-card-top">
-                <span className={`risk-pill risk-${result.risk_score.label.toLowerCase()}`}>
-                  {result.risk_score.label} signal
-                </span>
-                <strong>{result.risk_score.score}</strong>
-              </div>
+        {hasNoResults && (
+          <div className="empty-state">
+            <h3>No FDA recall records matched this search.</h3>
+            <p>
+              This does not prove the product is safe or unsafe. It only means no
+              matching records were returned from the current openFDA Drug Enforcement
+              search. Try searching by brand name, product name, ingredient, or category.
+            </p>
+          </div>
+        )}
 
-              <h3>{result.product_description}</h3>
+        {data && data.results.length > 0 && (
+          <div className="results-grid">
+            {data.results.map((result) => (
+              <article className="recall-card" key={result.recall_number}>
+                <div className="recall-card-top">
+                  <span className={`risk-pill risk-${result.risk_score.label.toLowerCase()}`}>
+                    {result.risk_score.label} signal
+                  </span>
+                  <strong>{result.risk_score.score}</strong>
+                </div>
 
-              <p className="reason">{result.reason_for_recall}</p>
+                <h3>{result.product_description}</h3>
 
-              <div className="metadata-grid">
-                <div>
-                  <small>FDA class</small>
-                  <span>{result.classification || 'Unknown'}</span>
-                </div>
-                <div>
-                  <small>Status</small>
-                  <span>{result.status || 'Unknown'}</span>
-                </div>
-                <div>
-                  <small>Recall date</small>
-                  <span>{formatDate(result.recall_initiation_date)}</span>
-                </div>
-                <div>
-                  <small>Firm</small>
-                  <span>{result.recalling_firm || 'Unknown'}</span>
-                </div>
-              </div>
+                <p className="reason">{result.reason_for_recall}</p>
 
-              <p className="plain-explanation">{riskExplanation(result)}</p>
-
-              <details>
-                <summary>Technical audit details</summary>
-                <div className="audit-box">
-                  <p>Source: {result.source.name}</p>
-                  <p>Retrieved: {formatTimestamp(result.source.retrieval_timestamp)}</p>
-                  <p>Score version: {result.risk_score.score_version}</p>
-                  <p>
-                    Components: class {result.risk_score.components.classification_score},
-                    status {result.risk_score.components.status_score}, recency{' '}
-                    {result.risk_score.components.recency_score}, scope{' '}
-                    {result.risk_score.components.scope_score}
-                  </p>
+                <div className="metadata-grid">
+                  <div>
+                    <small>FDA class</small>
+                    <span>{result.classification || 'Unknown'}</span>
+                  </div>
+                  <div>
+                    <small>Status</small>
+                    <span>{result.status || 'Unknown'}</span>
+                  </div>
+                  <div>
+                    <small>Recall date</small>
+                    <span>{formatDate(result.recall_initiation_date)}</span>
+                  </div>
+                  <div>
+                    <small>Firm</small>
+                    <span>{result.recalling_firm || 'Unknown'}</span>
+                  </div>
                 </div>
-              </details>
-            </article>
-          ))}
-        </div>
+
+                <p className="plain-explanation">{riskExplanation(result)}</p>
+
+                <details>
+                  <summary>Technical audit details</summary>
+                  <div className="audit-box">
+                    <p>Source: {result.source.name}</p>
+                    <p>Retrieved: {formatTimestamp(result.source.retrieval_timestamp)}</p>
+                    <p>Score version: {result.risk_score.score_version}</p>
+                    <p>
+                      Components: class {result.risk_score.components.classification_score},
+                      status {result.risk_score.components.status_score}, recency{' '}
+                      {result.risk_score.components.recency_score}, scope{' '}
+                      {result.risk_score.components.scope_score}
+                    </p>
+                  </div>
+                </details>
+              </article>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )

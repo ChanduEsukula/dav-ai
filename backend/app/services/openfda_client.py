@@ -19,12 +19,26 @@ class OpenFDAClient:
         async with httpx.AsyncClient(timeout=self.timeout_seconds) as client:
             response = await client.get(OPENFDA_DRUG_ENFORCEMENT_URL, params=params)
 
+        retrieval_timestamp = datetime.now(timezone.utc).isoformat()
+
+        if response.status_code == 404:
+            return {
+                "source_name": "openFDA Drug Enforcement API",
+                "endpoint": OPENFDA_DRUG_ENFORCEMENT_URL,
+                "query": query,
+                "retrieval_timestamp": retrieval_timestamp,
+                "raw": {
+                    "meta": {},
+                    "results": [],
+                },
+            }
+
         response.raise_for_status()
 
         return {
             "source_name": "openFDA Drug Enforcement API",
             "endpoint": OPENFDA_DRUG_ENFORCEMENT_URL,
             "query": query,
-            "retrieval_timestamp": datetime.now(timezone.utc).isoformat(),
+            "retrieval_timestamp": retrieval_timestamp,
             "raw": response.json(),
         }
