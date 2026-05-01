@@ -1043,8 +1043,6 @@ a {
   }
 }
 
-
-
 .brand-button {
   border: 0;
   background: transparent;
@@ -1086,46 +1084,3 @@ a {
   background: linear-gradient(135deg, var(--clinical-blue), var(--deep-teal));
   box-shadow: 0 16px 34px rgba(0, 123, 135, 0.3);
 }
-
-.brand-button {
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-}
-
-.nav-links button {
-  border: 0;
-  cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 999px;
-  color: var(--muted);
-  background: transparent;
-  font-size: 13px;
-  font-weight: 850;
-  transition:
-    color 180ms ease,
-    background 180ms ease,
-    transform 180ms ease,
-    box-shadow 180ms ease;
-}
-
-.nav-links button:hover,
-.nav-links button.active {
-  color: var(--clinical-blue);
-  background: rgba(255, 255, 255, 0.88);
-  transform: translateY(-1px);
-}
-
-.nav-links .signup-button {
-  color: #ffffff;
-  background: linear-gradient(135deg, var(--clinical-blue), var(--deep-teal));
-  box-shadow: 0 12px 28px rgba(0, 123, 135, 0.24);
-}
-
-.nav-links .signup-button:hover,
-.nav-links .signup-button.active {
-  color: #ffffff;
-  background: linear-gradient(135deg, var(--clinical-blue), var(--deep-teal));
-  box-shadow: 0 16px 34px rgba(0, 123, 135, 0.3);
-}
-
