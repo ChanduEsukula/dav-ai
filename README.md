@@ -2,7 +2,7 @@
 
 **Healthcare safety intelligence from public FDA signals.**
 
-MedSignal AI is a full-stack healthcare safety intelligence prototype that turns public recall data into source-aware, explainable safety signals. The current MVP focuses on **RecallRadar**, a live FDA recall search workflow powered by the openFDA Drug Enforcement API.
+MedSignal AI is a full-stack healthcare safety intelligence prototype that turns public recall and adverse-event data into source-aware, explainable safety signals. The current product foundation includes **RecallRadar**, a live FDA recall search workflow powered by the openFDA Drug Enforcement API, and a backend **DrugSignal** skeleton powered by the openFDA Drug Event API.
 
 This project is designed as a serious full-stack AI/data product prototype, not a static student demo.
 
@@ -22,7 +22,7 @@ RecallRadar allows a user to search a product, drug, brand, or category and rece
 - Source timestamp and technical audit details
 - Medical safety disclaimer
 
-The current MVP focuses only on recall intelligence. DrugSignal, Briefing Engine, saved monitors, database persistence, and deployment are planned future phases.
+RecallRadar is the current frontend MVP. DrugSignal currently exists as a tested backend API skeleton. Briefing Engine, saved monitors, database persistence, and deployment are planned future phases.
 
 ---
 
@@ -32,27 +32,30 @@ The current MVP focuses only on recall intelligence. DrugSignal, Briefing Engine
 
 - React + TypeScript frontend
 - FastAPI backend
+- Backend source registry for FDA source metadata
 - openFDA Drug Enforcement API integration
 - RecallRadar search workflow
 - Rule-based Recall Review Score
 - Source-aware audit panel
 - Medical safety disclaimers
 - Empty-result handling for searches with no FDA matches
+- DrugSignal backend skeleton using openFDA Drug Event API
+- DrugSignal backend tests for route behavior, query validation, and openFDA client behavior
 - Backend unit tests for recall scoring
 - Backend route tests for success, empty-result, upstream failure, and query validation
 - openFDA client tests for success, no-match, and server-error behavior
-- Backend response schemas for RecallRadar API responses
+- Backend response schemas for RecallRadar and DrugSignal API responses
 - Top-level audit metadata including source endpoint and score version
 - Environment-based frontend API URL configuration
 - Clean frontend/backend project structure
 
 ### Not built yet
 
+- DrugSignal frontend page
 - Database or Supabase persistence
 - User accounts
 - Saved searches or alerts
 - Persistent audit logs
-- DrugSignal adverse-event module
 - AI Briefing Engine
 - Frontend tests
 - CI/CD pipeline
@@ -63,25 +66,31 @@ The current MVP focuses only on recall intelligence. DrugSignal, Briefing Engine
 
 ## Current Engineering Status
 
-RecallRadar is the active MVP module. It currently supports:
+RecallRadar is the active frontend MVP module. DrugSignal currently exists as a tested backend module.
+
+Current backend support includes:
 
 - Live openFDA Drug Enforcement recall search
-- Normalized recall result cards
+- Live openFDA Drug Event adverse-event search
+- Normalized RecallRadar result cards
 - Transparent rule-based Recall Review Score
 - Source metadata and retrieval timestamps
 - Medical safety disclaimer
+- FAERS causation disclaimer for DrugSignal
 - Empty-result handling for searches with no FDA matches
 - Backend scoring tests
-- Backend route tests for success, empty-result, upstream failure, and query validation
-- openFDA client tests for success, no-match, and server-error behavior
-- Backend response schemas for RecallRadar API responses
+- RecallRadar route tests for success, empty-result, upstream failure, and query validation
+- DrugSignal route tests for success, empty-result, upstream failure, and query validation
+- openFDA Drug Enforcement client tests for success, no-match, and server-error behavior
+- openFDA Drug Event client tests for success, no-match, and server-error behavior
+- Backend response schemas for RecallRadar and DrugSignal API responses
 - Top-level audit metadata including source endpoint and score version
 - Environment-based frontend API URL configuration
 
 Current backend test status:
 
 ```bash
-13 passed
+22 passed
 ```
 
 Recent stability improvements:
@@ -91,8 +100,10 @@ Recent stability improvements:
 - Recall scoring now uses timezone-aware UTC dates.
 - RecallRadar route responses now use backend Pydantic schemas.
 - Audit metadata now includes top-level source endpoint and score version.
+- Source metadata is centralized through a backend source registry.
 - openFDA client behavior is tested with mocked HTTP responses.
 - Query validation is tested for short queries and invalid limits.
+- DrugSignal backend endpoint returns top reported FAERS reactions with a causation disclaimer.
 
 ---
 
@@ -130,6 +141,27 @@ recall-risk-v0.1
 
 ---
 
+## DrugSignal Backend
+
+DrugSignal is the second backend module. It uses the openFDA Drug Event API to retrieve FAERS adverse-event reports for a searched drug or medicinal product.
+
+Current DrugSignal backend response includes:
+
+- Search query
+- Source name
+- Source endpoint
+- Retrieval timestamp
+- Record count
+- Medical disclaimer
+- FAERS causation disclaimer
+- Top reported reactions from returned FAERS records
+
+Important limitation:
+
+FAERS adverse-event reports do **not** prove that a drug caused a reaction. Reports may be incomplete, duplicated, influenced by reporting patterns, or missing clinical context. DrugSignal is a reporting-pattern explorer, not a causation engine.
+
+---
+
 ## Safety Boundary
 
 MedSignal AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.
@@ -163,9 +195,10 @@ Users should verify source records and consult qualified healthcare professional
 - Pydantic
 - pytest
 
-### Public Data Source
+### Public Data Sources
 
 - openFDA Drug Enforcement API
+- openFDA Drug Event API
 
 ---
 
@@ -189,6 +222,19 @@ Health check:
 
 ```text
 http://127.0.0.1:8000/health
+```
+
+FastAPI docs:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+Current backend endpoints:
+
+```text
+GET /api/v1/recalls/search
+GET /api/v1/drug-events/search
 ```
 
 ### Frontend
@@ -229,16 +275,23 @@ Current backend test coverage includes:
 - Recall Review Score behavior
 - Successful RecallRadar route response
 - Empty-result RecallRadar route response
-- Upstream failure handling
-- Query validation for short queries and invalid limits
-- openFDA client success behavior
-- openFDA client no-match behavior
-- openFDA client server-error behavior
+- RecallRadar upstream failure handling
+- RecallRadar query validation for short queries and invalid limits
+- openFDA Drug Enforcement client success behavior
+- openFDA Drug Enforcement client no-match behavior
+- openFDA Drug Enforcement client server-error behavior
+- Successful DrugSignal route response
+- Empty-result DrugSignal route response
+- DrugSignal upstream failure handling
+- DrugSignal query validation for short queries and invalid limits
+- openFDA Drug Event client success behavior
+- openFDA Drug Event client no-match behavior
+- openFDA Drug Event client server-error behavior
 
 Current backend test status:
 
 ```bash
-13 passed
+22 passed
 ```
 
 Run frontend production build:
@@ -252,16 +305,17 @@ npm run build
 
 ## Planned Next Phases
 
-1. Add richer frontend loading and error states
-2. Add frontend tests for RecallRadar success, empty, and error states
-3. Add a source registry and persistent audit trail
-4. Add Supabase/PostgreSQL persistence
-5. Build DrugSignal adverse-event exploration
-6. Build role-specific Safety Briefing Engine
-7. Add CI/CD with GitHub Actions
-8. Add Docker setup
-9. Deploy frontend and backend
-10. Add optional NLP, RAG, and OCR/CNN experiments later
+1. Add a frontend DrugSignal page for the existing backend endpoint
+2. Add richer frontend loading and error states
+3. Add frontend tests for RecallRadar and DrugSignal states
+4. Add a source registry UI / data sources page
+5. Add persistent audit trail
+6. Add Supabase/PostgreSQL persistence
+7. Build role-specific Safety Briefing Engine
+8. Add CI/CD with GitHub Actions
+9. Add Docker setup
+10. Deploy frontend and backend
+11. Add optional NLP, RAG, and OCR/CNN experiments later
 
 ---
 
