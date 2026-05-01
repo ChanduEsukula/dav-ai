@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.routes.drug_events import router as drug_events_router
 from app.routes.recalls import router as recalls_router
 
 app = FastAPI(
@@ -18,6 +19,7 @@ app.add_middleware(
 )
 
 app.include_router(recalls_router, prefix="/api/v1/recalls", tags=["RecallRadar"])
+app.include_router(drug_events_router, prefix="/api/v1/drug-events", tags=["DrugSignal"])
 
 
 @app.get("/")
@@ -25,7 +27,7 @@ def root():
     return {
         "message": "MedSignal AI backend is running",
         "status": "ok",
-        "module": "RecallRadar",
+        "modules": ["RecallRadar", "DrugSignal"],
         "docs": "/docs",
     }
 
