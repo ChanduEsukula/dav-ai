@@ -1,10 +1,10 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.scoring.recall_score import calculate_recall_risk_score
 
 
 def test_high_risk_ongoing_class_i_nationwide_recent_recall():
-    recent_date = (datetime.utcnow() - timedelta(days=30)).strftime("%Y%m%d")
+    recent_date = (datetime.now(timezone.utc) - timedelta(days=30)).strftime("%Y%m%d")
 
     record = {
         "classification": "Class I",
@@ -25,7 +25,7 @@ def test_high_risk_ongoing_class_i_nationwide_recent_recall():
 
 
 def test_low_risk_completed_class_iii_old_local_recall():
-    old_date = (datetime.utcnow() - timedelta(days=1500)).strftime("%Y%m%d")
+    old_date = (datetime.now(timezone.utc) - timedelta(days=1500)).strftime("%Y%m%d")
 
     record = {
         "classification": "Class III",

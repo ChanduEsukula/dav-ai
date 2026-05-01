@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 CLASSIFICATION_WEIGHTS = {
@@ -44,8 +44,8 @@ def _recency_score(date_string: str | None) -> int:
         return 5
 
     try:
-        recall_date = datetime.strptime(date_string, "%Y%m%d")
-        days_old = (datetime.utcnow() - recall_date).days
+        recall_date = datetime.strptime(date_string, "%Y%m%d").replace(tzinfo=timezone.utc)
+        days_old = (datetime.now(timezone.utc) - recall_date).days
 
         if days_old <= 90:
             return 20
