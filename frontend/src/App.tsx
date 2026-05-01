@@ -8,11 +8,13 @@ import './styles/signals.css'
 import './styles/pages.css'
 import './styles/about.css'
 import './styles/faq.css'
+import './styles/drugsignal.css'
 import { searchRecalls, type RecallSearchResponse } from './api/recalls'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Signals from './components/Signals'
 import RecallRadar from './components/RecallRadar'
+import DrugSignal from './components/DrugSignal'
 import FaqPage from './components/FaqPage'
 import AboutPage from './components/AboutPage'
 import InfoPage from './components/InfoPage'
@@ -61,6 +63,18 @@ function App() {
     }, 80)
   }
 
+  function goToDrugSignal() {
+    setActivePage('home')
+    setActiveSection('drugsignal')
+
+    setTimeout(() => {
+      document.getElementById('drugsignal')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    }, 80)
+  }
+
   function goToPage(page: ActivePage) {
     setActivePage(page)
     setActiveSection('home')
@@ -74,6 +88,7 @@ function App() {
         activeSection={activeSection}
         goHome={goHome}
         goToRecallRadar={goToRecallRadar}
+        goToDrugSignal={goToDrugSignal}
         goToPage={goToPage}
       />
 
@@ -93,6 +108,8 @@ function App() {
             error={error}
             handleSearch={handleSearch}
           />
+
+          <DrugSignal />
 
           <Signals />
         </>

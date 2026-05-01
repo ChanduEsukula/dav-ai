@@ -1,0 +1,52 @@
+.drugsignal {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 48px 0;
+}
+
+.drug-signal-panel {
+  margin-top: 24px;
+  padding: 28px;
+  border-radius: 28px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(16, 32, 51, 0.1);
+}
+
+.drug-audit-panel {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 22px;
+  background: #f8fbfc;
+  border: 1px solid rgba(0, 123, 135, 0.14);
+}
+
+.reaction-list {
+  margin-top: 24px;
+  display: grid;
+  gap: 12px;
+}
+
+.reaction-list h3 {
+  margin: 0 0 8px;
+  color: #102033;
+}
+
+.reaction-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: #f8fbfc;
+  border: 1px solid rgba(16, 32, 51, 0.08);
+}
+
+.reaction-row span {
+  color: #102033;
+  font-weight: 600;
+}
+
+.reaction-row strong {
+  color: #007b87;
+  font-size: 1.05rem;
+}

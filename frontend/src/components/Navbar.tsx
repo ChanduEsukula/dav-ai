@@ -5,10 +5,18 @@ type NavbarProps = {
   activeSection: ActiveSection
   goHome: () => void
   goToRecallRadar: () => void
+  goToDrugSignal: () => void
   goToPage: (page: ActivePage) => void
 }
 
-function Navbar({ activePage, activeSection, goHome, goToRecallRadar, goToPage }: NavbarProps) {
+function Navbar({
+  activePage,
+  activeSection,
+  goHome,
+  goToRecallRadar,
+  goToDrugSignal,
+  goToPage,
+}: NavbarProps) {
   return (
     <nav className="nav">
       <button className="brand brand-button" onClick={goHome}>
@@ -29,6 +37,13 @@ function Navbar({ activePage, activeSection, goHome, goToRecallRadar, goToPage }
           onClick={goToRecallRadar}
         >
           RecallRadar
+        </button>
+
+        <button
+          className={activePage === 'home' && activeSection === 'drugsignal' ? 'active' : ''}
+          onClick={goToDrugSignal}
+        >
+          DrugSignal
         </button>
 
         <button className={activePage === 'about' ? 'active' : ''} onClick={() => goToPage('about')}>
