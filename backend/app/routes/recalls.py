@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Query
-
+from app.schemas.recalls import RecallSearchResponse
 from app.services.openfda_client import OpenFDAClient
 from app.scoring.recall_score import calculate_recall_risk_score
 
@@ -7,7 +7,7 @@ router = APIRouter()
 client = OpenFDAClient()
 
 
-@router.get("/search")
+@router.get("/search", response_model=RecallSearchResponse)
 async def search_recalls(
     q: str = Query(..., min_length=2, description="Drug, product, brand, or recall keyword"),
     limit: int = Query(10, ge=1, le=25),
