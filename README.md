@@ -26,6 +26,7 @@ DrugSignal allows a user to search a drug or medicinal product and receive:
 
 - Live public openFDA Drug Event records
 - Top reported FAERS reactions
+- Relative count bars for reaction frequency
 - Record count and source metadata
 - Source endpoint and retrieval timestamp
 - FAERS causation disclaimer
@@ -55,6 +56,7 @@ RecallRadar and DrugSignal are now both connected end-to-end through the React f
 - Empty-result handling for searches with no FAERS drug-event matches
 - DrugSignal frontend page using the openFDA Drug Event API
 - DrugSignal backend module using the openFDA Drug Event API
+- DrugSignal top reported reactions display with relative count bars
 - DrugSignal backend tests for route behavior, query validation, and openFDA client behavior
 - Backend unit tests for recall scoring
 - Backend route tests for success, empty-result, upstream failure, and query validation
@@ -87,7 +89,7 @@ Current support includes:
 - Live openFDA Drug Enforcement recall search
 - Live openFDA Drug Event adverse-event search
 - Normalized RecallRadar result cards
-- DrugSignal top reported reactions display
+- DrugSignal top reported reactions display with relative count bars
 - Transparent rule-based Recall Review Score
 - Source metadata and retrieval timestamps
 - Medical safety disclaimer
@@ -122,6 +124,7 @@ Recent stability improvements:
 - Query validation is tested for short queries and invalid limits.
 - DrugSignal backend endpoint returns top reported FAERS reactions with a causation disclaimer.
 - DrugSignal frontend page is connected to the tested backend endpoint.
+- DrugSignal reaction counts are displayed with relative visual bars.
 
 ---
 
@@ -173,6 +176,7 @@ Current DrugSignal response includes:
 - Medical disclaimer
 - FAERS causation disclaimer
 - Top reported reactions from returned FAERS records
+- Relative count bars for comparing reaction frequency within the returned results
 
 Important limitation:
 
@@ -323,17 +327,16 @@ npm run build
 
 ## Planned Next Phases
 
-1. Add richer DrugSignal result visualization, such as a compact reaction table or chart
-2. Add richer frontend loading and error states
-3. Add frontend tests for RecallRadar and DrugSignal states
-4. Add a source registry UI / data sources page
-5. Add persistent audit trail
-6. Add Supabase/PostgreSQL persistence
-7. Build role-specific Safety Briefing Engine
-8. Add CI/CD with GitHub Actions
-9. Add Docker setup
-10. Deploy frontend and backend
-11. Add optional NLP, RAG, and OCR/CNN experiments later
+1. Add richer frontend loading and error states
+2. Add frontend tests for RecallRadar and DrugSignal states
+3. Add a source registry UI / data sources page
+4. Add persistent audit trail
+5. Add Supabase/PostgreSQL persistence
+6. Build role-specific Safety Briefing Engine
+7. Add CI/CD with GitHub Actions
+8. Add Docker setup
+9. Deploy frontend and backend
+10. Add optional NLP, RAG, and OCR/CNN experiments later
 
 ---
 
