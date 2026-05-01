@@ -1,0 +1,119 @@
+import type { RecallSearchResponse } from '../api/recalls'
+import AuditPanel from './AuditPanel'
+import { formatDate, formatTimestamp, riskExplanation } from '../utils/recallFormatters'
+
+type RecallRadarProps = {
+  query: string
+  setQuery: (query: string) => void
+  data: RecallSearchResponse | null
+  loading: boolean
+  error: string
+  handleSearch: () => void
+}
+
+function RecallRadar({
+  query,
+  setQuery,
+  data,
+  loading,
+  error,
+  handleSearch,
+}: RecallRadarProps) {
+  return (
+    <section className="recallradar reveal" id="recallradar">
+      <div className="section-heading">
+        <p className="eyebrow">RecallRadar live module</p>
+        <h2>Search public FDA recall signals.</h2>
+        <p>
+          Enter a product, drug, brand, or category. MedSignal AI fetches live public
+          recall records, scores the signal, and keeps source details visible.
+        </p>
+      </div>
+
+      <div className="search-panel">
+        <div className="search-box">
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                handleSearch()
+              }
+            }}
+            placeholder="Search recalls: eye drops, insulin, metformin"
+          />
+          <button onClick={handleSearch} disabled={loading}>
+            {loading ? 'Analyzing...' : 'Analyze'}
+          </button>
+        </div>
+
+        {error && <p className="error-message">{error}</p>}
+
+        {data && (
+          <div className="source-strip">
+            <span>{data.count} records matched</span>
+            <span>{data.source_name}</span>
+            <span>Retrieved {formatTimestamp(data.retrieval_timestamp)}</span>
+          </div>
+        )}
+
+        {data && <AuditPanel query={query} response={data} />}
+
+        <div className="results-grid">
+          {data?.results.map((result) => (
+            <article className="recall-card" key={result.recall_number}>
+              <div className="recall-card-top">
+                <span className={`risk-pill risk-${result.risk_score.label.toLowerCase()}`}>
+                  {result.risk_score.label} signal
+                </span>
+                <strong>{result.risk_score.score}</strong>
+              </div>
+
+              <h3>{result.product_description}</h3>
+
+              <p className="reason">{result.reason_for_recall}</p>
+
+              <div className="metadata-grid">
+                <div>
+                  <small>FDA class</small>
+                  <span>{result.classification || 'Unknown'}</span>
+                </div>
+                <div>
+                  <small>Status</small>
+                  <span>{result.status || 'Unknown'}</span>
+                </div>
+                <div>
+                  <small>Recall date</small>
+                  <span>{formatDate(result.recall_initiation_date)}</span>
+                </div>
+                <div>
+                  <small>Firm</small>
+                  <span>{result.recalling_firm || 'Unknown'}</span>
+                </div>
+              </div>
+
+              <p className="plain-explanation">{riskExplanation(result)}</p>
+
+              <details>
+                <summary>Technical audit details</summary>
+                <div className="audit-box">
+                  <p>Source: {result.source.name}</p>
+                  <p>Retrieved: {formatTimestamp(result.source.retrieval_timestamp)}</p>
+                  <p>Score version: {result.risk_score.score_version}</p>
+                  <p>
+                    Components: class {result.risk_score.components.classification_score},
+                    status {result.risk_score.components.status_score}, recency{' '}
+                    {result.risk_score.components.recency_score}, scope{' '}
+                    {result.risk_score.components.scope_score}
+                  </p>
+                </div>
+              </details>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export default RecallRadar
