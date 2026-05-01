@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './App.css'
+import './styles/animations.css'
 import './styles/navbar.css'
 import './styles/hero.css'
 import './styles/recallradar.css'
