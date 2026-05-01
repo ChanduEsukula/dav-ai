@@ -11,12 +11,13 @@ import './styles/faq.css'
 import { searchRecalls, type RecallSearchResponse } from './api/recalls'
 import { formatDate, formatTimestamp, riskExplanation } from './utils/recallFormatters'
 import AuditPanel from './components/AuditPanel'
+import Navbar from './components/Navbar'
+import Hero from './components/Hero'
 import { signals } from './data/signals'
 import { faqs } from './data/faqs'
 
 type ActivePage = 'home' | 'about' | 'faq' | 'help' | 'profile' | 'signup'
 type ActiveSection = 'home' | 'recallradar'
-
 
 function App() {
   const [activePage, setActivePage] = useState<ActivePage>('home')
@@ -66,138 +67,23 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const topResult = data?.results?.[0]
-
   return (
     <main className="app">
-      <nav className="nav">
-        <button className="brand brand-button" onClick={goHome}>
-          <span className="brand-mark">✚</span>
-          <span>MedSignal AI</span>
-        </button>
-
-        <div className="nav-links">
-          <button
-            className={activePage === 'home' && activeSection === 'home' ? 'active' : ''}
-            onClick={goHome}
-          >
-            Home
-          </button>
-
-          <button
-            className={activePage === 'home' && activeSection === 'recallradar' ? 'active' : ''}
-            onClick={goToRecallRadar}
-          >
-            RecallRadar
-          </button>
-
-          <button
-  className={activePage === 'about' ? 'active' : ''}
-  onClick={() => goToPage('about')}
->
-  About
-</button>
-
-<button
-  className={activePage === 'faq' ? 'active' : ''}
-  onClick={() => goToPage('faq')}
->
-  FAQ
-</button>
-
-<button
-  className={activePage === 'help' ? 'active' : ''}
-  onClick={() => goToPage('help')}
->
-  Help
-</button>
-
-<button
-  className={activePage === 'profile' ? 'active' : ''}
-  onClick={() => goToPage('profile')}
->
-  Profile
-</button>
-
-          <button
-            className={`signup-button ${activePage === 'signup' ? 'active' : ''}`}
-            onClick={() => goToPage('signup')}
-          >
-            Sign Up
-          </button>
-        </div>
-      </nav>
+      <Navbar
+        activePage={activePage}
+        activeSection={activeSection}
+        goHome={goHome}
+        goToRecallRadar={goToRecallRadar}
+        goToPage={goToPage}
+      />
 
       {activePage === 'home' && (
         <>
-          <section className="hero">
-            <div className="hero-copy">
-              <p className="eyebrow">Public health intelligence</p>
-
-              <h1>
-                Public safety
-                <br />
-                data.
-                <br />
-                Made clear.
-              </h1>
-
-              <p className="subtitle">
-                MedSignal AI turns public recall and drug-safety data into clear,
-                source-aware intelligence.
-              </p>
-
-              <div className="actions">
-                <button onClick={goToRecallRadar}>Search RecallRadar</button>
-                <button onClick={() => goToPage('about')}>How it works</button>
-              </div>
-            </div>
-
-            <div className="hero-visual" aria-label="Animated product preview">
-              <div className="gradient-orb orb-a"></div>
-              <div className="gradient-orb orb-b"></div>
-
-              <div className="dashboard-card main-card">
-                <div className="card-header">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
-
-                <div className="signal-score">
-                  <div>
-                    <p>{topResult ? 'Live signal score' : 'Signal score'}</p>
-                    <h2>{topResult ? topResult.risk_score.score : 82}</h2>
-                  </div>
-                  <div className="score-ring"></div>
-                </div>
-
-                <div className="mini-chart">
-                  <i></i>
-                  <i></i>
-                  <i></i>
-                  <i></i>
-                  <i></i>
-                  <i></i>
-                </div>
-              </div>
-
-              <div className="floating-card card-one">
-                <small>Recall</small>
-                <strong>{topResult ? topResult.risk_score.label : 'Pattern detected'}</strong>
-              </div>
-
-              <div className="floating-card card-two">
-                <small>Source</small>
-                <strong>{data ? `${data.count} FDA records` : 'openFDA ready'}</strong>
-              </div>
-
-              <div className="floating-card card-three">
-                <small>Audit</small>
-                <strong>{data ? 'Timestamp verified' : 'Traceable results'}</strong>
-              </div>
-            </div>
-          </section>
+          <Hero
+            data={data}
+            goToRecallRadar={goToRecallRadar}
+            goToAbout={() => goToPage('about')}
+          />
 
           <section className="recallradar reveal" id="recallradar">
             <div className="section-heading">
@@ -306,126 +192,126 @@ function App() {
       )}
 
       {activePage === 'about' && (
-  <section className="about-page reveal">
-    <div className="about-hero">
-      <p className="eyebrow">About MedSignal AI</p>
-      <h2>Healthcare safety intelligence from public FDA signals.</h2>
-      <p>
-        MedSignal AI is a full-stack public safety intelligence platform that turns
-        fragmented recall and drug-safety data into clear, source-aware review workflows.
-        The current MVP focuses on RecallRadar, a live FDA recall search experience powered
-        by public openFDA enforcement data.
-      </p>
-    </div>
+        <section className="about-page reveal">
+          <div className="about-hero">
+            <p className="eyebrow">About MedSignal AI</p>
+            <h2>Healthcare safety intelligence from public FDA signals.</h2>
+            <p>
+              MedSignal AI is a full-stack public safety intelligence platform that turns
+              fragmented recall and drug-safety data into clear, source-aware review workflows.
+              The current MVP focuses on RecallRadar, a live FDA recall search experience powered
+              by public openFDA enforcement data.
+            </p>
+          </div>
 
-    <div className="about-grid">
-      <article>
-        <span>01</span>
-        <h3>What the app does</h3>
-        <p>
-          MedSignal AI helps users search public recall records, review FDA classification,
-          check recall status, understand recall timing, and inspect audit details from the
-          source response.
-        </p>
-      </article>
+          <div className="about-grid">
+            <article>
+              <span>01</span>
+              <h3>What the app does</h3>
+              <p>
+                MedSignal AI helps users search public recall records, review FDA classification,
+                check recall status, understand recall timing, and inspect audit details from the
+                source response.
+              </p>
+            </article>
 
-      <article>
-        <span>02</span>
-        <h3>What the app does not do</h3>
-        <p>
-          It does not diagnose conditions, recommend treatment, replace clinicians, or tell
-          users to start, stop, or change medication. It is an information and review tool,
-          not a medical decision system.
-        </p>
-      </article>
+            <article>
+              <span>02</span>
+              <h3>What the app does not do</h3>
+              <p>
+                It does not diagnose conditions, recommend treatment, replace clinicians, or tell
+                users to start, stop, or change medication. It is an information and review tool,
+                not a medical decision system.
+              </p>
+            </article>
 
-      <article>
-        <span>03</span>
-        <h3>Data source transparency</h3>
-        <p>
-          The current workflow uses public openFDA recall/enforcement data. Each result keeps
-          source details visible, including retrieval timestamp, source name, score version,
-          and technical audit context.
-        </p>
-      </article>
+            <article>
+              <span>03</span>
+              <h3>Data source transparency</h3>
+              <p>
+                The current workflow uses public openFDA recall/enforcement data. Each result keeps
+                source details visible, including retrieval timestamp, source name, score version,
+                and technical audit context.
+              </p>
+            </article>
 
-      <article>
-        <span>04</span>
-        <h3>Recall Review Score</h3>
-        <p>
-          The score is a review-priority signal. It combines recall class, status, recency,
-          scope, and confidence into a simple number so users can identify which public
-          records deserve closer review.
-        </p>
-      </article>
-    </div>
+            <article>
+              <span>04</span>
+              <h3>Recall Review Score</h3>
+              <p>
+                The score is a review-priority signal. It combines recall class, status, recency,
+                scope, and confidence into a simple number so users can identify which public
+                records deserve closer review.
+              </p>
+            </article>
+          </div>
 
-    <div className="about-section">
-      <div>
-        <p className="eyebrow">Product positioning</p>
-        <h3>Not another health app. A source-audited safety workflow.</h3>
-      </div>
-      <p>
-        MedSignal AI is designed for users who need to review public safety information
-        without manually searching multiple government portals. The long-term vision includes
-        DrugSignal for adverse-event patterns, role-based briefings, saved monitors, and
-        source-audited safety dashboards.
-      </p>
-    </div>
+          <div className="about-section">
+            <div>
+              <p className="eyebrow">Product positioning</p>
+              <h3>Not another health app. A source-audited safety workflow.</h3>
+            </div>
+            <p>
+              MedSignal AI is designed for users who need to review public safety information
+              without manually searching multiple government portals. The long-term vision includes
+              DrugSignal for adverse-event patterns, role-based briefings, saved monitors, and
+              source-audited safety dashboards.
+            </p>
+          </div>
 
-    <div className="audience-grid">
-      <article>
-        <h4>Consumers</h4>
-        <p>Search a product or drug and understand whether public recall records exist.</p>
-      </article>
-      <article>
-        <h4>Pharmacies</h4>
-        <p>Review recall signals, affected products, source details, and staff checklist items.</p>
-      </article>
-      <article>
-        <h4>Clinics</h4>
-        <p>Prepare patient-facing safety communication based on public data, not guesses.</p>
-      </article>
-      <article>
-        <h4>Public-health teams</h4>
-        <p>Track what changed, where the data came from, and why a signal matters.</p>
-      </article>
-    </div>
+          <div className="audience-grid">
+            <article>
+              <h4>Consumers</h4>
+              <p>Search a product or drug and understand whether public recall records exist.</p>
+            </article>
+            <article>
+              <h4>Pharmacies</h4>
+              <p>Review recall signals, affected products, source details, and staff checklist items.</p>
+            </article>
+            <article>
+              <h4>Clinics</h4>
+              <p>Prepare patient-facing safety communication based on public data, not guesses.</p>
+            </article>
+            <article>
+              <h4>Public-health teams</h4>
+              <p>Track what changed, where the data came from, and why a signal matters.</p>
+            </article>
+          </div>
 
-    <div className="safety-note">
-      <strong>Important safety boundary:</strong>
-      <span>
-        MedSignal AI is not FDA approved, not medical advice, and not a replacement for FDA,
-        CDC, clinician, pharmacist, or emergency guidance.
-      </span>
-    </div>
-  </section>
-)}
+          <div className="safety-note">
+            <strong>Important safety boundary:</strong>
+            <span>
+              MedSignal AI is not FDA approved, not medical advice, and not a replacement for FDA,
+              CDC, clinician, pharmacist, or emergency guidance.
+            </span>
+          </div>
+        </section>
+      )}
 
-{activePage === 'faq' && (
-  <section className="faq-page reveal">
-    <div className="faq-hero">
-      <p className="eyebrow">Frequently Asked Questions</p>
-      <h2>Clear answers without crowding the page.</h2>
-      <p>
-        These questions explain what MedSignal AI is, what it is not, where the data comes
-        from, and how to interpret recall search results safely.
-      </p>
-    </div>
+      {activePage === 'faq' && (
+        <section className="faq-page reveal">
+          <div className="faq-hero">
+            <p className="eyebrow">Frequently Asked Questions</p>
+            <h2>Clear answers without crowding the page.</h2>
+            <p>
+              These questions explain what MedSignal AI is, what it is not, where the data comes
+              from, and how to interpret recall search results safely.
+            </p>
+          </div>
 
-    <div className="faq-list">
-      {faqs.map((item) => (
-        <details className="faq-item" key={item.question}>
-          <summary>
-            <span>{item.question}</span>
-            <strong>⌄</strong>
-          </summary>
-          <p>{item.answer}</p>
-        </details>
-      ))}
-    </div>
-  </section>
-)}
+          <div className="faq-list">
+            {faqs.map((item) => (
+              <details className="faq-item" key={item.question}>
+                <summary>
+                  <span>{item.question}</span>
+                  <strong>⌄</strong>
+                </summary>
+                <p>{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+      )}
 
       {activePage === 'help' && (
         <section className="trust reveal">
