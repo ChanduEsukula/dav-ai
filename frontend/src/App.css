@@ -100,55 +100,6 @@ a {
 }
 
 
-.signals {
-  max-width: 1180px;
-  margin: 110px auto 0;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-
-.signals article {
-  padding: 34px 30px;
-  border-radius: 32px;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.84);
-  border: 1px solid rgba(255, 255, 255, 0.96);
-  box-shadow: var(--soft-shadow);
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease,
-    border-color 180ms ease;
-}
-
-.signals article:hover {
-  transform: translateY(-6px);
-  border-color: rgba(0, 123, 135, 0.16);
-  box-shadow: 0 28px 70px rgba(16, 32, 51, 0.11);
-}
-
-.signals span {
-  color: var(--deep-teal);
-  font-size: 13px;
-  font-weight: 950;
-}
-
-.signals h2 {
-  margin: 18px 0 10px;
-  color: var(--deep-ink);
-  font-size: 25px;
-  line-height: 1.08;
-  letter-spacing: -0.05em;
-}
-
-.signals p {
-  max-width: 280px;
-  margin: 0 auto;
-  color: var(--muted);
-  font-size: 15px;
-  line-height: 1.58;
-}
-
 .trust {
   max-width: 1180px;
   margin: 64px auto 0;
@@ -287,10 +238,6 @@ a {
 @media (max-width: 960px) {
   .app {
     padding: 18px 16px 64px;
-  }
-  .signals {
-    margin-top: 76px;
-    grid-template-columns: 1fr;
   }
 
   .trust {
