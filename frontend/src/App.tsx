@@ -8,7 +8,8 @@ import './styles/signals.css'
 import './styles/pages.css'
 import './styles/about.css'
 import './styles/faq.css'
-import { searchRecalls, type RecallResult, type RecallSearchResponse } from './api/recalls'
+import { searchRecalls, type RecallSearchResponse } from './api/recalls'
+import { formatDate, formatTimestamp, riskExplanation } from './utils/recallFormatters'
 import AuditPanel from './components/AuditPanel'
 import { signals } from './data/signals'
 import { faqs } from './data/faqs'
@@ -16,41 +17,6 @@ import { faqs } from './data/faqs'
 type ActivePage = 'home' | 'about' | 'faq' | 'help' | 'profile' | 'signup'
 type ActiveSection = 'home' | 'recallradar'
 
-
-function formatDate(value: string | null) {
-  if (!value) return 'Unknown'
-
-  if (/^\d{8}$/.test(value)) {
-    const year = value.slice(0, 4)
-    const month = value.slice(4, 6)
-    const day = value.slice(6, 8)
-    return `${month}/${day}/${year}`
-  }
-
-  return value
-}
-
-function formatTimestamp(value: string) {
-  try {
-    return new Intl.DateTimeFormat('en-US', {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-    }).format(new Date(value))
-  } catch {
-    return value
-  }
-}
-
-function riskExplanation(result: RecallResult) {
-  const level = result.risk_score.label
-  const classification = result.classification || 'an FDA recall classification'
-  const status = result.status || 'unknown status'
-  const scope = result.distribution_pattern?.toLowerCase().includes('nationwide')
-    ? 'nationwide distribution'
-    : 'documented distribution details'
-
-  return `${level} signal based on ${classification}, ${status.toLowerCase()} status, ${scope}, and recall timing. Review the exact product, lot details, and FDA source before taking action.`
-}
 
 function App() {
   const [activePage, setActivePage] = useState<ActivePage>('home')
