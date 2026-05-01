@@ -39,7 +39,11 @@ The current MVP focuses only on recall intelligence. DrugSignal, Briefing Engine
 - Medical safety disclaimers
 - Empty-result handling for searches with no FDA matches
 - Backend unit tests for recall scoring
-- Backend route tests for success, empty-result, and upstream failure cases
+- Backend route tests for success, empty-result, upstream failure, and query validation
+- openFDA client tests for success, no-match, and server-error behavior
+- Backend response schemas for RecallRadar API responses
+- Top-level audit metadata including source endpoint and score version
+- Environment-based frontend API URL configuration
 - Clean frontend/backend project structure
 
 ### Not built yet
@@ -50,6 +54,7 @@ The current MVP focuses only on recall intelligence. DrugSignal, Briefing Engine
 - Persistent audit logs
 - DrugSignal adverse-event module
 - AI Briefing Engine
+- Frontend tests
 - CI/CD pipeline
 - Docker setup
 - Production deployment
@@ -67,14 +72,16 @@ RecallRadar is the active MVP module. It currently supports:
 - Medical safety disclaimer
 - Empty-result handling for searches with no FDA matches
 - Backend scoring tests
-- Backend route tests for success, empty-result, and upstream failure cases
+- Backend route tests for success, empty-result, upstream failure, and query validation
+- openFDA client tests for success, no-match, and server-error behavior
 - Backend response schemas for RecallRadar API responses
 - Top-level audit metadata including source endpoint and score version
+- Environment-based frontend API URL configuration
 
 Current backend test status:
 
 ```bash
-7 passed
+13 passed
 ```
 
 Recent stability improvements:
@@ -82,6 +89,10 @@ Recent stability improvements:
 - No-match openFDA searches now return `count: 0` and `results: []` instead of a false backend error.
 - RecallRadar now displays a clear empty-state message when no FDA recall records match.
 - Recall scoring now uses timezone-aware UTC dates.
+- RecallRadar route responses now use backend Pydantic schemas.
+- Audit metadata now includes top-level source endpoint and score version.
+- openFDA client behavior is tested with mocked HTTP responses.
+- Query validation is tested for short queries and invalid limits.
 
 ---
 
@@ -141,7 +152,7 @@ Users should verify source records and consult qualified healthcare professional
 - React
 - TypeScript
 - Vite
-- CSS modules/files
+- CSS files
 - Axios
 
 ### Backend
@@ -194,6 +205,14 @@ Frontend runs at:
 http://localhost:5173
 ```
 
+Frontend API configuration:
+
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8000
+```
+
+Use `frontend/.env.example` as the reference file for local configuration.
+
 ---
 
 ## Testing
@@ -211,6 +230,16 @@ Current backend test coverage includes:
 - Successful RecallRadar route response
 - Empty-result RecallRadar route response
 - Upstream failure handling
+- Query validation for short queries and invalid limits
+- openFDA client success behavior
+- openFDA client no-match behavior
+- openFDA client server-error behavior
+
+Current backend test status:
+
+```bash
+13 passed
+```
 
 Run frontend production build:
 
@@ -225,15 +254,14 @@ npm run build
 
 1. Add richer frontend loading and error states
 2. Add frontend tests for RecallRadar success, empty, and error states
-3. Add openFDA client tests with mocked HTTP responses
-4. Add a source registry and persistent audit trail
-5. Add Supabase/PostgreSQL persistence
-6. Build DrugSignal adverse-event exploration
-7. Build role-specific Safety Briefing Engine
-8. Add CI/CD with GitHub Actions
-9. Add Docker setup
-10. Deploy frontend and backend
-11. Add optional NLP, RAG, and OCR/CNN experiments later
+3. Add a source registry and persistent audit trail
+4. Add Supabase/PostgreSQL persistence
+5. Build DrugSignal adverse-event exploration
+6. Build role-specific Safety Briefing Engine
+7. Add CI/CD with GitHub Actions
+8. Add Docker setup
+9. Deploy frontend and backend
+10. Add optional NLP, RAG, and OCR/CNN experiments later
 
 ---
 
