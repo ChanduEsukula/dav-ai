@@ -1,9 +1,13 @@
+import logging
 from typing import Any
 
 import psycopg
 from psycopg.rows import dict_row
+from psycopg.types.json import Jsonb
 
 from app.db.database import get_database_url
+
+logger = logging.getLogger(__name__)
 
 
 def save_audit_event(audit_event: dict[str, Any]) -> dict[str, str]:
@@ -14,6 +18,11 @@ def save_audit_event(audit_event: dict[str, Any]) -> dict[str, str]:
             "status": "skipped",
             "reason": "database_not_configured",
         }
+
+    audit_event_for_insert = {
+        **audit_event,
+        "query_params": Jsonb(audit_event.get("query_params", {})),
+    }
 
     try:
         with psycopg.connect(database_url, row_factory=dict_row) as connection:
@@ -55,7 +64,7 @@ def save_audit_event(audit_event: dict[str, Any]) -> dict[str, str]:
                         %(created_at)s
                     )
                     """,
-                    audit_event,
+                    audit_event_for_insert,
                 )
 
         return {
@@ -63,7 +72,9 @@ def save_audit_event(audit_event: dict[str, Any]) -> dict[str, str]:
             "reason": "audit_event_persisted",
         }
 
-    except Exception:
+    except Exception as exc:
+        logger.warning("Audit event persistence failed: %s", exc)
+
         return {
             "status": "error",
             "reason": "audit_event_persistence_failed",
