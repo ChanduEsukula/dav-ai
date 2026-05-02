@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from app.schemas.audit import AuditSummary
+
 
 class DrugEventReaction(BaseModel):
     reaction: str
@@ -15,4 +17,5 @@ class DrugEventSearchResponse(BaseModel):
     retrieval_timestamp: str
     medical_disclaimer: str
     faers_disclaimer: str
+    audit: AuditSummary
     top_reactions: list[DrugEventReaction]

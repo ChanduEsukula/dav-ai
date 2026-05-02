@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 
+from app.audit.audit_event import build_audit_event
 from app.schemas.recalls import RecallSearchResponse
 from app.services.openfda_client import OpenFDAClient
 from app.scoring.recall_score import calculate_recall_risk_score
@@ -16,6 +17,7 @@ async def search_recalls(
     try:
         payload = await client.search_drug_recalls(query=q, limit=limit)
         raw_results = payload["raw"].get("results", [])
+        upstream_status = "empty" if not raw_results else "success"
 
         normalized_results = []
 
@@ -41,6 +43,20 @@ async def search_recalls(
                 }
             )
 
+        audit_event = build_audit_event(
+            module="RecallRadar",
+            source_id=payload["source_id"],
+            source_name=payload["source_name"],
+            endpoint=payload["endpoint"],
+            query=q,
+            query_params={"q": q, "limit": limit},
+            retrieval_timestamp=payload["retrieval_timestamp"],
+            upstream_status=upstream_status,
+            record_count=len(normalized_results),
+            transform_version="recall-transform-v0.1",
+            score_version="recall-risk-v0.1",
+        )
+
         return {
             "query": q,
             "count": len(normalized_results),
@@ -50,6 +66,14 @@ async def search_recalls(
             "retrieval_timestamp": payload["retrieval_timestamp"],
             "score_version": "recall-risk-v0.1",
             "medical_disclaimer": "MedSignal AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.",
+            "audit": {
+                "audit_id": audit_event["audit_id"],
+                "source_id": audit_event["source_id"],
+                "module": audit_event["module"],
+                "upstream_status": audit_event["upstream_status"],
+                "record_count": audit_event["record_count"],
+                "transform_version": audit_event["transform_version"],
+            },
             "results": normalized_results,
         }
 

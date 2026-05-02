@@ -2,6 +2,7 @@ from collections import Counter
 
 from fastapi import APIRouter, HTTPException, Query
 
+from app.audit.audit_event import build_audit_event
 from app.schemas.drug_events import DrugEventSearchResponse
 from app.services.openfda_drug_event_client import OpenFDADrugEventClient
 
@@ -17,6 +18,7 @@ async def search_drug_events(
     try:
         payload = await client.search_drug_events(query=q, limit=limit)
         raw_results = payload["raw"].get("results", [])
+        upstream_status = "empty" if not raw_results else "success"
 
         reaction_counter: Counter[str] = Counter()
 
@@ -33,6 +35,19 @@ async def search_drug_events(
             for reaction, count in reaction_counter.most_common(10)
         ]
 
+        audit_event = build_audit_event(
+            module="DrugSignal",
+            source_id=payload["source_id"],
+            source_name=payload["source_name"],
+            endpoint=payload["endpoint"],
+            query=q,
+            query_params={"q": q, "limit": limit},
+            retrieval_timestamp=payload["retrieval_timestamp"],
+            upstream_status=upstream_status,
+            record_count=len(raw_results),
+            transform_version="drug-event-transform-v0.1",
+        )
+
         return {
             "query": q,
             "count": len(raw_results),
@@ -42,6 +57,14 @@ async def search_drug_events(
             "retrieval_timestamp": payload["retrieval_timestamp"],
             "medical_disclaimer": "MedSignal AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.",
             "faers_disclaimer": "FAERS adverse-event reports do not prove that a drug caused a reaction. Reports may be incomplete, duplicated, or influenced by reporting patterns.",
+            "audit": {
+                "audit_id": audit_event["audit_id"],
+                "source_id": audit_event["source_id"],
+                "module": audit_event["module"],
+                "upstream_status": audit_event["upstream_status"],
+                "record_count": audit_event["record_count"],
+                "transform_version": audit_event["transform_version"],
+            },
             "top_reactions": top_reactions,
         }
 

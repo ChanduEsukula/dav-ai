@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from app.schemas.audit import AuditSummary
+
 
 class RecallScoreComponents(BaseModel):
     classification_score: int
@@ -43,4 +45,5 @@ class RecallSearchResponse(BaseModel):
     retrieval_timestamp: str
     score_version: str
     medical_disclaimer: str
+    audit: AuditSummary
     results: list[RecallResult]

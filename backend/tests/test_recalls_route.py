@@ -7,6 +7,7 @@ from app.routes import recalls
 class MockOpenFDAClientSuccess:
     async def search_drug_recalls(self, query: str, limit: int = 10):
         return {
+            "source_id": "openfda_drug_enforcement",
             "source_name": "openFDA Drug Enforcement API",
             "endpoint": "https://api.fda.gov/drug/enforcement.json",
             "query": query,
@@ -31,6 +32,7 @@ class MockOpenFDAClientSuccess:
 class MockOpenFDAClientEmpty:
     async def search_drug_recalls(self, query: str, limit: int = 10):
         return {
+            "source_id": "openfda_drug_enforcement",
             "source_name": "openFDA Drug Enforcement API",
             "endpoint": "https://api.fda.gov/drug/enforcement.json",
             "query": query,
@@ -63,6 +65,13 @@ def test_search_recalls_returns_normalized_results():
     assert body["score_version"] == "recall-risk-v0.1"
     assert body["medical_disclaimer"]
 
+    assert body["audit"]["source_id"] == "openfda_drug_enforcement"
+    assert body["audit"]["module"] == "RecallRadar"
+    assert body["audit"]["upstream_status"] == "success"
+    assert body["audit"]["record_count"] == 1
+    assert body["audit"]["transform_version"] == "recall-transform-v0.1"
+    assert body["audit"]["audit_id"]
+
     result = body["results"][0]
     assert result["recall_number"] == "D-1234-2026"
     assert result["product_description"] == "Example eye drops"
@@ -91,6 +100,13 @@ def test_search_recalls_returns_empty_results_for_no_matches():
     assert body["endpoint"] == "https://api.fda.gov/drug/enforcement.json"
     assert body["score_version"] == "recall-risk-v0.1"
     assert body["medical_disclaimer"]
+
+    assert body["audit"]["source_id"] == "openfda_drug_enforcement"
+    assert body["audit"]["module"] == "RecallRadar"
+    assert body["audit"]["upstream_status"] == "empty"
+    assert body["audit"]["record_count"] == 0
+    assert body["audit"]["transform_version"] == "recall-transform-v0.1"
+    assert body["audit"]["audit_id"]
 
 
 def test_search_recalls_returns_502_for_upstream_failure():
