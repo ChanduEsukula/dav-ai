@@ -21,6 +21,7 @@ RecallRadar allows a user to search a product, drug, brand, or category and rece
 - Plain-English explanation
 - Source timestamp and technical audit details
 - Medical safety disclaimer
+- Compact audit summary for source traceability
 
 DrugSignal allows a user to search a drug or medicinal product and receive:
 
@@ -32,6 +33,7 @@ DrugSignal allows a user to search a drug or medicinal product and receive:
 - FAERS causation disclaimer
 - Medical safety disclaimer
 - Empty-result handling for searches with no FAERS matches
+- Compact audit summary for source traceability
 
 RecallRadar and DrugSignal are now both connected end-to-end through the React frontend and FastAPI backend. Briefing Engine, saved monitors, database persistence, and deployment are planned future phases.
 
@@ -45,12 +47,15 @@ RecallRadar and DrugSignal are now both connected end-to-end through the React f
 - FastAPI backend
 - Backend source registry for FDA source metadata
 - Sources endpoint exposing registered public data sources
+- Frontend Data Sources page using the backend source registry endpoint
 - openFDA Drug Enforcement API integration
 - openFDA Drug Event API integration
 - RecallRadar end-to-end search workflow
 - DrugSignal end-to-end search workflow
 - Rule-based Recall Review Score
 - Source-aware audit panels
+- Compact audit summaries in RecallRadar and DrugSignal API responses
+- Internal audit event builder utility for future persistence
 - Medical safety disclaimers
 - FAERS causation disclaimer for DrugSignal
 - Empty-result handling for searches with no FDA recall matches
@@ -63,7 +68,8 @@ RecallRadar and DrugSignal are now both connected end-to-end through the React f
 - Backend route tests for success, empty-result, upstream failure, and query validation
 - openFDA client tests for success, no-match, and server-error behavior
 - Backend tests for the source registry endpoint
-- Backend response schemas for RecallRadar, DrugSignal, and Sources API responses
+- Backend tests for audit event construction
+- Backend response schemas for RecallRadar, DrugSignal, Sources, and Audit API objects
 - Top-level audit metadata including source endpoint and score version
 - Environment-based frontend API URL configuration
 - Clean frontend/backend project structure
@@ -91,15 +97,19 @@ Current support includes:
 - Live openFDA Drug Enforcement recall search
 - Live openFDA Drug Event adverse-event search
 - Public source registry endpoint for source transparency
+- Frontend Data Sources page for registered public data sources
 - Normalized RecallRadar result cards
 - DrugSignal top reported reactions display with relative count bars
 - Transparent rule-based Recall Review Score
+- Compact audit summaries in RecallRadar and DrugSignal API responses
+- Internal full audit event builder utility for future database persistence
 - Source metadata and retrieval timestamps
 - Medical safety disclaimer
 - FAERS causation disclaimer for DrugSignal
 - Empty-result handling for searches with no FDA matches
 - DrugSignal empty-state UI for searches with no FAERS matches
 - Backend scoring tests
+- Audit event builder tests
 - RecallRadar route tests for success, empty-result, upstream failure, and query validation
 - DrugSignal route tests for success, empty-result, upstream failure, and query validation
 - Sources endpoint response and required metadata tests
@@ -112,7 +122,7 @@ Current support includes:
 Current backend test status:
 
 ```bash
-24 passed
+26 passed
 ```
 
 Recent stability improvements:
@@ -130,6 +140,7 @@ Recent stability improvements:
 - DrugSignal backend endpoint returns top reported FAERS reactions with a causation disclaimer.
 - DrugSignal frontend page is connected to the tested backend endpoint.
 - DrugSignal reaction counts are displayed with relative visual bars.
+- API responses now include compact audit summaries while full audit-event construction remains internal.
 
 ---
 
@@ -182,6 +193,7 @@ Current DrugSignal response includes:
 - FAERS causation disclaimer
 - Top reported reactions from returned FAERS records
 - Relative count bars for comparing reaction frequency within the returned results
+- Compact audit summary for traceability
 
 Important limitation:
 
@@ -213,7 +225,43 @@ The endpoint returns each source with:
 - Description
 - Update cadence
 
+The frontend Data Sources page consumes this endpoint and displays registered public sources, modules, endpoints, descriptions, and update cadence.
+
 This is the foundation for future source transparency, audit logs, saved monitors, and briefing traceability.
+
+---
+
+## Audit Architecture
+
+MedSignal AI separates public response metadata from internal audit construction.
+
+The backend currently supports:
+
+- Compact audit summaries in RecallRadar and DrugSignal responses
+- Internal full audit event construction through a backend audit utility
+- Audit event tests for standard success and error shapes
+
+The compact public audit summary includes:
+
+- Audit ID
+- Source ID
+- Module
+- Upstream status
+- Record count
+- Transform version
+
+The internal audit event builder additionally supports:
+
+- Source name
+- Endpoint
+- Query parameters
+- Retrieval timestamp
+- Score version
+- Disclaimer version
+- Error message
+- Created timestamp
+
+This design avoids coupling the frontend to future persistence internals while preparing the backend for Supabase/PostgreSQL audit logging later.
 
 ---
 
@@ -333,6 +381,7 @@ Current backend test coverage includes:
 - Empty-result RecallRadar route response
 - RecallRadar upstream failure handling
 - RecallRadar query validation for short queries and invalid limits
+- Compact RecallRadar audit summary behavior
 - openFDA Drug Enforcement client success behavior
 - openFDA Drug Enforcement client no-match behavior
 - openFDA Drug Enforcement client server-error behavior
@@ -340,15 +389,17 @@ Current backend test coverage includes:
 - Empty-result DrugSignal route response
 - DrugSignal upstream failure handling
 - DrugSignal query validation for short queries and invalid limits
+- Compact DrugSignal audit summary behavior
 - openFDA Drug Event client success behavior
 - openFDA Drug Event client no-match behavior
 - openFDA Drug Event client server-error behavior
 - Sources endpoint response and required metadata tests
+- Audit event builder success and error shape tests
 
 Current backend test status:
 
 ```bash
-24 passed
+26 passed
 ```
 
 Run frontend production build:
@@ -362,7 +413,7 @@ npm run build
 
 ## Planned Next Phases
 
-1. Add a frontend Data Sources / Audit page using `GET /api/v1/sources`
+1. Add frontend display of compact audit summaries for RecallRadar and DrugSignal
 2. Add richer frontend loading and error states
 3. Add frontend tests for RecallRadar and DrugSignal states
 4. Add persistent audit trail
