@@ -44,6 +44,7 @@ RecallRadar and DrugSignal are now both connected end-to-end through the React f
 - React + TypeScript frontend
 - FastAPI backend
 - Backend source registry for FDA source metadata
+- Sources endpoint exposing registered public data sources
 - openFDA Drug Enforcement API integration
 - openFDA Drug Event API integration
 - RecallRadar end-to-end search workflow
@@ -61,7 +62,8 @@ RecallRadar and DrugSignal are now both connected end-to-end through the React f
 - Backend unit tests for recall scoring
 - Backend route tests for success, empty-result, upstream failure, and query validation
 - openFDA client tests for success, no-match, and server-error behavior
-- Backend response schemas for RecallRadar and DrugSignal API responses
+- Backend tests for the source registry endpoint
+- Backend response schemas for RecallRadar, DrugSignal, and Sources API responses
 - Top-level audit metadata including source endpoint and score version
 - Environment-based frontend API URL configuration
 - Clean frontend/backend project structure
@@ -88,6 +90,7 @@ Current support includes:
 
 - Live openFDA Drug Enforcement recall search
 - Live openFDA Drug Event adverse-event search
+- Public source registry endpoint for source transparency
 - Normalized RecallRadar result cards
 - DrugSignal top reported reactions display with relative count bars
 - Transparent rule-based Recall Review Score
@@ -99,6 +102,7 @@ Current support includes:
 - Backend scoring tests
 - RecallRadar route tests for success, empty-result, upstream failure, and query validation
 - DrugSignal route tests for success, empty-result, upstream failure, and query validation
+- Sources endpoint response and required metadata tests
 - openFDA Drug Enforcement client tests for success, no-match, and server-error behavior
 - openFDA Drug Event client tests for success, no-match, and server-error behavior
 - Backend response schemas for RecallRadar and DrugSignal API responses
@@ -108,7 +112,7 @@ Current support includes:
 Current backend test status:
 
 ```bash
-22 passed
+24 passed
 ```
 
 Recent stability improvements:
@@ -120,6 +124,7 @@ Recent stability improvements:
 - RecallRadar route responses now use backend Pydantic schemas.
 - Audit metadata now includes top-level source endpoint and score version.
 - Source metadata is centralized through a backend source registry.
+- Sources are exposed through `GET /api/v1/sources`.
 - openFDA client behavior is tested with mocked HTTP responses.
 - Query validation is tested for short queries and invalid limits.
 - DrugSignal backend endpoint returns top reported FAERS reactions with a causation disclaimer.
@@ -181,6 +186,34 @@ Current DrugSignal response includes:
 Important limitation:
 
 FAERS adverse-event reports do **not** prove that a drug caused a reaction. Reports may be incomplete, duplicated, influenced by reporting patterns, or missing clinical context. DrugSignal is a reporting-pattern explorer, not a causation engine.
+
+---
+
+## Sources Registry
+
+MedSignal AI includes a backend source registry to make public-data usage transparent and auditable.
+
+Current registered sources:
+
+- openFDA Drug Enforcement API for RecallRadar
+- openFDA Drug Event API for DrugSignal
+
+Sources endpoint:
+
+```text
+GET /api/v1/sources
+```
+
+The endpoint returns each source with:
+
+- Source ID
+- Source name
+- Endpoint
+- Module
+- Description
+- Update cadence
+
+This is the foundation for future source transparency, audit logs, saved monitors, and briefing traceability.
 
 ---
 
@@ -257,6 +290,7 @@ Current backend endpoints:
 ```text
 GET /api/v1/recalls/search
 GET /api/v1/drug-events/search
+GET /api/v1/sources
 ```
 
 ### Frontend
@@ -309,11 +343,12 @@ Current backend test coverage includes:
 - openFDA Drug Event client success behavior
 - openFDA Drug Event client no-match behavior
 - openFDA Drug Event client server-error behavior
+- Sources endpoint response and required metadata tests
 
 Current backend test status:
 
 ```bash
-22 passed
+24 passed
 ```
 
 Run frontend production build:
@@ -327,9 +362,9 @@ npm run build
 
 ## Planned Next Phases
 
-1. Add richer frontend loading and error states
-2. Add frontend tests for RecallRadar and DrugSignal states
-3. Add a source registry UI / data sources page
+1. Add a frontend Data Sources / Audit page using `GET /api/v1/sources`
+2. Add richer frontend loading and error states
+3. Add frontend tests for RecallRadar and DrugSignal states
 4. Add persistent audit trail
 5. Add Supabase/PostgreSQL persistence
 6. Build role-specific Safety Briefing Engine
