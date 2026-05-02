@@ -16,24 +16,12 @@ function formatTimestamp(value: string) {
   }
 }
 
-function getScoreVersion(response: RecallSearchResponse) {
-  const firstResult = response.results?.[0]
-
-  return firstResult?.risk_score.score_version ?? 'Not available'
-}
-
-function getEndpoint(response: RecallSearchResponse) {
-  const firstResult = response.results?.[0]
-
-  return firstResult?.source.endpoint ?? 'Not available'
-}
-
 export default function AuditPanel({ query, response }: Props) {
   const retrieved = response.retrieval_timestamp
   const recordCount = response.count ?? response.results?.length ?? 0
-  const scoreVersion = getScoreVersion(response)
+  const scoreVersion = response.score_version ?? 'Not available'
   const dataSource = response.source_name ?? 'Not available'
-  const endpoint = getEndpoint(response)
+  const endpoint = response.endpoint ?? 'Not available'
   const disclaimer =
     response.medical_disclaimer ?? 'Public-data safety intelligence only. Not medical advice.'
 
@@ -68,6 +56,31 @@ export default function AuditPanel({ query, response }: Props) {
         <div>
           <small>Score Version</small>
           <span>{scoreVersion}</span>
+        </div>
+
+        <div>
+          <small>Audit ID</small>
+          <span>{response.audit.audit_id}</span>
+        </div>
+
+        <div>
+          <small>Source ID</small>
+          <span>{response.audit.source_id}</span>
+        </div>
+
+        <div>
+          <small>Module</small>
+          <span>{response.audit.module}</span>
+        </div>
+
+        <div>
+          <small>Upstream Status</small>
+          <span>{response.audit.upstream_status}</span>
+        </div>
+
+        <div>
+          <small>Transform Version</small>
+          <span>{response.audit.transform_version}</span>
         </div>
       </div>
 

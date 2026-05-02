@@ -2,6 +2,15 @@ import axios from 'axios'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000'
 
+export type AuditSummary = {
+  audit_id: string
+  source_id: string
+  module: string
+  upstream_status: string
+  record_count: number
+  transform_version: string
+}
+
 export type DrugEventReaction = {
   reaction: string
   count: number
@@ -16,6 +25,7 @@ export type DrugEventSearchResponse = {
   retrieval_timestamp: string
   medical_disclaimer: string
   faers_disclaimer: string
+  audit: AuditSummary
   top_reactions: DrugEventReaction[]
 }
 

@@ -99,6 +99,31 @@ function DrugSignal() {
                 <small>Record Count</small>
                 <span>{data.count}</span>
               </div>
+
+              <div>
+                <small>Audit ID</small>
+                <span>{data.audit.audit_id}</span>
+              </div>
+
+              <div>
+                <small>Source ID</small>
+                <span>{data.audit.source_id}</span>
+              </div>
+
+              <div>
+                <small>Module</small>
+                <span>{data.audit.module}</span>
+              </div>
+
+              <div>
+                <small>Upstream Status</small>
+                <span>{data.audit.upstream_status}</span>
+              </div>
+
+              <div>
+                <small>Transform Version</small>
+                <span>{data.audit.transform_version}</span>
+              </div>
             </div>
 
             <p className="disclaimer">{data.faers_disclaimer}</p>
