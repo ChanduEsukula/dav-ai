@@ -35,7 +35,7 @@ DrugSignal allows a user to search a drug or medicinal product and receive:
 - Empty-result handling for searches with no FAERS matches
 - Compact audit summary for source traceability
 
-RecallRadar and DrugSignal are now both connected end-to-end through the React frontend and FastAPI backend. Briefing Engine, saved monitors, database persistence, and deployment are planned future phases.
+RecallRadar and DrugSignal are now both connected end-to-end through the React frontend and FastAPI backend. Audit events are persisted to Supabase/PostgreSQL through a fail-soft backend repository layer. Briefing Engine, saved monitors, frontend tests, CI/CD, Docker, and deployment are planned future phases.
 
 ---
 
@@ -56,8 +56,11 @@ RecallRadar and DrugSignal are now both connected end-to-end through the React f
 - Source-aware audit panels
 - Compact audit summaries in RecallRadar and DrugSignal API responses
 - Frontend display of compact audit summaries for RecallRadar and DrugSignal
-- Internal audit event builder utility for future persistence
+- Internal audit event builder utility
 - Fail-soft audit persistence boundary wired into RecallRadar and DrugSignal routes
+- Real Supabase/PostgreSQL audit event persistence for RecallRadar and DrugSignal
+- Supabase `source_registry` table for registered public data sources
+- Supabase `audit_events` table for persisted source/search audit events
 - Medical safety disclaimers
 - FAERS causation disclaimer for DrugSignal
 - Empty-result handling for searches with no FDA recall matches
@@ -71,17 +74,17 @@ RecallRadar and DrugSignal are now both connected end-to-end through the React f
 - openFDA client tests for success, no-match, and server-error behavior
 - Backend tests for the source registry endpoint
 - Backend tests for audit event construction
+- Backend tests for database configuration and fail-soft persistence behavior
 - Backend response schemas for RecallRadar, DrugSignal, Sources, and Audit API objects
 - Top-level audit metadata including source endpoint and score version
 - Environment-based frontend API URL configuration
+- Environment-based backend database URL configuration
 - Clean frontend/backend project structure
 
 ### Not built yet
 
-- Database or Supabase persistence
 - User accounts
 - Saved searches or alerts
-- Persistent audit logs
 - AI Briefing Engine
 - Frontend tests
 - CI/CD pipeline
@@ -105,8 +108,11 @@ Current support includes:
 - Transparent rule-based Recall Review Score
 - Compact audit summaries in RecallRadar and DrugSignal API responses
 - Frontend display of compact audit summaries for RecallRadar and DrugSignal
-- Internal full audit event builder utility for future database persistence
+- Internal full audit event builder utility
 - Fail-soft audit persistence boundary wired into RecallRadar and DrugSignal routes
+- Real PostgreSQL audit event persistence through Supabase connection pooling
+- Source metadata stored in Supabase/PostgreSQL
+- Audit events stored in Supabase/PostgreSQL after successful RecallRadar and DrugSignal searches
 - Source metadata and retrieval timestamps
 - Medical safety disclaimer
 - FAERS causation disclaimer for DrugSignal
@@ -114,6 +120,8 @@ Current support includes:
 - DrugSignal empty-state UI for searches with no FAERS matches
 - Backend scoring tests
 - Audit event builder tests
+- Database configuration helper tests
+- Fail-soft audit repository tests
 - RecallRadar route tests for success, empty-result, upstream failure, and query validation
 - DrugSignal route tests for success, empty-result, upstream failure, and query validation
 - Sources endpoint response and required metadata tests
@@ -122,11 +130,12 @@ Current support includes:
 - Backend response schemas for RecallRadar and DrugSignal API responses
 - Top-level audit metadata including source endpoint and score version
 - Environment-based frontend API URL configuration
+- Environment-based backend database configuration
 
 Current backend test status:
 
 ```bash
-31 passed
+32 passed
 ```
 
 Recent stability improvements:
@@ -147,6 +156,7 @@ Recent stability improvements:
 - API responses now include compact audit summaries while full audit-event construction remains internal.
 - Compact audit summaries are now visible in the RecallRadar and DrugSignal UI.
 - RecallRadar and DrugSignal now call the fail-soft audit repository after building audit events.
+- Audit events are now persisted to Supabase/PostgreSQL after RecallRadar and DrugSignal searches.
 
 ---
 
@@ -233,7 +243,7 @@ The endpoint returns each source with:
 
 The frontend Data Sources page consumes this endpoint and displays registered public sources, modules, endpoints, descriptions, and update cadence.
 
-This is the foundation for future source transparency, audit logs, saved monitors, and briefing traceability.
+The same source metadata is also stored in the Supabase/PostgreSQL `source_registry` table as the database foundation for audit logging and future briefing traceability.
 
 ---
 
@@ -246,8 +256,10 @@ The backend currently supports:
 - Compact audit summaries in RecallRadar and DrugSignal responses
 - Frontend display of compact audit summaries in RecallRadar and DrugSignal audit panels
 - Internal full audit event construction through a backend audit utility
-- Fail-soft audit persistence boundary for future database persistence
+- Fail-soft audit repository boundary
+- Real PostgreSQL persistence into the `audit_events` table
 - Audit event tests for standard success and error shapes
+- Repository tests for skipped, saved, and fail-soft error outcomes
 
 The compact public audit summary includes:
 
@@ -269,25 +281,56 @@ The internal audit event builder additionally supports:
 - Error message
 - Created timestamp
 
-The routes now build full audit events and pass them through a fail-soft audit repository boundary. If no database is configured, audit persistence is skipped safely and the user-facing search response still returns normally.
+The routes build full audit events and pass them through a fail-soft audit repository boundary. Audit events are now saved to the `audit_events` PostgreSQL table through Supabase connection pooling. If database persistence fails, the search workflow still returns a normal response while the persistence error is handled internally.
 
-This design avoids coupling the frontend to future persistence internals while preparing the backend for Supabase/PostgreSQL audit logging later.
+This design avoids coupling the frontend to database persistence internals while keeping the backend ready for future saved monitors, role-specific briefings, and deployment traceability.
 
 ---
 
-## Persistence Planning
+## Persistence
 
-MedSignal AI includes early persistence planning for a future Supabase/PostgreSQL audit trail.
+MedSignal AI now includes working Supabase/PostgreSQL audit persistence.
 
-Current persistence preparation includes:
+Current persistence support includes:
 
 - `docs/persistence_plan.md`
 - `backend/.env.example`
 - `backend/db/schema.sql`
 - database configuration helper
-- fail-soft audit repository skeleton
+- fail-soft audit repository
+- live inserts into the `audit_events` table
+- source metadata stored in the `source_registry` table
+- Supabase connection pooling for local PostgreSQL access
+- local `DATABASE_URL` loading through `backend/.env`
 
-The first real persistence phase should store source metadata and audit events only. It should not store personal health records, patient identifiers, medication profiles tied to users, uploaded documents, or private medical notes.
+The current persistence layer stores:
+
+- Source ID
+- Source name
+- Endpoint
+- Module
+- Search query
+- Query parameters
+- Retrieval timestamp
+- Upstream status
+- Record count
+- Transform version
+- Score version when applicable
+- Disclaimer version
+- Error message when applicable
+- Created timestamp
+
+The current persistence layer does **not** store:
+
+- Personal health records
+- Patient identifiers
+- Medication profiles tied to real users
+- Uploaded documents
+- Uploaded images
+- Private medical notes
+- User accounts or authentication records
+
+Database credentials must be stored only in local or deployment environment variables. Do not commit real credentials to GitHub.
 
 ---
 
@@ -323,17 +366,20 @@ Users should verify source records and consult qualified healthcare professional
 - httpx
 - Pydantic
 - pytest
+- python-dotenv
+- psycopg
 
 ### Public Data Sources
 
 - openFDA Drug Enforcement API
 - openFDA Drug Event API
 
-### Planned Persistence
+### Persistence
 
 - Supabase PostgreSQL
 - SQL schema for source registry and audit events
-- Fail-soft audit persistence boundary
+- Supabase transaction pooler connection
+- Fail-soft audit persistence repository
 
 ---
 
@@ -398,8 +444,10 @@ Use `frontend/.env.example` as the reference file for local configuration.
 ### Backend environment configuration
 
 ```env
-DATABASE_URL=postgresql+psycopg://username:password@host:5432/database
+DATABASE_URL=postgresql://username:password@host:port/database
 ```
+
+For Supabase local development, use the Supabase transaction pooler connection string in `backend/.env`.
 
 Use `backend/.env.example` as the reference file for future database configuration. Do not commit real credentials.
 
@@ -436,12 +484,12 @@ Current backend test coverage includes:
 - Sources endpoint response and required metadata tests
 - Audit event builder success and error shape tests
 - Database configuration helper tests
-- Fail-soft audit repository skeleton tests
+- Fail-soft audit repository tests for skipped, saved, and error outcomes
 
 Current backend test status:
 
 ```bash
-31 passed
+32 passed
 ```
 
 Run frontend production build:
@@ -453,12 +501,26 @@ npm run build
 
 ---
 
+## Manual Persistence Verification
+
+Manual Supabase/PostgreSQL verification completed successfully.
+
+Verified persisted audit rows include:
+
+- Manual backend audit event insert
+- RecallRadar search audit event
+- DrugSignal search audit event
+
+Expected rows appear in the Supabase `audit_events` table with module, source ID, query, upstream status, record count, transform version, score version when applicable, and disclaimer version.
+
+---
+
 ## Planned Next Phases
 
-1. Implement real PostgreSQL/Supabase audit event persistence
-2. Add richer frontend loading and error states
-3. Add frontend tests for RecallRadar and DrugSignal states
-4. Build role-specific Safety Briefing Engine
+1. Add richer frontend loading and error states
+2. Add frontend tests for RecallRadar and DrugSignal states
+3. Build role-specific Safety Briefing Engine
+4. Add saved searches or alert-monitoring workflows
 5. Add CI/CD with GitHub Actions
 6. Add Docker setup
 7. Deploy frontend and backend
