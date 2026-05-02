@@ -57,6 +57,7 @@ RecallRadar and DrugSignal are now both connected end-to-end through the React f
 - Compact audit summaries in RecallRadar and DrugSignal API responses
 - Frontend display of compact audit summaries for RecallRadar and DrugSignal
 - Internal audit event builder utility for future persistence
+- Fail-soft audit persistence boundary wired into RecallRadar and DrugSignal routes
 - Medical safety disclaimers
 - FAERS causation disclaimer for DrugSignal
 - Empty-result handling for searches with no FDA recall matches
@@ -105,6 +106,7 @@ Current support includes:
 - Compact audit summaries in RecallRadar and DrugSignal API responses
 - Frontend display of compact audit summaries for RecallRadar and DrugSignal
 - Internal full audit event builder utility for future database persistence
+- Fail-soft audit persistence boundary wired into RecallRadar and DrugSignal routes
 - Source metadata and retrieval timestamps
 - Medical safety disclaimer
 - FAERS causation disclaimer for DrugSignal
@@ -124,7 +126,7 @@ Current support includes:
 Current backend test status:
 
 ```bash
-26 passed
+31 passed
 ```
 
 Recent stability improvements:
@@ -144,6 +146,7 @@ Recent stability improvements:
 - DrugSignal reaction counts are displayed with relative visual bars.
 - API responses now include compact audit summaries while full audit-event construction remains internal.
 - Compact audit summaries are now visible in the RecallRadar and DrugSignal UI.
+- RecallRadar and DrugSignal now call the fail-soft audit repository after building audit events.
 
 ---
 
@@ -243,6 +246,7 @@ The backend currently supports:
 - Compact audit summaries in RecallRadar and DrugSignal responses
 - Frontend display of compact audit summaries in RecallRadar and DrugSignal audit panels
 - Internal full audit event construction through a backend audit utility
+- Fail-soft audit persistence boundary for future database persistence
 - Audit event tests for standard success and error shapes
 
 The compact public audit summary includes:
@@ -265,7 +269,25 @@ The internal audit event builder additionally supports:
 - Error message
 - Created timestamp
 
+The routes now build full audit events and pass them through a fail-soft audit repository boundary. If no database is configured, audit persistence is skipped safely and the user-facing search response still returns normally.
+
 This design avoids coupling the frontend to future persistence internals while preparing the backend for Supabase/PostgreSQL audit logging later.
+
+---
+
+## Persistence Planning
+
+MedSignal AI includes early persistence planning for a future Supabase/PostgreSQL audit trail.
+
+Current persistence preparation includes:
+
+- `docs/persistence_plan.md`
+- `backend/.env.example`
+- `backend/db/schema.sql`
+- database configuration helper
+- fail-soft audit repository skeleton
+
+The first real persistence phase should store source metadata and audit events only. It should not store personal health records, patient identifiers, medication profiles tied to users, uploaded documents, or private medical notes.
 
 ---
 
@@ -306,6 +328,12 @@ Users should verify source records and consult qualified healthcare professional
 
 - openFDA Drug Enforcement API
 - openFDA Drug Event API
+
+### Planned Persistence
+
+- Supabase PostgreSQL
+- SQL schema for source registry and audit events
+- Fail-soft audit persistence boundary
 
 ---
 
@@ -367,6 +395,14 @@ VITE_API_BASE_URL=http://127.0.0.1:8000
 
 Use `frontend/.env.example` as the reference file for local configuration.
 
+### Backend environment configuration
+
+```env
+DATABASE_URL=postgresql+psycopg://username:password@host:5432/database
+```
+
+Use `backend/.env.example` as the reference file for future database configuration. Do not commit real credentials.
+
 ---
 
 ## Testing
@@ -399,11 +435,13 @@ Current backend test coverage includes:
 - openFDA Drug Event client server-error behavior
 - Sources endpoint response and required metadata tests
 - Audit event builder success and error shape tests
+- Database configuration helper tests
+- Fail-soft audit repository skeleton tests
 
 Current backend test status:
 
 ```bash
-26 passed
+31 passed
 ```
 
 Run frontend production build:
@@ -417,20 +455,19 @@ npm run build
 
 ## Planned Next Phases
 
-1. Add richer frontend loading and error states
-2. Add frontend tests for RecallRadar and DrugSignal states
-3. Add persistent audit trail
-4. Add Supabase/PostgreSQL persistence
-5. Build role-specific Safety Briefing Engine
-6. Add CI/CD with GitHub Actions
-7. Add Docker setup
-8. Deploy frontend and backend
-9. Add optional NLP, RAG, and OCR/CNN experiments later
+1. Implement real PostgreSQL/Supabase audit event persistence
+2. Add richer frontend loading and error states
+3. Add frontend tests for RecallRadar and DrugSignal states
+4. Build role-specific Safety Briefing Engine
+5. Add CI/CD with GitHub Actions
+6. Add Docker setup
+7. Deploy frontend and backend
+8. Add optional NLP, RAG, and OCR/CNN experiments later
 
 ---
 
 ## Project Direction
 
-MedSignal AI should remain focused on healthcare safety intelligence, public-data signal monitoring, source transparency, and role-based decision support.
+MedSignal AI should remain focused on healthcare safety intelligence, public-data signal monitoring, source transparency, auditability, and role-based decision support.
 
 It should not become a generic weather app, generic chatbot, or broad unfocused dashboard.
