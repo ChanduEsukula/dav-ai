@@ -55,6 +55,7 @@ RecallRadar and DrugSignal are now both connected end-to-end through the React f
 - Rule-based Recall Review Score
 - Source-aware audit panels
 - Compact audit summaries in RecallRadar and DrugSignal API responses
+- Frontend display of compact audit summaries for RecallRadar and DrugSignal
 - Internal audit event builder utility for future persistence
 - Medical safety disclaimers
 - FAERS causation disclaimer for DrugSignal
@@ -102,6 +103,7 @@ Current support includes:
 - DrugSignal top reported reactions display with relative count bars
 - Transparent rule-based Recall Review Score
 - Compact audit summaries in RecallRadar and DrugSignal API responses
+- Frontend display of compact audit summaries for RecallRadar and DrugSignal
 - Internal full audit event builder utility for future database persistence
 - Source metadata and retrieval timestamps
 - Medical safety disclaimer
@@ -141,6 +143,7 @@ Recent stability improvements:
 - DrugSignal frontend page is connected to the tested backend endpoint.
 - DrugSignal reaction counts are displayed with relative visual bars.
 - API responses now include compact audit summaries while full audit-event construction remains internal.
+- Compact audit summaries are now visible in the RecallRadar and DrugSignal UI.
 
 ---
 
@@ -238,6 +241,7 @@ MedSignal AI separates public response metadata from internal audit construction
 The backend currently supports:
 
 - Compact audit summaries in RecallRadar and DrugSignal responses
+- Frontend display of compact audit summaries in RecallRadar and DrugSignal audit panels
 - Internal full audit event construction through a backend audit utility
 - Audit event tests for standard success and error shapes
 
@@ -413,16 +417,15 @@ npm run build
 
 ## Planned Next Phases
 
-1. Add frontend display of compact audit summaries for RecallRadar and DrugSignal
-2. Add richer frontend loading and error states
-3. Add frontend tests for RecallRadar and DrugSignal states
-4. Add persistent audit trail
-5. Add Supabase/PostgreSQL persistence
-6. Build role-specific Safety Briefing Engine
-7. Add CI/CD with GitHub Actions
-8. Add Docker setup
-9. Deploy frontend and backend
-10. Add optional NLP, RAG, and OCR/CNN experiments later
+1. Add richer frontend loading and error states
+2. Add frontend tests for RecallRadar and DrugSignal states
+3. Add persistent audit trail
+4. Add Supabase/PostgreSQL persistence
+5. Build role-specific Safety Briefing Engine
+6. Add CI/CD with GitHub Actions
+7. Add Docker setup
+8. Deploy frontend and backend
+9. Add optional NLP, RAG, and OCR/CNN experiments later
 
 ---
 
