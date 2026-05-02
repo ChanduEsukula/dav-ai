@@ -3,6 +3,7 @@ from collections import Counter
 from fastapi import APIRouter, HTTPException, Query
 
 from app.audit.audit_event import build_audit_event
+from app.db.audit_repository import save_audit_event
 from app.schemas.drug_events import DrugEventSearchResponse
 from app.services.openfda_drug_event_client import OpenFDADrugEventClient
 
@@ -47,6 +48,8 @@ async def search_drug_events(
             record_count=len(raw_results),
             transform_version="drug-event-transform-v0.1",
         )
+
+        save_audit_event(audit_event)
 
         return {
             "query": q,

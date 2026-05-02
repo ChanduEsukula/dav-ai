@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException, Query
 
 from app.audit.audit_event import build_audit_event
+from app.db.audit_repository import save_audit_event
 from app.schemas.recalls import RecallSearchResponse
-from app.services.openfda_client import OpenFDAClient
 from app.scoring.recall_score import calculate_recall_risk_score
+from app.services.openfda_client import OpenFDAClient
 
 router = APIRouter()
 client = OpenFDAClient()
@@ -56,6 +57,8 @@ async def search_recalls(
             transform_version="recall-transform-v0.1",
             score_version="recall-risk-v0.1",
         )
+
+        save_audit_event(audit_event)
 
         return {
             "query": q,
