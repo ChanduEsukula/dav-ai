@@ -46,6 +46,13 @@ function Navbar({
           DrugSignal
         </button>
 
+        <button
+          className={activePage === 'sources' ? 'active' : ''}
+          onClick={() => goToPage('sources')}
+        >
+          Sources
+        </button>
+
         <button className={activePage === 'about' ? 'active' : ''} onClick={() => goToPage('about')}>
           About
         </button>
