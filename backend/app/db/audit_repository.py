@@ -1,16 +1,70 @@
 from typing import Any
 
-from app.db.database import is_database_configured
+import psycopg
+from psycopg.rows import dict_row
+
+from app.db.database import get_database_url
 
 
 def save_audit_event(audit_event: dict[str, Any]) -> dict[str, str]:
-    if not is_database_configured():
+    database_url = get_database_url()
+
+    if not database_url:
         return {
             "status": "skipped",
             "reason": "database_not_configured",
         }
 
-    return {
-        "status": "not_implemented",
-        "reason": "database_configured_but_repository_not_implemented",
-    }
+    try:
+        with psycopg.connect(database_url, row_factory=dict_row) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    insert into audit_events (
+                        audit_id,
+                        module,
+                        source_id,
+                        source_name,
+                        endpoint,
+                        query,
+                        query_params,
+                        retrieval_timestamp,
+                        upstream_status,
+                        record_count,
+                        transform_version,
+                        score_version,
+                        disclaimer_version,
+                        error_message,
+                        created_at
+                    )
+                    values (
+                        %(audit_id)s,
+                        %(module)s,
+                        %(source_id)s,
+                        %(source_name)s,
+                        %(endpoint)s,
+                        %(query)s,
+                        %(query_params)s,
+                        %(retrieval_timestamp)s,
+                        %(upstream_status)s,
+                        %(record_count)s,
+                        %(transform_version)s,
+                        %(score_version)s,
+                        %(disclaimer_version)s,
+                        %(error_message)s,
+                        %(created_at)s
+                    )
+                    """,
+                    audit_event,
+                )
+
+        return {
+            "status": "saved",
+            "reason": "audit_event_persisted",
+        }
+
+    except Exception:
+        return {
+            "status": "error",
+            "reason": "audit_event_persistence_failed",
+        }
