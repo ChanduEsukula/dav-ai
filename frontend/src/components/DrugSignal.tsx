@@ -1,15 +1,21 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   searchDrugEvents,
   type DrugEventSearchResponse,
 } from '../api/drugEvents'
+import SafetyBriefingPanel from './SafetyBriefingPanel'
 import { formatTimestamp } from '../utils/recallFormatters'
+import { generateDrugEventBriefing } from '../utils/briefingGenerator'
+import { briefingRoleLabels, type BriefingRole } from '../types/briefing'
+
+const briefingRoles: BriefingRole[] = ['consumer', 'pharmacy', 'clinic', 'public_health']
 
 function DrugSignal() {
   const [query, setQuery] = useState('')
   const [data, setData] = useState<DrugEventSearchResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [briefingRole, setBriefingRole] = useState<BriefingRole>('consumer')
 
   async function handleSearch() {
     const trimmedQuery = query.trim()
@@ -37,6 +43,12 @@ function DrugSignal() {
   const hasNoResults = data && data.top_reactions.length === 0
   const maxReactionCount =
     data?.top_reactions.reduce((max, item) => Math.max(max, item.count), 0) ?? 0
+
+  const briefing = useMemo(() => {
+    if (!data) return null
+
+    return generateDrugEventBriefing(data, briefingRole)
+  }, [data, briefingRole])
 
   return (
     <section className="drugsignal reveal" id="drugsignal">
@@ -128,6 +140,27 @@ function DrugSignal() {
 
             <p className="disclaimer">{data.faers_disclaimer}</p>
             <p className="disclaimer">{data.medical_disclaimer}</p>
+          </div>
+        )}
+
+        {briefing && (
+          <div className="briefing-control-panel">
+            <div className="briefing-role-selector">
+              <label htmlFor="drug-briefing-role">Briefing role</label>
+              <select
+                id="drug-briefing-role"
+                value={briefingRole}
+                onChange={(event) => setBriefingRole(event.target.value as BriefingRole)}
+              >
+                {briefingRoles.map((role) => (
+                  <option key={role} value={role}>
+                    {briefingRoleLabels[role]}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <SafetyBriefingPanel briefing={briefing} />
           </div>
         )}
 

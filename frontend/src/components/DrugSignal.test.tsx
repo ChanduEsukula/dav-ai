@@ -61,17 +61,11 @@ test('renders DrugSignal search input and button', () => {
     })
   ).toBeInTheDocument()
 
-  expect(
-    screen.getByPlaceholderText(/Search FAERS reports/i)
-  ).toBeInTheDocument()
+  expect(screen.getByPlaceholderText(/Search FAERS reports/i)).toBeInTheDocument()
 
-  expect(
-    screen.getByRole('button', { name: /Analyze/i })
-  ).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: /Analyze/i })).toBeInTheDocument()
 
-  expect(
-    screen.getByText(/do not prove causation/i)
-  ).toBeInTheDocument()
+  expect(screen.getByText(/do not prove causation/i)).toBeInTheDocument()
 })
 
 test('shows validation error for empty search', async () => {
@@ -110,7 +104,7 @@ test('shows loading state during search', async () => {
   })
 })
 
-test('shows successful reaction results with source and disclaimers', async () => {
+test('shows successful reaction results with source, disclaimers, and briefing information', async () => {
   const user = userEvent.setup()
 
   mockSearchDrugEvents.mockResolvedValue(mockResponse)
@@ -130,21 +124,33 @@ test('shows successful reaction results with source and disclaimers', async () =
     screen.getByRole('heading', { name: /Top reported reactions/i })
   ).toBeInTheDocument()
 
-  expect(screen.getByText(/NAUSEA/i)).toBeInTheDocument()
-  expect(screen.getByText('12')).toBeInTheDocument()
+  expect(screen.getAllByText(/NAUSEA/i).length).toBeGreaterThan(0)
+  expect(screen.getAllByText('12').length).toBeGreaterThan(0)
   expect(screen.getByText(/HEADACHE/i)).toBeInTheDocument()
   expect(screen.getByText('6')).toBeInTheDocument()
 
   expect(
-    screen.getByText(/FAERS reports are safety signals only/i)
-  ).toBeInTheDocument()
+    screen.getAllByText(/FAERS reports are safety signals only/i).length
+  ).toBeGreaterThan(0)
 
   expect(
-    screen.getByText(/not medical advice, diagnosis, or treatment/i)
+    screen.getAllByText(/not medical advice, diagnosis, or treatment/i).length
+  ).toBeGreaterThan(0)
+
+  expect(screen.getAllByText(/drug-audit-123/i).length).toBeGreaterThan(0)
+  expect(screen.getAllByText(/DrugSignal/i).length).toBeGreaterThan(0)
+
+  expect(
+    screen.getByRole('heading', { name: /Consumer briefing/i })
   ).toBeInTheDocument()
 
-  expect(screen.getByText(/drug-audit-123/i)).toBeInTheDocument()
-  expect(screen.getAllByText(/DrugSignal/i).length).toBeGreaterThan(0)
+  expect(screen.getByText(/Safety Briefing Engine v1/i)).toBeInTheDocument()
+
+  expect(screen.getByLabelText(/Briefing role/i)).toBeInTheDocument()
+
+  expect(
+    screen.getByText(/These are adverse-event reporting patterns only/i)
+  ).toBeInTheDocument()
 })
 
 test('shows no-results state with safety language', async () => {
@@ -174,6 +180,14 @@ test('shows no-results state with safety language', async () => {
   expect(
     screen.getByText(/This does not prove the drug is safe or unsafe/i)
   ).toBeInTheDocument()
+
+  expect(
+    screen.getByRole('heading', { name: /Consumer briefing/i })
+  ).toBeInTheDocument()
+
+  expect(screen.getByText(/Safety Briefing Engine v1/i)).toBeInTheDocument()
+
+  expect(screen.getByLabelText(/Briefing role/i)).toBeInTheDocument()
 })
 
 test('shows error message when API call fails', async () => {
