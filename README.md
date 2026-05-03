@@ -2,13 +2,19 @@
 
 **Healthcare safety intelligence from public FDA signals.**
 
-MedSignal AI is a full-stack healthcare safety intelligence prototype that turns public recall and adverse-event data into source-aware, explainable safety signals. The current product foundation includes **RecallRadar**, a live FDA recall search workflow powered by the openFDA Drug Enforcement API, and **DrugSignal**, a public FAERS adverse-event reporting pattern explorer powered by the openFDA Drug Event API.
+MedSignal AI is a full-stack healthcare safety intelligence prototype that turns public recall and adverse-event data into source-aware, explainable safety signals and deterministic role-based safety briefings.
+
+The current product foundation includes:
+
+- **RecallRadar**: a live FDA recall search workflow powered by the openFDA Drug Enforcement API
+- **DrugSignal**: a public FAERS adverse-event reporting pattern explorer powered by the openFDA Drug Event API
+- **Safety Briefing Engine v1**: a deterministic role-based briefing layer for RecallRadar and DrugSignal
 
 This project is designed as a serious full-stack AI/data product prototype, not a static student demo.
 
 ---
 
-## Current MVP: RecallRadar and DrugSignal
+## Current MVP: RecallRadar, DrugSignal, and Safety Briefing Engine v1
 
 RecallRadar allows a user to search a product, drug, brand, or category and receive:
 
@@ -22,6 +28,7 @@ RecallRadar allows a user to search a product, drug, brand, or category and rece
 - Source timestamp and technical audit details
 - Medical safety disclaimer
 - Compact audit summary for source traceability
+- Role-based safety briefing
 
 DrugSignal allows a user to search a drug or medicinal product and receive:
 
@@ -34,8 +41,18 @@ DrugSignal allows a user to search a drug or medicinal product and receive:
 - Medical safety disclaimer
 - Empty-result handling for searches with no FAERS matches
 - Compact audit summary for source traceability
+- Role-based safety briefing
 
-RecallRadar and DrugSignal are now both connected end-to-end through the React frontend and FastAPI backend. Audit events are persisted to Supabase/PostgreSQL through a fail-soft backend repository layer. Briefing Engine, saved monitors, frontend tests, CI/CD, Docker, and deployment are planned future phases.
+Safety Briefing Engine v1 generates deterministic role-based briefings for:
+
+- Consumer
+- Pharmacy
+- Clinic
+- Public Health / Analyst
+
+Briefings are generated from structured RecallRadar and DrugSignal response data only. The current briefing engine does not use an LLM and does not provide diagnosis, treatment guidance, medication-change advice, or FAERS causation claims.
+
+RecallRadar and DrugSignal are now both connected end-to-end through the React frontend and FastAPI backend. Audit events are persisted to Supabase/PostgreSQL through a fail-soft backend repository layer. Safety Briefing Engine v1 is implemented as a deterministic, role-based frontend briefing layer for RecallRadar and DrugSignal. Frontend tests, backend tests, and GitHub Actions CI are active. Saved monitors, Docker, deployment, database migrations, and production hardening remain future phases.
 
 ---
 
@@ -53,6 +70,9 @@ RecallRadar and DrugSignal are now both connected end-to-end through the React f
 - RecallRadar end-to-end search workflow
 - DrugSignal end-to-end search workflow
 - Rule-based Recall Review Score
+- Deterministic Safety Briefing Engine v1 for RecallRadar and DrugSignal
+- Role-based safety briefings for Consumer, Pharmacy, Clinic, and Public Health / Analyst
+- Safety briefing source/audit details
 - Source-aware audit panels
 - Compact audit summaries in RecallRadar and DrugSignal API responses
 - Frontend display of compact audit summaries for RecallRadar and DrugSignal
@@ -68,6 +88,8 @@ RecallRadar and DrugSignal are now both connected end-to-end through the React f
 - DrugSignal frontend page using the openFDA Drug Event API
 - DrugSignal backend module using the openFDA Drug Event API
 - DrugSignal top reported reactions display with relative count bars
+- Safety briefing generator unit tests
+- Frontend component tests with Vitest and React Testing Library
 - DrugSignal backend tests for route behavior, query validation, and openFDA client behavior
 - Backend unit tests for recall scoring
 - Backend route tests for success, empty-result, upstream failure, and query validation
@@ -79,23 +101,30 @@ RecallRadar and DrugSignal are now both connected end-to-end through the React f
 - Top-level audit metadata including source endpoint and score version
 - Environment-based frontend API URL configuration
 - Environment-based backend database URL configuration
+- GitHub Actions CI for backend tests, frontend tests, lint, and build
 - Clean frontend/backend project structure
 
 ### Not built yet
 
 - User accounts
+- Authentication/roles
 - Saved searches or alerts
-- AI Briefing Engine
-- Frontend tests
-- CI/CD pipeline
+- Saved monitors
 - Docker setup
 - Production deployment
+- Database migrations
+- Audit history UI
+- Briefing persistence
+- LLM/RAG briefing upgrade
+- CNN/OCR product label scanner
+- Production observability/logging
+- Production security hardening
 
 ---
 
 ## Current Engineering Status
 
-RecallRadar and DrugSignal are the active end-to-end MVP modules.
+RecallRadar, DrugSignal, and Safety Briefing Engine v1 are the active end-to-end MVP modules.
 
 Current support includes:
 
@@ -106,6 +135,7 @@ Current support includes:
 - Normalized RecallRadar result cards
 - DrugSignal top reported reactions display with relative count bars
 - Transparent rule-based Recall Review Score
+- Deterministic role-based safety briefings for RecallRadar and DrugSignal
 - Compact audit summaries in RecallRadar and DrugSignal API responses
 - Frontend display of compact audit summaries for RecallRadar and DrugSignal
 - Internal full audit event builder utility
@@ -127,6 +157,11 @@ Current support includes:
 - Sources endpoint response and required metadata tests
 - openFDA Drug Enforcement client tests for success, no-match, and server-error behavior
 - openFDA Drug Event client tests for success, no-match, and server-error behavior
+- Frontend App smoke test
+- RecallRadar component tests
+- DrugSignal component tests
+- Safety briefing generator tests
+- GitHub Actions CI for backend tests, frontend tests, frontend lint, and frontend production build
 - Backend response schemas for RecallRadar and DrugSignal API responses
 - Top-level audit metadata including source endpoint and score version
 - Environment-based frontend API URL configuration
@@ -136,6 +171,12 @@ Current backend test status:
 
 ```bash
 32 passed
+```
+
+Current frontend test status:
+
+```bash
+20 passed
 ```
 
 Recent stability improvements:
@@ -157,6 +198,9 @@ Recent stability improvements:
 - Compact audit summaries are now visible in the RecallRadar and DrugSignal UI.
 - RecallRadar and DrugSignal now call the fail-soft audit repository after building audit events.
 - Audit events are now persisted to Supabase/PostgreSQL after RecallRadar and DrugSignal searches.
+- Safety Briefing Engine v1 now generates deterministic role-based briefings from structured RecallRadar and DrugSignal data.
+- Frontend tests now cover App rendering, RecallRadar behavior, DrugSignal behavior, and briefing generator behavior.
+- GitHub Actions CI is active and passing.
 
 ---
 
@@ -210,10 +254,56 @@ Current DrugSignal response includes:
 - Top reported reactions from returned FAERS records
 - Relative count bars for comparing reaction frequency within the returned results
 - Compact audit summary for traceability
+- Role-based safety briefing
 
 Important limitation:
 
 FAERS adverse-event reports do **not** prove that a drug caused a reaction. Reports may be incomplete, duplicated, influenced by reporting patterns, or missing clinical context. DrugSignal is a reporting-pattern explorer, not a causation engine.
+
+---
+
+## Safety Briefing Engine v1
+
+Safety Briefing Engine v1 is a deterministic frontend briefing layer that turns structured RecallRadar and DrugSignal response data into role-based public-data safety briefings.
+
+Current roles:
+
+- Consumer
+- Pharmacy
+- Clinic
+- Public Health / Analyst
+
+Each briefing includes:
+
+- Summary
+- What was found
+- What to verify
+- Suggested review checklist
+- Limitations
+- Source and audit details
+- Disclaimer
+
+The briefing engine uses existing structured API response fields only, including:
+
+- Query
+- Record count
+- Recall score or top FAERS reaction
+- Source name
+- Endpoint
+- Retrieval timestamp
+- Audit ID
+- Medical disclaimer
+- FAERS disclaimer when applicable
+
+The current briefing engine does not use an LLM. This keeps the MVP explainable, deterministic, testable, and safer for healthcare-adjacent public-data workflows.
+
+The briefing engine must not generate:
+
+- Diagnosis
+- Treatment guidance
+- Medication-change advice
+- Claims that FAERS reports prove causation
+- Unsupported medical recommendations
 
 ---
 
@@ -358,6 +448,8 @@ Users should verify source records and consult qualified healthcare professional
 - Vite
 - CSS files
 - Axios
+- Vitest
+- React Testing Library
 
 ### Backend
 
@@ -380,6 +472,14 @@ Users should verify source records and consult qualified healthcare professional
 - SQL schema for source registry and audit events
 - Supabase transaction pooler connection
 - Fail-soft audit persistence repository
+
+### CI/CD
+
+- GitHub Actions
+- Backend pytest job
+- Frontend test job
+- Frontend lint job
+- Frontend production build job
 
 ---
 
@@ -492,10 +592,31 @@ Current backend test status:
 32 passed
 ```
 
-Run frontend production build:
+Run frontend tests:
 
 ```bash
 cd frontend
+npm test
+```
+
+Current frontend test coverage includes:
+
+- App smoke rendering
+- RecallRadar component behavior
+- DrugSignal component behavior
+- Safety briefing generator behavior
+
+Current frontend test status:
+
+```bash
+20 passed
+```
+
+Run frontend lint and production build:
+
+```bash
+cd frontend
+npm run lint
 npm run build
 ```
 
@@ -517,14 +638,13 @@ Expected rows appear in the Supabase `audit_events` table with module, source ID
 
 ## Planned Next Phases
 
-1. Add richer frontend loading and error states
-2. Add frontend tests for RecallRadar and DrugSignal states
-3. Build role-specific Safety Briefing Engine
-4. Add saved searches or alert-monitoring workflows
-5. Add CI/CD with GitHub Actions
-6. Add Docker setup
-7. Deploy frontend and backend
-8. Add optional NLP, RAG, and OCR/CNN experiments later
+1. Keep Safety Briefing Engine v1 stable and documented
+2. Add Docker setup
+3. Prepare frontend/backend deployment
+4. Add database migration strategy
+5. Add saved searches or alert-monitoring workflows
+6. Add audit history UI
+7. Add optional NLP, RAG, and OCR/CNN experiments later
 
 ---
 

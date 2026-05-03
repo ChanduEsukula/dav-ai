@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The audit trail records how each safety signal was produced, which public source was used, when the data was retrieved, what query was sent, and what transformation or scoring version was applied.
+The audit trail records how each public safety signal was produced, which public source was used, when data was retrieved, what query was sent, and what transformation or scoring version was applied.
 
 The goal is source transparency, reproducibility, and reviewer trust.
 
@@ -10,7 +10,9 @@ The goal is source transparency, reproducibility, and reviewer trust.
 
 ## Why This Matters
 
-MedSignal AI is a healthcare safety intelligence platform. It does not diagnose, prescribe, or claim causation. Because the app summarizes public FDA safety data, every result should be traceable back to:
+MedSignal AI is a healthcare safety intelligence platform. It does not diagnose, prescribe, or claim causation.
+
+Because the app summarizes public FDA/openFDA safety data, every result should be traceable back to:
 
 - source name
 - endpoint
@@ -18,8 +20,9 @@ MedSignal AI is a healthcare safety intelligence platform. It does not diagnose,
 - retrieval timestamp
 - record count
 - transformation version
-- score version
+- score version when applicable
 - disclaimer used
+- audit ID
 
 ---
 
@@ -41,19 +44,19 @@ MedSignal AI is a healthcare safety intelligence platform. It does not diagnose,
 
 ---
 
-## Proposed Audit Event Fields
+## Current Audit Event Fields
 
 | Field | Purpose |
 |---|---|
 | audit_id | Unique event ID |
-| module | RecallRadar, DrugSignal, future Briefing Engine |
+| module | RecallRadar or DrugSignal |
 | source_id | Registry source ID |
 | source_name | Human-readable source name |
 | endpoint | Public API endpoint |
 | query | User/search query |
 | query_params | Full query parameters sent upstream |
 | retrieval_timestamp | When MedSignal retrieved the source data |
-| upstream_status | Success, empty, or error |
+| upstream_status | success, empty, or error |
 | record_count | Number of records returned or reviewed |
 | transform_version | Version of normalization/transformation logic |
 | score_version | Version of scoring logic, if applicable |
@@ -63,13 +66,13 @@ MedSignal AI is a healthcare safety intelligence platform. It does not diagnose,
 
 ---
 
-## Proposed Tables for Future Database Phase
+## Current Database Tables
 
 ### source_registry
 
 Stores source metadata.
 
-Possible fields:
+Current fields include:
 
 - source_id
 - source_name
@@ -82,16 +85,17 @@ Possible fields:
 
 ### audit_events
 
-Stores one row per search, source call, or briefing generation.
+Stores one row per search/source workflow.
 
-Possible fields:
+Current fields include:
 
 - audit_id
 - module
 - source_id
+- source_name
 - endpoint
 - query
-- query_params_json
+- query_params
 - retrieval_timestamp
 - upstream_status
 - record_count
@@ -101,44 +105,65 @@ Possible fields:
 - error_message
 - created_at
 
-### raw_snapshots
-
-Stores raw source payloads or references to raw payload files.
-
-Possible fields:
-
-- snapshot_id
-- audit_id
-- source_id
-- raw_payload_json
-- payload_hash
-- created_at
-
 ---
 
 ## Current App Status
 
-Currently, MedSignal AI returns audit metadata directly in API responses. It does not persist audit events yet.
+MedSignal AI currently returns compact audit metadata directly in RecallRadar and DrugSignal API responses.
 
-Current audit metadata includes:
+It also builds full audit events internally and persists them to Supabase/PostgreSQL through a fail-soft repository layer when `DATABASE_URL` is configured.
 
-- source_name
+Current visible audit metadata includes:
+
+- source name
 - endpoint
-- retrieval_timestamp
+- retrieval timestamp
 - record count
-- score_version for RecallRadar
-- disclaimers
+- score version for RecallRadar
+- audit ID
+- source ID
+- module
+- upstream status
+- transform version
+- disclaimer
 
 ---
 
-## Recommended Implementation Order
+## Current UI Audit Surfaces
 
-1. Keep returning audit metadata in API responses.
-2. Add a simple audit event builder function in backend.
-3. Add tests for audit event shape.
-4. Add database only after schema is stable.
-5. Store source registry and audit events in Supabase/PostgreSQL.
-6. Add Data Sources / Audit page to show source metadata and future audit history.
+Audit/source details are visible in:
+
+- RecallRadar audit panel
+- RecallRadar technical audit details
+- DrugSignal audit panel
+- Safety Briefing Engine v1 source/audit section
+- Data Sources page
+
+---
+
+## Safety Briefing Engine v1
+
+Safety Briefing Engine v1 uses structured RecallRadar and DrugSignal response data to generate deterministic role-based safety briefings.
+
+The briefing panel shows:
+
+- role
+- summary
+- what was found
+- what to verify
+- suggested review checklist
+- limitations
+- source and audit details
+- disclaimer
+
+Current roles:
+
+- Consumer
+- Pharmacy
+- Clinic
+- Public Health / Analyst
+
+The briefing engine does not use an LLM yet and must not produce diagnosis, treatment guidance, medication-change advice, or FAERS causation claims.
 
 ---
 
@@ -150,8 +175,27 @@ The MVP should only store public-data queries and source metadata. If user accou
 
 ---
 
-## Next Engineering Step
+## Known Gaps
 
-Before Supabase, create a backend utility that builds a standard audit event dictionary from RecallRadar and DrugSignal responses.
+Current audit architecture does not yet include:
 
-This keeps audit logic consistent and testable before persistence.
+- Audit history UI
+- Briefing persistence
+- Saved monitor audit events
+- Scheduled ingestion audit events
+- Change detection history
+- Raw upstream snapshot storage
+- Formal migration system
+- Production observability/logging
+- PHI-safe user-specific privacy model
+
+---
+
+## Recommended Next Engineering Steps
+
+1. Keep current audit metadata visible in API responses and UI.
+2. Keep fail-soft audit persistence stable.
+3. Update README/docs to reflect Safety Briefing Engine v1.
+4. Add Docker/deployment preparation next.
+5. Add migration tooling before expanding database schema.
+6. Add saved monitors only after deployment and privacy boundaries are clearer.

@@ -2,9 +2,9 @@
 
 ## Purpose
 
-This document defines how MedSignal AI will persist source metadata, audit events, and future safety-monitoring records.
+This document defines how MedSignal AI persists source metadata and audit events, and how persistence should expand later for saved monitors, briefings, and deployment readiness.
 
-The goal is to add database persistence without tightly coupling the current RecallRadar and DrugSignal APIs to Supabase/PostgreSQL too early.
+The goal is to support source transparency and auditability without turning the MVP into a heavy user-data or clinical system too early.
 
 ---
 
@@ -14,55 +14,50 @@ MedSignal AI currently has:
 
 - RecallRadar end-to-end workflow
 - DrugSignal end-to-end workflow
+- Safety Briefing Engine v1 in the frontend
 - Backend source registry
 - Sources endpoint
 - Internal audit event builder
 - Compact audit summaries in API responses
-- Frontend display of compact audit summaries
+- Frontend display of audit/source metadata
+- Supabase/PostgreSQL schema for source registry and audit events
+- Fail-soft audit repository
+- Audit-event persistence wired into RecallRadar and DrugSignal routes
 - Backend tests passing
+- Frontend tests passing
+- GitHub Actions CI running backend tests, frontend tests, lint, and build
 
 Current backend test status:
 
 ```bash
-26 passed
+32 passed
 ```
 
-The app does not yet persist audit events or source metadata to a database.
+Current frontend test status:
+
+```bash
+20 passed
+```
 
 ---
 
-## Persistence Goals
+## Current Persistence Scope
 
-The database should support:
+The current database phase supports:
 
-1. Source transparency
+1. Source registry metadata
 2. Audit event storage
-3. Future saved monitors
-4. Future briefing traceability
+3. Source/search traceability
+4. Future briefing traceability foundation
 5. Future deployment readiness
 
----
-
-## Non-Goals for First Persistence Phase
-
-The first database phase should not include:
-
-- User accounts
-- Login/authentication
-- Saved monitors
-- Alerts
-- AI briefing storage
-- Personal health data
-- Uploaded images
-- RAG/vector storage
-
-Those should come later.
+The current implementation intentionally does not store personal health information.
 
 ---
 
-## Proposed Database Choice
+## Current Database Choice
 
-Primary option:
+Primary database:
 
 - Supabase PostgreSQL
 
@@ -72,20 +67,11 @@ Why:
 - Free/low-cost starting tier
 - Easy table inspection
 - Good fit for portfolio/demo deployment
-- Can later support auth, storage, and row-level security
-
-Local development option:
-
-- Local PostgreSQL later if needed
-
-Avoid for this phase:
-
-- SQLite, because the deployed version should be closer to production architecture
-- Raw JSON files, because audit data should be queryable
+- Can later support auth, storage, and row-level security if needed
 
 ---
 
-## Proposed Tables
+## Current Tables
 
 ### source_registry
 
@@ -124,87 +110,63 @@ Stores one audit event per search/API workflow.
 | error_message | text nullable | Error details if failed |
 | created_at | timestamptz | When event was stored |
 
-### raw_snapshots
-
-Optional later table for raw payloads.
-
-| Field | Type | Notes |
-|---|---|---|
-| snapshot_id | uuid primary key | Snapshot ID |
-| audit_id | uuid | References audit_events.audit_id |
-| source_id | text | Source ID |
-| payload_hash | text | Hash of raw payload |
-| raw_payload | jsonb | Raw upstream payload |
-| created_at | timestamptz | Stored time |
-
-This table should wait until we decide whether raw payload storage is necessary.
-
 ---
 
-## First Implementation Scope
+## Current Backend Design
 
-Phase 1 should only implement:
-
-1. Supabase/PostgreSQL connection configuration
-2. `source_registry` table migration or SQL script
-3. `audit_events` table migration or SQL script
-4. Backend repository/service for saving audit events
-5. Tests with mocked persistence behavior
-6. Optional manual insert test
-
-Do not store raw payloads yet.
-
----
-
-## Backend Design
-
-Recommended backend modules:
+Current backend database modules:
 
 ```text
-backend/app/db/
 backend/app/db/database.py
 backend/app/db/audit_repository.py
-backend/app/db/source_repository.py
+backend/db/schema.sql
 ```
-
-Recommended responsibilities:
 
 ### database.py
 
-- Reads database URL from environment variable
-- Creates database connection/engine
-- Does not contain business logic
+Responsibilities:
+
+- Loads backend `.env`
+- Reads `DATABASE_URL`
+- Determines whether database persistence is configured
+- Avoids business logic
 
 ### audit_repository.py
 
-- Accepts full audit event dictionary
+Responsibilities:
+
+- Accepts a full audit event dictionary
 - Saves it into `audit_events`
-- Can be disabled when database URL is missing
+- Skips persistence safely when `DATABASE_URL` is missing
+- Fails soft when the database connection fails
+- Prevents audit persistence issues from breaking RecallRadar or DrugSignal searches
 
-### source_repository.py
+### schema.sql
 
-- Later syncs source registry into database
-- Not required for first audit-event persistence step
+Responsibilities:
+
+- Defines `source_registry`
+- Defines `audit_events`
+- Seeds current openFDA source metadata
+- Provides the current SQL foundation before a formal migration system is added
 
 ---
 
 ## Environment Variables
 
-Recommended variable:
+Recommended local variable:
 
 ```env
-DATABASE_URL=postgresql+psycopg://...
+DATABASE_URL=postgresql://...
 ```
 
-For Supabase, the backend should read this from local `.env` or deployment environment variables.
-
-Do not hardcode credentials.
+Credentials must not be hardcoded.
 
 ---
 
 ## Safety and Privacy Rules
 
-The first persistence phase should store only:
+The current persistence phase stores only:
 
 - Public data source metadata
 - Query text
@@ -214,28 +176,34 @@ The first persistence phase should store only:
 - Transform/scoring versions
 - Error messages
 
-It should not store:
+It must not store:
 
 - Personal health records
 - Patient identifiers
-- Login data
-- Medication profiles tied to a real user
-- Uploaded documents/images
-- Private medical notes
+- Diagnosis information
+- Treatment history
+- Medication adherence information
+- PHI
+- Uploaded product images
+- User-specific saved monitors until privacy controls are designed
 
 ---
 
-## Recommended Implementation Order
+## What Is Not Built Yet
 
-1. Add database dependencies only when ready.
-2. Add `.env.example` for backend database configuration.
-3. Create SQL schema for `source_registry` and `audit_events`.
-4. Add database connection utility.
-5. Add audit repository that can be safely disabled when no database URL exists.
-6. Update RecallRadar and DrugSignal routes to call audit repository after building audit event.
-7. Make persistence fail-soft so source search still works if database save fails.
-8. Add tests for fail-soft persistence behavior.
-9. Update README.
+Persistence does not yet include:
+
+- User accounts
+- Login/authentication
+- Saved monitors
+- Alerts
+- Briefing storage
+- Raw upstream payload snapshots
+- Database migrations with Alembic
+- Source registry synchronization from code to database
+- Audit history UI
+- User-specific health profiles
+- PHI workflows
 
 ---
 
@@ -243,24 +211,27 @@ It should not store:
 
 Audit persistence must not break the user-facing search workflow.
 
-If source data is successfully retrieved but the database audit insert fails, the API should still return the search response and log/preserve the audit error internally.
+If source data is successfully retrieved but the database audit insert fails, the API should still return the search response and avoid breaking RecallRadar or DrugSignal.
 
 This prevents database downtime from breaking public source search.
 
 ---
 
-## Next Engineering Decision
+## Next Persistence Steps
 
-Before coding persistence, decide:
+Recommended next database steps:
 
-- Use SQLAlchemy/SQLModel with psycopg
-- Or use Supabase Python client
-- Or start with raw SQL via psycopg
-
-Recommended: SQLAlchemy Core/ORM with PostgreSQL driver for professional backend structure.
+1. Keep current audit persistence stable.
+2. Add a migration strategy before expanding schema.
+3. Decide whether source registry should be code-first, database-first, or synchronized.
+4. Add briefing audit events only after Briefing Engine behavior stabilizes.
+5. Add saved monitors only after deployment and privacy boundaries are clearer.
+6. Avoid raw payload storage until there is a clear reason to store full upstream responses.
 
 ---
 
-## Next Coding Step
+## Current Recommendation
 
-After this plan is committed, create a backend `.env.example` and add a database schema SQL file, but do not connect to Supabase until credentials and schema are ready.
+Do not expand persistence immediately.
+
+The next immediate project step should be documentation refresh and then Docker/deployment preparation. Database migrations should come before saved monitors or alerts.
