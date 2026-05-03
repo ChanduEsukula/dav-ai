@@ -1,6 +1,10 @@
+import { useMemo, useState } from 'react'
 import type { RecallSearchResponse } from '../api/recalls'
 import AuditPanel from './AuditPanel'
+import SafetyBriefingPanel from './SafetyBriefingPanel'
 import { formatDate, formatTimestamp, riskExplanation } from '../utils/recallFormatters'
+import { generateRecallBriefing } from '../utils/briefingGenerator'
+import { briefingRoleLabels, type BriefingRole } from '../types/briefing'
 
 type RecallRadarProps = {
   query: string
@@ -11,6 +15,8 @@ type RecallRadarProps = {
   handleSearch: () => void
 }
 
+const briefingRoles: BriefingRole[] = ['consumer', 'pharmacy', 'clinic', 'public_health']
+
 function RecallRadar({
   query,
   setQuery,
@@ -19,7 +25,14 @@ function RecallRadar({
   error,
   handleSearch,
 }: RecallRadarProps) {
+  const [briefingRole, setBriefingRole] = useState<BriefingRole>('consumer')
   const hasNoResults = data && data.results.length === 0
+
+  const briefing = useMemo(() => {
+    if (!data) return null
+
+    return generateRecallBriefing(data, briefingRole)
+  }, [data, briefingRole])
 
   return (
     <section className="recallradar reveal" id="recallradar">
@@ -60,6 +73,27 @@ function RecallRadar({
         )}
 
         {data && <AuditPanel query={query} response={data} />}
+
+        {briefing && (
+          <div className="briefing-control-panel">
+            <div className="briefing-role-selector">
+              <label htmlFor="recall-briefing-role">Briefing role</label>
+              <select
+                id="recall-briefing-role"
+                value={briefingRole}
+                onChange={(event) => setBriefingRole(event.target.value as BriefingRole)}
+              >
+                {briefingRoles.map((role) => (
+                  <option key={role} value={role}>
+                    {briefingRoleLabels[role]}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <SafetyBriefingPanel briefing={briefing} />
+          </div>
+        )}
 
         {hasNoResults && (
           <div className="empty-state">

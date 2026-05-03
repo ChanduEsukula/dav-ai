@@ -1,0 +1,120 @@
+.safety-briefing-panel {
+  margin-top: 24px;
+  padding: 28px;
+  border-radius: 28px;
+  background: #ffffff;
+  box-shadow: 0 20px 60px rgba(16, 32, 51, 0.08);
+  border: 1px solid rgba(0, 123, 135, 0.12);
+}
+
+.briefing-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.briefing-header h3 {
+  margin: 4px 0 0;
+  font-size: 1.45rem;
+  color: #102033;
+}
+
+.briefing-source-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: rgba(0, 123, 135, 0.1);
+  color: #007b87;
+  font-weight: 700;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.briefing-summary {
+  margin: 0 0 20px;
+  color: #4d6075;
+  line-height: 1.7;
+}
+
+.briefing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.briefing-card {
+  border-radius: 20px;
+  background: #f7fbfc;
+  border: 1px solid rgba(16, 32, 51, 0.08);
+  padding: 18px;
+}
+
+.briefing-card h4,
+.briefing-audit-box h4 {
+  margin: 0 0 12px;
+  color: #102033;
+}
+
+.briefing-card ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #4d6075;
+  line-height: 1.65;
+}
+
+.briefing-card li + li {
+  margin-top: 8px;
+}
+
+.briefing-audit-box {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 20px;
+  background: #eef7f8;
+  border: 1px solid rgba(0, 123, 135, 0.12);
+}
+
+.briefing-control-panel {
+  margin-top: 24px;
+}
+
+.briefing-role-selector {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.briefing-role-selector label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #4d6075;
+}
+
+.briefing-role-selector select {
+  border: 1px solid rgba(16, 32, 51, 0.14);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: #ffffff;
+  color: #102033;
+  font-weight: 700;
+}
+
+@media (max-width: 760px) {
+  .briefing-header {
+    flex-direction: column;
+  }
+
+  .briefing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .briefing-role-selector {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

@@ -83,13 +83,9 @@ test('renders RecallRadar search input and button', () => {
     screen.getByRole('heading', { name: /Search public FDA recall signals/i })
   ).toBeInTheDocument()
 
-  expect(
-    screen.getByPlaceholderText(/Search recalls/i)
-  ).toBeInTheDocument()
+  expect(screen.getByPlaceholderText(/Search recalls/i)).toBeInTheDocument()
 
-  expect(
-    screen.getByRole('button', { name: /Analyze/i })
-  ).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: /Analyze/i })).toBeInTheDocument()
 })
 
 test('calls setQuery when the user types', async () => {
@@ -154,26 +150,59 @@ test('shows no-results safety message', () => {
   expect(
     screen.getByText(/This does not prove the product is safe or unsafe/i)
   ).toBeInTheDocument()
+
+  expect(
+    screen.getByRole('heading', { name: /Consumer briefing/i })
+  ).toBeInTheDocument()
+
+  expect(screen.getByText(/Safety Briefing Engine v1/i)).toBeInTheDocument()
+
+  expect(screen.getByLabelText(/Briefing role/i)).toBeInTheDocument()
 })
 
-test('shows successful recall result with source and audit information', () => {
+test('shows successful recall result with source, audit, and briefing information', () => {
   renderRecallRadar({ query: 'eye drops', data: mockResponse })
 
   expect(screen.getByText(/1 records matched/i)).toBeInTheDocument()
-  expect(screen.getAllByText(/openFDA Drug Enforcement API/i).length).toBeGreaterThan(0)
+
+  expect(
+    screen.getAllByText(/openFDA Drug Enforcement API/i).length
+  ).toBeGreaterThan(0)
 
   expect(
     screen.getByRole('heading', { name: /Example Eye Drops/i })
   ).toBeInTheDocument()
 
   expect(
-    screen.getByText(/Potential microbial contamination/i)
-  ).toBeInTheDocument()
+    screen.getAllByText(/Potential microbial contamination/i).length
+  ).toBeGreaterThan(0)
 
   expect(screen.getAllByText(/High signal/i).length).toBeGreaterThan(0)
   expect(screen.getByText('72')).toBeInTheDocument()
 
   expect(
-    screen.getByText(/MedSignal AI provides public-data safety intelligence only/i)
+    screen.getByRole('heading', { name: /Consumer briefing/i })
   ).toBeInTheDocument()
+
+  expect(screen.getByText(/Safety Briefing Engine v1/i)).toBeInTheDocument()
+
+  expect(screen.getByLabelText(/Briefing role/i)).toBeInTheDocument()
+
+  expect(
+    screen.getByText(/This briefing summarizes public safety-signal information/i)
+  ).toBeInTheDocument()
+
+  expect(
+    screen.getByText(/Suggested review checklist/i)
+  ).toBeInTheDocument()
+
+  expect(
+    screen.getAllByText(/audit-123/i).length
+  ).toBeGreaterThan(0)
+
+  expect(
+    screen.getAllByText(
+      /MedSignal AI provides public-data safety intelligence only/i
+    ).length
+  ).toBeGreaterThan(0)
 })
