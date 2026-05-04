@@ -2,16 +2,16 @@ export const signals = [
   {
     number: '01',
     title: 'Recall intelligence',
-    text: 'Clean summaries from public food, drug, and device recall data.',
+    text: 'Clean summaries from public FDA recall and enforcement records.',
   },
   {
     number: '02',
     title: 'Drug safety patterns',
-    text: 'Adverse-event trends explained without diagnosis or treatment claims.',
+    text: 'FAERS reporting patterns explained without diagnosis or causation claims.',
   },
   {
     number: '03',
-    title: 'Weather risk context',
-    text: 'AQI, heat, cold, and exposure context for sensitive populations.',
+    title: 'Role-based briefings',
+    text: 'Consumer, pharmacy, clinic, and public-health review checklists with source details.',
   },
 ]

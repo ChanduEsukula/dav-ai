@@ -6,9 +6,9 @@ function AboutPage() {
         <h2>Healthcare safety intelligence from public FDA signals.</h2>
         <p>
           MedTrek AI is a full-stack public safety intelligence platform that turns
-          fragmented recall and drug-safety data into clear, source-aware review workflows.
-          The current MVP focuses on RecallRadar, a live FDA recall search experience powered
-          by public openFDA enforcement data.
+          fragmented recall and adverse-event data into clear, source-aware review
+          workflows. The current MVP includes RecallRadar, DrugSignal, and a deterministic
+          Safety Briefing Engine v1 powered by public openFDA data.
         </p>
       </div>
 
@@ -17,9 +17,9 @@ function AboutPage() {
           <span>01</span>
           <h3>What the app does</h3>
           <p>
-            MedTrek AI helps users search public recall records, review FDA classification,
-            check recall status, understand recall timing, and inspect audit details from the
-            source response.
+            MedTrek AI helps users search public FDA recall records, explore FAERS
+            adverse-event reporting patterns, review source metadata, and generate
+            role-based safety briefings grounded in structured public data.
           </p>
         </article>
 
@@ -27,9 +27,9 @@ function AboutPage() {
           <span>02</span>
           <h3>What the app does not do</h3>
           <p>
-            It does not diagnose conditions, recommend treatment, replace clinicians, or tell
-            users to start, stop, or change medication. It is an information and review tool,
-            not a medical decision system.
+            It does not diagnose conditions, recommend treatment, replace clinicians,
+            claim FAERS causation, or tell users to start, stop, or change medication.
+            It is an information and review workflow, not a medical decision system.
           </p>
         </article>
 
@@ -37,19 +37,19 @@ function AboutPage() {
           <span>03</span>
           <h3>Data source transparency</h3>
           <p>
-            The current workflow uses public openFDA recall/enforcement data. Each result keeps
-            source details visible, including retrieval timestamp, source name, score version,
-            and technical audit context.
+            Current workflows use public openFDA Drug Enforcement and Drug Event data.
+            Each result keeps source details visible, including retrieval timestamp,
+            source name, endpoint, audit ID, transform version, and technical audit context.
           </p>
         </article>
 
         <article>
           <span>04</span>
-          <h3>Recall Review Score</h3>
+          <h3>Safety Briefing Engine v1</h3>
           <p>
-            The score is a review-priority signal. It combines recall class, status, recency,
-            scope, and confidence into a simple number so users can identify which public
-            records deserve closer review.
+            The briefing engine creates deterministic role-based summaries for consumers,
+            pharmacies, clinics, and public-health analysts. It uses structured API response
+            data only and keeps limitations visible.
           </p>
         </article>
       </div>
@@ -61,9 +61,10 @@ function AboutPage() {
         </div>
         <p>
           MedTrek AI is designed for users who need to review public safety information
-          without manually searching multiple government portals. The long-term vision includes
-          DrugSignal for adverse-event patterns, role-based briefings, saved monitors, and
-          source-audited safety dashboards.
+          without manually searching multiple government portals. The current system focuses
+          on RecallRadar, DrugSignal, role-based briefings, source transparency, and audit
+          persistence. Future phases may add saved monitors, alert workflows, audit history,
+          deployment hardening, and carefully scoped ML/NLP features.
         </p>
       </div>
 
@@ -74,7 +75,7 @@ function AboutPage() {
         </article>
         <article>
           <h4>Pharmacies</h4>
-          <p>Review recall signals, affected products, source details, and staff checklist items.</p>
+          <p>Review recall and FAERS reporting patterns with source details and checklist items.</p>
         </article>
         <article>
           <h4>Clinics</h4>
@@ -82,7 +83,7 @@ function AboutPage() {
         </article>
         <article>
           <h4>Public-health teams</h4>
-          <p>Track what changed, where the data came from, and why a signal matters.</p>
+          <p>Track what source was used, when it was retrieved, and why a signal needs review.</p>
         </article>
       </div>
 
@@ -90,7 +91,8 @@ function AboutPage() {
         <strong>Important safety boundary:</strong>
         <span>
           MedTrek AI is not FDA approved, not medical advice, and not a replacement for FDA,
-          CDC, clinician, pharmacist, or emergency guidance.
+          CDC, clinician, pharmacist, or emergency guidance. FAERS reports are safety signals
+          only and do not prove causation.
         </span>
       </div>
     </section>
