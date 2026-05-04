@@ -1,8 +1,8 @@
-# MedSignal AI Persistence Plan
+# MedTrek AI Persistence Plan
 
 ## Purpose
 
-This document defines how MedSignal AI persists source metadata and audit events, and how persistence should expand later for saved monitors, briefings, and deployment readiness.
+This document defines how MedTrek AI persists source metadata and audit events, and how persistence should expand later for saved monitors, briefings, and deployment readiness.
 
 The goal is to support source transparency and auditability without turning the MVP into a heavy user-data or clinical system too early.
 
@@ -10,7 +10,7 @@ The goal is to support source transparency and auditability without turning the 
 
 ## Current State
 
-MedSignal AI currently has:
+MedTrek AI currently has:
 
 - RecallRadar end-to-end workflow
 - DrugSignal end-to-end workflow

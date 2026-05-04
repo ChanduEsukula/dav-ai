@@ -68,7 +68,7 @@ async def search_recalls(
             "endpoint": payload["endpoint"],
             "retrieval_timestamp": payload["retrieval_timestamp"],
             "score_version": "recall-risk-v0.1",
-            "medical_disclaimer": "MedSignal AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.",
+            "medical_disclaimer": "MedTrek AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.",
             "audit": {
                 "audit_id": audit_event["audit_id"],
                 "source_id": audit_event["source_id"],

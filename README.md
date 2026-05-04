@@ -1,8 +1,8 @@
-# MedSignal AI
+# MedTrek AI
 
 **Healthcare safety intelligence from public FDA signals.**
 
-MedSignal AI is a full-stack healthcare safety intelligence prototype that turns public recall and adverse-event data into source-aware, explainable safety signals and deterministic role-based safety briefings.
+MedTrek AI is a full-stack healthcare safety intelligence prototype that turns public recall and adverse-event data into source-aware, explainable safety signals and deterministic role-based safety briefings.
 
 The current product foundation includes:
 
@@ -208,7 +208,7 @@ Recent stability improvements:
 
 ## Recall Review Score
 
-MedSignal AI uses a transparent, rule-based **Recall Review Score** for the RecallRadar MVP.
+MedTrek AI uses a transparent, rule-based **Recall Review Score** for the RecallRadar MVP.
 
 The score is not a medical diagnosis, treatment recommendation, or official FDA replacement. It is a review-priority signal that helps users understand which public recall records may deserve closer attention.
 
@@ -311,7 +311,7 @@ The briefing engine must not generate:
 
 ## Sources Registry
 
-MedSignal AI includes a backend source registry to make public-data usage transparent and auditable.
+MedTrek AI includes a backend source registry to make public-data usage transparent and auditable.
 
 Current registered sources:
 
@@ -341,7 +341,7 @@ The same source metadata is also stored in the Supabase/PostgreSQL `source_regis
 
 ## Audit Architecture
 
-MedSignal AI separates public response metadata from internal audit construction.
+MedTrek AI separates public response metadata from internal audit construction.
 
 The backend currently supports:
 
@@ -381,7 +381,7 @@ This design avoids coupling the frontend to database persistence internals while
 
 ## Persistence
 
-MedSignal AI now includes working Supabase/PostgreSQL audit persistence.
+MedTrek AI now includes working Supabase/PostgreSQL audit persistence.
 
 Current persistence support includes:
 
@@ -428,7 +428,7 @@ Database credentials must be stored only in local or deployment environment vari
 
 ## Safety Boundary
 
-MedSignal AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.
+MedTrek AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.
 
 The app does not:
 
@@ -564,7 +564,7 @@ Use `backend/.env.example` as the reference file for future database configurati
 
 ## Docker Local Development
 
-MedSignal AI can also run locally with Docker Compose.
+MedTrek AI can also run locally with Docker Compose.
 
 From the repository root:
 
@@ -699,6 +699,6 @@ Expected rows appear in the Supabase `audit_events` table with module, source ID
 
 ## Project Direction
 
-MedSignal AI should remain focused on healthcare safety intelligence, public-data signal monitoring, source transparency, auditability, and role-based decision support.
+MedTrek AI should remain focused on healthcare safety intelligence, public-data signal monitoring, source transparency, auditability, and role-based decision support.
 
 It should not become a generic weather app, generic chatbot, or broad unfocused dashboard.

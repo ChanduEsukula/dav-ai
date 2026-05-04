@@ -25,7 +25,7 @@ const mockResponse: DrugEventSearchResponse = {
   endpoint: 'https://api.fda.gov/drug/event.json',
   retrieval_timestamp: '2026-05-03T12:00:00Z',
   medical_disclaimer:
-    'MedSignal AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.',
+    'MedTrek AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.',
   faers_disclaimer:
     'FAERS reports are safety signals only and do not prove causation.',
   audit: {

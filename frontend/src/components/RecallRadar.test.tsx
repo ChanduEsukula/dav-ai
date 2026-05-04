@@ -12,7 +12,7 @@ const mockResponse: RecallSearchResponse = {
   retrieval_timestamp: '2026-05-03T12:00:00Z',
   score_version: 'recall-score-v1',
   medical_disclaimer:
-    'MedSignal AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.',
+    'MedTrek AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.',
   audit: {
     audit_id: 'audit-123',
     source_id: 'openfda-drug-enforcement',
@@ -202,7 +202,7 @@ test('shows successful recall result with source, audit, and briefing informatio
 
   expect(
     screen.getAllByText(
-      /MedSignal AI provides public-data safety intelligence only/i
+      /MedTrek AI provides public-data safety intelligence only/i
     ).length
   ).toBeGreaterThan(0)
 })

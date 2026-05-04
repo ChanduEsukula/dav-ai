@@ -1,4 +1,4 @@
-# MedSignal AI Audit Trail Design
+# MedTrek AI Audit Trail Design
 
 ## Purpose
 
@@ -10,7 +10,7 @@ The goal is source transparency, reproducibility, and reviewer trust.
 
 ## Why This Matters
 
-MedSignal AI is a healthcare safety intelligence platform. It does not diagnose, prescribe, or claim causation.
+MedTrek AI is a healthcare safety intelligence platform. It does not diagnose, prescribe, or claim causation.
 
 Because the app summarizes public FDA/openFDA safety data, every result should be traceable back to:
 
@@ -55,7 +55,7 @@ Because the app summarizes public FDA/openFDA safety data, every result should b
 | endpoint | Public API endpoint |
 | query | User/search query |
 | query_params | Full query parameters sent upstream |
-| retrieval_timestamp | When MedSignal retrieved the source data |
+| retrieval_timestamp | When MedTrek retrieved the source data |
 | upstream_status | success, empty, or error |
 | record_count | Number of records returned or reviewed |
 | transform_version | Version of normalization/transformation logic |
@@ -109,7 +109,7 @@ Current fields include:
 
 ## Current App Status
 
-MedSignal AI currently returns compact audit metadata directly in RecallRadar and DrugSignal API responses.
+MedTrek AI currently returns compact audit metadata directly in RecallRadar and DrugSignal API responses.
 
 It also builds full audit events internally and persists them to Supabase/PostgreSQL through a fail-soft repository layer when `DATABASE_URL` is configured.
 

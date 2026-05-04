@@ -7,7 +7,7 @@ function FaqPage() {
         <p className="eyebrow">Frequently Asked Questions</p>
         <h2>Clear answers without crowding the page.</h2>
         <p>
-          These questions explain what MedSignal AI is, what it is not, where the data comes
+          These questions explain what MedTrek AI is, what it is not, where the data comes
           from, and how to interpret recall search results safely.
         </p>
       </div>

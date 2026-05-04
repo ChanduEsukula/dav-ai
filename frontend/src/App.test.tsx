@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import App from './App'
 
-test('renders MedSignal AI landing page', () => {
+test('renders MedTrek AI landing page', () => {
   render(<App />)
 
   expect(
-    screen.getByRole('button', { name: /MedSignal AI/i })
+    screen.getByRole('button', { name: /MedTrek AI/i })
   ).toBeInTheDocument()
 
   expect(

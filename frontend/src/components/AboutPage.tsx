@@ -2,10 +2,10 @@ function AboutPage() {
   return (
     <section className="about-page reveal">
       <div className="about-hero">
-        <p className="eyebrow">About MedSignal AI</p>
+        <p className="eyebrow">About MedTrek AI</p>
         <h2>Healthcare safety intelligence from public FDA signals.</h2>
         <p>
-          MedSignal AI is a full-stack public safety intelligence platform that turns
+          MedTrek AI is a full-stack public safety intelligence platform that turns
           fragmented recall and drug-safety data into clear, source-aware review workflows.
           The current MVP focuses on RecallRadar, a live FDA recall search experience powered
           by public openFDA enforcement data.
@@ -17,7 +17,7 @@ function AboutPage() {
           <span>01</span>
           <h3>What the app does</h3>
           <p>
-            MedSignal AI helps users search public recall records, review FDA classification,
+            MedTrek AI helps users search public recall records, review FDA classification,
             check recall status, understand recall timing, and inspect audit details from the
             source response.
           </p>
@@ -60,7 +60,7 @@ function AboutPage() {
           <h3>Not another health app. A source-audited safety workflow.</h3>
         </div>
         <p>
-          MedSignal AI is designed for users who need to review public safety information
+          MedTrek AI is designed for users who need to review public safety information
           without manually searching multiple government portals. The long-term vision includes
           DrugSignal for adverse-event patterns, role-based briefings, saved monitors, and
           source-audited safety dashboards.
@@ -89,7 +89,7 @@ function AboutPage() {
       <div className="safety-note">
         <strong>Important safety boundary:</strong>
         <span>
-          MedSignal AI is not FDA approved, not medical advice, and not a replacement for FDA,
+          MedTrek AI is not FDA approved, not medical advice, and not a replacement for FDA,
           CDC, clinician, pharmacist, or emergency guidance.
         </span>
       </div>
