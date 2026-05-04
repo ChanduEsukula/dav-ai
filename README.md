@@ -52,7 +52,7 @@ Safety Briefing Engine v1 generates deterministic role-based briefings for:
 
 Briefings are generated from structured RecallRadar and DrugSignal response data only. The current briefing engine does not use an LLM and does not provide diagnosis, treatment guidance, medication-change advice, or FAERS causation claims.
 
-RecallRadar and DrugSignal are now both connected end-to-end through the React frontend and FastAPI backend. Audit events are persisted to Supabase/PostgreSQL through a fail-soft backend repository layer. Safety Briefing Engine v1 is implemented as a deterministic, role-based frontend briefing layer for RecallRadar and DrugSignal. Frontend tests, backend tests, and GitHub Actions CI are active. Saved monitors, Docker, deployment, database migrations, and production hardening remain future phases.
+RecallRadar and DrugSignal are connected end-to-end through the React frontend and FastAPI backend. Audit events are persisted to Supabase/PostgreSQL through a fail-soft backend repository layer. Safety Briefing Engine v1 is implemented as a deterministic, role-based frontend briefing layer for RecallRadar and DrugSignal. Frontend tests, backend tests, GitHub Actions CI, and local Docker Compose setup are active. Saved monitors, deployment, database migrations, and production hardening remain future phases.
 
 ---
 
@@ -102,6 +102,7 @@ RecallRadar and DrugSignal are now both connected end-to-end through the React f
 - Environment-based frontend API URL configuration
 - Environment-based backend database URL configuration
 - GitHub Actions CI for backend tests, frontend tests, lint, and build
+- Docker Compose local development setup for frontend and backend
 - Clean frontend/backend project structure
 
 ### Not built yet
@@ -110,7 +111,6 @@ RecallRadar and DrugSignal are now both connected end-to-end through the React f
 - Authentication/roles
 - Saved searches or alerts
 - Saved monitors
-- Docker setup
 - Production deployment
 - Database migrations
 - Audit history UI
@@ -162,6 +162,7 @@ Current support includes:
 - DrugSignal component tests
 - Safety briefing generator tests
 - GitHub Actions CI for backend tests, frontend tests, frontend lint, and frontend production build
+- Docker Compose setup for running frontend and backend locally
 - Backend response schemas for RecallRadar and DrugSignal API responses
 - Top-level audit metadata including source endpoint and score version
 - Environment-based frontend API URL configuration
@@ -201,6 +202,7 @@ Recent stability improvements:
 - Safety Briefing Engine v1 now generates deterministic role-based briefings from structured RecallRadar and DrugSignal data.
 - Frontend tests now cover App rendering, RecallRadar behavior, DrugSignal behavior, and briefing generator behavior.
 - GitHub Actions CI is active and passing.
+- Docker Compose now builds and runs the frontend and backend locally.
 
 ---
 
@@ -481,6 +483,13 @@ Users should verify source records and consult qualified healthcare professional
 - Frontend lint job
 - Frontend production build job
 
+### Local Containerization
+
+- Docker
+- Docker Compose
+- Backend Dockerfile
+- Frontend Dockerfile
+
 ---
 
 ## Local Development
@@ -550,6 +559,46 @@ DATABASE_URL=postgresql://username:password@host:port/database
 For Supabase local development, use the Supabase transaction pooler connection string in `backend/.env`.
 
 Use `backend/.env.example` as the reference file for future database configuration. Do not commit real credentials.
+
+---
+
+## Docker Local Development
+
+MedSignal AI can also run locally with Docker Compose.
+
+From the repository root:
+
+```bash
+docker compose up --build
+```
+
+This starts:
+
+- FastAPI backend container
+- React/Vite frontend container
+
+Local URLs:
+
+```text
+Frontend: http://localhost:5173
+Backend health check: http://localhost:8000/health
+Backend API docs: http://localhost:8000/docs
+```
+
+Stop the containers:
+
+```bash
+docker compose down
+```
+
+Docker uses local environment files:
+
+```text
+backend/.env
+frontend/.env
+```
+
+Do not commit real `.env` files or secrets to GitHub. Use `.env.example` files as references.
 
 ---
 
@@ -639,12 +688,12 @@ Expected rows appear in the Supabase `audit_events` table with module, source ID
 ## Planned Next Phases
 
 1. Keep Safety Briefing Engine v1 stable and documented
-2. Add Docker setup
-3. Prepare frontend/backend deployment
-4. Add database migration strategy
-5. Add saved searches or alert-monitoring workflows
-6. Add audit history UI
-7. Add optional NLP, RAG, and OCR/CNN experiments later
+2. Prepare frontend/backend deployment
+3. Add database migration strategy
+4. Add saved searches or alert-monitoring workflows
+5. Add audit history UI
+6. Add optional NLP, RAG, and OCR/CNN experiments later
+7. Add production observability and security hardening
 
 ---
 
