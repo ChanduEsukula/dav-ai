@@ -152,18 +152,24 @@ function DrugSignal() {
         {briefing && (
           <div className="briefing-control-panel">
             <div className="briefing-role-selector">
-              <label htmlFor="drug-briefing-role">Briefing role</label>
-              <select
-                id="drug-briefing-role"
-                value={briefingRole}
-                onChange={(event) => setBriefingRole(event.target.value as BriefingRole)}
+              <span>Briefing role</span>
+
+              <div
+                className="briefing-role-buttons"
+                role="group"
+                aria-label="Drug briefing role"
               >
                 {briefingRoles.map((role) => (
-                  <option key={role} value={role}>
+                  <button
+                    key={role}
+                    type="button"
+                    className={`briefing-role-button ${briefingRole === role ? 'active' : ''}`}
+                    onClick={() => setBriefingRole(role)}
+                  >
                     {briefingRoleLabels[role]}
-                  </option>
+                  </button>
                 ))}
-              </select>
+              </div>
             </div>
 
             <SafetyBriefingPanel briefing={briefing} />
