@@ -52,7 +52,7 @@ Safety Briefing Engine v1 generates deterministic role-based briefings for:
 
 Briefings are generated from structured RecallRadar and DrugSignal response data only. The current briefing engine does not use an LLM and does not provide diagnosis, treatment guidance, medication-change advice, or FAERS causation claims.
 
-RecallRadar and DrugSignal are connected end-to-end through the React frontend and FastAPI backend. Audit events are persisted to Supabase/PostgreSQL through a fail-soft backend repository layer. Safety Briefing Engine v1 is implemented as a deterministic, role-based frontend briefing layer for RecallRadar and DrugSignal. Frontend tests, backend tests, GitHub Actions CI, and local Docker Compose setup are active. Saved monitors, deployment, database migrations, and production hardening remain future phases.
+RecallRadar and DrugSignal are connected end-to-end through the React frontend and FastAPI backend. Audit events are persisted to Supabase/PostgreSQL through a fail-soft backend repository layer. Safety Briefing Engine v1 is implemented as a deterministic, role-based frontend briefing layer for RecallRadar and DrugSignal. Frontend tests, backend tests, GitHub Actions CI, local Docker Compose setup, and deployment environment configuration are active. Saved monitors, production deployment, database migrations, and production hardening remain future phases.
 
 ---
 
@@ -101,6 +101,7 @@ RecallRadar and DrugSignal are connected end-to-end through the React frontend a
 - Top-level audit metadata including source endpoint and score version
 - Environment-based frontend API URL configuration
 - Environment-based backend database URL configuration
+- Production-configurable backend CORS origins
 - GitHub Actions CI for backend tests, frontend tests, lint, and build
 - Docker Compose local development setup for frontend and backend
 - Clean frontend/backend project structure
@@ -163,6 +164,7 @@ Current support includes:
 - Safety briefing generator tests
 - GitHub Actions CI for backend tests, frontend tests, frontend lint, and frontend production build
 - Docker Compose setup for running frontend and backend locally
+- Backend CORS configuration through `ALLOWED_ORIGINS`
 - Backend response schemas for RecallRadar and DrugSignal API responses
 - Top-level audit metadata including source endpoint and score version
 - Environment-based frontend API URL configuration
@@ -203,6 +205,7 @@ Recent stability improvements:
 - Frontend tests now cover App rendering, RecallRadar behavior, DrugSignal behavior, and briefing generator behavior.
 - GitHub Actions CI is active and passing.
 - Docker Compose now builds and runs the frontend and backend locally.
+- Backend CORS origins are now configurable for deployment.
 
 ---
 
@@ -554,6 +557,7 @@ Use `frontend/.env.example` as the reference file for local configuration.
 
 ```env
 DATABASE_URL=postgresql://username:password@host:port/database
+ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 ```
 
 For Supabase local development, use the Supabase transaction pooler connection string in `backend/.env`.
@@ -599,6 +603,64 @@ frontend/.env
 ```
 
 Do not commit real `.env` files or secrets to GitHub. Use `.env.example` files as references.
+
+---
+
+## Deployment Environment Notes
+
+MedTrek AI is designed to deploy as separate frontend and backend services.
+
+Recommended MVP deployment path:
+
+```text
+Frontend: Vercel
+Backend: Render or Railway
+Database: Supabase PostgreSQL
+```
+
+### Backend environment variables
+
+The backend requires:
+
+```env
+DATABASE_URL=postgresql+psycopg://username:password@host:5432/database
+ALLOWED_ORIGINS=https://your-frontend-domain.vercel.app
+```
+
+`DATABASE_URL` should point to the Supabase PostgreSQL connection string.
+
+`ALLOWED_ORIGINS` should contain the deployed frontend URL. For multiple allowed origins, use a comma-separated list:
+
+```env
+ALLOWED_ORIGINS=http://localhost:5173,https://your-frontend-domain.vercel.app
+```
+
+Do not commit real database credentials or production secrets to GitHub.
+
+### Frontend environment variables
+
+The frontend requires:
+
+```env
+VITE_API_BASE_URL=https://your-backend-domain.onrender.com
+```
+
+For local development, use:
+
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8000
+```
+
+### Production safety notes
+
+Before public deployment:
+
+- Verify `/health` returns `{"status":"healthy"}`.
+- Verify `/docs` loads correctly.
+- Confirm RecallRadar and DrugSignal searches work from the deployed frontend.
+- Confirm Supabase audit rows are created after successful searches.
+- Confirm CORS only allows trusted frontend origins.
+- Confirm no real `.env` files or secrets are committed.
 
 ---
 
