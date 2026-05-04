@@ -25,6 +25,9 @@ app = FastAPI(
     title="MedTrek AI API",
     description="Healthcare safety intelligence API for recalls, adverse-event signals, source transparency, and audit-aware safety briefings.",
     version="0.1.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
 )
 
 app.add_middleware(
