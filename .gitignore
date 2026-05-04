@@ -15,3 +15,16 @@ dist/
 
 # Logs
 *.log
+# Local virtual environments
+.venv/
+.venv-*/
+backend/.venv/
+
+# Python test/cache output
+.pytest_cache/
+backend/.pytest_cache/
+__pycache__/
+*.py[cod]
+
+# macOS
+.DS_Store
