@@ -1,18 +1,35 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes.sources import router as sources_router
+
 from app.routes.drug_events import router as drug_events_router
 from app.routes.recalls import router as recalls_router
+from app.routes.sources import router as sources_router
+
+
+def get_allowed_origins() -> list[str]:
+    raw_origins = os.getenv(
+        "ALLOWED_ORIGINS",
+        "http://localhost:5173,http://127.0.0.1:5173",
+    )
+
+    return [
+        origin.strip()
+        for origin in raw_origins.split(",")
+        if origin.strip()
+    ]
+
 
 app = FastAPI(
     title="MedTrek AI API",
-    description="Healthcare safety intelligence API for recalls, adverse-event signals, and environmental health context.",
+    description="Healthcare safety intelligence API for recalls, adverse-event signals, source transparency, and audit-aware safety briefings.",
     version="0.1.0",
 )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=get_allowed_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -36,5 +53,5 @@ def root():
 @app.get("/health")
 def health_check():
     return {
-        "status": "healthy"
+        "status": "healthy",
     }
