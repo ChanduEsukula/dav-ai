@@ -113,7 +113,7 @@ test('calls handleSearch when Analyze is clicked', async () => {
 test('shows loading state and disables button', () => {
   renderRecallRadar({ loading: true })
 
-  const button = screen.getByRole('button', { name: /Analyzing/i })
+  const button = screen.getByRole('button', { name: /Checking public data/i })
 
   expect(button).toBeDisabled()
 })

@@ -75,9 +75,15 @@ function DrugSignal() {
             placeholder="Search FAERS reports: metformin, ibuprofen, aspirin"
           />
           <button onClick={handleSearch} disabled={loading}>
-            {loading ? 'Analyzing...' : 'Analyze'}
+            {loading ? 'Checking public data...' : 'Analyze'}
           </button>
         </div>
+
+        {loading && (
+          <p className="loading-helper">
+            This may take a few seconds while the secure backend wakes up and checks public FAERS reporting data.
+          </p>
+        )}
 
         {error && <p className="error-message">{error}</p>}
 

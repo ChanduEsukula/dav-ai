@@ -58,9 +58,15 @@ function RecallRadar({
             placeholder="Search recalls: eye drops, insulin, metformin"
           />
           <button onClick={handleSearch} disabled={loading}>
-            {loading ? 'Analyzing...' : 'Analyze'}
+            {loading ? 'Checking public data...' : 'Analyze'}
           </button>
         </div>
+
+        {loading && (
+          <p className="loading-helper">
+            This may take a few seconds while the secure backend wakes up and checks public FDA recall sources.
+          </p>
+        )}
 
         {error && <p className="error-message">{error}</p>}
 

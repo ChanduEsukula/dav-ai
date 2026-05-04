@@ -99,8 +99,78 @@ a {
   z-index: 1;
 }
 
+.loading-helper {
+  margin: 12px auto 0;
+  max-width: 760px;
+  color: #507078;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.briefing-role-selector {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 18px 0;
+  flex-wrap: wrap;
+}
+
+.briefing-role-selector span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.briefing-role-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.briefing-role-button {
+  border: 1px solid rgba(0, 139, 139, 0.16);
+  border-radius: 999px;
+  background: rgba(238, 248, 250, 0.9);
+  color: var(--clinical-blue);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 8px 12px;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.briefing-role-button:hover {
+  transform: translateY(-1px);
+  background: rgba(223, 248, 239, 0.96);
+  box-shadow: 0 10px 24px rgba(16, 32, 51, 0.08);
+}
+
+.briefing-role-button.active {
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--deep-teal), var(--aqua));
+  color: var(--white);
+  box-shadow: 0 12px 28px rgba(0, 123, 135, 0.22);
+}
+
 @media (max-width: 960px) {
   .app {
     padding: 18px 16px 64px;
+  }
+
+  .briefing-role-selector {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .briefing-role-buttons {
+    justify-content: flex-start;
   }
 }

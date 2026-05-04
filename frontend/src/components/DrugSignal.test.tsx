@@ -97,7 +97,7 @@ test('shows loading state during search', async () => {
   await user.type(screen.getByPlaceholderText(/Search FAERS reports/i), 'metformin')
   await user.click(screen.getByRole('button', { name: /Analyze/i }))
 
-  expect(screen.getByRole('button', { name: /Analyzing/i })).toBeDisabled()
+  expect(screen.getByRole('button', { name: /Checking public data/i })).toBeDisabled()
 
   await waitFor(() => {
     expect(mockSearchDrugEvents).toHaveBeenCalledWith('metformin', 10)
