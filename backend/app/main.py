@@ -3,6 +3,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.routes.audit_events import router as audit_events_router
 from app.routes.drug_events import router as drug_events_router
 from app.routes.recalls import router as recalls_router
 from app.routes.sources import router as sources_router
@@ -41,6 +42,7 @@ app.add_middleware(
 app.include_router(recalls_router, prefix="/api/v1/recalls", tags=["RecallRadar"])
 app.include_router(drug_events_router, prefix="/api/v1/drug-events", tags=["DrugSignal"])
 app.include_router(sources_router, prefix="/api/v1/sources", tags=["Sources"])
+app.include_router(audit_events_router, tags=["Audit History"])
 
 
 @app.get("/")
@@ -48,7 +50,12 @@ def root():
     return {
         "message": "MedTrek AI backend is running",
         "status": "ok",
-        "modules": ["RecallRadar", "DrugSignal"],
+        "modules": [
+            "RecallRadar",
+            "DrugSignal",
+            "Sources",
+            "Audit History",
+        ],
         "docs": "/docs",
     }
 

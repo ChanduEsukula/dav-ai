@@ -53,6 +53,13 @@ function Navbar({
           Sources
         </button>
 
+        <button
+          className={activePage === 'audit' ? 'active' : ''}
+          onClick={() => goToPage('audit')}
+        >
+          Audit
+        </button>
+
         <button className={activePage === 'about' ? 'active' : ''} onClick={() => goToPage('about')}>
           About
         </button>

@@ -11,6 +11,7 @@ import './styles/pages.css'
 import './styles/about.css'
 import './styles/faq.css'
 import './styles/briefing.css'
+import './styles/audit-history.css'
 import { searchRecalls, type RecallSearchResponse } from './api/recalls'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
@@ -18,11 +19,13 @@ import Signals from './components/Signals'
 import RecallRadar from './components/RecallRadar'
 import DrugSignal from './components/DrugSignal'
 import DataSourcesPage from './components/DataSourcesPage'
+import AuditHistoryPage from './components/AuditHistoryPage'
 import FaqPage from './components/FaqPage'
 import AboutPage from './components/AboutPage'
 import InfoPage from './components/InfoPage'
 import type { ActivePage, ActiveSection } from './types/navigation'
 import { infoPages } from './data/infoPages'
+
 
 function App() {
   const [activePage, setActivePage] = useState<ActivePage>('home')
@@ -119,6 +122,8 @@ function App() {
       )}
 
       {activePage === 'sources' && <DataSourcesPage />}
+
+      {activePage === 'audit' && <AuditHistoryPage />}
 
       {activePage === 'about' && <AboutPage />}
 
