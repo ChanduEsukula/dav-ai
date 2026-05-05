@@ -130,7 +130,7 @@ Current frontend test coverage includes:
 Current local frontend status:
 
 ```bash
-20 passed
+27 passed
 npm run lint
 npm run build
 ```

@@ -114,7 +114,6 @@ RecallRadar and DrugSignal are connected end-to-end through the React frontend a
 - Saved monitors
 - Production deployment
 - Database migrations
-- Audit history UI
 - Briefing persistence
 - LLM/RAG briefing upgrade
 - CNN/OCR product label scanner
@@ -173,13 +172,13 @@ Current support includes:
 Current backend test status:
 
 ```bash
-32 passed
+41 passed
 ```
 
 Current frontend test status:
 
 ```bash
-20 passed
+27 passed
 ```
 
 Recent stability improvements:
@@ -700,7 +699,7 @@ Current backend test coverage includes:
 Current backend test status:
 
 ```bash
-32 passed
+41 passed
 ```
 
 Run frontend tests:
@@ -720,7 +719,7 @@ Current frontend test coverage includes:
 Current frontend test status:
 
 ```bash
-20 passed
+27 passed
 ```
 
 Run frontend lint and production build:
@@ -749,11 +748,11 @@ Expected rows appear in the Supabase `audit_events` table with module, source ID
 
 ## Planned Next Phases
 
-1. Keep Safety Briefing Engine v1 stable and documented
-2. Prepare frontend/backend deployment
-3. Add database migration strategy
+1. Keep RecallRadar, DrugSignal, Safety Briefing Engine v1, and Audit History stable and documented
+2. Add database migration strategy
+3. Prepare frontend/backend deployment
 4. Add saved searches or alert-monitoring workflows
-5. Add audit history UI
+5. Add scheduled ingestion and change detection history
 6. Add optional NLP, RAG, and OCR/CNN experiments later
 7. Add production observability and security hardening
 

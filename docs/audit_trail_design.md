@@ -179,7 +179,6 @@ The MVP should only store public-data queries and source metadata. If user accou
 
 Current audit architecture does not yet include:
 
-- Audit history UI
 - Briefing persistence
 - Saved monitor audit events
 - Scheduled ingestion audit events

@@ -30,13 +30,13 @@ MedTrek AI currently has:
 Current backend test status:
 
 ```bash
-32 passed
+41 passed
 ```
 
 Current frontend test status:
 
 ```bash
-20 passed
+27 passed
 ```
 
 ---
@@ -201,7 +201,6 @@ Persistence does not yet include:
 - Raw upstream payload snapshots
 - Database migrations with Alembic
 - Source registry synchronization from code to database
-- Audit history UI
 - User-specific health profiles
 - PHI workflows
 
