@@ -764,3 +764,18 @@ Expected rows appear in the Supabase `audit_events` table with module, source ID
 MedTrek AI should remain focused on healthcare safety intelligence, public-data signal monitoring, source transparency, auditability, and role-based decision support.
 
 It should not become a generic weather app, generic chatbot, or broad unfocused dashboard.
+
+### Audit History
+
+MedTrek AI includes an Audit History workflow for reviewing recent public-data searches.
+
+The backend exposes:
+
+- `GET /api/v1/audit-events`
+- `GET /api/v1/audit-events/{audit_id}`
+
+The frontend includes an `Audit` navigation tab where recent audit events can be reviewed in a table with selected event details.
+
+Audit History shows source and transformation metadata such as audit ID, module, source name, endpoint, query parameters, retrieval timestamp, upstream status, record count, transform version, score version, disclaimer version, and error messages when present.
+
+This is public-data traceability only. It is not PHI storage, not clinical record storage, and not medical advice.

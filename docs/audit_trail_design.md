@@ -199,3 +199,48 @@ Current audit architecture does not yet include:
 4. Add Docker/deployment preparation next.
 5. Add migration tooling before expanding database schema.
 6. Add saved monitors only after deployment and privacy boundaries are clearer.
+
+## Audit History API and UI
+
+MedTrek AI now includes an Audit History workflow for reviewing recent public-data search events.
+
+### Backend endpoints
+
+- `GET /api/v1/audit-events`
+  - Returns recent audit events from the configured PostgreSQL/Supabase audit table.
+  - Supports a `limit` query parameter.
+  - Fails safely if persistence is not configured or cannot be read.
+
+- `GET /api/v1/audit-events/{audit_id}`
+  - Returns a single audit event by audit ID.
+  - Returns a safe `not_found` response if the audit ID does not exist.
+
+### Frontend page
+
+The frontend includes an `Audit` navigation tab that opens the Audit History page. This page shows recent audit events in a review table and displays selected event details in a side panel.
+
+### Fields shown
+
+The Audit History workflow exposes safe public-data traceability fields:
+
+- Audit ID
+- Module
+- Source ID
+- Source name
+- Source endpoint
+- Query
+- Query parameters
+- Retrieval timestamp
+- Upstream status
+- Record count
+- Transform version
+- Score version
+- Disclaimer version
+- Error message, if present
+- Created timestamp
+
+### Safety boundary
+
+Audit History is for public-data traceability only. It is not clinical record storage and must not contain PHI, patient identifiers, diagnosis history, treatment history, personal medication profiles, uploaded medical documents, or private health notes.
+
+This feature supports source transparency, reproducibility, reviewer trust, and engineering auditability. It does not provide medical advice, diagnosis, treatment guidance, or causation claims.
