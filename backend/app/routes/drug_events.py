@@ -1,6 +1,6 @@
 from collections import Counter
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 
 from app.audit.audit_event import build_audit_event
 from app.db.audit_repository import save_audit_event
@@ -11,13 +11,41 @@ router = APIRouter()
 client = OpenFDADrugEventClient()
 
 
+async def _search_drug_events_with_request_id(
+    query: str,
+    limit: int,
+    request_id: str | None,
+):
+    try:
+        return await client.search_drug_events(
+            query=query,
+            limit=limit,
+            request_id=request_id,
+        )
+    except TypeError as exc:
+        if "request_id" not in str(exc):
+            raise
+        return await client.search_drug_events(query=query, limit=limit)
+
+
+def _save_audit_event_with_request_id(audit_event, request_id: str | None):
+    try:
+        return save_audit_event(audit_event, request_id=request_id)
+    except TypeError as exc:
+        if "request_id" not in str(exc):
+            raise
+        return save_audit_event(audit_event)
+
+
 @router.get("/search", response_model=DrugEventSearchResponse)
 async def search_drug_events(
+    request: Request,
     q: str = Query(..., min_length=2, description="Drug name or medicinal product"),
     limit: int = Query(10, ge=1, le=25),
 ):
     try:
-        payload = await client.search_drug_events(query=q, limit=limit)
+        request_id = getattr(request.state, "request_id", None)
+        payload = await _search_drug_events_with_request_id(query=q, limit=limit, request_id=request_id)
         raw_results = payload["raw"].get("results", [])
         upstream_status = "empty" if not raw_results else "success"
 
@@ -49,7 +77,7 @@ async def search_drug_events(
             transform_version="drug-event-transform-v0.1",
         )
 
-        save_audit_event(audit_event)
+        _save_audit_event_with_request_id(audit_event, request_id=request_id)
 
         return {
             "query": q,

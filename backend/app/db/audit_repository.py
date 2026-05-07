@@ -1,4 +1,5 @@
 import logging
+import time
 from typing import Any
 
 import psycopg
@@ -7,13 +8,41 @@ from psycopg.types.json import Jsonb
 
 from app.db.database import get_database_url
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("medtrek.audit")
 
 
-def save_audit_event(audit_event: dict[str, Any]) -> dict[str, str]:
+def save_audit_event(
+    audit_event: dict[str, Any],
+    request_id: str | None = None,
+) -> dict[str, str]:
     database_url = get_database_url()
+    audit_id = audit_event.get("audit_id")
+
+    logger.info(
+        "audit_insert_started",
+        extra={
+            "event": "audit_insert_started",
+            "request_id": request_id,
+            "audit_id": audit_id,
+            "product_module": audit_event.get("module"),
+            "source_id": audit_event.get("source_id"),
+            "query": audit_event.get("query"),
+        },
+    )
 
     if not database_url:
+        logger.info(
+            "audit_insert_skipped",
+            extra={
+                "event": "audit_insert_skipped",
+                "request_id": request_id,
+                "audit_id": audit_id,
+                "product_module": audit_event.get("module"),
+                "source_id": audit_event.get("source_id"),
+                "reason": "database_not_configured",
+            },
+        )
+
         return {
             "status": "skipped",
             "reason": "database_not_configured",
@@ -23,6 +52,8 @@ def save_audit_event(audit_event: dict[str, Any]) -> dict[str, str]:
         **audit_event,
         "query_params": Jsonb(audit_event.get("query_params", {})),
     }
+
+    start_time = time.perf_counter()
 
     try:
         with psycopg.connect(database_url, row_factory=dict_row) as connection:
@@ -67,13 +98,42 @@ def save_audit_event(audit_event: dict[str, Any]) -> dict[str, str]:
                     audit_event_for_insert,
                 )
 
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+
+        logger.info(
+            "audit_insert_completed",
+            extra={
+                "event": "audit_insert_completed",
+                "request_id": request_id,
+                "audit_id": audit_id,
+                "product_module": audit_event.get("module"),
+                "source_id": audit_event.get("source_id"),
+                "status": "saved",
+                "duration_ms": duration_ms,
+            },
+        )
+
         return {
             "status": "saved",
             "reason": "audit_event_persisted",
         }
 
-    except Exception as exc:
-        logger.warning("Audit event persistence failed: %s", exc)
+    except Exception:
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+
+        logger.exception(
+            "audit_insert_failed",
+            extra={
+                "event": "audit_insert_failed",
+                "request_id": request_id,
+                "audit_id": audit_id,
+                "product_module": audit_event.get("module"),
+                "source_id": audit_event.get("source_id"),
+                "status": "error",
+                "duration_ms": duration_ms,
+                "error_category": "audit_event_persistence_failed",
+            },
+        )
 
         return {
             "status": "error",
@@ -81,7 +141,10 @@ def save_audit_event(audit_event: dict[str, Any]) -> dict[str, str]:
         }
 
 
-def list_audit_events(limit: int = 50) -> tuple[str, list[dict[str, Any]]]:
+def list_audit_events(
+    limit: int = 50,
+    request_id: str | None = None,
+) -> tuple[str, list[dict[str, Any]]]:
     """
     Return recent audit events.
 
@@ -91,11 +154,31 @@ def list_audit_events(limit: int = 50) -> tuple[str, list[dict[str, Any]]]:
     - error: database read failed
     """
     database_url = get_database_url()
+    safe_limit = max(1, min(limit, 100))
+
+    logger.info(
+        "audit_list_started",
+        extra={
+            "event": "audit_list_started",
+            "request_id": request_id,
+            "limit": safe_limit,
+        },
+    )
 
     if not database_url:
+        logger.info(
+            "audit_list_skipped",
+            extra={
+                "event": "audit_list_skipped",
+                "request_id": request_id,
+                "limit": safe_limit,
+                "reason": "database_not_configured",
+            },
+        )
+
         return "skipped", []
 
-    safe_limit = max(1, min(limit, 100))
+    start_time = time.perf_counter()
 
     try:
         with psycopg.connect(database_url, row_factory=dict_row) as connection:
@@ -127,15 +210,44 @@ def list_audit_events(limit: int = 50) -> tuple[str, list[dict[str, Any]]]:
 
                 rows = cursor.fetchall()
 
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+
+        logger.info(
+            "audit_list_completed",
+            extra={
+                "event": "audit_list_completed",
+                "request_id": request_id,
+                "limit": safe_limit,
+                "status": "saved",
+                "record_count": len(rows),
+                "duration_ms": duration_ms,
+            },
+        )
+
         return "saved", list(rows)
 
-    except Exception as exc:
-        logger.warning("Audit event history read failed: %s", exc)
+    except Exception:
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+
+        logger.exception(
+            "audit_list_failed",
+            extra={
+                "event": "audit_list_failed",
+                "request_id": request_id,
+                "limit": safe_limit,
+                "status": "error",
+                "duration_ms": duration_ms,
+                "error_category": "audit_event_history_read_failed",
+            },
+        )
 
         return "error", []
 
 
-def get_audit_event_by_id(audit_id: str) -> tuple[str, dict[str, Any] | None]:
+def get_audit_event_by_id(
+    audit_id: str,
+    request_id: str | None = None,
+) -> tuple[str, dict[str, Any] | None]:
     """
     Return one audit event by audit_id.
 
@@ -146,8 +258,29 @@ def get_audit_event_by_id(audit_id: str) -> tuple[str, dict[str, Any] | None]:
     """
     database_url = get_database_url()
 
+    logger.info(
+        "audit_detail_started",
+        extra={
+            "event": "audit_detail_started",
+            "request_id": request_id,
+            "audit_id": audit_id,
+        },
+    )
+
     if not database_url:
+        logger.info(
+            "audit_detail_skipped",
+            extra={
+                "event": "audit_detail_skipped",
+                "request_id": request_id,
+                "audit_id": audit_id,
+                "reason": "database_not_configured",
+            },
+        )
+
         return "skipped", None
+
+    start_time = time.perf_counter()
 
     try:
         with psycopg.connect(database_url, row_factory=dict_row) as connection:
@@ -179,9 +312,35 @@ def get_audit_event_by_id(audit_id: str) -> tuple[str, dict[str, Any] | None]:
 
                 row = cursor.fetchone()
 
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+
+        logger.info(
+            "audit_detail_completed",
+            extra={
+                "event": "audit_detail_completed",
+                "request_id": request_id,
+                "audit_id": audit_id,
+                "status": "saved",
+                "found": row is not None,
+                "duration_ms": duration_ms,
+            },
+        )
+
         return "saved", row
 
-    except Exception as exc:
-        logger.warning("Audit event detail read failed: %s", exc)
+    except Exception:
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+
+        logger.exception(
+            "audit_detail_failed",
+            extra={
+                "event": "audit_detail_failed",
+                "request_id": request_id,
+                "audit_id": audit_id,
+                "status": "error",
+                "duration_ms": duration_ms,
+                "error_category": "audit_event_detail_read_failed",
+            },
+        )
 
         return "error", None

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 
 from app.audit.audit_event import build_audit_event
 from app.db.audit_repository import save_audit_event
@@ -10,13 +10,41 @@ router = APIRouter()
 client = OpenFDAClient()
 
 
+async def _search_drug_recalls_with_request_id(
+    query: str,
+    limit: int,
+    request_id: str | None,
+):
+    try:
+        return await client.search_drug_recalls(
+            query=query,
+            limit=limit,
+            request_id=request_id,
+        )
+    except TypeError as exc:
+        if "request_id" not in str(exc):
+            raise
+        return await client.search_drug_recalls(query=query, limit=limit)
+
+
+def _save_audit_event_with_request_id(audit_event, request_id: str | None):
+    try:
+        return save_audit_event(audit_event, request_id=request_id)
+    except TypeError as exc:
+        if "request_id" not in str(exc):
+            raise
+        return save_audit_event(audit_event)
+
+
 @router.get("/search", response_model=RecallSearchResponse)
 async def search_recalls(
+    request: Request,
     q: str = Query(..., min_length=2, description="Drug, product, brand, or recall keyword"),
     limit: int = Query(10, ge=1, le=25),
 ):
     try:
-        payload = await client.search_drug_recalls(query=q, limit=limit)
+        request_id = getattr(request.state, "request_id", None)
+        payload = await _search_drug_recalls_with_request_id(query=q, limit=limit, request_id=request_id)
         raw_results = payload["raw"].get("results", [])
         upstream_status = "empty" if not raw_results else "success"
 
@@ -58,7 +86,7 @@ async def search_recalls(
             score_version="recall-risk-v0.1",
         )
 
-        save_audit_event(audit_event)
+        _save_audit_event_with_request_id(audit_event, request_id=request_id)
 
         return {
             "query": q,
