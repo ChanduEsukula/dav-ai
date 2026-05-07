@@ -10,6 +10,7 @@ from app.routes.audit_events import router as audit_events_router
 from app.routes.drug_events import router as drug_events_router
 from app.routes.recalls import router as recalls_router
 from app.routes.sources import router as sources_router
+from app.routes.system import router as system_router
 
 
 logger = logging.getLogger("medtrek.request")
@@ -105,6 +106,7 @@ app.include_router(recalls_router, prefix="/api/v1/recalls", tags=["RecallRadar"
 app.include_router(drug_events_router, prefix="/api/v1/drug-events", tags=["DrugSignal"])
 app.include_router(sources_router, prefix="/api/v1/sources", tags=["Sources"])
 app.include_router(audit_events_router, tags=["Audit History"])
+app.include_router(system_router, tags=["System"])
 
 
 @app.get("/")
