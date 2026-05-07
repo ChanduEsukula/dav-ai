@@ -1,12 +1,18 @@
+import logging
 import os
+import time
+import uuid
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routes.audit_events import router as audit_events_router
 from app.routes.drug_events import router as drug_events_router
 from app.routes.recalls import router as recalls_router
 from app.routes.sources import router as sources_router
+
+
+logger = logging.getLogger("medtrek.request")
 
 
 def get_allowed_origins() -> list[str]:
@@ -38,6 +44,42 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def request_id_logging_middleware(request: Request, call_next):
+    request_id = request.headers.get("X-Request-ID") or str(uuid.uuid4())
+    start_time = time.perf_counter()
+    status_code = 500
+
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+        return response
+    except Exception:
+        logger.exception(
+            "request_failed request_id=%s method=%s path=%s client_host=%s",
+            request_id,
+            request.method,
+            request.url.path,
+            request.client.host if request.client else None,
+        )
+        raise
+    finally:
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+
+        logger.info(
+            "request_completed request_id=%s method=%s path=%s status_code=%s duration_ms=%s client_host=%s",
+            request_id,
+            request.method,
+            request.url.path,
+            status_code,
+            duration_ms,
+            request.client.host if request.client else None,
+        )
+
+        if "response" in locals():
+            response.headers["X-Request-ID"] = request_id
 
 app.include_router(recalls_router, prefix="/api/v1/recalls", tags=["RecallRadar"])
 app.include_router(drug_events_router, prefix="/api/v1/drug-events", tags=["DrugSignal"])
