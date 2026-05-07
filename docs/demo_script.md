@@ -55,7 +55,7 @@ The MVP must not store PHI, patient identifiers, diagnosis history, treatment hi
 
 ## Verified Local Status
 
-- Backend tests: 41 passing
+- Backend tests: 45 passing
 - Audit History API route tests added
 - Frontend Audit History page tests added
 - Alembic migration system added

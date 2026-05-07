@@ -165,6 +165,7 @@ Current support includes:
 - Docker Compose setup for running frontend and backend locally
 - Backend CORS configuration through `ALLOWED_ORIGINS`
 - Backend response schemas for RecallRadar and DrugSignal API responses
+- Request ID middleware with production-verified `X-Request-ID` response headers
 - Top-level audit metadata including source endpoint and score version
 - Environment-based frontend API URL configuration
 - Environment-based backend database configuration
@@ -172,7 +173,7 @@ Current support includes:
 Current backend test status:
 
 ```bash
-41 passed
+45 passed
 ```
 
 Current frontend test status:
@@ -699,7 +700,7 @@ Current backend test coverage includes:
 Current backend test status:
 
 ```bash
-41 passed
+45 passed
 ```
 
 Run frontend tests:

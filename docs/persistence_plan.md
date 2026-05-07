@@ -30,7 +30,7 @@ MedTrek AI currently has:
 Current backend test status:
 
 ```bash
-41 passed
+45 passed
 ```
 
 Current frontend test status:
