@@ -1,6 +1,4 @@
-import axios from 'axios'
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000'
+import { apiClient } from './client'
 
 export type SourceRecord = {
   source_id: string
@@ -17,6 +15,6 @@ export type SourceRegistryResponse = {
 }
 
 export async function getSources() {
-  const response = await axios.get<SourceRegistryResponse>(`${API_BASE_URL}/api/v1/sources`)
+  const response = await apiClient.get<SourceRegistryResponse>(`/api/v1/sources`)
   return response.data
 }

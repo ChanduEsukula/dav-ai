@@ -1,6 +1,4 @@
-import axios from 'axios'
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000'
+import { apiClient } from './client'
 
 export type AuditSummary = {
   audit_id: string
@@ -52,8 +50,8 @@ export type RecallSearchResponse = {
 }
 
 export async function searchRecalls(query: string, limit = 5) {
-  const response = await axios.get<RecallSearchResponse>(
-    `${API_BASE_URL}/api/v1/recalls/search`,
+  const response = await apiClient.get<RecallSearchResponse>(
+    `/api/v1/recalls/search`,
     {
       params: {
         q: query,

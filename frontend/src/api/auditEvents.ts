@@ -1,6 +1,4 @@
-import axios from 'axios'
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000'
+import { apiClient } from './client'
 
 export type AuditHistoryItem = {
   audit_id: string
@@ -35,8 +33,8 @@ export type AuditHistoryDetailResponse = {
 }
 
 export async function getAuditEvents(limit = 50): Promise<AuditHistoryListResponse> {
-  const response = await axios.get<AuditHistoryListResponse>(
-    `${API_BASE_URL}/api/v1/audit-events`,
+  const response = await apiClient.get<AuditHistoryListResponse>(
+    `/api/v1/audit-events`,
     {
       params: { limit },
     },
@@ -48,8 +46,8 @@ export async function getAuditEvents(limit = 50): Promise<AuditHistoryListRespon
 export async function getAuditEventById(
   auditId: string,
 ): Promise<AuditHistoryDetailResponse> {
-  const response = await axios.get<AuditHistoryDetailResponse>(
-    `${API_BASE_URL}/api/v1/audit-events/${auditId}`,
+  const response = await apiClient.get<AuditHistoryDetailResponse>(
+    `/api/v1/audit-events/${auditId}`,
   )
 
   return response.data
