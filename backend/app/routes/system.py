@@ -109,7 +109,7 @@ def get_data_quality() -> DataQualityResponse:
     if latest_row:
         latest_audit_event.update(
             {
-                "audit_id": latest_row.get("audit_id"),
+                "audit_id": str(latest_row.get("audit_id")) if latest_row.get("audit_id") else None,
                 "module": latest_row.get("module"),
                 "query": latest_row.get("query"),
                 "upstream_status": latest_row.get("upstream_status"),
