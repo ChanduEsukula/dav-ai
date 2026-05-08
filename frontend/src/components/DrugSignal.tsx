@@ -172,6 +172,51 @@ function DrugSignal() {
         )}
 
         {data && (
+          <div className="drug-trend-card">
+            <div>
+              <p className="eyebrow">DrugSignal Trend Snapshot</p>
+              <h3>{data.trend_snapshot.label}</h3>
+              <p>{data.trend_snapshot.explanation}</p>
+            </div>
+
+            <div className="drug-trend-grid">
+              <div>
+                <small>Current records</small>
+                <span>{data.trend_snapshot.current_record_count}</span>
+              </div>
+
+              <div>
+                <small>Previous records</small>
+                <span>{data.trend_snapshot.previous_record_count ?? 'N/A'}</span>
+              </div>
+
+              <div>
+                <small>Previous audit ID</small>
+                <span>{data.trend_snapshot.previous_audit_id ?? 'N/A'}</span>
+              </div>
+
+              <div>
+                <small>Previous timestamp</small>
+                <span>
+                  {data.trend_snapshot.previous_created_at
+                    ? formatTimestamp(data.trend_snapshot.previous_created_at)
+                    : 'N/A'}
+                </span>
+              </div>
+
+              <div>
+                <small>Trend version</small>
+                <span>{data.trend_snapshot.trend_version}</span>
+              </div>
+            </div>
+
+            <p className="drug-trend-limitation">
+              {data.trend_snapshot.limitation}
+            </p>
+          </div>
+        )}
+
+        {data && (
           <div className="drug-audit-panel">
             <div className="metadata-grid">
               <div>

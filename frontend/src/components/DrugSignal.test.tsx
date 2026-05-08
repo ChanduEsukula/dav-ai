@@ -61,6 +61,16 @@ const mockResponse: DrugEventSearchResponse = {
     },
   ],
   reaction_classifier_version: 'reaction-classifier-v0.1',
+  trend_snapshot: {
+    label: 'Increased',
+    current_record_count: 2,
+    previous_record_count: 1,
+    previous_audit_id: 'previous-audit-123',
+    previous_created_at: '2026-05-02T12:00:00Z',
+    explanation: 'Compared with the most recent stored DrugSignal audit event for this query.',
+    limitation: 'Trend is based only on stored public-data searches in MedTrek AI, not all FDA activity.',
+    trend_version: 'drug-signal-trend-v0.1',
+  },
   top_reactions: [
     {
       reaction: 'NAUSEA',
@@ -182,6 +192,14 @@ test('shows successful reaction results with source, disclaimers, and briefing i
   expect(screen.getByText('Neurological')).toBeInTheDocument()
   expect(screen.getAllByText(/reaction-classifier-v0.1/i).length).toBeGreaterThan(0)
 
+  expect(screen.getByText(/DrugSignal Trend Snapshot/i)).toBeInTheDocument()
+  expect(screen.getByText('Increased')).toBeInTheDocument()
+  expect(screen.getByText(/Current records/i)).toBeInTheDocument()
+  expect(screen.getByText(/Previous records/i)).toBeInTheDocument()
+  expect(screen.getByText('previous-audit-123')).toBeInTheDocument()
+  expect(screen.getByText(/drug-signal-trend-v0.1/i)).toBeInTheDocument()
+  expect(screen.getByText(/stored public-data searches/i)).toBeInTheDocument()
+
   expect(
     screen.getByRole('heading', { name: /Consumer briefing/i })
   ).toBeInTheDocument()
@@ -219,6 +237,15 @@ test('shows no-results state with safety language', async () => {
       review_priority: 'Low',
     },
     reaction_categories: [],
+    trend_snapshot: {
+      ...mockResponse.trend_snapshot,
+      label: 'Insufficient history',
+      current_record_count: 0,
+      previous_record_count: null,
+      previous_audit_id: null,
+      previous_created_at: null,
+      explanation: 'No previous stored DrugSignal audit event was available for this query.',
+    },
     top_reactions: [],
   })
 

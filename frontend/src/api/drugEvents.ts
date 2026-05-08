@@ -30,6 +30,17 @@ export type DrugReactionCategory = {
   reactions: string[]
 }
 
+export type DrugSignalTrendSnapshot = {
+  label: string
+  current_record_count: number
+  previous_record_count: number | null
+  previous_audit_id: string | null
+  previous_created_at: string | null
+  explanation: string
+  limitation: string
+  trend_version: string
+}
+
 export type DrugEventSearchResponse = {
   query: string
   count: number
@@ -43,6 +54,7 @@ export type DrugEventSearchResponse = {
   intelligence_score: DrugSignalIntelligenceScore
   reaction_categories: DrugReactionCategory[]
   reaction_classifier_version: string
+  trend_snapshot: DrugSignalTrendSnapshot
   top_reactions: DrugEventReaction[]
 }
 
