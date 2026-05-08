@@ -84,6 +84,19 @@ const drugEventResponse: DrugEventSearchResponse = {
       'Scores are based on returned public openFDA records and reaction counts, not clinical incidence rates.',
     ],
   },
+  reaction_categories: [
+    {
+      category: 'Gastrointestinal',
+      count: 12,
+      reactions: ['NAUSEA'],
+    },
+    {
+      category: 'Neurological',
+      count: 6,
+      reactions: ['HEADACHE'],
+    },
+  ],
+  reaction_classifier_version: 'reaction-classifier-v0.1',
   top_reactions: [
     {
       reaction: 'NAUSEA',

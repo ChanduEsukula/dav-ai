@@ -24,6 +24,12 @@ export type DrugSignalIntelligenceScore = {
   limitations: string[]
 }
 
+export type DrugReactionCategory = {
+  category: string
+  count: number
+  reactions: string[]
+}
+
 export type DrugEventSearchResponse = {
   query: string
   count: number
@@ -35,6 +41,8 @@ export type DrugEventSearchResponse = {
   faers_disclaimer: string
   audit: AuditSummary
   intelligence_score: DrugSignalIntelligenceScore
+  reaction_categories: DrugReactionCategory[]
+  reaction_classifier_version: string
   top_reactions: DrugEventReaction[]
 }
 

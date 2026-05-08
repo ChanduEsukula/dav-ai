@@ -48,6 +48,19 @@ const mockResponse: DrugEventSearchResponse = {
       'Scores are based on returned public openFDA records and reaction counts, not clinical incidence rates.',
     ],
   },
+  reaction_categories: [
+    {
+      category: 'Gastrointestinal',
+      count: 12,
+      reactions: ['NAUSEA'],
+    },
+    {
+      category: 'Neurological',
+      count: 6,
+      reactions: ['HEADACHE'],
+    },
+  ],
+  reaction_classifier_version: 'reaction-classifier-v0.1',
   top_reactions: [
     {
       reaction: 'NAUSEA',
@@ -138,8 +151,8 @@ test('shows successful reaction results with source, disclaimers, and briefing i
 
   expect(screen.getAllByText(/NAUSEA/i).length).toBeGreaterThan(0)
   expect(screen.getAllByText('12').length).toBeGreaterThan(0)
-  expect(screen.getByText(/HEADACHE/i)).toBeInTheDocument()
-  expect(screen.getByText('6')).toBeInTheDocument()
+  expect(screen.getAllByText(/HEADACHE/i).length).toBeGreaterThan(0)
+  expect(screen.getAllByText('6').length).toBeGreaterThan(0)
 
   expect(
     screen.getAllByText(/FAERS reports are safety signals only/i).length
@@ -161,6 +174,13 @@ test('shows successful reaction results with source, disclaimers, and briefing i
   expect(screen.getByText('66.67%')).toBeInTheDocument()
   expect(screen.getByText('drug-signal-intelligence-v0.1')).toBeInTheDocument()
   expect(screen.getByText(/not clinical incidence rates/i)).toBeInTheDocument()
+
+  expect(screen.getByText(/Reaction Classification/i)).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: /Reaction categories/i })).toBeInTheDocument()
+  expect(screen.getByText(/Rule-based NLP-style grouping/i)).toBeInTheDocument()
+  expect(screen.getByText('Gastrointestinal')).toBeInTheDocument()
+  expect(screen.getByText('Neurological')).toBeInTheDocument()
+  expect(screen.getByText(/Classifier version: reaction-classifier-v0.1/i)).toBeInTheDocument()
 
   expect(
     screen.getByRole('heading', { name: /Consumer briefing/i })
@@ -193,6 +213,7 @@ test('shows no-results state with safety language', async () => {
       top_reaction_concentration: 0,
       review_priority: 'Low',
     },
+    reaction_categories: [],
     top_reactions: [],
   })
 

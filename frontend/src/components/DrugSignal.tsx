@@ -141,6 +141,36 @@ function DrugSignal() {
           </div>
         )}
 
+        {data && data.reaction_categories.length > 0 && (
+          <div className="reaction-category-card">
+            <div>
+              <p className="eyebrow">Reaction Classification</p>
+              <h3>Reaction categories</h3>
+              <p>
+                Rule-based NLP-style grouping of returned top reactions into
+                explainable safety-signal categories.
+              </p>
+            </div>
+
+            <div className="reaction-category-list">
+              {data.reaction_categories.map((category) => (
+                <div className="reaction-category-row" key={category.category}>
+                  <div>
+                    <span>{category.category}</span>
+                    <small>{category.reactions.join(', ')}</small>
+                  </div>
+
+                  <strong>{category.count}</strong>
+                </div>
+              ))}
+            </div>
+
+            <p className="reaction-classifier-version">
+              Classifier version: {data.reaction_classifier_version}
+            </p>
+          </div>
+        )}
+
         {data && (
           <div className="drug-audit-panel">
             <div className="metadata-grid">
