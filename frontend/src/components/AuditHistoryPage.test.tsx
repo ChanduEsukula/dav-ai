@@ -244,6 +244,7 @@ describe('AuditHistoryPage', () => {
     fireEvent.click(screen.getByText('Copy audit ID'))
 
     expect(writeText).toHaveBeenCalledWith('11111111-1111-4111-8111-111111111111')
+    expect(await screen.findByText('Copied audit ID')).toBeInTheDocument()
 
     fireEvent.click(screen.getByText('Copy trace summary'))
 
@@ -258,6 +259,7 @@ describe('AuditHistoryPage', () => {
         'Created: 2026-05-05T00:08:55.761053Z',
       ].join('\n'),
     )
+    expect(await screen.findByText('Copied trace summary')).toBeInTheDocument()
   })
 
   test('exports displayed audit history rows as CSV', async () => {

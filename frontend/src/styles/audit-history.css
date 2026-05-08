@@ -373,3 +373,12 @@
   font-weight: 850;
   cursor: pointer;
 }
+
+.audit-copy-message {
+  margin: -8px 0 16px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(36, 180, 126, 0.14);
+  color: #08764f;
+  font-weight: 850;
+}

@@ -91,6 +91,7 @@ export default function AuditHistoryPage() {
   const [appliedModuleFilter, setAppliedModuleFilter] = useState<ModuleFilter>('all')
   const [appliedStatusFilter, setAppliedStatusFilter] = useState<StatusFilter>('all')
   const [appliedSearchText, setAppliedSearchText] = useState('')
+  const [copyMessage, setCopyMessage] = useState('')
 
   useEffect(() => {
     let isMounted = true
@@ -173,12 +174,22 @@ export default function AuditHistoryPage() {
     URL.revokeObjectURL(url)
   }
 
+  function showCopyMessage(message: string) {
+    setCopyMessage(message)
+
+    window.setTimeout(() => {
+      setCopyMessage('')
+    }, 2000)
+  }
+
   async function copyAuditId(item: AuditHistoryItem) {
     await navigator.clipboard.writeText(item.audit_id)
+    showCopyMessage('Copied audit ID')
   }
 
   async function copyTraceSummary(item: AuditHistoryItem) {
     await navigator.clipboard.writeText(buildAuditTraceSummary(item))
+    showCopyMessage('Copied trace summary')
   }
 
 
@@ -346,6 +357,12 @@ export default function AuditHistoryPage() {
                     Copy trace summary
                   </button>
                 </div>
+
+                {copyMessage && (
+                  <p className="audit-copy-message" role="status">
+                    {copyMessage}
+                  </p>
+                )}
 
                 <dl>
                   <div>
