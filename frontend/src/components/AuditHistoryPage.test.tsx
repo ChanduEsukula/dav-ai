@@ -186,6 +186,41 @@ describe('AuditHistoryPage', () => {
     })
   })
 
+  test('applies filters when pressing Enter in the search field', async () => {
+    mockedGetAuditEvents.mockResolvedValue({
+      status: 'ok',
+      persistence_available: true,
+      count: mockAuditItems.length,
+      items: mockAuditItems,
+    })
+
+    render(<AuditHistoryPage />)
+
+    await screen.findByText(/Showing\s+2\s+recent audit events/i)
+
+    fireEvent.change(screen.getByLabelText('Module'), {
+      target: { value: 'RecallRadar' },
+    })
+
+    fireEvent.change(screen.getByLabelText('Status'), {
+      target: { value: 'success' },
+    })
+
+    fireEvent.change(screen.getByLabelText('Search'), {
+      target: { value: 'eye' },
+    })
+
+    fireEvent.submit(screen.getByLabelText('Audit history filters'))
+
+    await waitFor(() => {
+      expect(mockedGetAuditEvents).toHaveBeenLastCalledWith(20, {
+        module: 'RecallRadar',
+        upstreamStatus: 'success',
+        searchText: 'eye',
+      })
+    })
+  })
+
   test('exports displayed audit history rows as CSV', async () => {
     const createObjectURL = vi.fn(() => 'blob:mock-audit-csv')
     const revokeObjectURL = vi.fn()

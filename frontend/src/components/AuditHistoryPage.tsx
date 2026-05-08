@@ -201,7 +201,14 @@ export default function AuditHistoryPage() {
         )}
 
         {status === 'ok' && items.length > 0 && (
-          <div className="audit-filter-panel" aria-label="Audit history filters">
+          <form
+            className="audit-filter-panel"
+            aria-label="Audit history filters"
+            onSubmit={(event) => {
+              event.preventDefault()
+              applyFilters()
+            }}
+          >
             <label>
               Module
               <select
@@ -237,7 +244,7 @@ export default function AuditHistoryPage() {
               />
             </label>
 
-            <button type="button" onClick={applyFilters}>
+            <button type="submit">
               Apply filters
             </button>
 
@@ -254,7 +261,7 @@ export default function AuditHistoryPage() {
                 ? `Showing ${items.length} recent audit events`
                 : `Showing ${items.length} matching audit events`}
             </p>
-          </div>
+          </form>
         )}
 
         {status === 'ok' && items.length === 0 && (

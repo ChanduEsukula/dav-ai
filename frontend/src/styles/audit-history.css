@@ -341,3 +341,18 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.audit-filter-panel button {
+  white-space: nowrap;
+}
+
+@media (max-width: 1180px) {
+  .audit-filter-panel {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .audit-search-field {
+    grid-column: 1 / -1;
+  }
+}
