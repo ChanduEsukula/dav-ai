@@ -60,6 +60,13 @@ function Navbar({
           Audit
         </button>
 
+        <button
+          className={activePage === 'system' ? 'active' : ''}
+          onClick={() => goToPage('system')}
+        >
+          System
+        </button>
+
         <button className={activePage === 'about' ? 'active' : ''} onClick={() => goToPage('about')}>
           About
         </button>

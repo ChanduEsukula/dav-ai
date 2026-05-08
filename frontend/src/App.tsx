@@ -20,6 +20,7 @@ import RecallRadar from './components/RecallRadar'
 import DrugSignal from './components/DrugSignal'
 import DataSourcesPage from './components/DataSourcesPage'
 import AuditHistoryPage from './components/AuditHistoryPage'
+import SystemStatusPage from './components/SystemStatusPage'
 import FaqPage from './components/FaqPage'
 import AboutPage from './components/AboutPage'
 import InfoPage from './components/InfoPage'
@@ -124,6 +125,8 @@ function App() {
       {activePage === 'sources' && <DataSourcesPage />}
 
       {activePage === 'audit' && <AuditHistoryPage />}
+
+      {activePage === 'system' && <SystemStatusPage />}
 
       {activePage === 'about' && <AboutPage />}
 
