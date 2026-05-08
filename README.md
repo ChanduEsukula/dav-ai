@@ -779,3 +779,10 @@ The frontend includes an `Audit` navigation tab where recent audit events can be
 Audit History shows source and transformation metadata such as audit ID, module, source name, endpoint, query parameters, retrieval timestamp, upstream status, record count, transform version, score version, disclaimer version, and error messages when present.
 
 This is public-data traceability only. It is not PHI storage, not clinical record storage, and not medical advice.
+## Manual Saved Monitors v1
+
+MedTrek AI supports a manual saved-monitor workflow using existing RecallRadar, DrugSignal, source metadata, audit history, and safety briefing features.
+
+A reviewer can repeat the same product or drug search over time, record the score, record count, source timestamp, audit ID, and briefing output, then compare future results against previous checks.
+
+This validates the Saved Monitors product direction before backend automation, scheduled refresh, and alerting are implemented.
