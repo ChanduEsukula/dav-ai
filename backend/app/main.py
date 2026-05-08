@@ -6,6 +6,7 @@ import uuid
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.routes import saved_monitors
 from app.routes.audit_events import router as audit_events_router
 from app.routes.drug_events import router as drug_events_router
 from app.routes.recalls import router as recalls_router
@@ -102,11 +103,13 @@ async def request_id_logging_middleware(request: Request, call_next):
         if "response" in locals():
             response.headers["X-Request-ID"] = request_id
 
+
 app.include_router(recalls_router, prefix="/api/v1/recalls", tags=["RecallRadar"])
 app.include_router(drug_events_router, prefix="/api/v1/drug-events", tags=["DrugSignal"])
 app.include_router(sources_router, prefix="/api/v1/sources", tags=["Sources"])
 app.include_router(audit_events_router, tags=["Audit History"])
 app.include_router(system_router, tags=["System"])
+app.include_router(saved_monitors.router)
 
 
 @app.get("/")
@@ -119,6 +122,7 @@ def root():
             "DrugSignal",
             "Sources",
             "Audit History",
+            "Saved Monitors",
         ],
         "docs": "/docs",
     }
