@@ -28,9 +28,12 @@ export default function AuditHistoryPage() {
   const [status, setStatus] = useState<string>('idle')
   const [persistenceAvailable, setPersistenceAvailable] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
-  const [moduleFilter, setModuleFilter] = useState<ModuleFilter>('all')
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
-  const [searchText, setSearchText] = useState('')
+  const [draftModuleFilter, setDraftModuleFilter] = useState<ModuleFilter>('all')
+  const [draftStatusFilter, setDraftStatusFilter] = useState<StatusFilter>('all')
+  const [draftSearchText, setDraftSearchText] = useState('')
+  const [appliedModuleFilter, setAppliedModuleFilter] = useState<ModuleFilter>('all')
+  const [appliedStatusFilter, setAppliedStatusFilter] = useState<StatusFilter>('all')
+  const [appliedSearchText, setAppliedSearchText] = useState('')
 
   useEffect(() => {
     let isMounted = true
@@ -41,9 +44,9 @@ export default function AuditHistoryPage() {
 
       try {
         const response = await getAuditEvents(20, {
-          module: moduleFilter === 'all' ? undefined : moduleFilter,
-          upstreamStatus: statusFilter === 'all' ? undefined : statusFilter,
-          searchText: searchText.trim() || undefined,
+          module: appliedModuleFilter === 'all' ? undefined : appliedModuleFilter,
+          upstreamStatus: appliedStatusFilter === 'all' ? undefined : appliedStatusFilter,
+          searchText: appliedSearchText.trim() || undefined,
         })
 
         if (!isMounted) return
@@ -80,12 +83,21 @@ export default function AuditHistoryPage() {
     return () => {
       isMounted = false
     }
-  }, [moduleFilter, searchText, statusFilter])
+  }, [appliedModuleFilter, appliedSearchText, appliedStatusFilter])
+
+  function applyFilters() {
+    setAppliedModuleFilter(draftModuleFilter)
+    setAppliedStatusFilter(draftStatusFilter)
+    setAppliedSearchText(draftSearchText)
+  }
 
   function resetFilters() {
-    setModuleFilter('all')
-    setStatusFilter('all')
-    setSearchText('')
+    setDraftModuleFilter('all')
+    setDraftStatusFilter('all')
+    setDraftSearchText('')
+    setAppliedModuleFilter('all')
+    setAppliedStatusFilter('all')
+    setAppliedSearchText('')
   }
 
   return (
@@ -132,8 +144,8 @@ export default function AuditHistoryPage() {
             <label>
               Module
               <select
-                value={moduleFilter}
-                onChange={(event) => setModuleFilter(event.target.value as ModuleFilter)}
+                value={draftModuleFilter}
+                onChange={(event) => setDraftModuleFilter(event.target.value as ModuleFilter)}
               >
                 <option value="all">All modules</option>
                 <option value="RecallRadar">RecallRadar</option>
@@ -144,8 +156,8 @@ export default function AuditHistoryPage() {
             <label>
               Status
               <select
-                value={statusFilter}
-                onChange={(event) => setStatusFilter(event.target.value as StatusFilter)}
+                value={draftStatusFilter}
+                onChange={(event) => setDraftStatusFilter(event.target.value as StatusFilter)}
               >
                 <option value="all">All statuses</option>
                 <option value="success">success</option>
@@ -158,18 +170,22 @@ export default function AuditHistoryPage() {
               Search
               <input
                 type="search"
-                value={searchText}
-                onChange={(event) => setSearchText(event.target.value)}
+                value={draftSearchText}
+                onChange={(event) => setDraftSearchText(event.target.value)}
                 placeholder="Search query, audit ID, source, or version"
               />
             </label>
+
+            <button type="button" onClick={applyFilters}>
+              Apply filters
+            </button>
 
             <button type="button" onClick={resetFilters}>
               Reset filters
             </button>
 
             <p>
-              {moduleFilter === 'all' && statusFilter === 'all' && !searchText.trim()
+              {appliedModuleFilter === 'all' && appliedStatusFilter === 'all' && !appliedSearchText.trim()
                 ? `Showing ${items.length} recent audit events`
                 : `Showing ${items.length} matching audit events`}
             </p>
@@ -178,7 +194,7 @@ export default function AuditHistoryPage() {
 
         {status === 'ok' && items.length === 0 && (
           <p className="muted-text">
-            {moduleFilter === 'all' && statusFilter === 'all' && !searchText.trim()
+            {appliedModuleFilter === 'all' && appliedStatusFilter === 'all' && !appliedSearchText.trim()
               ? 'No audit events found yet.'
               : 'No audit events match the current filters.'}
           </p>

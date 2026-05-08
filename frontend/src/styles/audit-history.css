@@ -284,7 +284,7 @@
 }
 .audit-filter-panel {
   display: grid;
-  grid-template-columns: minmax(140px, 0.8fr) minmax(140px, 0.8fr) minmax(240px, 1.4fr) auto;
+  grid-template-columns: minmax(140px, 0.8fr) minmax(140px, 0.8fr) minmax(240px, 1.4fr) auto auto;
   gap: 14px;
   align-items: end;
   margin: 0 0 24px;

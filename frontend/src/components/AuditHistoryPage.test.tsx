@@ -129,11 +129,15 @@ describe('AuditHistoryPage', () => {
 
     render(<AuditHistoryPage />)
 
-    expect(await screen.findByText(/Showing\s+2\s+audit events/i)).toBeInTheDocument()
+    expect(await screen.findByText(/Showing\s+2\s+recent audit events/i)).toBeInTheDocument()
 
     fireEvent.change(screen.getByLabelText('Module'), {
       target: { value: 'DrugSignal' },
     })
+
+    expect(mockedGetAuditEvents).toHaveBeenCalledTimes(1)
+
+    fireEvent.click(screen.getByText('Apply filters'))
 
     await waitFor(() => {
       expect(mockedGetAuditEvents).toHaveBeenLastCalledWith(20, {
@@ -147,6 +151,8 @@ describe('AuditHistoryPage', () => {
       target: { value: 'success' },
     })
 
+    fireEvent.click(screen.getByText('Apply filters'))
+
     await waitFor(() => {
       expect(mockedGetAuditEvents).toHaveBeenLastCalledWith(20, {
         module: 'DrugSignal',
@@ -158,6 +164,8 @@ describe('AuditHistoryPage', () => {
     fireEvent.change(screen.getByLabelText('Search'), {
       target: { value: 'metformin' },
     })
+
+    fireEvent.click(screen.getByText('Apply filters'))
 
     await waitFor(() => {
       expect(mockedGetAuditEvents).toHaveBeenLastCalledWith(20, {
