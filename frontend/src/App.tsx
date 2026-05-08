@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import './App.css'
 import './styles/animations.css'
 import './styles/navbar.css'
@@ -28,22 +28,50 @@ import type { ActivePage, ActiveSection } from './types/navigation'
 import { infoPages } from './data/infoPages'
 
 
+function getInitialPage(): ActivePage {
+  const params = new URLSearchParams(window.location.search)
+  const page = params.get('page')
+
+  if (
+    page === 'sources' ||
+    page === 'audit' ||
+    page === 'system' ||
+    page === 'about' ||
+    page === 'faq' ||
+    page === 'help' ||
+    page === 'profile' ||
+    page === 'signup'
+  ) {
+    return page
+  }
+
+  if (params.has('audit_id')) {
+    return 'audit'
+  }
+
+  return 'home'
+}
+
+function updatePageInUrl(page: ActivePage) {
+  const url = new URL(window.location.href)
+
+  if (page === 'home') {
+    url.searchParams.delete('page')
+    url.searchParams.delete('audit_id')
+  } else {
+    url.searchParams.set('page', page)
+  }
+
+  window.history.replaceState(null, '', url.toString())
+}
+
 function App() {
-  const [activePage, setActivePage] = useState<ActivePage>('home')
+  const [activePage, setActivePage] = useState<ActivePage>(() => getInitialPage())
   const [activeSection, setActiveSection] = useState<ActiveSection>('home')
   const [query, setQuery] = useState('')
   const [data, setData] = useState<RecallSearchResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-
-    if (params.get('page') === 'audit' || params.has('audit_id')) {
-      setActivePage('audit')
-      setActiveSection('home')
-    }
-  }, [])
 
   async function handleSearch() {
     if (!query.trim() || loading) return
@@ -64,12 +92,14 @@ function App() {
   function goHome() {
     setActivePage('home')
     setActiveSection('home')
+    updatePageInUrl('home')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   function goToRecallRadar() {
     setActivePage('home')
     setActiveSection('recallradar')
+    updatePageInUrl('home')
 
     setTimeout(() => {
       document.getElementById('recallradar')?.scrollIntoView({
@@ -82,6 +112,7 @@ function App() {
   function goToDrugSignal() {
     setActivePage('home')
     setActiveSection('drugsignal')
+    updatePageInUrl('home')
 
     setTimeout(() => {
       document.getElementById('drugsignal')?.scrollIntoView({
@@ -94,6 +125,7 @@ function App() {
   function goToPage(page: ActivePage) {
     setActivePage(page)
     setActiveSection('home')
+    updatePageInUrl(page)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
