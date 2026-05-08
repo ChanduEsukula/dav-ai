@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 
-import { getSystemStatus, type SystemStatusResponse } from '../api/systemStatus'
+import {
+  getDataQuality,
+  getSystemStatus,
+  type DataQualityResponse,
+  type SystemStatusResponse,
+} from '../api/systemStatus'
 
 function formatBoolean(value: boolean) {
   return value ? 'Yes' : 'No'
@@ -8,6 +13,7 @@ function formatBoolean(value: boolean) {
 
 function SystemStatusPage() {
   const [status, setStatus] = useState<SystemStatusResponse | null>(null)
+  const [dataQuality, setDataQuality] = useState<DataQualityResponse | null>(null)
   const [lastChecked, setLastChecked] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -17,8 +23,13 @@ function SystemStatusPage() {
     setError('')
 
     try {
-      const result = await getSystemStatus()
-      setStatus(result)
+      const [systemResult, dataQualityResult] = await Promise.all([
+        getSystemStatus(),
+        getDataQuality(),
+      ])
+
+      setStatus(systemResult)
+      setDataQuality(dataQualityResult)
       setLastChecked(new Date().toLocaleString())
     } catch {
       setError('Unable to load system status. Please check the backend deployment.')
@@ -38,7 +49,7 @@ function SystemStatusPage() {
         <h1>System Status</h1>
         <p>
           A quick operational snapshot of the MedTrek AI backend, audit persistence,
-          and registered public-data sources.
+          registered public-data sources, and recent audit data quality.
         </p>
       </div>
 
@@ -100,6 +111,83 @@ function SystemStatusPage() {
                   </div>
                 </div>
               </article>
+
+              {dataQuality && (
+                <article className="source-card">
+                  <div className="source-card-top">
+                    <span>Data Quality</span>
+                    <small>{dataQuality.status}</small>
+                  </div>
+
+                  <p>
+                    Recent audit history is summarized to show source-call outcomes,
+                    persistence readability, and the latest recorded audit event.
+                  </p>
+
+                  <div className="source-summary">
+                    <span>Recent audits: {dataQuality.recent_audit_count}</span>
+                    <span>Success: {dataQuality.upstream_status_counts.success}</span>
+                    <span>Empty: {dataQuality.upstream_status_counts.empty}</span>
+                    <span>Error: {dataQuality.upstream_status_counts.error}</span>
+                  </div>
+
+                  <div className="source-metadata">
+                    <div>
+                      <small>Database configured</small>
+                      <span>{formatBoolean(dataQuality.database_configured)}</span>
+                    </div>
+
+                    <div>
+                      <small>Audit readable</small>
+                      <span>{formatBoolean(dataQuality.audit_readable)}</span>
+                    </div>
+
+                    <div>
+                      <small>Source registry count</small>
+                      <span>{dataQuality.source_registry_count}</span>
+                    </div>
+
+                    <div>
+                      <small>Latest audit exists</small>
+                      <span>{formatBoolean(dataQuality.latest_audit_event.exists)}</span>
+                    </div>
+
+                    {dataQuality.latest_audit_event.exists && (
+                      <>
+                        <div>
+                          <small>Latest module</small>
+                          <span>{dataQuality.latest_audit_event.module}</span>
+                        </div>
+
+                        <div>
+                          <small>Latest query</small>
+                          <span>{dataQuality.latest_audit_event.query}</span>
+                        </div>
+
+                        <div>
+                          <small>Latest upstream status</small>
+                          <span>{dataQuality.latest_audit_event.upstream_status}</span>
+                        </div>
+
+                        <div>
+                          <small>Latest record count</small>
+                          <span>{dataQuality.latest_audit_event.record_count}</span>
+                        </div>
+
+                        <div>
+                          <small>Latest audit ID</small>
+                          <span>{dataQuality.latest_audit_event.audit_id}</span>
+                        </div>
+
+                        <div>
+                          <small>Latest created at</small>
+                          <span>{dataQuality.latest_audit_event.created_at}</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </article>
+              )}
             </div>
           </>
         )}
