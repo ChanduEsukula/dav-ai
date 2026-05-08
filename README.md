@@ -2,57 +2,123 @@
 
 **Healthcare safety intelligence from public FDA signals.**
 
-MedTrek AI is a full-stack healthcare safety intelligence prototype that turns public recall and adverse-event data into source-aware, explainable safety signals and deterministic role-based safety briefings.
+MedTrek AI is a full-stack healthcare public-data safety intelligence prototype. It turns public FDA/openFDA recall and adverse-event data into source-aware, explainable review workflows with audit trails, versioned scoring, reaction classification, trend snapshots, and deterministic role-based safety briefings.
 
-The current product foundation includes:
-
-- **RecallRadar**: a live FDA recall search workflow powered by the openFDA Drug Enforcement API
-- **DrugSignal**: a public FAERS adverse-event reporting pattern explorer powered by the openFDA Drug Event API
-- **Safety Briefing Engine v1**: a deterministic role-based briefing layer for RecallRadar and DrugSignal
-
-This project is designed as a serious full-stack AI/data product prototype, not a static student demo.
+This project is an MVP and portfolio-grade engineering prototype. It is not a medical device, not clinical decision support, and not a replacement for official FDA, CDC, clinician, pharmacist, or emergency guidance.
 
 ---
 
-## Current MVP: RecallRadar, DrugSignal, and Safety Briefing Engine v1
+## Current Project Status
+
+MedTrek AI currently includes:
+
+- **RecallRadar** for live openFDA Drug Enforcement recall search.
+- **DrugSignal** for openFDA Drug Event / FAERS-style adverse-event reporting-pattern review.
+- **Recall Review Score** for transparent recall review-priority scoring.
+- **DrugSignal Intelligence Score v1** for explainable FAERS reporting-pattern scoring.
+- **Reaction Classification v1** for rule-based grouping of DrugSignal reaction terms.
+- **DrugSignal Trend Snapshot v1** for comparing the current DrugSignal result with stored audit history.
+- **Safety Briefing Engine** for deterministic role-aware public-data safety briefings.
+- **Source Registry** for public data source transparency.
+- **Audit History** for persisted source/search traceability.
+- **Manual Saved Monitors v1** workflow documentation.
+- **System/Data Quality views** for operational and audit-persistence visibility.
+- **Supabase/PostgreSQL audit persistence** through a fail-soft backend repository.
+- **GitHub Actions CI** for backend tests, frontend tests, frontend lint, and frontend production build.
+- **Production deployment verification docs** for Vercel frontend, Render backend, and Supabase PostgreSQL.
+
+The current product direction is to move from one-time public-data search toward repeatable safety monitoring workflows:
+
+```text
+Search → Score → Audit → Briefing → Monitor → Compare → Alert
+```
+
+---
+
+## Product Foundation
+
+The current product foundation is built around five ideas:
+
+1. **Public-data safety intelligence**: MedTrek AI uses public FDA/openFDA data, not private medical records.
+2. **Source transparency**: Results expose source names, endpoints, retrieval timestamps, source IDs, and update context.
+3. **Auditability**: Searches generate audit IDs and persisted audit events for later review.
+4. **Explainability**: Recall and DrugSignal scores are rule-based, versioned, and visible.
+5. **Healthcare safety guardrails**: The app avoids medical advice, diagnosis, treatment guidance, medication-change recommendations, and FAERS causation claims.
+
+MedTrek AI is intentionally focused on public-data traceability, operational readiness, and healthcare safety boundaries rather than generic chatbot behavior.
+
+---
+
+## Current MVP: RecallRadar, DrugSignal, Audit History, and Safety Briefings
+
+### RecallRadar
 
 RecallRadar allows a user to search a product, drug, brand, or category and receive:
 
-- Live public FDA recall records
-- Normalized recall details
-- Recall reason and FDA classification
-- Recall status and initiation date
-- Distribution pattern and recalling firm
-- Transparent Recall Review Score
-- Plain-English explanation
-- Source timestamp and technical audit details
-- Medical safety disclaimer
-- Compact audit summary for source traceability
-- Role-based safety briefing
+- Live public FDA recall records from the openFDA Drug Enforcement API.
+- Normalized recall details.
+- Recall reason and FDA classification.
+- Recall status and initiation date.
+- Distribution pattern and recalling firm.
+- Transparent Recall Review Score.
+- Plain-English review-priority explanation.
+- Source timestamp and technical audit details.
+- Medical safety disclaimer.
+- Compact audit summary for source traceability.
+- Persisted audit event when database persistence is configured.
+- Role-based safety briefing.
+
+### DrugSignal
 
 DrugSignal allows a user to search a drug or medicinal product and receive:
 
-- Live public openFDA Drug Event records
-- Top reported FAERS reactions
-- Relative count bars for reaction frequency
-- Record count and source metadata
-- Source endpoint and retrieval timestamp
-- FAERS causation disclaimer
-- Medical safety disclaimer
-- Empty-result handling for searches with no FAERS matches
-- Compact audit summary for source traceability
-- Role-based safety briefing
+- Live public openFDA Drug Event records.
+- Top reported FAERS reactions.
+- Relative count bars for reaction frequency within returned results.
+- DrugSignal Intelligence Score v1.
+- Signal strength label.
+- Review priority.
+- Data confidence label.
+- Top reaction concentration.
+- Rule-based Reaction Classification v1.
+- DrugSignal Trend Snapshot v1.
+- Record count and source metadata.
+- Source endpoint and retrieval timestamp.
+- FAERS causation disclaimer.
+- Medical safety disclaimer.
+- Empty-result handling for searches with no FAERS matches.
+- Compact audit summary for source traceability.
+- Persisted audit event when database persistence is configured.
+- Role-based safety briefing.
 
-Safety Briefing Engine v1 generates deterministic role-based briefings for:
+### Audit History
 
-- Consumer
-- Pharmacy
-- Clinic
-- Public Health / Analyst
+Audit History allows users to review recent public-data searches and inspect traceability metadata such as audit ID, module, source, endpoint, query parameters, retrieval timestamp, upstream status, record count, transform version, score version, disclaimer version, and error messages when present.
+
+The Audit History frontend includes:
+
+- Recent audit event table.
+- Selected audit detail panel.
+- Module/status/search filters.
+- Applied filter summary.
+- CSV export.
+- Copy audit ID.
+- Copy trace summary.
+- Copy audit link.
+- Audit detail URL state and refresh preservation.
+
+### Safety Briefing Engine
+
+The Safety Briefing Engine generates deterministic role-based briefings for:
+
+- Consumer.
+- Pharmacy.
+- Clinic.
+- Public Health / Analyst.
 
 Briefings are generated from structured RecallRadar and DrugSignal response data only. The current briefing engine does not use an LLM and does not provide diagnosis, treatment guidance, medication-change advice, or FAERS causation claims.
 
-RecallRadar and DrugSignal are connected end-to-end through the React frontend and FastAPI backend. Audit events are persisted to Supabase/PostgreSQL through a fail-soft backend repository layer. Safety Briefing Engine v1 is implemented as a deterministic, role-based frontend briefing layer for RecallRadar and DrugSignal. Frontend tests, backend tests, GitHub Actions CI, local Docker Compose setup, and deployment environment configuration are active. Saved monitors, production deployment, database migrations, and production hardening remain future phases.
+DrugSignal briefing output has been upgraded to use DrugSignal Intelligence Score v1 and Reaction Classification v1, with source/audit details and limitations kept visible.
 
 ---
 
@@ -60,115 +126,76 @@ RecallRadar and DrugSignal are connected end-to-end through the React frontend a
 
 ### Working now
 
-- React + TypeScript frontend
-- FastAPI backend
-- Backend source registry for FDA source metadata
-- Sources endpoint exposing registered public data sources
-- Frontend Data Sources page using the backend source registry endpoint
-- openFDA Drug Enforcement API integration
-- openFDA Drug Event API integration
-- RecallRadar end-to-end search workflow
-- DrugSignal end-to-end search workflow
-- Rule-based Recall Review Score
-- Deterministic Safety Briefing Engine v1 for RecallRadar and DrugSignal
-- Role-based safety briefings for Consumer, Pharmacy, Clinic, and Public Health / Analyst
-- Safety briefing source/audit details
-- Source-aware audit panels
-- Compact audit summaries in RecallRadar and DrugSignal API responses
-- Frontend display of compact audit summaries for RecallRadar and DrugSignal
-- Internal audit event builder utility
-- Fail-soft audit persistence boundary wired into RecallRadar and DrugSignal routes
-- Real Supabase/PostgreSQL audit event persistence for RecallRadar and DrugSignal
-- Supabase `source_registry` table for registered public data sources
-- Supabase `audit_events` table for persisted source/search audit events
-- Medical safety disclaimers
-- FAERS causation disclaimer for DrugSignal
-- Empty-result handling for searches with no FDA recall matches
-- Empty-result handling for searches with no FAERS drug-event matches
-- DrugSignal frontend page using the openFDA Drug Event API
-- DrugSignal backend module using the openFDA Drug Event API
-- DrugSignal top reported reactions display with relative count bars
-- Safety briefing generator unit tests
-- Frontend component tests with Vitest and React Testing Library
-- DrugSignal backend tests for route behavior, query validation, and openFDA client behavior
-- Backend unit tests for recall scoring
-- Backend route tests for success, empty-result, upstream failure, and query validation
-- openFDA client tests for success, no-match, and server-error behavior
-- Backend tests for the source registry endpoint
-- Backend tests for audit event construction
-- Backend tests for database configuration and fail-soft persistence behavior
-- Backend response schemas for RecallRadar, DrugSignal, Sources, and Audit API objects
-- Top-level audit metadata including source endpoint and score version
-- Environment-based frontend API URL configuration
-- Environment-based backend database URL configuration
-- Production-configurable backend CORS origins
-- GitHub Actions CI for backend tests, frontend tests, lint, and build
-- Docker Compose local development setup for frontend and backend
-- Clean frontend/backend project structure
+- React + TypeScript frontend.
+- FastAPI backend.
+- Backend source registry for public FDA/openFDA source metadata.
+- Sources endpoint and frontend Data Sources page.
+- openFDA Drug Enforcement API integration.
+- openFDA Drug Event API integration.
+- RecallRadar end-to-end search workflow.
+- DrugSignal end-to-end search workflow.
+- Rule-based Recall Review Score.
+- DrugSignal Intelligence Score v1.
+- Reaction Classification v1.
+- DrugSignal Trend Snapshot v1.
+- Deterministic Safety Briefing Engine.
+- Role-based briefings for Consumer, Pharmacy, Clinic, and Public Health / Analyst.
+- Source-aware audit panels.
+- Compact audit summaries in RecallRadar and DrugSignal responses.
+- Internal audit event builder utility.
+- Fail-soft audit persistence boundary.
+- Supabase/PostgreSQL `source_registry` table.
+- Supabase/PostgreSQL `audit_events` table.
+- Audit History list/detail API.
+- Audit History frontend page with filters, detail panel, CSV export, and copy actions.
+- Manual Saved Monitors v1 workflow documentation.
+- System Status page.
+- Data Quality panel.
+- Request ID propagation and `X-Request-ID` response headers.
+- Medical safety disclaimers.
+- FAERS causation disclaimer for DrugSignal.
+- Empty-result handling for RecallRadar and DrugSignal.
+- Backend tests.
+- Frontend tests.
+- GitHub Actions CI.
+- Docker Compose local development setup.
+- Production deployment and verification documentation.
 
 ### Not built yet
 
-- User accounts
-- Authentication/roles
-- Saved searches or alerts
-- Saved monitors
-- Production deployment
-- Database migrations
-- Briefing persistence
-- LLM/RAG briefing upgrade
-- CNN/OCR product label scanner
-- Production observability/logging
-- Production security hardening
+- User accounts.
+- Authentication and role-based access control.
+- Database-backed saved monitors.
+- Scheduled monitor refresh.
+- Automated alerts.
+- Briefing persistence.
+- Formal ML model training.
+- Embedding search or clustering model.
+- Formal classifier evaluation dataset.
+- Product analytics.
+- Production observability dashboard.
+- Production security hardening beyond current MVP configuration.
 
 ---
 
 ## Current Engineering Status
 
-RecallRadar, DrugSignal, and Safety Briefing Engine v1 are the active end-to-end MVP modules.
+The active MVP modules are RecallRadar, DrugSignal, Audit History, Safety Briefing Engine, Source Registry, System Status, Data Quality, and Manual Saved Monitors v1 documentation.
 
-Current support includes:
+Current engineering support includes:
 
-- Live openFDA Drug Enforcement recall search
-- Live openFDA Drug Event adverse-event search
-- Public source registry endpoint for source transparency
-- Frontend Data Sources page for registered public data sources
-- Normalized RecallRadar result cards
-- DrugSignal top reported reactions display with relative count bars
-- Transparent rule-based Recall Review Score
-- Deterministic role-based safety briefings for RecallRadar and DrugSignal
-- Compact audit summaries in RecallRadar and DrugSignal API responses
-- Frontend display of compact audit summaries for RecallRadar and DrugSignal
-- Internal full audit event builder utility
-- Fail-soft audit persistence boundary wired into RecallRadar and DrugSignal routes
-- Real PostgreSQL audit event persistence through Supabase connection pooling
-- Source metadata stored in Supabase/PostgreSQL
-- Audit events stored in Supabase/PostgreSQL after successful RecallRadar and DrugSignal searches
-- Source metadata and retrieval timestamps
-- Medical safety disclaimer
-- FAERS causation disclaimer for DrugSignal
-- Empty-result handling for searches with no FDA matches
-- DrugSignal empty-state UI for searches with no FAERS matches
-- Backend scoring tests
-- Audit event builder tests
-- Database configuration helper tests
-- Fail-soft audit repository tests
-- RecallRadar route tests for success, empty-result, upstream failure, and query validation
-- DrugSignal route tests for success, empty-result, upstream failure, and query validation
-- Sources endpoint response and required metadata tests
-- openFDA Drug Enforcement client tests for success, no-match, and server-error behavior
-- openFDA Drug Event client tests for success, no-match, and server-error behavior
-- Frontend App smoke test
-- RecallRadar component tests
-- DrugSignal component tests
-- Safety briefing generator tests
-- GitHub Actions CI for backend tests, frontend tests, frontend lint, and frontend production build
-- Docker Compose setup for running frontend and backend locally
-- Backend CORS configuration through `ALLOWED_ORIGINS`
-- Backend response schemas for RecallRadar and DrugSignal API responses
-- Request ID middleware with production-verified `X-Request-ID` response headers
-- Top-level audit metadata including source endpoint and score version
-- Environment-based frontend API URL configuration
-- Environment-based backend database configuration
+- Live public openFDA source calls.
+- Normalized backend response schemas.
+- Typed frontend API models.
+- Explainable scoring modules.
+- Rule-based reaction classification module.
+- Trend snapshot helper using stored audit history.
+- Audit event construction and persistence.
+- PostgreSQL/Supabase schema and Alembic migration.
+- Request ID middleware and frontend request ID propagation.
+- Production verification documentation for deployed behavior.
+- Backend and frontend tests.
+- GitHub Actions CI.
 
 Current backend test status:
 
@@ -182,58 +209,31 @@ Current frontend test status:
 27 passed
 ```
 
-Recent stability improvements:
-
-- No-match openFDA searches now return `count: 0` and `results: []` instead of a false backend error.
-- RecallRadar now displays a clear empty-state message when no FDA recall records match.
-- DrugSignal now displays a clear empty-state message when no FAERS records match.
-- Recall scoring now uses timezone-aware UTC dates.
-- RecallRadar route responses now use backend Pydantic schemas.
-- Audit metadata now includes top-level source endpoint and score version.
-- Source metadata is centralized through a backend source registry.
-- Sources are exposed through `GET /api/v1/sources`.
-- openFDA client behavior is tested with mocked HTTP responses.
-- Query validation is tested for short queries and invalid limits.
-- DrugSignal backend endpoint returns top reported FAERS reactions with a causation disclaimer.
-- DrugSignal frontend page is connected to the tested backend endpoint.
-- DrugSignal reaction counts are displayed with relative visual bars.
-- API responses now include compact audit summaries while full audit-event construction remains internal.
-- Compact audit summaries are now visible in the RecallRadar and DrugSignal UI.
-- RecallRadar and DrugSignal now call the fail-soft audit repository after building audit events.
-- Audit events are now persisted to Supabase/PostgreSQL after RecallRadar and DrugSignal searches.
-- Safety Briefing Engine v1 now generates deterministic role-based briefings from structured RecallRadar and DrugSignal data.
-- Frontend tests now cover App rendering, RecallRadar behavior, DrugSignal behavior, and briefing generator behavior.
-- GitHub Actions CI is active and passing.
-- Docker Compose now builds and runs the frontend and backend locally.
-- Backend CORS origins are now configurable for deployment.
-
 ---
 
 ## Recall Review Score
 
-MedTrek AI uses a transparent, rule-based **Recall Review Score** for the RecallRadar MVP.
+MedTrek AI uses a transparent, rule-based **Recall Review Score** for RecallRadar.
 
 The score is not a medical diagnosis, treatment recommendation, or official FDA replacement. It is a review-priority signal that helps users understand which public recall records may deserve closer attention.
 
 ### Current score inputs
 
-The current score uses four public recall fields:
+The current Recall Review Score uses four public recall fields:
 
-1. **FDA classification severity**
-2. **Recall status**
-3. **Recall initiation recency**
-4. **Distribution scope**
+1. FDA classification severity.
+2. Recall status.
+3. Recall initiation recency.
+4. Distribution scope.
 
 ### Component logic
 
 | Component | Current logic |
 |---|---|
-| FDA classification | Class I receives the highest weight, followed by Class II and Class III |
-| Recall status | Ongoing recalls receive more weight than completed or terminated recalls |
-| Recency | Recent recalls receive more weight than older recalls |
-| Distribution scope | Nationwide or multi-state distribution receives more weight than local distribution |
-
-The backend returns both the final score and the component-level scores so the result is explainable.
+| FDA classification | Class I receives the highest weight, followed by Class II and Class III. |
+| Recall status | Ongoing recalls receive more weight than completed or terminated recalls. |
+| Recency | Recent recalls receive more weight than older recalls. |
+| Distribution scope | Nationwide or multi-state distribution receives more weight than local distribution. |
 
 Current score version:
 
@@ -245,70 +245,196 @@ recall-risk-v0.1
 
 ## DrugSignal
 
-DrugSignal is the second MVP module. It uses the openFDA Drug Event API to retrieve FAERS adverse-event reports for a searched drug or medicinal product.
+DrugSignal is the FAERS-style public adverse-event reporting-pattern module. It uses the openFDA Drug Event API to retrieve public adverse-event records for a searched drug or medicinal product.
 
 Current DrugSignal response includes:
 
-- Search query
-- Source name
-- Source endpoint
-- Retrieval timestamp
-- Record count
-- Medical disclaimer
-- FAERS causation disclaimer
-- Top reported reactions from returned FAERS records
-- Relative count bars for comparing reaction frequency within the returned results
-- Compact audit summary for traceability
-- Role-based safety briefing
+- Search query.
+- Source name.
+- Source endpoint.
+- Retrieval timestamp.
+- Record count.
+- Medical disclaimer.
+- FAERS causation disclaimer.
+- Compact audit summary.
+- DrugSignal Intelligence Score v1.
+- Reaction Classification v1.
+- DrugSignal Trend Snapshot v1.
+- Top reported reactions from returned FAERS records.
+- Relative count bars for comparing reaction frequency within returned results.
+- Role-based safety briefing.
 
 Important limitation:
 
-FAERS adverse-event reports do **not** prove that a drug caused a reaction. Reports may be incomplete, duplicated, influenced by reporting patterns, or missing clinical context. DrugSignal is a reporting-pattern explorer, not a causation engine.
+FAERS adverse-event reports do **not** prove that a drug caused a reaction. Reports may be incomplete, duplicated, delayed, influenced by reporting patterns, or missing clinical context. DrugSignal is a reporting-pattern explorer, not a causation engine.
 
 ---
 
-## Safety Briefing Engine v1
+## DrugSignal Intelligence Score v1
 
-Safety Briefing Engine v1 is a deterministic frontend briefing layer that turns structured RecallRadar and DrugSignal response data into role-based public-data safety briefings.
+DrugSignal Intelligence Score v1 is an explainable scoring layer for public FAERS adverse-event search results.
+
+It summarizes returned openFDA Drug Event records into a transparent signal score without implying medical causation.
+
+Current score version:
+
+```text
+drug-signal-intelligence-v0.1
+```
+
+Current score inputs:
+
+- Returned FAERS record count.
+- Top reaction concentration.
+- Reaction diversity.
+- Data confidence.
+
+Current score output:
+
+- Score from 0 to 100.
+- Signal strength label.
+- Review priority.
+- Data confidence.
+- Top reaction concentration.
+- Score version.
+- Safety limitations.
+
+The score is based on returned public openFDA records and reaction counts, not clinical incidence rates.
+
+Documentation:
+
+```text
+docs/drug_signal_intelligence_score.md
+docs/drug_signal_intelligence_backend_verification.md
+docs/drug_signal_intelligence_frontend_verification.md
+```
+
+---
+
+## Reaction Classification v1
+
+Reaction Classification v1 groups returned top FAERS reaction terms into understandable rule-based categories.
+
+Current categories include:
+
+- Neurological.
+- Gastrointestinal.
+- Respiratory.
+- Cardiovascular.
+- Skin / allergy.
+- Infection / immune.
+- Metabolic.
+- General / other.
+
+Current classifier version:
+
+```text
+reaction-classifier-v0.1
+```
+
+This is an NLP-style classification layer, but it is intentionally rule-based for the current MVP. That makes it easier to explain, test, audit, and keep healthcare-safe before adding ML or embedding-based clustering.
+
+Documentation:
+
+```text
+docs/drug_signal_reaction_classification_verification.md
+```
+
+---
+
+## DrugSignal Trend Snapshot v1
+
+DrugSignal Trend Snapshot v1 compares the current DrugSignal result with the most recent stored DrugSignal audit event for the same query when previous history exists.
+
+Current trend output includes:
+
+- Trend label.
+- Current record count.
+- Previous record count.
+- Previous audit ID.
+- Previous timestamp.
+- Plain-language explanation.
+- Trend limitation.
+- Trend version.
+
+Current trend version:
+
+```text
+drug-signal-trend-v0.1
+```
+
+Current limitation:
+
+Trend Snapshot v1 is based only on stored public-data searches in MedTrek AI. It does not represent all FDA activity and should not be interpreted as a complete surveillance signal.
+
+Documentation:
+
+```text
+docs/drug_signal_trend_snapshot_verification.md
+```
+
+---
+
+## Safety Briefing Engine
+
+The Safety Briefing Engine turns structured RecallRadar and DrugSignal response data into deterministic role-based public-data safety briefings.
 
 Current roles:
 
-- Consumer
-- Pharmacy
-- Clinic
-- Public Health / Analyst
+- Consumer.
+- Pharmacy.
+- Clinic.
+- Public Health / Analyst.
 
 Each briefing includes:
 
-- Summary
-- What was found
-- What to verify
-- Suggested review checklist
-- Limitations
-- Source and audit details
-- Disclaimer
+- Summary.
+- What was found.
+- What to verify.
+- Suggested review checklist.
+- Limitations.
+- Source and audit details.
+- Disclaimer.
 
-The briefing engine uses existing structured API response fields only, including:
+RecallRadar briefings use structured recall response data and Recall Review Score output.
 
-- Query
-- Record count
-- Recall score or top FAERS reaction
-- Source name
-- Endpoint
-- Retrieval timestamp
-- Audit ID
-- Medical disclaimer
-- FAERS disclaimer when applicable
+DrugSignal briefings use structured DrugSignal response data, including DrugSignal Intelligence Score v1 and Reaction Classification v1. The DrugSignal briefing UI displays Safety Briefing Engine v2.
 
-The current briefing engine does not use an LLM. This keeps the MVP explainable, deterministic, testable, and safer for healthcare-adjacent public-data workflows.
+The briefing engine does not use an LLM. It must not generate diagnosis, treatment guidance, medication-change advice, FAERS causation claims, or unsupported medical recommendations.
 
-The briefing engine must not generate:
+Documentation:
 
-- Diagnosis
-- Treatment guidance
-- Medication-change advice
-- Claims that FAERS reports prove causation
-- Unsupported medical recommendations
+```text
+docs/drug_signal_briefing_v2_verification.md
+```
+
+---
+
+## Manual Saved Monitors v1
+
+Manual Saved Monitors v1 is a documented workflow that demonstrates how MedTrek AI can already support repeatable public-data safety monitoring behavior before database-backed saved monitors, scheduled refresh, or automated alerts are implemented.
+
+Exact workflow:
+
+```text
+Search → Score → Audit ID → Briefing → Repeat later → Compare change
+```
+
+The workflow uses existing MedTrek AI capabilities:
+
+- Search RecallRadar or DrugSignal.
+- Review score, source, record count, and safety briefing.
+- Copy or record the audit ID.
+- Repeat the same search later.
+- Compare score, record count, audit details, briefing language, and trend snapshot when available.
+
+Documentation:
+
+```text
+docs/manual_saved_monitors_v1.md
+```
+
+Manual Saved Monitors v1 is not the same as automated saved monitors. It is a bridge workflow that proves the product direction before adding accounts, saved monitor records, scheduled refresh, and alerts.
 
 ---
 
@@ -318,8 +444,8 @@ MedTrek AI includes a backend source registry to make public-data usage transpar
 
 Current registered sources:
 
-- openFDA Drug Enforcement API for RecallRadar
-- openFDA Drug Event API for DrugSignal
+- openFDA Drug Enforcement API for RecallRadar.
+- openFDA Drug Event API for DrugSignal.
 
 Sources endpoint:
 
@@ -329,101 +455,106 @@ GET /api/v1/sources
 
 The endpoint returns each source with:
 
-- Source ID
-- Source name
-- Endpoint
-- Module
-- Description
-- Update cadence
+- Source ID.
+- Source name.
+- Endpoint.
+- Module.
+- Description.
+- Update cadence.
 
 The frontend Data Sources page consumes this endpoint and displays registered public sources, modules, endpoints, descriptions, and update cadence.
-
-The same source metadata is also stored in the Supabase/PostgreSQL `source_registry` table as the database foundation for audit logging and future briefing traceability.
 
 ---
 
 ## Audit Architecture
 
-MedTrek AI separates public response metadata from internal audit construction.
+MedTrek AI separates public response metadata from internal audit event construction.
 
 The backend currently supports:
 
-- Compact audit summaries in RecallRadar and DrugSignal responses
-- Frontend display of compact audit summaries in RecallRadar and DrugSignal audit panels
-- Internal full audit event construction through a backend audit utility
-- Fail-soft audit repository boundary
-- Real PostgreSQL persistence into the `audit_events` table
-- Audit event tests for standard success and error shapes
-- Repository tests for skipped, saved, and fail-soft error outcomes
+- Compact audit summaries in RecallRadar and DrugSignal responses.
+- Frontend display of compact audit summaries.
+- Internal full audit event construction.
+- Fail-soft audit repository boundary.
+- PostgreSQL persistence into the `audit_events` table.
+- Audit History list/detail endpoints.
+- Audit History filters.
+- Audit detail URL state.
+- Audit copy/export actions in the frontend.
 
 The compact public audit summary includes:
 
-- Audit ID
-- Source ID
-- Module
-- Upstream status
-- Record count
-- Transform version
+- Audit ID.
+- Source ID.
+- Module.
+- Upstream status.
+- Record count.
+- Transform version.
 
-The internal audit event builder additionally supports:
+The full audit event additionally supports:
 
-- Source name
-- Endpoint
-- Query parameters
-- Retrieval timestamp
-- Score version
-- Disclaimer version
-- Error message
-- Created timestamp
+- Source name.
+- Endpoint.
+- Query parameters.
+- Retrieval timestamp.
+- Score version when applicable.
+- Disclaimer version.
+- Error message.
+- Created timestamp.
 
-The routes build full audit events and pass them through a fail-soft audit repository boundary. Audit events are now saved to the `audit_events` PostgreSQL table through Supabase connection pooling. If database persistence fails, the search workflow still returns a normal response while the persistence error is handled internally.
+Current Audit History endpoints:
 
-This design avoids coupling the frontend to database persistence internals while keeping the backend ready for future saved monitors, role-specific briefings, and deployment traceability.
+```text
+GET /api/v1/audit-events
+GET /api/v1/audit-events/{audit_id}
+```
+
+Audit History is for public-data traceability only. It is not clinical record storage.
 
 ---
 
 ## Persistence
 
-MedTrek AI now includes working Supabase/PostgreSQL audit persistence.
+MedTrek AI includes Supabase/PostgreSQL audit persistence.
 
 Current persistence support includes:
 
-- `docs/persistence_plan.md`
-- `backend/.env.example`
-- `backend/db/schema.sql`
-- database configuration helper
-- fail-soft audit repository
-- live inserts into the `audit_events` table
-- source metadata stored in the `source_registry` table
-- Supabase connection pooling for local PostgreSQL access
-- local `DATABASE_URL` loading through `backend/.env`
+- `backend/db/schema.sql`.
+- Alembic migration for `source_registry` and `audit_events`.
+- `backend/app/db/database.py`.
+- `backend/app/db/audit_repository.py`.
+- Fail-soft audit event inserts.
+- Audit event reads for Audit History.
+- Latest audit event lookup for DrugSignal Trend Snapshot v1.
+- Source metadata stored in `source_registry`.
+- Search/source audit events stored in `audit_events`.
 
 The current persistence layer stores:
 
-- Source ID
-- Source name
-- Endpoint
-- Module
-- Search query
-- Query parameters
-- Retrieval timestamp
-- Upstream status
-- Record count
-- Transform version
-- Score version when applicable
-- Disclaimer version
-- Error message when applicable
-- Created timestamp
+- Source ID.
+- Source name.
+- Endpoint.
+- Module.
+- Search query.
+- Query parameters.
+- Retrieval timestamp.
+- Upstream status.
+- Record count.
+- Transform version.
+- Score version when applicable.
+- Disclaimer version.
+- Error message when applicable.
+- Created timestamp.
 
 The current persistence layer does **not** store:
 
-- Personal health records
-- Patient identifiers
-- Medication profiles tied to real users
-- Uploaded documents
-- Uploaded images
-- Private medical notes
-- User accounts or authentication records
+- Personal health records.
+- Patient identifiers.
+- Medication profiles tied to real users.
+- Uploaded documents.
+- Uploaded images.
+- Private medical notes.
+- User accounts or authentication records.
 
 Database credentials must be stored only in local or deployment environment variables. Do not commit real credentials to GitHub.
 
@@ -431,16 +562,26 @@ Database credentials must be stored only in local or deployment environment vari
 
 ## Safety Boundary
 
-MedTrek AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.
+MedTrek AI provides public-data safety intelligence only.
+
+It is not:
+
+- Medical advice.
+- Diagnosis.
+- Treatment guidance.
+- A medication-change recommendation system.
+- A replacement for FDA, CDC, clinicians, pharmacists, emergency services, or official source guidance.
 
 The app does not:
 
-- Diagnose medical conditions
-- Recommend medication changes
-- Replace FDA, CDC, clinician, pharmacist, or emergency guidance
-- Claim that public safety reports prove causation
+- Diagnose medical conditions.
+- Recommend starting, stopping, or changing medication.
+- Claim that public safety reports prove causation.
+- Store PHI in the current MVP design.
 
-Users should verify source records and consult qualified healthcare professionals for medical decisions.
+FAERS adverse-event reports do **not** prove causation. They are reporting-pattern signals that may be incomplete, duplicated, delayed, biased by reporting behavior, or missing clinical context.
+
+Users should verify official source records and consult qualified healthcare professionals for medical decisions.
 
 ---
 
@@ -448,50 +589,51 @@ Users should verify source records and consult qualified healthcare professional
 
 ### Frontend
 
-- React
-- TypeScript
-- Vite
-- CSS files
-- Axios
-- Vitest
-- React Testing Library
+- React.
+- TypeScript.
+- Vite.
+- CSS.
+- Axios.
+- Vitest.
+- React Testing Library.
 
 ### Backend
 
-- FastAPI
-- Uvicorn
-- httpx
-- Pydantic
-- pytest
-- python-dotenv
-- psycopg
+- FastAPI.
+- Uvicorn.
+- httpx.
+- Pydantic.
+- pytest.
+- python-dotenv.
+- psycopg.
+- Alembic.
 
 ### Public Data Sources
 
-- openFDA Drug Enforcement API
-- openFDA Drug Event API
+- openFDA Drug Enforcement API.
+- openFDA Drug Event API.
 
 ### Persistence
 
-- Supabase PostgreSQL
-- SQL schema for source registry and audit events
-- Supabase transaction pooler connection
-- Fail-soft audit persistence repository
+- Supabase PostgreSQL.
+- SQL schema for source registry and audit events.
+- Alembic migration.
+- Fail-soft audit persistence repository.
 
 ### CI/CD
 
-- GitHub Actions
-- Backend pytest job
-- Frontend test job
-- Frontend lint job
-- Frontend production build job
+- GitHub Actions.
+- Backend pytest job.
+- Frontend test job.
+- Frontend lint job.
+- Frontend production build job.
 
 ### Local Containerization
 
-- Docker
-- Docker Compose
-- Backend Dockerfile
-- Frontend Dockerfile
+- Docker.
+- Docker Compose.
+- Backend Dockerfile.
+- Frontend Dockerfile.
 
 ---
 
@@ -523,12 +665,22 @@ FastAPI docs:
 http://127.0.0.1:8000/docs
 ```
 
-Current backend endpoints:
+Current core backend endpoints:
 
 ```text
 GET /api/v1/recalls/search
 GET /api/v1/drug-events/search
 GET /api/v1/sources
+GET /api/v1/audit-events
+GET /api/v1/audit-events/{audit_id}
+```
+
+Additional operational endpoints:
+
+```text
+GET /health
+GET /api/v1/system/status
+GET /api/v1/system/data-quality
 ```
 
 ### Frontend
@@ -551,24 +703,20 @@ Frontend API configuration:
 VITE_API_BASE_URL=http://127.0.0.1:8000
 ```
 
-Use `frontend/.env.example` as the reference file for local configuration.
-
 ### Backend environment configuration
 
 ```env
-DATABASE_URL=postgresql://username:password@host:port/database
+DATABASE_URL=postgresql+psycopg://username:password@host:5432/database
 ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 ```
 
-For Supabase local development, use the Supabase transaction pooler connection string in `backend/.env`.
-
-Use `backend/.env.example` as the reference file for future database configuration. Do not commit real credentials.
+Use local `.env` files for development and deployment environment variables for hosted services. Do not commit real `.env` files or secrets.
 
 ---
 
 ## Docker Local Development
 
-MedTrek AI can also run locally with Docker Compose.
+MedTrek AI can run locally with Docker Compose.
 
 From the repository root:
 
@@ -578,8 +726,8 @@ docker compose up --build
 
 This starts:
 
-- FastAPI backend container
-- React/Vite frontend container
+- FastAPI backend container.
+- React/Vite frontend container.
 
 Local URLs:
 
@@ -602,13 +750,13 @@ backend/.env
 frontend/.env
 ```
 
-Do not commit real `.env` files or secrets to GitHub. Use `.env.example` files as references.
+Do not commit real `.env` files or secrets to GitHub.
 
 ---
 
 ## Deployment Environment Notes
 
-MedTrek AI is designed to deploy as separate frontend and backend services.
+MedTrek AI is designed to deploy as separate frontend, backend, and database services.
 
 Recommended MVP deployment path:
 
@@ -618,46 +766,29 @@ Backend: Render or Railway
 Database: Supabase PostgreSQL
 ```
 
-### Backend environment variables
+Deployment environment variables:
 
-The backend requires:
+Backend:
 
 ```env
 DATABASE_URL=postgresql+psycopg://username:password@host:5432/database
 ALLOWED_ORIGINS=https://your-frontend-domain.vercel.app
 ```
 
-`DATABASE_URL` should point to the Supabase PostgreSQL connection string.
-
-`ALLOWED_ORIGINS` should contain the deployed frontend URL. For multiple allowed origins, use a comma-separated list:
-
-```env
-ALLOWED_ORIGINS=http://localhost:5173,https://your-frontend-domain.vercel.app
-```
-
-Do not commit real database credentials or production secrets to GitHub.
-
-### Frontend environment variables
-
-The frontend requires:
+Frontend:
 
 ```env
 VITE_API_BASE_URL=https://your-backend-domain.onrender.com
 ```
 
-For local development, use:
-
-```env
-VITE_API_BASE_URL=http://127.0.0.1:8000
-```
-
-### Production safety notes
-
-Before public deployment:
+Production safety checks:
 
 - Verify `/health` returns `{"status":"healthy"}`.
 - Verify `/docs` loads correctly.
-- Confirm RecallRadar and DrugSignal searches work from the deployed frontend.
+- Confirm RecallRadar search works from the deployed frontend.
+- Confirm DrugSignal search works from the deployed frontend.
+- Confirm Audit History can read persisted events.
+- Confirm System/Data Quality views load.
 - Confirm Supabase audit rows are created after successful searches.
 - Confirm CORS only allows trusted frontend origins.
 - Confirm no real `.env` files or secrets are committed.
@@ -673,35 +804,28 @@ cd backend
 pytest
 ```
 
-Current backend test coverage includes:
-
-- Recall Review Score behavior
-- Successful RecallRadar route response
-- Empty-result RecallRadar route response
-- RecallRadar upstream failure handling
-- RecallRadar query validation for short queries and invalid limits
-- Compact RecallRadar audit summary behavior
-- openFDA Drug Enforcement client success behavior
-- openFDA Drug Enforcement client no-match behavior
-- openFDA Drug Enforcement client server-error behavior
-- Successful DrugSignal route response
-- Empty-result DrugSignal route response
-- DrugSignal upstream failure handling
-- DrugSignal query validation for short queries and invalid limits
-- Compact DrugSignal audit summary behavior
-- openFDA Drug Event client success behavior
-- openFDA Drug Event client no-match behavior
-- openFDA Drug Event client server-error behavior
-- Sources endpoint response and required metadata tests
-- Audit event builder success and error shape tests
-- Database configuration helper tests
-- Fail-soft audit repository tests for skipped, saved, and error outcomes
-
 Current backend test status:
 
 ```bash
 45 passed
 ```
+
+Backend test coverage includes:
+
+- Recall Review Score behavior.
+- RecallRadar route behavior.
+- DrugSignal route behavior.
+- DrugSignal Intelligence Score v1.
+- Reaction Classification v1.
+- DrugSignal Trend Snapshot v1.
+- openFDA client behavior.
+- Source registry endpoint behavior.
+- Audit event construction.
+- Database configuration.
+- Fail-soft audit repository behavior.
+- Audit History API behavior.
+- System Status and Data Quality API behavior.
+- Request ID middleware behavior.
 
 Run frontend tests:
 
@@ -710,18 +834,21 @@ cd frontend
 npm test
 ```
 
-Current frontend test coverage includes:
-
-- App smoke rendering
-- RecallRadar component behavior
-- DrugSignal component behavior
-- Safety briefing generator behavior
-
 Current frontend test status:
 
 ```bash
 27 passed
 ```
+
+Frontend test coverage includes:
+
+- App smoke rendering.
+- RecallRadar component behavior.
+- DrugSignal component behavior.
+- DrugSignal Intelligence, classification, trend, and briefing UI behavior.
+- Safety briefing generator behavior.
+- Audit History filters, copy actions, CSV export, and URL state.
+- System Status / Data Quality page behavior.
 
 Run frontend lint and production build:
 
@@ -731,58 +858,85 @@ npm run lint
 npm run build
 ```
 
+GitHub Actions CI runs backend tests, frontend tests, frontend lint, and frontend production build on push and pull request.
+
 ---
 
 ## Manual Persistence Verification
 
-Manual Supabase/PostgreSQL verification completed successfully.
+Manual Supabase/PostgreSQL verification has been documented for audit persistence.
 
 Verified persisted audit rows include:
 
-- Manual backend audit event insert
-- RecallRadar search audit event
-- DrugSignal search audit event
+- Manual backend audit event insert.
+- RecallRadar search audit event.
+- DrugSignal search audit event.
 
-Expected rows appear in the Supabase `audit_events` table with module, source ID, query, upstream status, record count, transform version, score version when applicable, and disclaimer version.
+Expected rows appear in the Supabase `audit_events` table with module, source ID, query, upstream status, record count, transform version, score version when applicable, disclaimer version, and timestamps.
+
+Related docs:
+
+```text
+docs/persistence_plan.md
+docs/audit_trail_design.md
+docs/production_observability_verification.md
+```
 
 ---
 
-## Planned Next Phases
+## Production Verification Documentation
 
-1. Keep RecallRadar, DrugSignal, Safety Briefing Engine v1, and Audit History stable and documented
-2. Add database migration strategy
-3. Prepare frontend/backend deployment
-4. Add saved searches or alert-monitoring workflows
-5. Add scheduled ingestion and change detection history
-6. Add optional NLP, RAG, and OCR/CNN experiments later
-7. Add production observability and security hardening
+Production and verification documentation is kept in `docs/`.
+
+Important verification docs include:
+
+```text
+docs/deployment_verification.md
+docs/deployment_checklist.md
+docs/backend_deployment_setup.md
+docs/production_observability_verification.md
+docs/frontend_request_id_verification.md
+docs/system_status_verification.md
+docs/system_data_quality_verification.md
+docs/frontend_system_status_verification.md
+docs/frontend_data_quality_verification.md
+docs/drug_signal_intelligence_backend_verification.md
+docs/drug_signal_intelligence_frontend_verification.md
+docs/drug_signal_reaction_classification_verification.md
+docs/drug_signal_briefing_v2_verification.md
+docs/drug_signal_trend_snapshot_verification.md
+docs/manual_saved_monitors_v1.md
+```
+
+These docs support reproducibility, reviewer confidence, and production-readiness tracking.
+
+---
+
+## Near-Term Roadmap
+
+Recommended next steps:
+
+1. Keep RecallRadar, DrugSignal, Audit History, Source Registry, System/Data Quality, and Safety Briefing Engine stable.
+2. Refresh roadmap/docs as features move from planned to implemented.
+3. Improve Trend Snapshot examples using repeated-query audit history.
+4. Add frontend trend comparison visualization improvements.
+5. Add database-backed saved monitors after privacy and access-control design.
+6. Add scheduled refresh and alert workflows after saved monitors are stable.
+7. Add authentication and role-aware access control.
+8. Add production observability dashboard or monitoring summary.
+9. Add formal NLP/ML evaluation dataset for reaction classification.
+10. Explore NLP-assisted clustering only after the rule-based baseline is evaluated.
 
 ---
 
 ## Project Direction
 
-MedTrek AI should remain focused on healthcare safety intelligence, public-data signal monitoring, source transparency, auditability, and role-based decision support.
+MedTrek AI should remain focused on healthcare public-data safety intelligence, source transparency, auditability, monitoring, and responsible AI guardrails.
 
-It should not become a generic weather app, generic chatbot, or broad unfocused dashboard.
+It should not become a generic chatbot, generic dashboard, or medical advice tool.
 
-### Audit History
+The strongest next product direction is:
 
-MedTrek AI includes an Audit History workflow for reviewing recent public-data searches.
-
-The backend exposes:
-
-- `GET /api/v1/audit-events`
-- `GET /api/v1/audit-events/{audit_id}`
-
-The frontend includes an `Audit` navigation tab where recent audit events can be reviewed in a table with selected event details.
-
-Audit History shows source and transformation metadata such as audit ID, module, source name, endpoint, query parameters, retrieval timestamp, upstream status, record count, transform version, score version, disclaimer version, and error messages when present.
-
-This is public-data traceability only. It is not PHI storage, not clinical record storage, and not medical advice.
-## Manual Saved Monitors v1
-
-MedTrek AI supports a manual saved-monitor workflow using existing RecallRadar, DrugSignal, source metadata, audit history, and safety briefing features.
-
-A reviewer can repeat the same product or drug search over time, record the score, record count, source timestamp, audit ID, and briefing output, then compare future results against previous checks.
-
-This validates the Saved Monitors product direction before backend automation, scheduled refresh, and alerting are implemented.
+```text
+Search → Score → Audit → Briefing → Monitor → Compare → Alert
+```
