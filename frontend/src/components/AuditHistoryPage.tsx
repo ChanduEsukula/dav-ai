@@ -169,7 +169,9 @@ export default function AuditHistoryPage() {
             </button>
 
             <p>
-              Showing {items.length} audit events
+              {moduleFilter === 'all' && statusFilter === 'all' && !searchText.trim()
+                ? `Showing ${items.length} recent audit events`
+                : `Showing ${items.length} matching audit events`}
             </p>
           </div>
         )}
