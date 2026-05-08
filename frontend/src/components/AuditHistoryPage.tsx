@@ -250,6 +250,15 @@ export default function AuditHistoryPage() {
     showCopyMessage('Copied trace summary')
   }
 
+  async function copyAuditLink(item: AuditHistoryItem) {
+    const url = new URL(window.location.href)
+    url.searchParams.set('page', 'audit')
+    url.searchParams.set('audit_id', item.audit_id)
+
+    await navigator.clipboard.writeText(url.toString())
+    showCopyMessage('Copied audit link')
+  }
+
 
   return (
     <main
@@ -417,6 +426,9 @@ export default function AuditHistoryPage() {
                   </button>
                   <button type="button" onClick={() => copyTraceSummary(selectedItem)}>
                     Copy trace summary
+                  </button>
+                  <button type="button" onClick={() => copyAuditLink(selectedItem)}>
+                    Copy audit link
                   </button>
                 </div>
 

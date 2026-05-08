@@ -318,6 +318,41 @@ describe('AuditHistoryPage', () => {
     expect(await screen.findByText('Copied trace summary')).toBeInTheDocument()
   })
 
+  test('copies shareable audit link from the detail card', async () => {
+    const writeText = vi.fn()
+
+    Object.assign(navigator, {
+      clipboard: {
+        writeText,
+      },
+    })
+
+    window.history.replaceState(null, '', '/?page=audit')
+
+    mockedGetAuditEvents.mockResolvedValue({
+      status: 'ok',
+      persistence_available: true,
+      count: mockAuditItems.length,
+      items: mockAuditItems,
+    })
+
+    render(<AuditHistoryPage />)
+
+    await screen.findByText('Selected audit event')
+
+    fireEvent.click(screen.getByText('Copy audit link'))
+
+    expect(writeText).toHaveBeenCalledWith(
+      expect.stringContaining('page=audit'),
+    )
+    expect(writeText).toHaveBeenCalledWith(
+      expect.stringContaining('audit_id=11111111-1111-4111-8111-111111111111'),
+    )
+    expect(await screen.findByText('Copied audit link')).toBeInTheDocument()
+
+    window.history.replaceState(null, '', '/')
+  })
+
   test('exports displayed audit history rows as CSV', async () => {
     const createObjectURL = vi.fn(() => 'blob:mock-audit-csv')
     const revokeObjectURL = vi.fn()
