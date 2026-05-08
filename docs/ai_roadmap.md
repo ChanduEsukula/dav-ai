@@ -92,13 +92,11 @@ Documentation:
 - docs/drug_signal_intelligence_frontend_verification.md
 - docs/drug_signal_intelligence_backend_verification.md
 
-## Next AI Layer: Reaction Classification v1
+## Completed AI Milestone: Reaction Classification v1
 
-The next AI-focused improvement should be reaction classification.
+Reaction Classification v1 groups returned FAERS reaction terms into understandable categories.
 
-Goal:
-
-Group reported reactions into understandable categories such as:
+Categories include:
 
 - Gastrointestinal
 - Neurological
@@ -109,21 +107,24 @@ Group reported reactions into understandable categories such as:
 - Metabolic
 - General / other
 
-Recommended first version:
-
-- Rule-based classification
-- Transparent category mapping
-- Unit tests
-- UI category summary
-- Documentation of limitations
-
-Why rule-based first:
+The first version is intentionally rule-based because it is:
 
 - Safer for healthcare context
 - Easier to explain
 - Easier to test
-- Does not require model hosting
-- Creates a clean baseline before ML models
+- Easier to audit
+- A strong baseline before ML or embedding-based clustering
+
+Implemented components:
+
+- backend/app/scoring/reaction_classifier.py
+- backend/tests/test_reaction_classifier.py
+- frontend/src/components/DrugSignal.tsx
+- docs/drug_signal_reaction_classification_verification.md
+
+Current classifier version:
+
+- reaction-classifier-v0.1
 
 ## Future AI Layer: NLP-Assisted Reaction Clustering
 
