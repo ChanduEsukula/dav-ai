@@ -118,6 +118,45 @@ describe('AuditHistoryPage', () => {
     expect(screen.getAllByText('DrugSignal').length).toBeGreaterThan(0)
   })
 
+
+  test('filters audit history by module, status, and search text', async () => {
+    mockedGetAuditEvents.mockResolvedValue({
+      status: 'ok',
+      persistence_available: true,
+      count: mockAuditItems.length,
+      items: mockAuditItems,
+    })
+
+    render(<AuditHistoryPage />)
+
+    expect(await screen.findByText('Showing 2 of 2 audit events')).toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText('Module'), {
+      target: { value: 'DrugSignal' },
+    })
+
+    expect(screen.getByText('Showing 1 of 2 audit events')).toBeInTheDocument()
+    expect(screen.getAllByText('metformin').length).toBeGreaterThan(0)
+    expect(screen.queryByText('eye drops')).not.toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText('Status'), {
+      target: { value: 'empty' },
+    })
+
+    expect(screen.getByText('No audit events match the current filters.')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByText('Reset filters'))
+
+    expect(screen.getByText('Showing 2 of 2 audit events')).toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText('Search'), {
+      target: { value: 'eye' },
+    })
+
+    expect(screen.getByText('Showing 1 of 2 audit events')).toBeInTheDocument()
+    expect(screen.getAllByText('eye drops').length).toBeGreaterThan(0)
+  })
+
   test('renders empty state when no audit events are returned', async () => {
     mockedGetAuditEvents.mockResolvedValue({
       status: 'ok',

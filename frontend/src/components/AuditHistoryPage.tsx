@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   getAuditEvents,
   type AuditHistoryItem,
 } from '../api/auditEvents'
+
+type ModuleFilter = 'all' | 'RecallRadar' | 'DrugSignal'
+type StatusFilter = 'all' | 'success' | 'empty' | 'error'
 
 function formatTimestamp(value: string) {
   try {
@@ -19,12 +22,45 @@ function formatQueryParams(params: Record<string, unknown>) {
   return JSON.stringify(params, null, 2)
 }
 
+function matchesSearchText(item: AuditHistoryItem, searchText: string) {
+  const normalizedSearch = searchText.trim().toLowerCase()
+
+  if (!normalizedSearch) return true
+
+  return [
+    item.audit_id,
+    item.module,
+    item.query,
+    item.source_name,
+    item.source_id,
+    item.upstream_status,
+    item.score_version ?? '',
+    item.transform_version,
+  ]
+    .join(' ')
+    .toLowerCase()
+    .includes(normalizedSearch)
+}
+
 export default function AuditHistoryPage() {
   const [items, setItems] = useState<AuditHistoryItem[]>([])
   const [selectedItem, setSelectedItem] = useState<AuditHistoryItem | null>(null)
   const [status, setStatus] = useState<string>('idle')
   const [persistenceAvailable, setPersistenceAvailable] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
+  const [moduleFilter, setModuleFilter] = useState<ModuleFilter>('all')
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
+  const [searchText, setSearchText] = useState('')
+
+  const filteredItems = useMemo(() => {
+    return items.filter((item) => {
+      const moduleMatches = moduleFilter === 'all' || item.module === moduleFilter
+      const statusMatches = statusFilter === 'all' || item.upstream_status === statusFilter
+      const searchMatches = matchesSearchText(item, searchText)
+
+      return moduleMatches && statusMatches && searchMatches
+    })
+  }, [items, moduleFilter, searchText, statusFilter])
 
   useEffect(() => {
     let isMounted = true
@@ -72,6 +108,27 @@ export default function AuditHistoryPage() {
     }
   }, [])
 
+  useEffect(() => {
+    if (filteredItems.length === 0) {
+      setSelectedItem(null)
+      return
+    }
+
+    const selectedStillVisible = filteredItems.some(
+      (item) => item.audit_id === selectedItem?.audit_id,
+    )
+
+    if (!selectedStillVisible) {
+      setSelectedItem(filteredItems[0])
+    }
+  }, [filteredItems, selectedItem?.audit_id])
+
+  function resetFilters() {
+    setModuleFilter('all')
+    setStatusFilter('all')
+    setSearchText('')
+  }
+
   return (
     <main
       className="info-page audit-history-page"
@@ -111,11 +168,62 @@ export default function AuditHistoryPage() {
           </div>
         )}
 
+        {status === 'ok' && items.length > 0 && (
+          <div className="audit-filter-panel" aria-label="Audit history filters">
+            <label>
+              Module
+              <select
+                value={moduleFilter}
+                onChange={(event) => setModuleFilter(event.target.value as ModuleFilter)}
+              >
+                <option value="all">All modules</option>
+                <option value="RecallRadar">RecallRadar</option>
+                <option value="DrugSignal">DrugSignal</option>
+              </select>
+            </label>
+
+            <label>
+              Status
+              <select
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value as StatusFilter)}
+              >
+                <option value="all">All statuses</option>
+                <option value="success">success</option>
+                <option value="empty">empty</option>
+                <option value="error">error</option>
+              </select>
+            </label>
+
+            <label className="audit-search-field">
+              Search
+              <input
+                type="search"
+                value={searchText}
+                onChange={(event) => setSearchText(event.target.value)}
+                placeholder="Search query, audit ID, source, or version"
+              />
+            </label>
+
+            <button type="button" onClick={resetFilters}>
+              Reset filters
+            </button>
+
+            <p>
+              Showing {filteredItems.length} of {items.length} audit events
+            </p>
+          </div>
+        )}
+
         {status === 'ok' && items.length === 0 && (
           <p className="muted-text">No audit events found yet.</p>
         )}
 
-        {items.length > 0 && (
+        {status === 'ok' && items.length > 0 && filteredItems.length === 0 && (
+          <p className="muted-text">No audit events match the current filters.</p>
+        )}
+
+        {filteredItems.length > 0 && (
           <div className="audit-history-layout">
             <div className="audit-table-wrap">
               <table className="audit-table">
@@ -132,7 +240,7 @@ export default function AuditHistoryPage() {
                 </thead>
 
                 <tbody>
-                  {items.map((item) => (
+                  {filteredItems.map((item) => (
                     <tr
                       key={item.audit_id}
                       className={selectedItem?.audit_id === item.audit_id ? 'selected' : ''}
