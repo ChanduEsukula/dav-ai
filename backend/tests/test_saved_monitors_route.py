@@ -124,3 +124,150 @@ def test_reject_too_short_name() -> None:
     )
 
     assert response.status_code == 422
+
+
+def test_run_recallradar_saved_monitor(monkeypatch) -> None:
+    async def fake_search_recalls(request, q: str, limit: int):
+        return {
+            "query": q,
+            "count": 5,
+            "audit": {
+                "audit_id": "recall-audit-123",
+            },
+            "results": [
+                {
+                    "risk_score": {
+                        "score": 52,
+                    }
+                }
+            ],
+        }
+
+    monkeypatch.setattr(
+        "app.routes.saved_monitors.search_recalls",
+        fake_search_recalls,
+    )
+
+    create_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Eye drops monitor",
+            "query": "eye drops",
+            "module": "recallradar",
+        },
+    )
+    monitor_id = create_response.json()["id"]
+
+    run_response = client.post(f"/api/v1/saved-monitors/{monitor_id}/run")
+
+    assert run_response.status_code == 200
+    data = run_response.json()
+
+    assert data["status"] == "checked"
+    assert data["latest_audit_id"] == "recall-audit-123"
+    assert data["latest_score"] == 52
+    assert data["latest_record_count"] == 5
+    assert data["previous_score"] is None
+    assert data["previous_record_count"] is None
+    assert data["last_checked_at"] is not None
+
+
+def test_run_drugsignal_saved_monitor(monkeypatch) -> None:
+    async def fake_search_drug_events(request, q: str, limit: int):
+        return {
+            "query": q,
+            "count": 10,
+            "audit": {
+                "audit_id": "drug-audit-123",
+            },
+            "intelligence_score": {
+                "score": 80,
+            },
+        }
+
+    monkeypatch.setattr(
+        "app.routes.saved_monitors.search_drug_events",
+        fake_search_drug_events,
+    )
+
+    create_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Metformin monitor",
+            "query": "metformin",
+            "module": "drugsignal",
+        },
+    )
+    monitor_id = create_response.json()["id"]
+
+    run_response = client.post(f"/api/v1/saved-monitors/{monitor_id}/run")
+
+    assert run_response.status_code == 200
+    data = run_response.json()
+
+    assert data["status"] == "checked"
+    assert data["latest_audit_id"] == "drug-audit-123"
+    assert data["latest_score"] == 80
+    assert data["latest_record_count"] == 10
+    assert data["previous_score"] is None
+    assert data["previous_record_count"] is None
+    assert data["last_checked_at"] is not None
+
+
+def test_run_saved_monitor_preserves_previous_values(monkeypatch) -> None:
+    calls = 0
+
+    async def fake_search_recalls(request, q: str, limit: int):
+        nonlocal calls
+        calls += 1
+
+        if calls == 1:
+            return {
+                "query": q,
+                "count": 5,
+                "audit": {"audit_id": "first-audit"},
+                "results": [{"risk_score": {"score": 52}}],
+            }
+
+        return {
+            "query": q,
+            "count": 7,
+            "audit": {"audit_id": "second-audit"},
+            "results": [{"risk_score": {"score": 61}}],
+        }
+
+    monkeypatch.setattr(
+        "app.routes.saved_monitors.search_recalls",
+        fake_search_recalls,
+    )
+
+    create_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Eye drops monitor",
+            "query": "eye drops",
+            "module": "recallradar",
+        },
+    )
+    monitor_id = create_response.json()["id"]
+
+    first_run = client.post(f"/api/v1/saved-monitors/{monitor_id}/run")
+    second_run = client.post(f"/api/v1/saved-monitors/{monitor_id}/run")
+
+    assert first_run.status_code == 200
+    assert second_run.status_code == 200
+
+    data = second_run.json()
+
+    assert data["latest_audit_id"] == "second-audit"
+    assert data["latest_score"] == 61
+    assert data["latest_record_count"] == 7
+    assert data["previous_score"] == 52
+    assert data["previous_record_count"] == 5
+
+
+def test_run_saved_monitor_not_found() -> None:
+    response = client.post("/api/v1/saved-monitors/00000000-0000-0000-0000-000000000000/run")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Saved monitor not found"

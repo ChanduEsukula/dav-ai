@@ -30,6 +30,11 @@ class InMemorySavedMonitorRepository:
             reverse=True,
         )
 
+    def get(self, monitor_id: UUID) -> SavedMonitor | None:
+        """Return one saved monitor by ID."""
+
+        return self._items.get(monitor_id)
+
     def create(self, payload: SavedMonitorCreate) -> SavedMonitor:
         """Create a saved monitor with default not-checked state."""
 
@@ -49,6 +54,50 @@ class InMemorySavedMonitorRepository:
         )
         self._items[monitor.id] = monitor
         return monitor
+
+    def update_after_run(
+        self,
+        monitor_id: UUID,
+        *,
+        latest_audit_id: str | None,
+        latest_score: int | None,
+        latest_record_count: int | None,
+    ) -> SavedMonitor | None:
+        """Update a saved monitor after a manual run check."""
+
+        existing = self._items.get(monitor_id)
+        if existing is None:
+            return None
+
+        updated = existing.model_copy(
+            update={
+                "previous_score": existing.latest_score,
+                "previous_record_count": existing.latest_record_count,
+                "latest_audit_id": latest_audit_id,
+                "latest_score": latest_score,
+                "latest_record_count": latest_record_count,
+                "last_checked_at": datetime.now(timezone.utc),
+                "status": SavedMonitorStatus.CHECKED,
+            }
+        )
+        self._items[monitor_id] = updated
+        return updated
+
+    def mark_error(self, monitor_id: UUID) -> SavedMonitor | None:
+        """Mark a saved monitor run as failed."""
+
+        existing = self._items.get(monitor_id)
+        if existing is None:
+            return None
+
+        updated = existing.model_copy(
+            update={
+                "last_checked_at": datetime.now(timezone.utc),
+                "status": SavedMonitorStatus.ERROR,
+            }
+        )
+        self._items[monitor_id] = updated
+        return updated
 
     def delete(self, monitor_id: UUID) -> bool:
         """Delete a saved monitor. Returns True when deleted."""
