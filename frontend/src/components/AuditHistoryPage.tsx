@@ -99,6 +99,24 @@ function buildAppliedFilterSummary(
   return filters.length > 0 ? filters.join(' · ') : 'None'
 }
 
+function getAuditIdFromUrl() {
+  return new URLSearchParams(window.location.search).get('audit_id')
+}
+
+function setAuditIdInUrl(auditId: string | null) {
+  const url = new URL(window.location.href)
+
+  url.searchParams.set('page', 'audit')
+
+  if (auditId) {
+    url.searchParams.set('audit_id', auditId)
+  } else {
+    url.searchParams.delete('audit_id')
+  }
+
+  window.history.replaceState(null, '', url.toString())
+}
+
 
 
 export default function AuditHistoryPage() {
@@ -142,7 +160,13 @@ export default function AuditHistoryPage() {
 
         if (response.status === 'ok') {
           setItems(response.items)
-          setSelectedItem(response.items[0] ?? null)
+
+          const auditIdFromUrl = getAuditIdFromUrl()
+          const urlSelectedItem = auditIdFromUrl
+            ? response.items.find((item) => item.audit_id === auditIdFromUrl)
+            : null
+
+          setSelectedItem(urlSelectedItem ?? response.items[0] ?? null)
           return
         }
 
@@ -184,6 +208,12 @@ export default function AuditHistoryPage() {
     setAppliedModuleFilter('all')
     setAppliedStatusFilter('all')
     setAppliedSearchText('')
+    setAuditIdInUrl(null)
+  }
+
+  function selectAuditItem(item: AuditHistoryItem) {
+    setSelectedItem(item)
+    setAuditIdInUrl(item.audit_id)
   }
 
   function exportAuditCsv() {
@@ -357,7 +387,7 @@ export default function AuditHistoryPage() {
                     <tr
                       key={item.audit_id}
                       className={selectedItem?.audit_id === item.audit_id ? 'selected' : ''}
-                      onClick={() => setSelectedItem(item)}
+                      onClick={() => selectAuditItem(item)}
                     >
                       <td>{formatTimestamp(item.created_at)}</td>
                       <td>{item.module}</td>

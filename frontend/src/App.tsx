@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import './styles/animations.css'
 import './styles/navbar.css'
@@ -35,6 +35,15 @@ function App() {
   const [data, setData] = useState<RecallSearchResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+
+    if (params.get('page') === 'audit' || params.has('audit_id')) {
+      setActivePage('audit')
+      setActiveSection('home')
+    }
+  }, [])
 
   async function handleSearch() {
     if (!query.trim() || loading) return

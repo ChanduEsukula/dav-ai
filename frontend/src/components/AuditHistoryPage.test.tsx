@@ -100,6 +100,29 @@ describe('AuditHistoryPage', () => {
     expect(screen.getByText('https://api.fda.gov/drug/enforcement.json')).toBeInTheDocument()
   })
 
+  test('selects audit event from audit_id URL parameter when present', async () => {
+    window.history.replaceState(
+      null,
+      '',
+      '/?page=audit&audit_id=22222222-2222-4222-8222-222222222222',
+    )
+
+    mockedGetAuditEvents.mockResolvedValue({
+      status: 'ok',
+      persistence_available: true,
+      count: mockAuditItems.length,
+      items: mockAuditItems,
+    })
+
+    render(<AuditHistoryPage />)
+
+    expect(await screen.findByText('Selected audit event')).toBeInTheDocument()
+    expect(screen.getByText('22222222-2222-4222-8222-222222222222')).toBeInTheDocument()
+    expect(screen.getAllByText('DrugSignal').length).toBeGreaterThan(0)
+
+    window.history.replaceState(null, '', '/')
+  })
+
   test('clicking another row updates the selected detail card', async () => {
     mockedGetAuditEvents.mockResolvedValue({
       status: 'ok',
@@ -116,6 +139,8 @@ describe('AuditHistoryPage', () => {
     expect(screen.getByText('22222222-2222-4222-8222-222222222222')).toBeInTheDocument()
     expect(screen.getByText('https://api.fda.gov/drug/event.json')).toBeInTheDocument()
     expect(screen.getAllByText('DrugSignal').length).toBeGreaterThan(0)
+    expect(window.location.search).toContain('page=audit')
+    expect(window.location.search).toContain('audit_id=22222222-2222-4222-8222-222222222222')
   })
 
 
