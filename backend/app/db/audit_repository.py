@@ -379,3 +379,110 @@ def get_audit_event_by_id(
         )
 
         return "error", None
+
+
+def get_latest_audit_event_for_query(
+    module: str,
+    query: str,
+    exclude_audit_id: str | None = None,
+    request_id: str | None = None,
+) -> tuple[str, dict[str, Any] | None]:
+    """
+    Return the latest stored audit event for a module/query pair.
+
+    Status values:
+    - saved: database lookup completed
+    - skipped: DATABASE_URL is not configured
+    - error: database read failed
+    """
+    database_url = get_database_url()
+
+    logger.info(
+        "audit_query_latest_started",
+        extra={
+            "event": "audit_query_latest_started",
+            "request_id": request_id,
+            "product_module": module,
+            "query": query,
+            "exclude_audit_id": exclude_audit_id,
+        },
+    )
+
+    if not database_url:
+        logger.info(
+            "audit_query_latest_skipped",
+            extra={
+                "event": "audit_query_latest_skipped",
+                "request_id": request_id,
+                "product_module": module,
+                "query": query,
+                "reason": "database_not_configured",
+            },
+        )
+
+        return "skipped", None
+
+    start_time = time.perf_counter()
+
+    try:
+        with psycopg.connect(database_url, row_factory=dict_row) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    select
+                        audit_id,
+                        module,
+                        query,
+                        record_count,
+                        upstream_status,
+                        created_at
+                    from audit_events
+                    where module = %(module)s
+                      and lower(query) = lower(%(query)s)
+                      and (%(exclude_audit_id)s is null or audit_id::text != %(exclude_audit_id)s)
+                    order by created_at desc
+                    limit 1
+                    """,
+                    {
+                        "module": module,
+                        "query": query,
+                        "exclude_audit_id": exclude_audit_id,
+                    },
+                )
+
+                row = cursor.fetchone()
+
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+
+        logger.info(
+            "audit_query_latest_completed",
+            extra={
+                "event": "audit_query_latest_completed",
+                "request_id": request_id,
+                "product_module": module,
+                "query": query,
+                "status": "saved",
+                "found": row is not None,
+                "duration_ms": duration_ms,
+            },
+        )
+
+        return "saved", row
+
+    except Exception:
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+
+        logger.exception(
+            "audit_query_latest_failed",
+            extra={
+                "event": "audit_query_latest_failed",
+                "request_id": request_id,
+                "product_module": module,
+                "query": query,
+                "status": "error",
+                "duration_ms": duration_ms,
+                "error_category": "audit_query_latest_read_failed",
+            },
+        )
+
+        return "error", None

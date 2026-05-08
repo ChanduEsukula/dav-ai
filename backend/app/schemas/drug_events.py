@@ -24,6 +24,17 @@ class DrugReactionCategory(BaseModel):
     reactions: list[str]
 
 
+class DrugSignalTrendSnapshot(BaseModel):
+    label: str
+    current_record_count: int
+    previous_record_count: int | None = None
+    previous_audit_id: str | None = None
+    previous_created_at: str | None = None
+    explanation: str
+    limitation: str
+    trend_version: str
+
+
 class DrugEventSearchResponse(BaseModel):
     query: str
     count: int
@@ -37,4 +48,5 @@ class DrugEventSearchResponse(BaseModel):
     intelligence_score: DrugSignalIntelligenceScore
     reaction_categories: list[DrugReactionCategory]
     reaction_classifier_version: str
+    trend_snapshot: DrugSignalTrendSnapshot
     top_reactions: list[DrugEventReaction]

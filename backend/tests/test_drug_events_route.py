@@ -93,6 +93,10 @@ def test_search_drug_events_returns_top_reactions():
             "reactions": ["Headache"],
         },
     ]
+    assert body["trend_snapshot"]["label"] == "Insufficient history"
+    assert body["trend_snapshot"]["current_record_count"] == 2
+    assert body["trend_snapshot"]["previous_record_count"] is None
+    assert body["trend_snapshot"]["trend_version"] == "drug-signal-trend-v0.1"
 
 
 def test_search_drug_events_returns_empty_results_for_no_matches():
@@ -115,6 +119,8 @@ def test_search_drug_events_returns_empty_results_for_no_matches():
     assert body["intelligence_score"]["top_reaction_concentration"] == 0.0
     assert body["reaction_categories"] == []
     assert body["reaction_classifier_version"] == "reaction-classifier-v0.1"
+    assert body["trend_snapshot"]["label"] == "Insufficient history"
+    assert body["trend_snapshot"]["current_record_count"] == 0
     assert body["source_name"] == "openFDA Drug Event API"
     assert body["endpoint"] == "https://api.fda.gov/drug/event.json"
     assert body["medical_disclaimer"]
@@ -156,3 +162,45 @@ def test_search_drug_events_rejects_limit_above_maximum():
     response = test_client.get("/api/v1/drug-events/search", params={"q": "metformin", "limit": 26})
 
     assert response.status_code == 422
+
+def test_search_drug_events_returns_trend_snapshot_with_previous_audit(monkeypatch):
+    drug_events.client = MockDrugEventClientSuccess()
+
+    def fake_get_latest_audit_event_for_query(
+        module: str,
+        query: str,
+        exclude_audit_id: str | None,
+        request_id: str | None,
+    ):
+        assert module == "DrugSignal"
+        assert query == "metformin"
+        assert exclude_audit_id is not None
+        assert request_id is not None
+
+        return "saved", {
+            "audit_id": "99999999-9999-4999-8999-999999999999",
+            "module": "DrugSignal",
+            "query": "metformin",
+            "record_count": 1,
+            "upstream_status": "success",
+            "created_at": "2026-05-08T18:00:00Z",
+        }
+
+    monkeypatch.setattr(
+        "app.routes.drug_events.get_latest_audit_event_for_query",
+        fake_get_latest_audit_event_for_query,
+    )
+
+    test_client = TestClient(app)
+    response = test_client.get("/api/v1/drug-events/search", params={"q": "metformin", "limit": 5})
+
+    assert response.status_code == 200
+
+    body = response.json()
+    assert body["trend_snapshot"]["label"] == "Increased"
+    assert body["trend_snapshot"]["current_record_count"] == 2
+    assert body["trend_snapshot"]["previous_record_count"] == 1
+    assert body["trend_snapshot"]["previous_audit_id"] == "99999999-9999-4999-8999-999999999999"
+    assert body["trend_snapshot"]["previous_created_at"] == "2026-05-08T18:00:00Z"
+    assert "most recent stored DrugSignal audit event" in body["trend_snapshot"]["explanation"]
+    assert "stored public-data searches" in body["trend_snapshot"]["limitation"]

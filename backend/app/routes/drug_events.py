@@ -3,7 +3,7 @@ from collections import Counter
 from fastapi import APIRouter, HTTPException, Query, Request
 
 from app.audit.audit_event import build_audit_event
-from app.db.audit_repository import save_audit_event
+from app.db.audit_repository import get_latest_audit_event_for_query, save_audit_event
 from app.schemas.drug_events import DrugEventSearchResponse
 from app.scoring.drug_signal_score import calculate_drug_signal_intelligence_score
 from app.scoring.reaction_classifier import (
@@ -11,6 +11,7 @@ from app.scoring.reaction_classifier import (
     classify_reactions,
 )
 from app.services.openfda_drug_event_client import OpenFDADrugEventClient
+from app.trends.drug_signal_trend import build_drug_signal_trend_snapshot
 
 router = APIRouter()
 client = OpenFDADrugEventClient()
@@ -40,6 +41,25 @@ def _save_audit_event_with_request_id(audit_event, request_id: str | None):
         if "request_id" not in str(exc):
             raise
         return save_audit_event(audit_event)
+
+
+def _get_latest_audit_event_for_query_with_request_id(
+    module: str,
+    query: str,
+    exclude_audit_id: str | None,
+    request_id: str | None,
+):
+    try:
+        return get_latest_audit_event_for_query(
+            module=module,
+            query=query,
+            exclude_audit_id=exclude_audit_id,
+            request_id=request_id,
+        )
+    except TypeError as exc:
+        if "request_id" not in str(exc) and "exclude_audit_id" not in str(exc):
+            raise
+        return get_latest_audit_event_for_query(module=module, query=query)
 
 
 @router.get("/search", response_model=DrugEventSearchResponse)
@@ -90,6 +110,17 @@ async def search_drug_events(
 
         _save_audit_event_with_request_id(audit_event, request_id=request_id)
 
+        _, previous_audit_event = _get_latest_audit_event_for_query_with_request_id(
+            module="DrugSignal",
+            query=q,
+            exclude_audit_id=audit_event["audit_id"],
+            request_id=request_id,
+        )
+        trend_snapshot = build_drug_signal_trend_snapshot(
+            current_record_count=len(raw_results),
+            previous_event=previous_audit_event,
+        )
+
         return {
             "query": q,
             "count": len(raw_results),
@@ -110,6 +141,7 @@ async def search_drug_events(
             "intelligence_score": intelligence_score,
             "reaction_categories": reaction_categories,
             "reaction_classifier_version": REACTION_CLASSIFIER_VERSION,
+            "trend_snapshot": trend_snapshot,
             "top_reactions": top_reactions,
         }
 
