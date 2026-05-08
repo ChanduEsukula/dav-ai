@@ -186,6 +186,37 @@ describe('AuditHistoryPage', () => {
     })
   })
 
+  test('shows applied filter summary after filters are applied', async () => {
+    mockedGetAuditEvents.mockResolvedValue({
+      status: 'ok',
+      persistence_available: true,
+      count: mockAuditItems.length,
+      items: mockAuditItems,
+    })
+
+    render(<AuditHistoryPage />)
+
+    expect(await screen.findByText('Active filters: None')).toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText('Module'), {
+      target: { value: 'RecallRadar' },
+    })
+
+    fireEvent.change(screen.getByLabelText('Status'), {
+      target: { value: 'success' },
+    })
+
+    fireEvent.change(screen.getByLabelText('Search'), {
+      target: { value: 'eye' },
+    })
+
+    fireEvent.click(screen.getByText('Apply filters'))
+
+    expect(
+      await screen.findByText('Active filters: Module = RecallRadar · Status = success · Search = eye'),
+    ).toBeInTheDocument()
+  })
+
   test('applies filters when pressing Enter in the search field', async () => {
     mockedGetAuditEvents.mockResolvedValue({
       status: 'ok',

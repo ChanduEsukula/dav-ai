@@ -382,3 +382,8 @@
   color: #08764f;
   font-weight: 850;
 }
+
+.audit-applied-filter-summary {
+  color: var(--deep-teal) !important;
+  font-weight: 800;
+}

@@ -77,6 +77,28 @@ function buildAuditTraceSummary(item: AuditHistoryItem) {
   ].join('\n')
 }
 
+function buildAppliedFilterSummary(
+  moduleFilter: ModuleFilter,
+  statusFilter: StatusFilter,
+  searchText: string,
+) {
+  const filters = []
+
+  if (moduleFilter !== 'all') {
+    filters.push(`Module = ${moduleFilter}`)
+  }
+
+  if (statusFilter !== 'all') {
+    filters.push(`Status = ${statusFilter}`)
+  }
+
+  if (searchText.trim()) {
+    filters.push(`Search = ${searchText.trim()}`)
+  }
+
+  return filters.length > 0 ? filters.join(' · ') : 'None'
+}
+
 
 
 export default function AuditHistoryPage() {
@@ -92,6 +114,12 @@ export default function AuditHistoryPage() {
   const [appliedStatusFilter, setAppliedStatusFilter] = useState<StatusFilter>('all')
   const [appliedSearchText, setAppliedSearchText] = useState('')
   const [copyMessage, setCopyMessage] = useState('')
+
+  const appliedFilterSummary = buildAppliedFilterSummary(
+    appliedModuleFilter,
+    appliedStatusFilter,
+    appliedSearchText,
+  )
 
   useEffect(() => {
     let isMounted = true
@@ -292,6 +320,10 @@ export default function AuditHistoryPage() {
               {appliedModuleFilter === 'all' && appliedStatusFilter === 'all' && !appliedSearchText.trim()
                 ? `Showing ${items.length} recent audit events`
                 : `Showing ${items.length} matching audit events`}
+            </p>
+
+            <p className="audit-applied-filter-summary">
+              Active filters: {appliedFilterSummary}
             </p>
           </form>
         )}
