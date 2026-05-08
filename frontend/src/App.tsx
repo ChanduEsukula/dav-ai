@@ -21,12 +21,12 @@ import DrugSignal from './components/DrugSignal'
 import DataSourcesPage from './components/DataSourcesPage'
 import AuditHistoryPage from './components/AuditHistoryPage'
 import SystemStatusPage from './components/SystemStatusPage'
+import SavedMonitorsPage from './components/SavedMonitorsPage'
 import FaqPage from './components/FaqPage'
 import AboutPage from './components/AboutPage'
 import InfoPage from './components/InfoPage'
 import type { ActivePage, ActiveSection } from './types/navigation'
 import { infoPages } from './data/infoPages'
-
 
 function getInitialPage(): ActivePage {
   const params = new URLSearchParams(window.location.search)
@@ -36,6 +36,7 @@ function getInitialPage(): ActivePage {
     page === 'sources' ||
     page === 'audit' ||
     page === 'system' ||
+    page === 'saved-monitors' ||
     page === 'about' ||
     page === 'faq' ||
     page === 'help' ||
@@ -168,6 +169,8 @@ function App() {
       {activePage === 'audit' && <AuditHistoryPage />}
 
       {activePage === 'system' && <SystemStatusPage />}
+
+      {activePage === 'saved-monitors' && <SavedMonitorsPage />}
 
       {activePage === 'about' && <AboutPage />}
 

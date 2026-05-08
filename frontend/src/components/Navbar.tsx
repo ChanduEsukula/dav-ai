@@ -67,6 +67,13 @@ function Navbar({
           System
         </button>
 
+        <button
+          className={activePage === 'saved-monitors' ? 'active' : ''}
+          onClick={() => goToPage('saved-monitors')}
+        >
+          Monitors
+        </button>
+
         <button className={activePage === 'about' ? 'active' : ''} onClick={() => goToPage('about')}>
           About
         </button>
