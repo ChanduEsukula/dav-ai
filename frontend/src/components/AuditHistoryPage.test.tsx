@@ -186,6 +186,44 @@ describe('AuditHistoryPage', () => {
     })
   })
 
+  test('exports displayed audit history rows as CSV', async () => {
+    const createObjectURL = vi.fn(() => 'blob:mock-audit-csv')
+    const revokeObjectURL = vi.fn()
+    const click = vi.fn()
+
+    vi.stubGlobal('URL', {
+      createObjectURL,
+      revokeObjectURL,
+    })
+
+    const originalCreateElement = document.createElement.bind(document)
+
+    vi.spyOn(document, 'createElement').mockImplementation((tagName) => {
+      const element = originalCreateElement(tagName)
+
+      if (tagName.toLowerCase() === 'a') {
+        element.click = click
+      }
+
+      return element
+    })
+
+    mockedGetAuditEvents.mockResolvedValue({
+      status: 'ok',
+      persistence_available: true,
+      count: mockAuditItems.length,
+      items: mockAuditItems,
+    })
+
+    render(<AuditHistoryPage />)
+
+    fireEvent.click(await screen.findByText('Export CSV'))
+
+    expect(createObjectURL).toHaveBeenCalledTimes(1)
+    expect(click).toHaveBeenCalledTimes(1)
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:mock-audit-csv')
+  })
+
   test('renders empty state when no audit events are returned', async () => {
     mockedGetAuditEvents.mockResolvedValue({
       status: 'ok',

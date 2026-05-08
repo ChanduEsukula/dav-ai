@@ -22,6 +22,50 @@ function formatQueryParams(params: Record<string, unknown>) {
   return JSON.stringify(params, null, 2)
 }
 
+function escapeCsvValue(value: string | number | null | undefined) {
+  const normalizedValue = value === null || value === undefined ? '' : String(value)
+
+  if (/[",\n]/.test(normalizedValue)) {
+    return `"${normalizedValue.replaceAll('"', '""')}"`
+  }
+
+  return normalizedValue
+}
+
+function buildAuditCsv(items: AuditHistoryItem[]) {
+  const headers = [
+    'created_at',
+    'module',
+    'query',
+    'upstream_status',
+    'record_count',
+    'source_name',
+    'audit_id',
+    'source_id',
+    'transform_version',
+    'score_version',
+  ]
+
+  const rows = items.map((item) => [
+    item.created_at,
+    item.module,
+    item.query,
+    item.upstream_status,
+    item.record_count,
+    item.source_name,
+    item.audit_id,
+    item.source_id,
+    item.transform_version,
+    item.score_version ?? '',
+  ])
+
+  return [
+    headers.join(','),
+    ...rows.map((row) => row.map(escapeCsvValue).join(',')),
+  ].join('\n')
+}
+
+
 export default function AuditHistoryPage() {
   const [items, setItems] = useState<AuditHistoryItem[]>([])
   const [selectedItem, setSelectedItem] = useState<AuditHistoryItem | null>(null)
@@ -99,6 +143,23 @@ export default function AuditHistoryPage() {
     setAppliedStatusFilter('all')
     setAppliedSearchText('')
   }
+
+  function exportAuditCsv() {
+    if (items.length === 0) return
+
+    const csv = buildAuditCsv(items)
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+
+    link.href = url
+    link.download = `medtrek-audit-history-${new Date().toISOString().slice(0, 10)}.csv`
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+  }
+
 
   return (
     <main
@@ -182,6 +243,10 @@ export default function AuditHistoryPage() {
 
             <button type="button" onClick={resetFilters}>
               Reset filters
+            </button>
+
+            <button type="button" onClick={exportAuditCsv}>
+              Export CSV
             </button>
 
             <p>
