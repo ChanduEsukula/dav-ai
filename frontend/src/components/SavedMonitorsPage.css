@@ -1,78 +1,103 @@
 .saved-monitors-page {
+  width: min(1120px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 2rem 0 4rem;
   display: grid;
   gap: 1.5rem;
 }
 
 .saved-monitors-hero {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 1.25rem;
-  padding: 1.5rem;
+  max-width: 760px;
 }
 
 .saved-monitors-hero h1 {
-  margin: 0.25rem 0 0.5rem;
+  margin: 0.25rem 0 0.65rem;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1;
+  color: #0f172a;
 }
 
 .saved-monitors-hero p {
   margin: 0;
-  max-width: 760px;
+  color: #334155;
+  font-size: 1rem;
+  line-height: 1.55;
 }
 
 .eyebrow {
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  opacity: 0.75;
+  color: #087f8c;
 }
 
 .saved-monitor-form {
   display: grid;
-  grid-template-columns: 1.2fr 1.2fr 0.8fr auto;
+  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) minmax(160px, 0.7fr) auto;
   gap: 1rem;
   align-items: end;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 1.1rem;
+  border: 1px solid rgba(15, 118, 110, 0.16);
   border-radius: 1.25rem;
-  padding: 1rem;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(10px);
 }
 
 .saved-monitor-form div {
   display: grid;
-  gap: 0.35rem;
+  gap: 0.45rem;
 }
 
 .saved-monitor-form label {
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #0f172a;
 }
 
 .saved-monitor-form input,
 .saved-monitor-form select {
-  min-height: 2.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 0.75rem;
-  padding: 0 0.75rem;
-  background: rgba(255, 255, 255, 0.08);
-  color: inherit;
+  width: 100%;
+  min-height: 2.85rem;
+  border: 1px solid rgba(15, 118, 110, 0.18);
+  border-radius: 0.9rem;
+  padding: 0 0.85rem;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+  outline: none;
+}
+
+.saved-monitor-form input:focus,
+.saved-monitor-form select:focus {
+  border-color: rgba(8, 127, 140, 0.72);
+  box-shadow: 0 0 0 4px rgba(8, 127, 140, 0.12);
 }
 
 .saved-monitor-form button,
 .saved-monitor-panel-header button,
 .danger-button {
-  min-height: 2.5rem;
-  border: 0;
-  border-radius: 0.75rem;
-  padding: 0 0.9rem;
-  font-weight: 700;
+  min-height: 2.85rem;
+  border-radius: 0.9rem;
+  padding: 0 1rem;
+  font-weight: 800;
   cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
 }
 
-.saved-monitor-form button,
-.saved-monitor-panel-header button {
-  background: #ffffff;
-  color: #111827;
+.saved-monitor-form button {
+  border: 0;
+  background: linear-gradient(135deg, #006b7a, #0891b2);
+  color: white;
+  box-shadow: 0 14px 25px rgba(8, 145, 178, 0.24);
+}
+
+.saved-monitor-form button:hover,
+.saved-monitor-panel-header button:hover,
+.danger-button:hover {
+  transform: translateY(-1px);
 }
 
 .saved-monitor-form button:disabled {
@@ -80,24 +105,19 @@
   cursor: not-allowed;
 }
 
-.danger-button {
-  background: rgba(239, 68, 68, 0.16);
-  color: #fecaca;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
 .saved-monitor-error {
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  border: 1px solid rgba(220, 38, 38, 0.24);
   border-radius: 1rem;
   padding: 0.9rem 1rem;
-  color: #fecaca;
-  background: rgba(239, 68, 68, 0.12);
+  color: #991b1b;
+  background: rgba(254, 226, 226, 0.75);
 }
 
 .saved-monitor-panel {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(15, 118, 110, 0.14);
   border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
   overflow: hidden;
 }
 
@@ -106,17 +126,26 @@
   justify-content: space-between;
   gap: 1rem;
   align-items: center;
-  padding: 1rem;
+  padding: 1.1rem;
+  border-bottom: 1px solid rgba(15, 118, 110, 0.1);
 }
 
 .saved-monitor-panel-header h2 {
   margin: 0;
+  font-size: 1.35rem;
+  color: #0f172a;
+}
+
+.saved-monitor-panel-header button {
+  border: 1px solid rgba(15, 118, 110, 0.18);
+  background: #ffffff;
+  color: #0f172a;
 }
 
 .saved-monitor-muted {
   margin: 0;
-  padding: 1rem;
-  opacity: 0.75;
+  padding: 1.25rem;
+  color: #475569;
 }
 
 .saved-monitor-table-wrap {
@@ -131,28 +160,41 @@
 
 .saved-monitor-table th,
 .saved-monitor-table td {
-  padding: 0.85rem 1rem;
+  padding: 0.9rem 1rem;
   text-align: left;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(15, 118, 110, 0.08);
   vertical-align: top;
+  color: #0f172a;
 }
 
 .saved-monitor-table th {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  opacity: 0.75;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  background: rgba(240, 253, 250, 0.55);
+}
+
+.danger-button {
+  border: 1px solid rgba(220, 38, 38, 0.18);
+  background: rgba(254, 226, 226, 0.78);
+  color: #991b1b;
 }
 
 .saved-monitor-note {
-  border: 1px solid rgba(59, 130, 246, 0.25);
-  border-radius: 1rem;
-  padding: 1rem;
-  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(14, 165, 233, 0.18);
+  border-radius: 1.15rem;
+  padding: 1rem 1.1rem;
+  background: rgba(224, 242, 254, 0.7);
+  color: #0f172a;
 }
 
 @media (max-width: 900px) {
   .saved-monitor-form {
     grid-template-columns: 1fr;
+  }
+
+  .saved-monitor-form button {
+    width: 100%;
   }
 }
