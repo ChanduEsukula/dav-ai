@@ -126,6 +126,36 @@ Current classifier version:
 
 - reaction-classifier-v0.1
 
+## Current Best Next Move
+
+Build DrugSignal Trend Snapshot v1.
+
+Trend Snapshot v1 should compare current DrugSignal output with recent audit history so users can see whether a query is stable, increasing, decreasing, or newly observed.
+
+Recommended v1 inputs:
+
+- Current query
+- Current record count
+- Current intelligence score
+- Current top reactions
+- Current reaction categories
+- Recent audit events for the same query/module
+- Previous record counts
+- Previous timestamps
+- Source and audit IDs
+
+Recommended v1 output:
+
+- Simple trend label: New, Stable, Increased, Decreased, or Insufficient history
+- Latest score and previous score when available
+- Latest record count and previous record count when available
+- Plain-language explanation
+- Safety limitation that trend is based only on stored public-data searches
+
+Why this is the best next AI-focused step:
+
+It adds temporal intelligence and change detection, which fits the MIT-inspired monitoring and situational-awareness direction of MedTrek AI.
+
 ## Future AI Layer: NLP-Assisted Reaction Clustering
 
 After rule-based classification, MedTrek AI can add lightweight NLP clustering.
