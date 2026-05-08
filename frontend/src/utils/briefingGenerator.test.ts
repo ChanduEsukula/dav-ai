@@ -158,6 +158,14 @@ test('generates a DrugSignal briefing without causation claims', () => {
   expect(briefing.role).toBe('clinic')
   expect(briefing.source).toBe('drug_event')
   expect(fullText).toContain('NAUSEA')
+  expect(fullText).toContain('DrugSignal Intelligence score: 57/100 Moderate')
+  expect(fullText).toContain('Review priority: Watch')
+  expect(fullText).toContain('Data confidence: Limited')
+  expect(fullText).toContain('Top reaction concentration: 66.67%')
+  expect(fullText).toContain('Leading reaction category: Gastrointestinal')
+  expect(fullText).toContain('drug-signal-intelligence-v0.1')
+  expect(fullText).toContain('reaction-classifier-v0.1')
+  expect(fullText).toContain('rule-based')
   expect(fullText).toContain('not proof of causation')
   expect(fullText.toLowerCase()).not.toContain('caused by this drug')
   expect(briefing.sourceDetails.auditId).toBe('drug-audit-123')
@@ -172,6 +180,7 @@ test('handles DrugSignal no-results safely', () => {
         ...drugEventResponse.audit,
         record_count: 0,
       },
+      reaction_categories: [],
       top_reactions: [],
     },
     'public_health'
@@ -180,4 +189,7 @@ test('handles DrugSignal no-results safely', () => {
   expect(briefing.role).toBe('public_health')
   expect(briefing.whatWasFound.join(' ')).toContain('No FAERS drug-event records')
   expect(briefing.whatWasFound.join(' ')).toContain('does not prove')
+  expect(briefing.whatWasFound.join(' ')).toContain('DrugSignal Intelligence score')
+  expect(briefing.whatToVerify.join(' ')).toContain('drug-signal-intelligence-v0.1')
+  expect(briefing.whatToVerify.join(' ')).toContain('reaction-classifier-v0.1')
 })

@@ -165,34 +165,39 @@ test('shows successful reaction results with source, disclaimers, and briefing i
   expect(screen.getAllByText(/drug-audit-123/i).length).toBeGreaterThan(0)
   expect(screen.getAllByText(/DrugSignal/i).length).toBeGreaterThan(0)
 
-  expect(screen.getByText(/DrugSignal Intelligence/i)).toBeInTheDocument()
+  expect(screen.getAllByText(/DrugSignal Intelligence/i).length).toBeGreaterThan(0)
   expect(screen.getByText(/57 \/ 100/i)).toBeInTheDocument()
   expect(screen.getByText(/Transparent signal score/i)).toBeInTheDocument()
   expect(screen.getByText('Moderate')).toBeInTheDocument()
   expect(screen.getByText('Watch')).toBeInTheDocument()
   expect(screen.getByText('Limited')).toBeInTheDocument()
   expect(screen.getByText('66.67%')).toBeInTheDocument()
-  expect(screen.getByText('drug-signal-intelligence-v0.1')).toBeInTheDocument()
-  expect(screen.getByText(/not clinical incidence rates/i)).toBeInTheDocument()
+  expect(screen.getAllByText('drug-signal-intelligence-v0.1').length).toBeGreaterThan(0)
+  expect(screen.getAllByText(/not clinical incidence rates/i).length).toBeGreaterThan(0)
 
-  expect(screen.getByText(/Reaction Classification/i)).toBeInTheDocument()
+  expect(screen.getAllByText(/Reaction Classification/i).length).toBeGreaterThan(0)
   expect(screen.getByRole('heading', { name: /Reaction categories/i })).toBeInTheDocument()
   expect(screen.getByText(/Rule-based NLP-style grouping/i)).toBeInTheDocument()
   expect(screen.getByText('Gastrointestinal')).toBeInTheDocument()
   expect(screen.getByText('Neurological')).toBeInTheDocument()
-  expect(screen.getByText(/Classifier version: reaction-classifier-v0.1/i)).toBeInTheDocument()
+  expect(screen.getAllByText(/reaction-classifier-v0.1/i).length).toBeGreaterThan(0)
 
   expect(
     screen.getByRole('heading', { name: /Consumer briefing/i })
   ).toBeInTheDocument()
 
-  expect(screen.getByText(/Safety Briefing Engine v1/i)).toBeInTheDocument()
+  expect(screen.getByText(/Safety Briefing Engine v2/i)).toBeInTheDocument()
 
   expect(screen.getByLabelText(/Briefing role/i)).toBeInTheDocument()
 
   expect(
     screen.getByText(/These are adverse-event reporting patterns only/i)
   ).toBeInTheDocument()
+
+  expect(screen.getByText(/DrugSignal Intelligence score: 57\/100 Moderate/i)).toBeInTheDocument()
+  expect(screen.getByText(/Leading reaction category: Gastrointestinal/i)).toBeInTheDocument()
+  expect(screen.getByText(/Review score version: drug-signal-intelligence-v0.1/i)).toBeInTheDocument()
+  expect(screen.getByText(/Review reaction classifier version: reaction-classifier-v0.1/i)).toBeInTheDocument()
 })
 
 test('shows no-results state with safety language', async () => {
@@ -236,7 +241,7 @@ test('shows no-results state with safety language', async () => {
     screen.getByRole('heading', { name: /Consumer briefing/i })
   ).toBeInTheDocument()
 
-  expect(screen.getByText(/Safety Briefing Engine v1/i)).toBeInTheDocument()
+  expect(screen.getByText(/Safety Briefing Engine v2/i)).toBeInTheDocument()
 
   expect(screen.getByLabelText(/Briefing role/i)).toBeInTheDocument()
 })

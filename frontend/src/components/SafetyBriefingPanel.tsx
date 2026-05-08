@@ -18,7 +18,11 @@ function SafetyBriefingPanel({ briefing }: SafetyBriefingPanelProps) {
     <section className="safety-briefing-panel" aria-label="Safety briefing">
       <div className="briefing-header">
         <div>
-          <p className="eyebrow">Safety Briefing Engine v1</p>
+          <p className="eyebrow">
+            {briefing.source === 'drug_event'
+              ? 'Safety Briefing Engine v2'
+              : 'Safety Briefing Engine v1'}
+          </p>
           <h3>{briefingRoleLabels[briefing.role]} briefing</h3>
         </div>
 
@@ -81,8 +85,8 @@ function BriefingList({ title, items }: BriefingListProps) {
       <h4>{title}</h4>
 
       <ul>
-        {items.map((item) => (
-          <li key={item}>{item}</li>
+        {items.map((item, index) => (
+          <li key={`${title}-${index}-${item}`}>{item}</li>
         ))}
       </ul>
     </div>

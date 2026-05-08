@@ -142,17 +142,43 @@ export function generateDrugEventBriefing(
   role: BriefingRole
 ): SafetyBriefing {
   const topReaction = data.top_reactions[0]
+  const leadingCategory = data.reaction_categories[0]
+  const intelligence = data.intelligence_score
 
   const whatWasFound =
     data.top_reactions.length > 0
       ? [
           `${data.count} FAERS record(s) were reviewed for reporting-pattern context.`,
+          `DrugSignal Intelligence score: ${intelligence.score}/100 ${intelligence.label}.`,
+          `Review priority: ${intelligence.review_priority}. Data confidence: ${intelligence.data_confidence}.`,
+          `Top reaction concentration: ${intelligence.top_reaction_concentration}%.`,
+          leadingCategory
+            ? `Leading reaction category: ${leadingCategory.category} (${leadingCategory.count} report mentions).`
+            : 'No reaction category grouping was available for this result.',
           `Top reported reaction term: ${topReaction.reaction} (${topReaction.count} report mentions).`,
           'These are adverse-event reporting patterns only, not proof of causation.',
         ]
       : [
           'No FAERS drug-event records matched the current search.',
           'No-results output does not prove that a drug is safe or unsafe.',
+          `DrugSignal Intelligence score: ${intelligence.score}/100 ${intelligence.label}.`,
+          `Data confidence: ${intelligence.data_confidence}. Review priority: ${intelligence.review_priority}.`,
+        ]
+
+  const whatToVerify =
+    data.top_reactions.length > 0
+      ? [
+          'Verify the drug name, brand/generic naming, and source query context.',
+          `Review score version: ${intelligence.score_version}.`,
+          `Review reaction classifier version: ${data.reaction_classifier_version}.`,
+          'Review FAERS limitations before interpreting any reported reaction term or category.',
+          'Do not treat reporting patterns as evidence that a drug caused an event.',
+        ]
+      : [
+          'Try searching by generic name, brand name, active ingredient, or alternate spelling.',
+          `Review score version: ${intelligence.score_version}.`,
+          `Review reaction classifier version: ${data.reaction_classifier_version}.`,
+          'Check official FDA/openFDA sources directly if this is a time-sensitive safety concern.',
         ]
 
   const briefing: SafetyBriefing = {
@@ -161,14 +187,11 @@ export function generateDrugEventBriefing(
     title: `${roleSummary(role, data.query)}`,
     summary: roleSummary(role, data.query),
     whatWasFound,
-    whatToVerify: [
-      'Verify the drug name, brand/generic naming, and source query context.',
-      'Review FAERS limitations before interpreting any reported reaction term.',
-      'Do not treat reporting patterns as evidence that a drug caused an event.',
-    ],
+    whatToVerify,
     suggestedReviewChecklist: roleChecklist(role),
     limitations: [
-      data.faers_disclaimer,
+      ...intelligence.limitations,
+      'Reaction classification is rule-based and may group incomplete or ambiguous public adverse-event terms.',
       'FAERS reports may be incomplete, duplicated, delayed, or influenced by reporting behavior.',
       'This briefing is not medical advice, diagnosis, or treatment guidance.',
     ],
