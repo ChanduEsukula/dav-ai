@@ -144,6 +144,9 @@ def save_audit_event(
 def list_audit_events(
     limit: int = 50,
     request_id: str | None = None,
+    module: str | None = None,
+    upstream_status: str | None = None,
+    search_text: str | None = None,
 ) -> tuple[str, list[dict[str, Any]]]:
     """
     Return recent audit events.
@@ -162,6 +165,9 @@ def list_audit_events(
             "event": "audit_list_started",
             "request_id": request_id,
             "limit": safe_limit,
+            "product_module": module,
+            "upstream_status": upstream_status,
+            "search_text": search_text,
         },
     )
 
@@ -183,8 +189,36 @@ def list_audit_events(
     try:
         with psycopg.connect(database_url, row_factory=dict_row) as connection:
             with connection.cursor() as cursor:
+                filters = []
+                params: dict[str, Any] = {"limit": safe_limit}
+
+                if module:
+                    filters.append("module = %(module)s")
+                    params["module"] = module
+
+                if upstream_status:
+                    filters.append("upstream_status = %(upstream_status)s")
+                    params["upstream_status"] = upstream_status
+
+                if search_text:
+                    filters.append(
+                        """
+                        (
+                            query ilike %(search_pattern)s
+                            or audit_id::text ilike %(search_pattern)s
+                            or source_name ilike %(search_pattern)s
+                            or source_id ilike %(search_pattern)s
+                            or transform_version ilike %(search_pattern)s
+                            or coalesce(score_version, '') ilike %(search_pattern)s
+                        )
+                        """
+                    )
+                    params["search_pattern"] = f"%{search_text}%"
+
+                where_clause = f"where {' and '.join(filters)}" if filters else ""
+
                 cursor.execute(
-                    """
+                    f"""
                     select
                         audit_id,
                         module,
@@ -202,10 +236,11 @@ def list_audit_events(
                         error_message,
                         created_at
                     from audit_events
+                    {where_clause}
                     order by created_at desc
-                    limit %s
+                    limit %(limit)s
                     """,
-                    (safe_limit,),
+                    params,
                 )
 
                 rows = cursor.fetchall()

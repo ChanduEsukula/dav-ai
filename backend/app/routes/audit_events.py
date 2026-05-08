@@ -10,11 +10,23 @@ from app.schemas.audit_history import (
 router = APIRouter(prefix="/api/v1/audit-events")
 
 
-def _list_audit_events_with_request_id(limit: int, request_id: str | None):
+def _list_audit_events_with_request_id(
+    limit: int,
+    request_id: str | None,
+    module: str | None = None,
+    upstream_status: str | None = None,
+    search_text: str | None = None,
+):
     try:
-        return list_audit_events(limit=limit, request_id=request_id)
+        return list_audit_events(
+            limit=limit,
+            request_id=request_id,
+            module=module,
+            upstream_status=upstream_status,
+            search_text=search_text,
+        )
     except TypeError as exc:
-        if "request_id" not in str(exc):
+        if "request_id" not in str(exc) and "module" not in str(exc) and "upstream_status" not in str(exc) and "search_text" not in str(exc):
             raise
         return list_audit_events(limit=limit)
 
@@ -33,9 +45,18 @@ def _get_audit_event_by_id_with_request_id(audit_id: str, request_id: str | None
 def get_audit_events(
     request: Request,
     limit: int = Query(default=50, ge=1, le=100),
+    module: str | None = Query(default=None, description="Filter by module, such as RecallRadar or DrugSignal"),
+    upstream_status: str | None = Query(default=None, description="Filter by upstream status, such as success, empty, or error"),
+    q: str | None = Query(default=None, description="Search query, audit ID, source, or version metadata"),
 ) -> AuditHistoryListResponse:
     request_id = getattr(request.state, "request_id", None)
-    persistence_status, rows = _list_audit_events_with_request_id(limit=limit, request_id=request_id)
+    persistence_status, rows = _list_audit_events_with_request_id(
+        limit=limit,
+        request_id=request_id,
+        module=module,
+        upstream_status=upstream_status,
+        search_text=q,
+    )
 
     if persistence_status == "skipped":
         return AuditHistoryListResponse(

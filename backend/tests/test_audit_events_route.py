@@ -196,3 +196,42 @@ def test_list_audit_events_rejects_invalid_limit():
     response = client.get("/api/v1/audit-events?limit=0")
 
     assert response.status_code == 422
+
+
+def test_list_audit_events_passes_filter_params_to_repository(monkeypatch):
+    captured_filters = {}
+
+    def fake_list_audit_events(
+        limit: int = 50,
+        request_id: str | None = None,
+        module: str | None = None,
+        upstream_status: str | None = None,
+        search_text: str | None = None,
+    ):
+        captured_filters["limit"] = limit
+        captured_filters["request_id"] = request_id
+        captured_filters["module"] = module
+        captured_filters["upstream_status"] = upstream_status
+        captured_filters["search_text"] = search_text
+        return "saved", [sample_audit_event()]
+
+    monkeypatch.setattr(
+        "app.routes.audit_events.list_audit_events",
+        fake_list_audit_events,
+    )
+
+    response = client.get(
+        "/api/v1/audit-events?limit=10&module=RecallRadar&upstream_status=success&q=eye"
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["status"] == "ok"
+    assert data["count"] == 1
+    assert captured_filters["limit"] == 10
+    assert captured_filters["module"] == "RecallRadar"
+    assert captured_filters["upstream_status"] == "success"
+    assert captured_filters["search_text"] == "eye"
+    assert captured_filters["request_id"] is not None
