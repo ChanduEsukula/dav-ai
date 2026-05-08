@@ -18,6 +18,12 @@ class DrugSignalIntelligenceScore(BaseModel):
     limitations: list[str]
 
 
+class DrugReactionCategory(BaseModel):
+    category: str
+    count: int
+    reactions: list[str]
+
+
 class DrugEventSearchResponse(BaseModel):
     query: str
     count: int
@@ -29,4 +35,6 @@ class DrugEventSearchResponse(BaseModel):
     faers_disclaimer: str
     audit: AuditSummary
     intelligence_score: DrugSignalIntelligenceScore
+    reaction_categories: list[DrugReactionCategory]
+    reaction_classifier_version: str
     top_reactions: list[DrugEventReaction]

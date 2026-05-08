@@ -6,6 +6,10 @@ from app.audit.audit_event import build_audit_event
 from app.db.audit_repository import save_audit_event
 from app.schemas.drug_events import DrugEventSearchResponse
 from app.scoring.drug_signal_score import calculate_drug_signal_intelligence_score
+from app.scoring.reaction_classifier import (
+    REACTION_CLASSIFIER_VERSION,
+    classify_reactions,
+)
 from app.services.openfda_drug_event_client import OpenFDADrugEventClient
 
 router = APIRouter()
@@ -69,6 +73,7 @@ async def search_drug_events(
             record_count=len(raw_results),
             top_reactions=top_reactions,
         )
+        reaction_categories = classify_reactions(top_reactions)
 
         audit_event = build_audit_event(
             module="DrugSignal",
@@ -103,6 +108,8 @@ async def search_drug_events(
                 "transform_version": audit_event["transform_version"],
             },
             "intelligence_score": intelligence_score,
+            "reaction_categories": reaction_categories,
+            "reaction_classifier_version": REACTION_CLASSIFIER_VERSION,
             "top_reactions": top_reactions,
         }
 
