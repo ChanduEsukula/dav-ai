@@ -4,6 +4,7 @@ import {
   createSavedMonitor,
   deleteSavedMonitor,
   listSavedMonitors,
+  runSavedMonitor,
 } from "../api/savedMonitors";
 import type {
   CreateSavedMonitorPayload,
@@ -39,6 +40,7 @@ export default function SavedMonitorsPage() {
   const [module, setModule] = useState<SavedMonitorModule>("recallradar");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [runningMonitorId, setRunningMonitorId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
 
   async function loadMonitors() {
@@ -100,6 +102,25 @@ export default function SavedMonitorsPage() {
       );
     } catch {
       setErrorMessage("Unable to delete saved monitor.");
+    }
+  }
+
+
+  async function handleRunCheck(monitorId: string) {
+    setErrorMessage("");
+    setRunningMonitorId(monitorId);
+
+    try {
+      const updated = await runSavedMonitor(monitorId);
+      setMonitors((current) =>
+        current.map((monitor) =>
+          monitor.id === monitorId ? updated : monitor,
+        ),
+      );
+    } catch {
+      setErrorMessage("Unable to run saved monitor check.");
+    } finally {
+      setRunningMonitorId(null);
     }
   }
 
@@ -188,7 +209,7 @@ export default function SavedMonitorsPage() {
                   <th>Records</th>
                   <th>Last checked</th>
                   <th>Latest audit</th>
-                  <th>Action</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -203,13 +224,23 @@ export default function SavedMonitorsPage() {
                     <td>{formatDate(monitor.last_checked_at)}</td>
                     <td>{monitor.latest_audit_id ?? "N/A"}</td>
                     <td>
-                      <button
-                        type="button"
-                        className="danger-button"
-                        onClick={() => void handleDelete(monitor.id)}
-                      >
-                        Delete
-                      </button>
+                      <div className="saved-monitor-actions">
+                        <button
+                          type="button"
+                          onClick={() => void handleRunCheck(monitor.id)}
+                          disabled={runningMonitorId === monitor.id}
+                        >
+                          {runningMonitorId === monitor.id ? "Running..." : "Run Check"}
+                        </button>
+
+                        <button
+                          type="button"
+                          className="danger-button"
+                          onClick={() => void handleDelete(monitor.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

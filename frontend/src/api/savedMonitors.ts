@@ -42,3 +42,10 @@ export async function createSavedMonitor(
 export async function deleteSavedMonitor(monitorId: string): Promise<void> {
   await apiClient.delete(`/api/v1/saved-monitors/${monitorId}`)
 }
+
+export async function runSavedMonitor(monitorId: string): Promise<SavedMonitor> {
+  const response = await apiClient.post<SavedMonitor>(
+    `/api/v1/saved-monitors/${monitorId}/run`,
+  )
+  return response.data
+}
