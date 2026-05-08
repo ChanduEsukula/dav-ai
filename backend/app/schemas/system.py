@@ -18,3 +18,29 @@ class SystemStatusResponse(BaseModel):
     database: DatabaseStatus
     sources: SourceStatus
     modules: list[str]
+
+
+class AuditStatusCounts(BaseModel):
+    success: int
+    empty: int
+    error: int
+
+
+class LatestAuditEventSummary(BaseModel):
+    exists: bool
+    audit_id: str | None = None
+    module: str | None = None
+    query: str | None = None
+    upstream_status: str | None = None
+    record_count: int | None = None
+    created_at: str | None = None
+
+
+class DataQualityResponse(BaseModel):
+    status: str
+    database_configured: bool
+    audit_readable: bool
+    source_registry_count: int
+    recent_audit_count: int
+    upstream_status_counts: AuditStatusCounts
+    latest_audit_event: LatestAuditEventSummary
