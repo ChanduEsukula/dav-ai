@@ -73,6 +73,14 @@ def test_search_drug_events_returns_top_reactions():
     assert body["top_reactions"][0] == {"reaction": "Nausea", "count": 2}
     assert body["top_reactions"][1] == {"reaction": "Headache", "count": 1}
 
+    assert body["intelligence_score"]["score"] == 57
+    assert body["intelligence_score"]["label"] == "Moderate"
+    assert body["intelligence_score"]["data_confidence"] == "Limited"
+    assert body["intelligence_score"]["top_reaction_concentration"] == 66.67
+    assert body["intelligence_score"]["review_priority"] == "Watch"
+    assert body["intelligence_score"]["score_version"] == "drug-signal-intelligence-v0.1"
+    assert "do not prove causation" in body["intelligence_score"]["limitations"][0]
+
 
 def test_search_drug_events_returns_empty_results_for_no_matches():
     drug_events.client = MockDrugEventClientEmpty()
@@ -89,6 +97,9 @@ def test_search_drug_events_returns_empty_results_for_no_matches():
     assert body["query"] == "randomfakeproduct123"
     assert body["count"] == 0
     assert body["top_reactions"] == []
+    assert body["intelligence_score"]["label"] == "Low"
+    assert body["intelligence_score"]["data_confidence"] == "Limited"
+    assert body["intelligence_score"]["top_reaction_concentration"] == 0.0
     assert body["source_name"] == "openFDA Drug Event API"
     assert body["endpoint"] == "https://api.fda.gov/drug/event.json"
     assert body["medical_disclaimer"]

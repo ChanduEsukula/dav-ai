@@ -5,6 +5,7 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from app.audit.audit_event import build_audit_event
 from app.db.audit_repository import save_audit_event
 from app.schemas.drug_events import DrugEventSearchResponse
+from app.scoring.drug_signal_score import calculate_drug_signal_intelligence_score
 from app.services.openfda_drug_event_client import OpenFDADrugEventClient
 
 router = APIRouter()
@@ -64,6 +65,11 @@ async def search_drug_events(
             for reaction, count in reaction_counter.most_common(10)
         ]
 
+        intelligence_score = calculate_drug_signal_intelligence_score(
+            record_count=len(raw_results),
+            top_reactions=top_reactions,
+        )
+
         audit_event = build_audit_event(
             module="DrugSignal",
             source_id=payload["source_id"],
@@ -96,6 +102,7 @@ async def search_drug_events(
                 "record_count": audit_event["record_count"],
                 "transform_version": audit_event["transform_version"],
             },
+            "intelligence_score": intelligence_score,
             "top_reactions": top_reactions,
         }
 
