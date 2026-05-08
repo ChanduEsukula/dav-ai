@@ -32,11 +32,25 @@ export type AuditHistoryDetailResponse = {
   message: string | null
 }
 
-export async function getAuditEvents(limit = 50): Promise<AuditHistoryListResponse> {
+export type AuditHistoryFilters = {
+  module?: string
+  upstreamStatus?: string
+  searchText?: string
+}
+
+export async function getAuditEvents(
+  limit = 50,
+  filters: AuditHistoryFilters = {},
+): Promise<AuditHistoryListResponse> {
   const response = await apiClient.get<AuditHistoryListResponse>(
     `/api/v1/audit-events`,
     {
-      params: { limit },
+      params: {
+        limit,
+        module: filters.module,
+        upstream_status: filters.upstreamStatus,
+        q: filters.searchText,
+      },
     },
   )
 

@@ -119,7 +119,7 @@ describe('AuditHistoryPage', () => {
   })
 
 
-  test('filters audit history by module, status, and search text', async () => {
+  test('requests backend-filtered audit history when filters change', async () => {
     mockedGetAuditEvents.mockResolvedValue({
       status: 'ok',
       persistence_available: true,
@@ -129,32 +129,53 @@ describe('AuditHistoryPage', () => {
 
     render(<AuditHistoryPage />)
 
-    expect(await screen.findByText('Showing 2 of 2 audit events')).toBeInTheDocument()
+    expect(await screen.findByText(/Showing\s+2\s+audit events/i)).toBeInTheDocument()
 
     fireEvent.change(screen.getByLabelText('Module'), {
       target: { value: 'DrugSignal' },
     })
 
-    expect(screen.getByText('Showing 1 of 2 audit events')).toBeInTheDocument()
-    expect(screen.getAllByText('metformin').length).toBeGreaterThan(0)
-    expect(screen.queryByText('eye drops')).not.toBeInTheDocument()
-
-    fireEvent.change(screen.getByLabelText('Status'), {
-      target: { value: 'empty' },
+    await waitFor(() => {
+      expect(mockedGetAuditEvents).toHaveBeenLastCalledWith(20, {
+        module: 'DrugSignal',
+        upstreamStatus: undefined,
+        searchText: undefined,
+      })
     })
 
-    expect(screen.getByText('No audit events match the current filters.')).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('Status'), {
+      target: { value: 'success' },
+    })
+
+    await waitFor(() => {
+      expect(mockedGetAuditEvents).toHaveBeenLastCalledWith(20, {
+        module: 'DrugSignal',
+        upstreamStatus: 'success',
+        searchText: undefined,
+      })
+    })
+
+    fireEvent.change(screen.getByLabelText('Search'), {
+      target: { value: 'metformin' },
+    })
+
+    await waitFor(() => {
+      expect(mockedGetAuditEvents).toHaveBeenLastCalledWith(20, {
+        module: 'DrugSignal',
+        upstreamStatus: 'success',
+        searchText: 'metformin',
+      })
+    })
 
     fireEvent.click(screen.getByText('Reset filters'))
 
-    expect(screen.getByText('Showing 2 of 2 audit events')).toBeInTheDocument()
-
-    fireEvent.change(screen.getByLabelText('Search'), {
-      target: { value: 'eye' },
+    await waitFor(() => {
+      expect(mockedGetAuditEvents).toHaveBeenLastCalledWith(20, {
+        module: undefined,
+        upstreamStatus: undefined,
+        searchText: undefined,
+      })
     })
-
-    expect(screen.getByText('Showing 1 of 2 audit events')).toBeInTheDocument()
-    expect(screen.getAllByText('eye drops').length).toBeGreaterThan(0)
   })
 
   test('renders empty state when no audit events are returned', async () => {
