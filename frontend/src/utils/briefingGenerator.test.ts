@@ -72,6 +72,18 @@ const drugEventResponse: DrugEventSearchResponse = {
     record_count: 2,
     transform_version: 'drug-event-transform-v1',
   },
+  intelligence_score: {
+    score: 57,
+    label: 'Moderate',
+    data_confidence: 'Limited',
+    top_reaction_concentration: 66.67,
+    review_priority: 'Watch',
+    score_version: 'drug-signal-intelligence-v0.1',
+    limitations: [
+      'FAERS reports are safety signals only and do not prove causation.',
+      'Scores are based on returned public openFDA records and reaction counts, not clinical incidence rates.',
+    ],
+  },
   top_reactions: [
     {
       reaction: 'NAUSEA',

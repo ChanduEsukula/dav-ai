@@ -14,6 +14,16 @@ export type DrugEventReaction = {
   count: number
 }
 
+export type DrugSignalIntelligenceScore = {
+  score: number
+  label: string
+  data_confidence: string
+  top_reaction_concentration: number
+  review_priority: string
+  score_version: string
+  limitations: string[]
+}
+
 export type DrugEventSearchResponse = {
   query: string
   count: number
@@ -24,6 +34,7 @@ export type DrugEventSearchResponse = {
   medical_disclaimer: string
   faers_disclaimer: string
   audit: AuditSummary
+  intelligence_score: DrugSignalIntelligenceScore
   top_reactions: DrugEventReaction[]
 }
 

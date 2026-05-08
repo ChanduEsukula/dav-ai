@@ -96,6 +96,52 @@ function DrugSignal() {
         )}
 
         {data && (
+          <div className="drug-intelligence-card">
+            <div>
+              <p className="eyebrow">DrugSignal Intelligence</p>
+              <h3>{data.intelligence_score.score} / 100</h3>
+              <p>
+                Transparent signal score based on returned public FAERS records,
+                reaction concentration, reaction diversity, and data confidence.
+              </p>
+            </div>
+
+            <div className="drug-intelligence-grid">
+              <div>
+                <small>Signal strength</small>
+                <span>{data.intelligence_score.label}</span>
+              </div>
+
+              <div>
+                <small>Review priority</small>
+                <span>{data.intelligence_score.review_priority}</span>
+              </div>
+
+              <div>
+                <small>Data confidence</small>
+                <span>{data.intelligence_score.data_confidence}</span>
+              </div>
+
+              <div>
+                <small>Top reaction concentration</small>
+                <span>{data.intelligence_score.top_reaction_concentration}%</span>
+              </div>
+
+              <div>
+                <small>Score version</small>
+                <span>{data.intelligence_score.score_version}</span>
+              </div>
+            </div>
+
+            <ul className="drug-intelligence-limitations">
+              {data.intelligence_score.limitations.map((limitation) => (
+                <li key={limitation}>{limitation}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {data && (
           <div className="drug-audit-panel">
             <div className="metadata-grid">
               <div>

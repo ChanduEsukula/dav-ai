@@ -36,6 +36,18 @@ const mockResponse: DrugEventSearchResponse = {
     record_count: 2,
     transform_version: 'drug-event-transform-v1',
   },
+  intelligence_score: {
+    score: 57,
+    label: 'Moderate',
+    data_confidence: 'Limited',
+    top_reaction_concentration: 66.67,
+    review_priority: 'Watch',
+    score_version: 'drug-signal-intelligence-v0.1',
+    limitations: [
+      'FAERS reports are safety signals only and do not prove causation.',
+      'Scores are based on returned public openFDA records and reaction counts, not clinical incidence rates.',
+    ],
+  },
   top_reactions: [
     {
       reaction: 'NAUSEA',
@@ -140,6 +152,16 @@ test('shows successful reaction results with source, disclaimers, and briefing i
   expect(screen.getAllByText(/drug-audit-123/i).length).toBeGreaterThan(0)
   expect(screen.getAllByText(/DrugSignal/i).length).toBeGreaterThan(0)
 
+  expect(screen.getByText(/DrugSignal Intelligence/i)).toBeInTheDocument()
+  expect(screen.getByText(/57 \/ 100/i)).toBeInTheDocument()
+  expect(screen.getByText(/Transparent signal score/i)).toBeInTheDocument()
+  expect(screen.getByText('Moderate')).toBeInTheDocument()
+  expect(screen.getByText('Watch')).toBeInTheDocument()
+  expect(screen.getByText('Limited')).toBeInTheDocument()
+  expect(screen.getByText('66.67%')).toBeInTheDocument()
+  expect(screen.getByText('drug-signal-intelligence-v0.1')).toBeInTheDocument()
+  expect(screen.getByText(/not clinical incidence rates/i)).toBeInTheDocument()
+
   expect(
     screen.getByRole('heading', { name: /Consumer briefing/i })
   ).toBeInTheDocument()
@@ -162,6 +184,14 @@ test('shows no-results state with safety language', async () => {
     audit: {
       ...mockResponse.audit,
       record_count: 0,
+    },
+    intelligence_score: {
+      ...mockResponse.intelligence_score,
+      score: 10,
+      label: 'Low',
+      data_confidence: 'Limited',
+      top_reaction_concentration: 0,
+      review_priority: 'Low',
     },
     top_reactions: [],
   })
