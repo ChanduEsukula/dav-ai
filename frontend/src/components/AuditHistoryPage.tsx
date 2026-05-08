@@ -65,6 +65,19 @@ function buildAuditCsv(items: AuditHistoryItem[]) {
   ].join('\n')
 }
 
+function buildAuditTraceSummary(item: AuditHistoryItem) {
+  return [
+    `Audit ID: ${item.audit_id}`,
+    `Module: ${item.module}`,
+    `Query: ${item.query}`,
+    `Source: ${item.source_name}`,
+    `Status: ${item.upstream_status}`,
+    `Records: ${item.record_count}`,
+    `Created: ${item.created_at}`,
+  ].join('\n')
+}
+
+
 
 export default function AuditHistoryPage() {
   const [items, setItems] = useState<AuditHistoryItem[]>([])
@@ -158,6 +171,14 @@ export default function AuditHistoryPage() {
     link.click()
     link.remove()
     URL.revokeObjectURL(url)
+  }
+
+  async function copyAuditId(item: AuditHistoryItem) {
+    await navigator.clipboard.writeText(item.audit_id)
+  }
+
+  async function copyTraceSummary(item: AuditHistoryItem) {
+    await navigator.clipboard.writeText(buildAuditTraceSummary(item))
   }
 
 
@@ -316,6 +337,15 @@ export default function AuditHistoryPage() {
               <aside className="audit-detail-card">
                 <p className="eyebrow">Selected audit event</p>
                 <h3>{selectedItem.module}</h3>
+
+                <div className="audit-detail-actions">
+                  <button type="button" onClick={() => copyAuditId(selectedItem)}>
+                    Copy audit ID
+                  </button>
+                  <button type="button" onClick={() => copyTraceSummary(selectedItem)}>
+                    Copy trace summary
+                  </button>
+                </div>
 
                 <dl>
                   <div>

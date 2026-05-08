@@ -221,6 +221,45 @@ describe('AuditHistoryPage', () => {
     })
   })
 
+  test('copies audit ID and trace summary from the detail card', async () => {
+    const writeText = vi.fn()
+
+    Object.assign(navigator, {
+      clipboard: {
+        writeText,
+      },
+    })
+
+    mockedGetAuditEvents.mockResolvedValue({
+      status: 'ok',
+      persistence_available: true,
+      count: mockAuditItems.length,
+      items: mockAuditItems,
+    })
+
+    render(<AuditHistoryPage />)
+
+    await screen.findByText('Selected audit event')
+
+    fireEvent.click(screen.getByText('Copy audit ID'))
+
+    expect(writeText).toHaveBeenCalledWith('11111111-1111-4111-8111-111111111111')
+
+    fireEvent.click(screen.getByText('Copy trace summary'))
+
+    expect(writeText).toHaveBeenLastCalledWith(
+      [
+        'Audit ID: 11111111-1111-4111-8111-111111111111',
+        'Module: RecallRadar',
+        'Query: eye drops',
+        'Source: openFDA Drug Enforcement API',
+        'Status: success',
+        'Records: 1',
+        'Created: 2026-05-05T00:08:55.761053Z',
+      ].join('\n'),
+    )
+  })
+
   test('exports displayed audit history rows as CSV', async () => {
     const createObjectURL = vi.fn(() => 'blob:mock-audit-csv')
     const revokeObjectURL = vi.fn()
