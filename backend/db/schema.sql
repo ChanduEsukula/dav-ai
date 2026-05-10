@@ -81,3 +81,51 @@ on conflict (source_id) do update set
     description = excluded.description,
     update_cadence = excluded.update_cadence,
     updated_at = now();
+-- Saved Monitors v2
+-- Stores repeatable public-data monitor definitions and latest manual run state.
+-- No personal health information should be stored in this table.
+
+create table if not exists saved_monitors (
+    id uuid primary key,
+    name text not null,
+    query text not null,
+    module text not null,
+    created_at timestamptz not null default now(),
+    last_checked_at timestamptz,
+    latest_audit_id uuid,
+    latest_score integer,
+    previous_score integer,
+    latest_record_count integer,
+    previous_record_count integer,
+    status text not null default 'not_checked',
+
+    constraint saved_monitors_module_check
+        check (module in ('recallradar', 'drugsignal')),
+
+    constraint saved_monitors_status_check
+        check (status in ('not_checked', 'checked', 'error')),
+
+    constraint saved_monitors_latest_score_check
+        check (latest_score is null or latest_score >= 0),
+
+    constraint saved_monitors_previous_score_check
+        check (previous_score is null or previous_score >= 0),
+
+    constraint saved_monitors_latest_record_count_check
+        check (latest_record_count is null or latest_record_count >= 0),
+
+    constraint saved_monitors_previous_record_count_check
+        check (previous_record_count is null or previous_record_count >= 0)
+);
+
+create index if not exists idx_saved_monitors_module
+    on saved_monitors(module);
+
+create index if not exists idx_saved_monitors_status
+    on saved_monitors(status);
+
+create index if not exists idx_saved_monitors_created_at
+    on saved_monitors(created_at desc);
+
+create index if not exists idx_saved_monitors_last_checked_at
+    on saved_monitors(last_checked_at desc);
