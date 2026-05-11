@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import './styles/animations.css'
 import './styles/navbar.css'
@@ -73,6 +73,19 @@ function App() {
   const [data, setData] = useState<RecallSearchResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    function handlePopState() {
+      setActivePage(getInitialPage())
+      setActiveSection('home')
+    }
+
+    window.addEventListener('popstate', handlePopState)
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+    }
+  }, [])
 
   async function handleSearch() {
     if (!query.trim() || loading) return

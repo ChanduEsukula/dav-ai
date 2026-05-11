@@ -220,3 +220,18 @@
   opacity: 0.65;
   cursor: not-allowed;
 }
+
+.audit-link-button {
+  min-height: 2.35rem;
+  border: 1px solid rgba(8, 127, 140, 0.2);
+  border-radius: 0.75rem;
+  padding: 0 0.8rem;
+  background: rgba(224, 242, 254, 0.8);
+  color: #075985;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.audit-link-button:hover {
+  transform: translateY(-1px);
+}

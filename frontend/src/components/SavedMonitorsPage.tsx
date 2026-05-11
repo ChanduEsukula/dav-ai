@@ -33,6 +33,14 @@ function formatNullableNumber(value: number | null): string {
   return value === null ? "N/A" : String(value);
 }
 
+function openAuditDetail(auditId: string) {
+  const url = new URL(window.location.href);
+  url.searchParams.set("page", "audit");
+  url.searchParams.set("audit_id", auditId);
+  window.history.replaceState(null, "", url.toString());
+  window.dispatchEvent(new PopStateEvent("popstate"));
+}
+
 export default function SavedMonitorsPage() {
   const [monitors, setMonitors] = useState<SavedMonitor[]>([]);
   const [name, setName] = useState("");
@@ -222,7 +230,19 @@ export default function SavedMonitorsPage() {
                     <td>{formatNullableNumber(monitor.latest_score)}</td>
                     <td>{formatNullableNumber(monitor.latest_record_count)}</td>
                     <td>{formatDate(monitor.last_checked_at)}</td>
-                    <td>{monitor.latest_audit_id ?? "N/A"}</td>
+                    <td>
+                      {monitor.latest_audit_id ? (
+                        <button
+                          type="button"
+                          className="audit-link-button"
+                          onClick={() => openAuditDetail(monitor.latest_audit_id as string)}
+                        >
+                          View Audit
+                        </button>
+                      ) : (
+                        "N/A"
+                      )}
+                    </td>
                     <td>
                       <div className="saved-monitor-actions">
                         <button
