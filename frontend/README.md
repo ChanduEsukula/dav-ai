@@ -10,6 +10,10 @@ The current frontend supports:
 - DrugSignal
 - Safety Briefing Engine v1
 - Data Sources page
+- Audit History page
+- System Status / Data Quality page
+- Saved Monitors v2 foundation
+- Request ID propagation through the shared Axios client
 - About / FAQ / placeholder support pages
 - Frontend tests with Vitest and React Testing Library
 
@@ -58,13 +62,17 @@ DrugSignal allows users to search public openFDA Drug Event / FAERS records and 
 - Top reported reaction terms
 - Relative reaction-count bars
 - Record count
+- DrugSignal Intelligence Score v1
+- Signal strength, review priority, data confidence, and top reaction concentration
+- Reaction Classification v1
+- DrugSignal Trend Snapshot v1
 - Source metadata
 - Audit details
 - FAERS causation disclaimer
 - Medical safety disclaimer
 - Role-based safety briefing
 
-Important: FAERS reports are reporting patterns only. They do not prove causation.
+Important: FAERS adverse-event reports are reporting patterns only. They do not prove that a drug caused a reaction.
 
 ### Safety Briefing Engine v1
 
@@ -100,6 +108,58 @@ Current source categories include:
 - openFDA Drug Enforcement API
 - openFDA Drug Event API
 
+### Audit History
+
+The Audit History page displays recent persisted public-data audit events when backend audit persistence is configured.
+
+Current Audit History UI support includes:
+
+- Recent audit event table
+- Selected audit detail panel
+- Module/status/search filters
+- Applied filter summary
+- CSV export
+- Copy audit ID
+- Copy trace summary
+- Copy audit link
+- Audit detail URL state
+
+Audit History is for public-data traceability only. It is not clinical record storage.
+
+### System Status / Data Quality
+
+The System Status page provides operational transparency into the backend and audit persistence state.
+
+Current System Status / Data Quality UI support includes:
+
+- Backend API status
+- Database configured status
+- Audit readable status
+- Registered source count
+- Recent audit count
+- Upstream status counts
+- Latest audit event summary when available
+
+This is operational transparency, not a full production observability dashboard with alerts, SLOs, or metrics dashboards.
+
+### Saved Monitors
+
+The Saved Monitors page is a v2 foundation for repeatable public-data searches.
+
+Current Saved Monitors UI support includes:
+
+- Create repeatable RecallRadar or DrugSignal monitor definitions
+- List saved monitors
+- Delete saved monitors
+- Manually run a monitor check
+- Show latest score, record count, last checked timestamp, and latest audit link when available
+
+Saved Monitors is not yet scheduled monitoring or alerting. It does not yet include authentication/RBAC, scheduled refresh, automated notifications, or briefing history.
+
+### Request ID Propagation
+
+The shared Axios API client attaches an `X-Request-ID` header to outgoing backend requests. This helps connect frontend actions with backend request logs and response headers during debugging.
+
 ---
 
 ## Backend Requirement
@@ -125,7 +185,11 @@ Current frontend test coverage includes:
 - App smoke test
 - RecallRadar component tests
 - DrugSignal component tests
+- Audit History component tests
+- System Status / Data Quality component tests
 - Safety briefing generator tests
+
+Saved Monitors frontend tests should be added as the v2 foundation matures.
 
 Current local frontend status:
 

@@ -21,7 +21,7 @@ MedTrek AI currently includes:
 - **Safety Briefing Engine** for deterministic role-aware public-data safety briefings.
 - **Source Registry** for public data source transparency.
 - **Audit History** for persisted source/search traceability.
-- **Manual Saved Monitors v1** workflow documentation.
+- **Saved Monitors v2 foundation** for saving repeatable RecallRadar/DrugSignal searches and manually running checks.
 - **System/Data Quality views** for operational and audit-persistence visibility.
 - **Supabase/PostgreSQL audit persistence** through a fail-soft backend repository.
 - **GitHub Actions CI** for backend tests, frontend tests, frontend lint, and frontend production build.
@@ -46,6 +46,16 @@ The current product foundation is built around five ideas:
 5. **Healthcare safety guardrails**: The app avoids medical advice, diagnosis, treatment guidance, medication-change recommendations, and FAERS causation claims.
 
 MedTrek AI is intentionally focused on public-data traceability, operational readiness, and healthcare safety boundaries rather than generic chatbot behavior.
+
+---
+
+## Feature Status
+
+| Status | Features |
+|---|---|
+| Implemented | RecallRadar; DrugSignal; Audit History; System Status / Data Quality; Data Sources; deterministic safety briefings. |
+| Partial | Saved Monitors v2 foundation; persistence/audit hardening; deployment hardening. |
+| Planned | Scheduled saved monitor refresh; automated alerts; authentication/RBAC; briefing persistence/history; raw snapshot/hash-based reproducibility; Regional Health Pulse; EnviroHealth Signal; CNN/OCR label scanner; RAG/LLM upgrades. |
 
 ---
 
@@ -148,7 +158,7 @@ DrugSignal briefing output has been upgraded to use DrugSignal Intelligence Scor
 - Supabase/PostgreSQL `audit_events` table.
 - Audit History list/detail API.
 - Audit History frontend page with filters, detail panel, CSV export, and copy actions.
-- Manual Saved Monitors v1 workflow documentation.
+- Saved Monitors v2 foundation for creating, listing, deleting, and manually running repeatable RecallRadar or DrugSignal monitors.
 - System Status page.
 - Data Quality panel.
 - Request ID propagation and `X-Request-ID` response headers.
@@ -165,7 +175,7 @@ DrugSignal briefing output has been upgraded to use DrugSignal Intelligence Scor
 
 - User accounts.
 - Authentication and role-based access control.
-- Database-backed saved monitors.
+- Production-hardened saved monitors with confirmed migration coverage, authentication/RBAC, scheduled refresh, and alerts.
 - Scheduled monitor refresh.
 - Automated alerts.
 - Briefing persistence.
@@ -180,7 +190,7 @@ DrugSignal briefing output has been upgraded to use DrugSignal Intelligence Scor
 
 ## Current Engineering Status
 
-The active MVP modules are RecallRadar, DrugSignal, Audit History, Safety Briefing Engine, Source Registry, System Status, Data Quality, and Manual Saved Monitors v1 documentation.
+The active MVP modules are RecallRadar, DrugSignal, Audit History, Safety Briefing Engine, Source Registry, System Status, Data Quality, and the Saved Monitors v2 foundation.
 
 Current engineering support includes:
 
@@ -192,6 +202,7 @@ Current engineering support includes:
 - Trend snapshot helper using stored audit history.
 - Audit event construction and persistence.
 - PostgreSQL/Supabase schema and Alembic migration.
+- Saved monitor repository, API, frontend page, and backend route tests.
 - Request ID middleware and frontend request ID propagation.
 - Production verification documentation for deployed behavior.
 - Backend and frontend tests.
@@ -410,31 +421,38 @@ docs/drug_signal_briefing_v2_verification.md
 
 ---
 
-## Manual Saved Monitors v1
+## Saved Monitors
 
-Manual Saved Monitors v1 is a documented workflow that demonstrates how MedTrek AI can already support repeatable public-data safety monitoring behavior before database-backed saved monitors, scheduled refresh, or automated alerts are implemented.
+Saved Monitors v2 foundation is partially implemented. It lets users save repeatable RecallRadar or DrugSignal monitor definitions, list saved monitors, delete saved monitors, and manually run checks that update latest audit, score, record-count, and last-checked fields.
 
-Exact workflow:
+Current manual workflow:
 
 ```text
-Search → Score → Audit ID → Briefing → Repeat later → Compare change
+Save monitor → Run check → Review latest score/count/audit ID → Run again later → Compare latest and previous values
 ```
 
-The workflow uses existing MedTrek AI capabilities:
+The current implementation supports:
 
-- Search RecallRadar or DrugSignal.
-- Review score, source, record count, and safety briefing.
-- Copy or record the audit ID.
-- Repeat the same search later.
-- Compare score, record count, audit details, briefing language, and trend snapshot when available.
+- Saved monitor definitions for RecallRadar or DrugSignal.
+- Manual run checks from the backend and frontend.
+- Latest and previous score fields.
+- Latest and previous record-count fields.
+- Latest audit ID and last-checked timestamp.
+- A link from the latest saved-monitor audit ID to Audit History when an audit ID is available.
 
-Documentation:
+Saved Monitors is not production-ready monitoring yet. It does not include scheduled refresh, automated alerts, user accounts, authentication/RBAC, briefing history, or a completed production privacy model.
+
+Important implementation note:
+
+```text
+saved_monitors is present in backend/db/schema.sql and repository code, but Alembic migration coverage must be reconciled before calling saved monitors production-ready.
+```
+
+Historical documentation:
 
 ```text
 docs/manual_saved_monitors_v1.md
 ```
-
-Manual Saved Monitors v1 is not the same as automated saved monitors. It is a bridge workflow that proves the product direction before adding accounts, saved monitor records, scheduled refresh, and alerts.
 
 ---
 
@@ -511,11 +529,22 @@ GET /api/v1/audit-events/{audit_id}
 
 Audit History is for public-data traceability only. It is not clinical record storage.
 
+Current Saved Monitors endpoints:
+
+```text
+GET /api/v1/saved-monitors
+POST /api/v1/saved-monitors
+POST /api/v1/saved-monitors/{monitor_id}/run
+DELETE /api/v1/saved-monitors/{monitor_id}
+```
+
+Saved Monitors endpoints are a v2 foundation for repeatable public-data searches and manual run checks. They are not scheduled monitoring or alerting.
+
 ---
 
 ## Persistence
 
-MedTrek AI includes Supabase/PostgreSQL audit persistence.
+MedTrek AI includes Supabase/PostgreSQL audit persistence and a partial Saved Monitors persistence foundation.
 
 Current persistence support includes:
 
@@ -523,11 +552,19 @@ Current persistence support includes:
 - Alembic migration for `source_registry` and `audit_events`.
 - `backend/app/db/database.py`.
 - `backend/app/db/audit_repository.py`.
+- `backend/app/db/saved_monitor_repository.py`.
 - Fail-soft audit event inserts.
 - Audit event reads for Audit History.
 - Latest audit event lookup for DrugSignal Trend Snapshot v1.
 - Source metadata stored in `source_registry`.
 - Search/source audit events stored in `audit_events`.
+- Saved monitor definitions and latest manual run state when the `saved_monitors` table exists.
+
+Important Saved Monitors persistence limitation:
+
+```text
+saved_monitors is present in backend/db/schema.sql and repository code, but Alembic migration coverage must be reconciled before calling saved monitors production-ready.
+```
 
 The current persistence layer stores:
 
@@ -545,6 +582,7 @@ The current persistence layer stores:
 - Disclaimer version.
 - Error message when applicable.
 - Created timestamp.
+- Saved monitor name, query, module, status, latest/previous score, latest/previous record count, latest audit ID, and last-checked timestamp when Saved Monitors persistence is available.
 
 The current persistence layer does **not** store:
 
@@ -555,6 +593,7 @@ The current persistence layer does **not** store:
 - Uploaded images.
 - Private medical notes.
 - User accounts or authentication records.
+- Scheduled monitor jobs or alert delivery state.
 
 Database credentials must be stored only in local or deployment environment variables. Do not commit real credentials to GitHub.
 
@@ -616,9 +655,10 @@ Users should verify official source records and consult qualified healthcare pro
 ### Persistence
 
 - Supabase PostgreSQL.
-- SQL schema for source registry and audit events.
-- Alembic migration.
+- SQL schema for source registry, audit events, and saved monitors.
+- Alembic migration for source registry and audit events.
 - Fail-soft audit persistence repository.
+- Partial saved monitor repository with SQL schema support; migration coverage still needs reconciliation.
 
 ### CI/CD
 
@@ -673,6 +713,10 @@ GET /api/v1/drug-events/search
 GET /api/v1/sources
 GET /api/v1/audit-events
 GET /api/v1/audit-events/{audit_id}
+GET /api/v1/saved-monitors
+POST /api/v1/saved-monitors
+POST /api/v1/saved-monitors/{monitor_id}/run
+DELETE /api/v1/saved-monitors/{monitor_id}
 ```
 
 Additional operational endpoints:
@@ -826,6 +870,7 @@ Backend test coverage includes:
 - Audit History API behavior.
 - System Status and Data Quality API behavior.
 - Request ID middleware behavior.
+- Saved Monitors backend foundation behavior.
 
 Run frontend tests:
 
@@ -849,6 +894,8 @@ Frontend test coverage includes:
 - Safety briefing generator behavior.
 - Audit History filters, copy actions, CSV export, and URL state.
 - System Status / Data Quality page behavior.
+
+Saved Monitors frontend tests should be added as the v2 foundation matures.
 
 Run frontend lint and production build:
 
@@ -920,10 +967,10 @@ Recommended next steps:
 2. Refresh roadmap/docs as features move from planned to implemented.
 3. Improve Trend Snapshot examples using repeated-query audit history.
 4. Add frontend trend comparison visualization improvements.
-5. Add database-backed saved monitors after privacy and access-control design.
+5. Harden Saved Monitors v2 foundation with migration coverage, frontend tests, privacy review, and clearer persistence verification.
 6. Add scheduled refresh and alert workflows after saved monitors are stable.
 7. Add authentication and role-aware access control.
-8. Add production observability dashboard or monitoring summary.
+8. Add a production observability dashboard or monitoring summary beyond current request tracing and operational transparency.
 9. Add formal NLP/ML evaluation dataset for reaction classification.
 10. Explore NLP-assisted clustering only after the rule-based baseline is evaluated.
 

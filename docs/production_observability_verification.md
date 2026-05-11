@@ -1,4 +1,4 @@
-# Production Observability Verification
+# Production Request Tracing and Audit Persistence Verification
 
 Date verified: 2026-05-07  
 Commit verified: 67a9c4a Add structured operational logging  
@@ -6,9 +6,11 @@ Backend: https://medtrek-ai.onrender.com
 
 ## Summary
 
-Production observability was verified after the structured operational logging milestone.
+Production request tracing, operational transparency, health checks, and audit persistence were verified after the structured operational logging milestone.
 
 The deployed backend successfully returned request IDs, reused a custom incoming X-Request-ID, completed a live RecallRadar openFDA search, persisted the audit event to Supabase, and returned the newly created event through Audit History.
+
+This document does not verify a full production observability stack. Dashboards, alerting, SLOs, metrics aggregation, and incident workflows remain separate future hardening work unless documented elsewhere.
 
 ## Checks performed
 
@@ -96,8 +98,8 @@ request -> request ID middleware -> RecallRadar route -> openFDA Drug Enforcemen
 
 ## Current status
 
-The production backend is healthy, traceable, and audit-persistent.
+The production backend was verified as healthy, request-traceable, and audit-persistent at the time of this check.
 
 ## Follow-up recommendation
 
-Next engineering step should be frontend request ID propagation, so browser requests can generate or preserve X-Request-ID values and make frontend-to-backend debugging easier.
+Frontend request ID propagation was added in a later milestone. The next hardening step is to connect request tracing and audit persistence with broader operational monitoring, such as dashboards, alerts, and incident workflows.

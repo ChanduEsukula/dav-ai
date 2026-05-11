@@ -68,6 +68,8 @@ Because the app summarizes public FDA/openFDA safety data, every result should b
 
 ## Current Database Tables
 
+MedTrek AI has Alembic migration tooling, and the initial migration creates `source_registry` and `audit_events`. The SQL schema also includes newer Saved Monitors fields, so migration/schema drift must be reconciled before treating all persistence features as production-ready.
+
 ### source_registry
 
 Stores source metadata.
@@ -173,6 +175,8 @@ Audit trail data must not contain personal health information.
 
 The MVP should only store public-data queries and source metadata. If user accounts or saved monitors are added later, privacy controls must be designed before storing user-specific health interests.
 
+Saved Monitors v2 foundation now exists for repeatable public-data monitor definitions and manual run checks. It still needs migration coverage, monitor-run audit events, privacy controls, and scheduled refresh design before it should be treated as production-ready monitoring.
+
 ---
 
 ## Known Gaps
@@ -180,12 +184,12 @@ The MVP should only store public-data queries and source metadata. If user accou
 Current audit architecture does not yet include:
 
 - Briefing persistence
-- Saved monitor audit events
+- Saved monitor run audit events
 - Scheduled ingestion audit events
 - Change detection history
 - Raw upstream snapshot storage
-- Formal migration system
-- Production observability/logging
+- Full migration/schema alignment for newer tables such as `saved_monitors`
+- Full production observability with dashboards, alerts, or SLOs
 - PHI-safe user-specific privacy model
 
 ---
@@ -194,10 +198,10 @@ Current audit architecture does not yet include:
 
 1. Keep current audit metadata visible in API responses and UI.
 2. Keep fail-soft audit persistence stable.
-3. Update README/docs to reflect Safety Briefing Engine v1.
-4. Add Docker/deployment preparation next.
-5. Add migration tooling before expanding database schema.
-6. Add saved monitors only after deployment and privacy boundaries are clearer.
+3. Keep README/docs aligned with implemented features and partial features.
+4. Reconcile Alembic migration coverage with the current SQL schema.
+5. Add monitor-run audit events for Saved Monitors v2 manual checks.
+6. Harden Saved Monitors v2 with migration coverage, privacy controls, and scheduled refresh design.
 
 ## Audit History API and UI
 

@@ -42,7 +42,7 @@
 
 ## Security Follow-Up
 
-The Supabase database password should be rotated because it was exposed during deployment troubleshooting. After rotation, update Render `DATABASE_URL` and redeploy the backend.
+Open unless confirmed completed: the Supabase database password should be rotated because it was exposed during deployment troubleshooting. After rotation, update Render `DATABASE_URL` and redeploy the backend.
 
 ## Current Status
 

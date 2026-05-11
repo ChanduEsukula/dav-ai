@@ -9,6 +9,8 @@ The project is intentionally not a generic medical chatbot. Its AI direction is 
 Current AI-style capabilities include:
 
 - DrugSignal Intelligence Score v1
+- Reaction Classification v1
+- DrugSignal Trend Snapshot v1
 - Safety briefing generation
 - Source transparency
 - Audit history
@@ -126,35 +128,31 @@ Current classifier version:
 
 - reaction-classifier-v0.1
 
-## Current Best Next Move
+## Completed AI Milestone: DrugSignal Trend Snapshot v1
 
-Build DrugSignal Trend Snapshot v1.
+DrugSignal Trend Snapshot v1 compares the current DrugSignal result with recent stored audit history when previous matching audit events are available.
 
-Trend Snapshot v1 should compare current DrugSignal output with recent audit history so users can see whether a query is stable, increasing, decreasing, or newly observed.
-
-Recommended v1 inputs:
+Current v1 inputs:
 
 - Current query
 - Current record count
-- Current intelligence score
-- Current top reactions
-- Current reaction categories
-- Recent audit events for the same query/module
-- Previous record counts
-- Previous timestamps
-- Source and audit IDs
+- Recent audit event for the same query/module when available
+- Previous record count
+- Previous timestamp
+- Previous audit ID
 
-Recommended v1 output:
+Current v1 output:
 
-- Simple trend label: New, Stable, Increased, Decreased, or Insufficient history
-- Latest score and previous score when available
-- Latest record count and previous record count when available
+- Simple trend label such as Increased, Decreased, Stable, or Insufficient history
+- Current record count
+- Previous record count when available
+- Previous audit ID and timestamp when available
 - Plain-language explanation
-- Safety limitation that trend is based only on stored public-data searches
+- Safety limitation that trend is based only on stored public-data searches in MedTrek AI
 
-Why this is the best next AI-focused step:
+Why this matters:
 
-It adds temporal intelligence and change detection, which fits the MIT-inspired monitoring and situational-awareness direction of MedTrek AI.
+It adds an early temporal intelligence layer and supports the MIT-inspired monitoring and situational-awareness direction of MedTrek AI. It is still limited because it depends on MedTrek AI's stored audit history, not all FDA activity.
 
 ## Future AI Layer: NLP-Assisted Reaction Clustering
 
@@ -239,15 +237,15 @@ This would strengthen the MIT-style situational awareness direction.
 
 1. Keep DrugSignal Intelligence Score v1 stable.
 2. Verify production behavior after deploys.
-3. Add AI roadmap documentation.
-4. Prepare demo narrative for DrugSignal Intelligence.
+3. Keep Reaction Classification v1 and DrugSignal Trend Snapshot v1 documented as implemented baselines.
+4. Add examples and test fixtures that make current scoring, classification, and trend behavior easier to review.
 
 ### Next
 
-1. Add Reaction Classification v1.
-2. Show reaction category summary in DrugSignal.
-3. Add backend tests for category classification.
-4. Document the classification rules and limitations.
+1. Evaluate and harden Reaction Classification v1 with test fixtures, examples, and future ML/NLP evaluation criteria.
+2. Improve DrugSignal Trend Snapshot examples using repeated-query audit history.
+3. Add clearer comparison language for score, record-count, and category changes where supported.
+4. Keep FAERS limitations visible anywhere DrugSignal intelligence is described.
 
 ### Later
 
@@ -268,6 +266,6 @@ Built MedTrek AI, a deployed healthcare safety intelligence platform using React
 
 ## Current Best Next Move
 
-Build Reaction Classification v1 for DrugSignal.
+Evaluate and harden Reaction Classification v1 with test fixtures, examples, and future ML/NLP evaluation criteria.
 
-This is the best next AI-focused step because it adds real NLP-style intelligence while staying explainable, testable, and healthcare-safe.
+This is the best next AI-focused step because Reaction Classification v1 is already implemented as a rule-based baseline. The next maturity step is to prove where it works, document where it is limited, and prepare a responsible path toward NLP-assisted clustering without weakening explainability or healthcare safety boundaries.

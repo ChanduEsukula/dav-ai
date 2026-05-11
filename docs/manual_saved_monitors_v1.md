@@ -2,9 +2,11 @@
 
 Date: May 8, 2026
 
+Historical/manual workflow note: this document describes the manual monitor workflow before the Saved Monitors v2 foundation. Current code now includes saved monitor definitions and manual run checks, but scheduled refresh and alerts remain planned.
+
 ## Purpose
 
-Manual Saved Monitors v1 demonstrates how MedTrek AI can support recurring public-data safety monitoring before building database-backed saved monitors, scheduled refresh, or automated alerts.
+Manual Saved Monitors v1 demonstrates how MedTrek AI can support recurring public-data safety monitoring. It was written before the current Saved Monitors v2 foundation added saved monitor definitions and manual run checks.
 
 The goal is to prove the workflow manually using the current RecallRadar, DrugSignal, Audit History, source metadata, and Safety Briefing features.
 
@@ -45,20 +47,14 @@ Manual Saved Monitors v1 shows the product direction clearly:
 - Briefings convert raw public data into role-aware safety summaries.
 - No-result cases are handled responsibly without claiming that a product is safe.
 
-## Future Saved Monitors v2
+## Saved Monitors v2 Direction
 
-A future automated Saved Monitors feature can convert this manual workflow into a real product module with:
+The current Saved Monitors v2 foundation has started converting this manual workflow into a product module. It now includes saved query name, module type, latest/previous score fields, latest/previous record-count fields, latest audit ID, and last-checked timestamp for manual runs.
 
-- saved query name
-- module type
-- previous record count
-- latest record count
-- previous score
-- latest score
+Production-ready monitoring still needs:
+
 - score change
-- latest audit ID
 - previous audit ID
-- last checked timestamp
 - scheduled refresh
 - alert status
 - role-specific briefing history
@@ -71,4 +67,4 @@ The reviewer can also search “baby formula” and see that no matching records
 
 In DrugSignal, a search for “metformin” returns a high signal score, reaction categories, top reported reactions, trend snapshot status, source metadata, and an audit ID.
 
-This proves the core monitoring loop before database-backed saved monitors and automated alerts are implemented.
+This proves the core monitoring loop while Saved Monitors v2 continues toward production-ready persistence, scheduled refresh, and automated alerts.
