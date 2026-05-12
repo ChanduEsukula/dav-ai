@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, HTTPException, Query, Request
 
 from app.audit.audit_event import build_audit_event
@@ -36,14 +38,46 @@ def _save_audit_event_with_request_id(audit_event, request_id: str | None):
         return save_audit_event(audit_event)
 
 
+def _persist_recall_error_audit(
+    *,
+    query: str,
+    limit: int,
+    error_message: str,
+    request_id: str | None,
+):
+    audit_event = build_audit_event(
+        module="RecallRadar",
+        source_id="openfda-drug-enforcement",
+        source_name="openFDA Drug Enforcement API",
+        endpoint="https://api.fda.gov/drug/enforcement.json",
+        query=query,
+        query_params={"q": query, "limit": limit},
+        retrieval_timestamp=datetime.now(timezone.utc).isoformat(),
+        upstream_status="error",
+        record_count=0,
+        transform_version="recall-transform-v0.1",
+        score_version="recall-risk-v0.1",
+        error_message=error_message,
+    )
+
+    try:
+        _save_audit_event_with_request_id(audit_event, request_id=request_id)
+    except Exception:
+        # Do not mask the original upstream failure with an audit persistence failure.
+        return None
+
+    return audit_event
+
+
 @router.get("/search", response_model=RecallSearchResponse)
 async def search_recalls(
     request: Request,
     q: str = Query(..., min_length=2, description="Drug, product, brand, or recall keyword"),
     limit: int = Query(10, ge=1, le=25),
 ):
+    request_id = getattr(request.state, "request_id", None)
+
     try:
-        request_id = getattr(request.state, "request_id", None)
         payload = await _search_drug_recalls_with_request_id(query=q, limit=limit, request_id=request_id)
         raw_results = payload["raw"].get("results", [])
         upstream_status = "empty" if not raw_results else "success"
@@ -109,10 +143,17 @@ async def search_recalls(
         }
 
     except Exception as exc:
+        _persist_recall_error_audit(
+            query=q,
+            limit=limit,
+            error_message=str(exc),
+            request_id=request_id,
+        )
+
         raise HTTPException(
             status_code=502,
             detail={
                 "message": "Unable to retrieve recall data from openFDA.",
                 "error": str(exc),
             },
-        )
+        ) from exc
