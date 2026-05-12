@@ -2,9 +2,23 @@
 
 **Healthcare safety intelligence from public FDA signals.**
 
-MedTrek AI is a full-stack healthcare public-data safety intelligence prototype. It turns public FDA/openFDA recall and adverse-event data into source-aware, explainable review workflows with audit trails, versioned scoring, reaction classification, trend snapshots, and deterministic role-based safety briefings.
+MedTrek AI is a full-stack healthcare public-data safety intelligence prototype. It turns public FDA/openFDA recall and adverse-event data into source-aware, explainable review workflows with audit trails, versioned scoring, reaction classification, trend snapshots, deterministic role-based safety briefings, and repeatable saved-monitor workflows.
 
 This project is an MVP and portfolio-grade engineering prototype. It is not a medical device, not clinical decision support, and not a replacement for official FDA, CDC, clinician, pharmacist, or emergency guidance.
+
+---
+
+## Recent Milestone: Saved Monitors v2.1
+
+Saved Monitors v2.1 adds a monitoring workflow foundation to MedTrek AI. Users can save repeatable RecallRadar or DrugSignal searches, manually run checks, persist monitor state with Supabase/PostgreSQL, compare latest and previous results, view change indicators, prevent duplicate monitors, and open related Audit History events for traceability.
+
+This milestone was verified through backend tests, frontend tests, production build checks, GitHub Actions CI, and manual browser verification.
+
+See:
+
+```text
+docs/saved_monitors_v2_1_release_checkpoint.md
+```
 
 ---
 
@@ -21,9 +35,9 @@ MedTrek AI currently includes:
 - **Safety Briefing Engine** for deterministic role-aware public-data safety briefings.
 - **Source Registry** for public data source transparency.
 - **Audit History** for persisted source/search traceability.
-- **Saved Monitors v2 foundation** for saving repeatable RecallRadar/DrugSignal searches and manually running checks.
+- **Saved Monitors v2.1** for saved repeatable searches, manual run checks, latest/previous comparison, change indicators, duplicate prevention, and audit linking.
 - **System/Data Quality views** for operational and audit-persistence visibility.
-- **Supabase/PostgreSQL audit persistence** through a fail-soft backend repository.
+- **Supabase/PostgreSQL audit and saved-monitor persistence** through fail-soft backend repositories.
 - **GitHub Actions CI** for backend tests, frontend tests, frontend lint, and frontend production build.
 - **Production deployment verification docs** for Vercel frontend, Render backend, and Supabase PostgreSQL.
 
@@ -53,13 +67,13 @@ MedTrek AI is intentionally focused on public-data traceability, operational rea
 
 | Status | Features |
 |---|---|
-| Implemented | RecallRadar; DrugSignal; Audit History; System Status / Data Quality; Data Sources; deterministic safety briefings. |
-| Partial | Saved Monitors v2 foundation; persistence/audit hardening; deployment hardening. |
-| Planned | Scheduled saved monitor refresh; automated alerts; authentication/RBAC; briefing persistence/history; raw snapshot/hash-based reproducibility; Regional Health Pulse; EnviroHealth Signal; CNN/OCR label scanner; RAG/LLM upgrades. |
+| Implemented | RecallRadar; DrugSignal; Audit History; System Status / Data Quality; Data Sources; deterministic safety briefings; Saved Monitors v2.1 manual monitoring workflow. |
+| Partial | Deployment hardening; production observability; authentication/RBAC planning. |
+| Planned | Scheduled saved monitor refresh; automated alerts; authentication/RBAC; briefing persistence/history; saved monitor run history; raw snapshot/hash-based reproducibility; Regional Health Pulse; EnviroHealth Signal; CNN/OCR label scanner; RAG/LLM upgrades. |
 
 ---
 
-## Current MVP: RecallRadar, DrugSignal, Audit History, and Safety Briefings
+## Current MVP: RecallRadar, DrugSignal, Audit History, Safety Briefings, and Saved Monitors
 
 ### RecallRadar
 
@@ -130,6 +144,42 @@ Briefings are generated from structured RecallRadar and DrugSignal response data
 
 DrugSignal briefing output has been upgraded to use DrugSignal Intelligence Score v1 and Reaction Classification v1, with source/audit details and limitations kept visible.
 
+### Saved Monitors v2.1
+
+Saved Monitors v2.1 lets users save repeatable RecallRadar or DrugSignal searches and manually run checks over time.
+
+Current manual workflow:
+
+```text
+Save monitor → Run check → Review latest score/count/audit ID → Run again later → Compare latest and previous values
+```
+
+The current implementation supports:
+
+- Saved monitor definitions for RecallRadar or DrugSignal.
+- Supabase/PostgreSQL persistence when configured.
+- Local fail-soft fallback when persistence is unavailable.
+- Manual run checks from the backend and frontend.
+- Latest and previous score fields.
+- Latest and previous record-count fields.
+- Change indicators for score and record-count movement.
+- `Score N/A` and `Records N/A` when no previous values exist.
+- `Score unchanged` and `Records unchanged` when values match across runs.
+- Latest audit ID and last-checked timestamp.
+- A link from the latest saved-monitor audit ID to Audit History.
+- Duplicate prevention by module and normalized query.
+- Clear frontend duplicate-monitor error display.
+
+Saved Monitors is not scheduled monitoring yet. It does not include scheduled refresh, automated alerts, user accounts, authentication/RBAC, briefing history, saved monitor run history, or alert delivery preferences.
+
+Documentation:
+
+```text
+docs/saved_monitors_manual_verification.md
+docs/saved_monitors_v2_1_release_checkpoint.md
+docs/manual_saved_monitors_v1.md
+```
+
 ---
 
 ## Current MVP Status
@@ -156,9 +206,11 @@ DrugSignal briefing output has been upgraded to use DrugSignal Intelligence Scor
 - Fail-soft audit persistence boundary.
 - Supabase/PostgreSQL `source_registry` table.
 - Supabase/PostgreSQL `audit_events` table.
+- Supabase/PostgreSQL `saved_monitors` table.
 - Audit History list/detail API.
 - Audit History frontend page with filters, detail panel, CSV export, and copy actions.
-- Saved Monitors v2 foundation for creating, listing, deleting, and manually running repeatable RecallRadar or DrugSignal monitors.
+- Saved Monitors v2.1 for creating, listing, deleting, duplicate prevention, and manually running repeatable RecallRadar or DrugSignal monitors.
+- Saved monitor latest/previous comparison and change indicators.
 - System Status page.
 - Data Quality panel.
 - Request ID propagation and `X-Request-ID` response headers.
@@ -175,10 +227,11 @@ DrugSignal briefing output has been upgraded to use DrugSignal Intelligence Scor
 
 - User accounts.
 - Authentication and role-based access control.
-- Production-hardened saved monitors with confirmed migration coverage, authentication/RBAC, scheduled refresh, and alerts.
 - Scheduled monitor refresh.
 - Automated alerts.
 - Briefing persistence.
+- Saved monitor run history beyond latest/previous fields.
+- Alert delivery preferences.
 - Formal ML model training.
 - Embedding search or clustering model.
 - Formal classifier evaluation dataset.
@@ -190,7 +243,7 @@ DrugSignal briefing output has been upgraded to use DrugSignal Intelligence Scor
 
 ## Current Engineering Status
 
-The active MVP modules are RecallRadar, DrugSignal, Audit History, Safety Briefing Engine, Source Registry, System Status, Data Quality, and the Saved Monitors v2 foundation.
+The active MVP modules are RecallRadar, DrugSignal, Audit History, Safety Briefing Engine, Source Registry, System Status, Data Quality, and Saved Monitors v2.1.
 
 Current engineering support includes:
 
@@ -201,8 +254,10 @@ Current engineering support includes:
 - Rule-based reaction classification module.
 - Trend snapshot helper using stored audit history.
 - Audit event construction and persistence.
-- PostgreSQL/Supabase schema and Alembic migration.
-- Saved monitor repository, API, frontend page, and backend route tests.
+- PostgreSQL/Supabase schema and Alembic migrations.
+- Saved monitor repository, API, frontend page, and backend/frontend tests.
+- Saved monitor duplicate prevention.
+- Saved monitor change indicators.
 - Request ID middleware and frontend request ID propagation.
 - Production verification documentation for deployed behavior.
 - Backend and frontend tests.
@@ -211,13 +266,13 @@ Current engineering support includes:
 Current backend test status:
 
 ```bash
-45 passed
+76 passed
 ```
 
 Current frontend test status:
 
 ```bash
-27 passed
+49 passed
 ```
 
 ---
@@ -421,41 +476,6 @@ docs/drug_signal_briefing_v2_verification.md
 
 ---
 
-## Saved Monitors
-
-Saved Monitors v2 foundation is partially implemented. It lets users save repeatable RecallRadar or DrugSignal monitor definitions, list saved monitors, delete saved monitors, and manually run checks that update latest audit, score, record-count, and last-checked fields.
-
-Current manual workflow:
-
-```text
-Save monitor → Run check → Review latest score/count/audit ID → Run again later → Compare latest and previous values
-```
-
-The current implementation supports:
-
-- Saved monitor definitions for RecallRadar or DrugSignal.
-- Manual run checks from the backend and frontend.
-- Latest and previous score fields.
-- Latest and previous record-count fields.
-- Latest audit ID and last-checked timestamp.
-- A link from the latest saved-monitor audit ID to Audit History when an audit ID is available.
-
-Saved Monitors is not production-ready monitoring yet. It does not include scheduled refresh, automated alerts, user accounts, authentication/RBAC, briefing history, or a completed production privacy model.
-
-Important implementation note:
-
-```text
-saved_monitors is present in backend/db/schema.sql and repository code, but Alembic migration coverage must be reconciled before calling saved monitors production-ready.
-```
-
-Historical documentation:
-
-```text
-docs/manual_saved_monitors_v1.md
-```
-
----
-
 ## Sources Registry
 
 MedTrek AI includes a backend source registry to make public-data usage transparent and auditable.
@@ -499,6 +519,7 @@ The backend currently supports:
 - Audit History filters.
 - Audit detail URL state.
 - Audit copy/export actions in the frontend.
+- Saved monitor audit linking after successful manual monitor runs.
 
 The compact public audit summary includes:
 
@@ -538,18 +559,18 @@ POST /api/v1/saved-monitors/{monitor_id}/run
 DELETE /api/v1/saved-monitors/{monitor_id}
 ```
 
-Saved Monitors endpoints are a v2 foundation for repeatable public-data searches and manual run checks. They are not scheduled monitoring or alerting.
+Saved Monitors endpoints support repeatable public-data searches and manual run checks. They are not scheduled monitoring or alerting yet.
 
 ---
 
 ## Persistence
 
-MedTrek AI includes Supabase/PostgreSQL audit persistence and a partial Saved Monitors persistence foundation.
+MedTrek AI includes Supabase/PostgreSQL audit persistence and saved monitor persistence.
 
 Current persistence support includes:
 
 - `backend/db/schema.sql`.
-- Alembic migration for `source_registry` and `audit_events`.
+- Alembic migrations for `source_registry`, `audit_events`, and `saved_monitors`.
 - `backend/app/db/database.py`.
 - `backend/app/db/audit_repository.py`.
 - `backend/app/db/saved_monitor_repository.py`.
@@ -558,13 +579,7 @@ Current persistence support includes:
 - Latest audit event lookup for DrugSignal Trend Snapshot v1.
 - Source metadata stored in `source_registry`.
 - Search/source audit events stored in `audit_events`.
-- Saved monitor definitions and latest manual run state when the `saved_monitors` table exists.
-
-Important Saved Monitors persistence limitation:
-
-```text
-saved_monitors is present in backend/db/schema.sql and repository code, but Alembic migration coverage must be reconciled before calling saved monitors production-ready.
-```
+- Saved monitor definitions and latest manual run state stored in `saved_monitors`.
 
 The current persistence layer stores:
 
@@ -582,7 +597,7 @@ The current persistence layer stores:
 - Disclaimer version.
 - Error message when applicable.
 - Created timestamp.
-- Saved monitor name, query, module, status, latest/previous score, latest/previous record count, latest audit ID, and last-checked timestamp when Saved Monitors persistence is available.
+- Saved monitor name, query, module, status, latest/previous score, latest/previous record count, latest audit ID, and last-checked timestamp.
 
 The current persistence layer does **not** store:
 
@@ -656,9 +671,9 @@ Users should verify official source records and consult qualified healthcare pro
 
 - Supabase PostgreSQL.
 - SQL schema for source registry, audit events, and saved monitors.
-- Alembic migration for source registry and audit events.
+- Alembic migrations for source registry, audit events, and saved monitors.
 - Fail-soft audit persistence repository.
-- Partial saved monitor repository with SQL schema support; migration coverage still needs reconciliation.
+- Fail-soft saved monitor repository.
 
 ### CI/CD
 
@@ -833,7 +848,9 @@ Production safety checks:
 - Confirm DrugSignal search works from the deployed frontend.
 - Confirm Audit History can read persisted events.
 - Confirm System/Data Quality views load.
+- Confirm Saved Monitors can create, list, run, compare, and delete monitors.
 - Confirm Supabase audit rows are created after successful searches.
+- Confirm Supabase saved monitor rows are created after saved monitor creation.
 - Confirm CORS only allows trusted frontend origins.
 - Confirm no real `.env` files or secrets are committed.
 
@@ -851,7 +868,7 @@ pytest
 Current backend test status:
 
 ```bash
-45 passed
+76 passed
 ```
 
 Backend test coverage includes:
@@ -870,7 +887,10 @@ Backend test coverage includes:
 - Audit History API behavior.
 - System Status and Data Quality API behavior.
 - Request ID middleware behavior.
-- Saved Monitors backend foundation behavior.
+- Saved Monitors backend behavior.
+- Saved monitor duplicate prevention.
+- Saved monitor manual run checks.
+- Saved monitor latest/previous value preservation.
 
 Run frontend tests:
 
@@ -882,7 +902,7 @@ npm test
 Current frontend test status:
 
 ```bash
-27 passed
+49 passed
 ```
 
 Frontend test coverage includes:
@@ -894,8 +914,7 @@ Frontend test coverage includes:
 - Safety briefing generator behavior.
 - Audit History filters, copy actions, CSV export, and URL state.
 - System Status / Data Quality page behavior.
-
-Saved Monitors frontend tests should be added as the v2 foundation matures.
+- Saved Monitors loading, empty state, creation, duplicate error handling, validation, run checks, latest/previous values, change indicators, delete confirmation, audit linking, and error states.
 
 Run frontend lint and production build:
 
@@ -911,7 +930,7 @@ GitHub Actions CI runs backend tests, frontend tests, frontend lint, and fronten
 
 ## Manual Persistence Verification
 
-Manual Supabase/PostgreSQL verification has been documented for audit persistence.
+Manual Supabase/PostgreSQL verification has been documented for audit persistence and saved monitor persistence.
 
 Verified persisted audit rows include:
 
@@ -919,7 +938,15 @@ Verified persisted audit rows include:
 - RecallRadar search audit event.
 - DrugSignal search audit event.
 
-Expected rows appear in the Supabase `audit_events` table with module, source ID, query, upstream status, record count, transform version, score version when applicable, disclaimer version, and timestamps.
+Verified saved monitor persistence includes:
+
+- Saved monitor creation.
+- Saved monitor list retrieval after backend restart.
+- Manual saved monitor run check.
+- Latest/previous score persistence.
+- Latest/previous record-count persistence.
+- Latest audit ID persistence.
+- Last checked timestamp persistence.
 
 Related docs:
 
@@ -927,6 +954,8 @@ Related docs:
 docs/persistence_plan.md
 docs/audit_trail_design.md
 docs/production_observability_verification.md
+docs/saved_monitors_manual_verification.md
+docs/saved_monitors_v2_1_release_checkpoint.md
 ```
 
 ---
@@ -953,6 +982,8 @@ docs/drug_signal_reaction_classification_verification.md
 docs/drug_signal_briefing_v2_verification.md
 docs/drug_signal_trend_snapshot_verification.md
 docs/manual_saved_monitors_v1.md
+docs/saved_monitors_manual_verification.md
+docs/saved_monitors_v2_1_release_checkpoint.md
 ```
 
 These docs support reproducibility, reviewer confidence, and production-readiness tracking.
@@ -963,11 +994,11 @@ These docs support reproducibility, reviewer confidence, and production-readines
 
 Recommended next steps:
 
-1. Keep RecallRadar, DrugSignal, Audit History, Source Registry, System/Data Quality, and Safety Briefing Engine stable.
+1. Keep RecallRadar, DrugSignal, Audit History, Source Registry, System/Data Quality, Safety Briefing Engine, and Saved Monitors v2.1 stable.
 2. Refresh roadmap/docs as features move from planned to implemented.
 3. Improve Trend Snapshot examples using repeated-query audit history.
 4. Add frontend trend comparison visualization improvements.
-5. Harden Saved Monitors v2 foundation with migration coverage, frontend tests, privacy review, and clearer persistence verification.
+5. Add saved monitor detail page and run history.
 6. Add scheduled refresh and alert workflows after saved monitors are stable.
 7. Add authentication and role-aware access control.
 8. Add a production observability dashboard or monitoring summary beyond current request tracing and operational transparency.
