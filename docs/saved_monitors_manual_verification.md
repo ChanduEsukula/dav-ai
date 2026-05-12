@@ -157,3 +157,37 @@ Observed result:
 - Validation message after form reset was expected when Save Monitor was clicked with empty fields.
 
 Duplicate saved monitor verification: Passed.
+
+## Saved Monitors v2.1 Change Indicator Verification
+
+Date verified: 2026-05-12  
+Environment: Local development  
+Frontend: http://localhost:5173  
+Backend: http://127.0.0.1:8000  
+
+Manual browser verification confirmed the Saved Monitors v2.1 UI renders latest/previous comparison fields and change indicators.
+
+Verified behavior:
+
+- Saved Monitors page shows `Saved Monitors v2.1`.
+- Monitor list includes a `Change` column.
+- New unchecked monitors show `Score N/A` and `Records N/A`.
+- After running a RecallRadar monitor twice, the monitor row updated to checked.
+- Latest score and previous score both displayed.
+- Latest record count and previous record count both displayed.
+- Change pills displayed `Score unchanged` and `Records unchanged`.
+- View Audit button appeared after the run completed.
+
+Observed result:
+
+- Monitor: Eye drops v2.1 change test
+- Query: eye drops
+- Module: RecallRadar
+- Status: checked
+- Latest score: 85
+- Previous score: 85
+- Records: 5
+- Previous records: 5
+- Change indicators: Score unchanged, Records unchanged
+
+Saved Monitors v2.1 change indicator manual verification: Passed.
