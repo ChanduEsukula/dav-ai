@@ -19,7 +19,74 @@ This document records a manual end-to-end verification of the Saved Monitors v2 
 
 ## Backend Health Check
 
-Verified:
+Verified command:
 
-```bash
-curl http://127.0.0.1:8000/health
+    curl http://127.0.0.1:8000/health
+
+Expected result:
+
+    {"status":"healthy"}
+
+## RecallRadar Saved Monitor Flow
+
+Test monitor:
+
+- Name: Eye drops monitor
+- Query: eye drops
+- Module: RecallRadar
+
+Manual steps verified:
+
+1. Opened the frontend at `http://localhost:5173`.
+2. Navigated to the Monitors page.
+3. Created a RecallRadar saved monitor.
+4. Confirmed the monitor appeared in the monitor table.
+5. Clicked Run Check.
+6. Confirmed the monitor status changed to checked.
+7. Confirmed latest score appeared.
+8. Confirmed latest record count appeared.
+9. Confirmed View Audit button appeared.
+10. Clicked View Audit.
+11. Confirmed the URL changed to include `page=audit` and `audit_id`.
+12. Confirmed Audit History opened with the selected RecallRadar audit event.
+
+Observed result:
+
+- Status: checked
+- Latest score: 85
+- Records: 5
+- Audit History selected the related RecallRadar audit event.
+
+## Backend API Verification
+
+Created a saved monitor through the API:
+
+    curl -s -X POST http://127.0.0.1:8000/api/v1/saved-monitors \
+      -H "Content-Type: application/json" \
+      -d '{"name":"Eye drops monitor","query":"eye drops","module":"recallradar"}'
+
+Verified saved monitor list:
+
+    curl -s http://127.0.0.1:8000/api/v1/saved-monitors
+
+Verified manual run endpoint:
+
+    curl -s -X POST http://127.0.0.1:8000/api/v1/saved-monitors/{monitor_id}/run
+
+Expected fields after run:
+
+- `status`: checked
+- `latest_audit_id`: populated
+- `latest_score`: populated
+- `latest_record_count`: populated
+- `last_checked_at`: populated
+
+## Notes
+
+During local testing, duplicate Eye drops monitors appeared because one monitor was created through the browser and another through curl. This is expected behavior, not a defect.
+
+Local saved monitors may reset when the backend reloads if the application is using in-memory fallback instead of a configured database with the `saved_monitors` table.
+
+## Verification Status
+
+Saved Monitors v2 foundation manual verification: Passed.
