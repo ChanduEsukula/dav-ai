@@ -8,6 +8,12 @@ from app.main import app
 client = TestClient(app)
 
 
+RECALL_AUDIT_ID = "11111111-1111-1111-1111-111111111111"
+DRUG_AUDIT_ID = "22222222-2222-2222-2222-222222222222"
+FIRST_AUDIT_ID = "33333333-3333-3333-3333-333333333333"
+SECOND_AUDIT_ID = "44444444-4444-4444-4444-444444444444"
+
+
 def setup_function() -> None:
     saved_monitor_repository.clear()
 
@@ -132,7 +138,7 @@ def test_run_recallradar_saved_monitor(monkeypatch) -> None:
             "query": q,
             "count": 5,
             "audit": {
-                "audit_id": "recall-audit-123",
+                "audit_id": RECALL_AUDIT_ID,
             },
             "results": [
                 {
@@ -164,7 +170,7 @@ def test_run_recallradar_saved_monitor(monkeypatch) -> None:
     data = run_response.json()
 
     assert data["status"] == "checked"
-    assert data["latest_audit_id"] == "recall-audit-123"
+    assert data["latest_audit_id"] == RECALL_AUDIT_ID
     assert data["latest_score"] == 52
     assert data["latest_record_count"] == 5
     assert data["previous_score"] is None
@@ -178,7 +184,7 @@ def test_run_drugsignal_saved_monitor(monkeypatch) -> None:
             "query": q,
             "count": 10,
             "audit": {
-                "audit_id": "drug-audit-123",
+                "audit_id": DRUG_AUDIT_ID,
             },
             "intelligence_score": {
                 "score": 80,
@@ -206,7 +212,7 @@ def test_run_drugsignal_saved_monitor(monkeypatch) -> None:
     data = run_response.json()
 
     assert data["status"] == "checked"
-    assert data["latest_audit_id"] == "drug-audit-123"
+    assert data["latest_audit_id"] == DRUG_AUDIT_ID
     assert data["latest_score"] == 80
     assert data["latest_record_count"] == 10
     assert data["previous_score"] is None
@@ -225,14 +231,14 @@ def test_run_saved_monitor_preserves_previous_values(monkeypatch) -> None:
             return {
                 "query": q,
                 "count": 5,
-                "audit": {"audit_id": "first-audit"},
+                "audit": {"audit_id": FIRST_AUDIT_ID},
                 "results": [{"risk_score": {"score": 52}}],
             }
 
         return {
             "query": q,
             "count": 7,
-            "audit": {"audit_id": "second-audit"},
+            "audit": {"audit_id": SECOND_AUDIT_ID},
             "results": [{"risk_score": {"score": 61}}],
         }
 
@@ -259,7 +265,7 @@ def test_run_saved_monitor_preserves_previous_values(monkeypatch) -> None:
 
     data = second_run.json()
 
-    assert data["latest_audit_id"] == "second-audit"
+    assert data["latest_audit_id"] == SECOND_AUDIT_ID
     assert data["latest_score"] == 61
     assert data["latest_record_count"] == 7
     assert data["previous_score"] == 52

@@ -392,9 +392,24 @@ class SavedMonitorRepository:
             return True
 
     def clear(self) -> None:
-        """Clear all saved monitors. Used by tests for in-memory state."""
+        """Clear all saved monitors. Used by tests."""
 
         self._items.clear()
+
+        database_url = self._database_url()
+        if not database_url:
+            return
+
+        try:
+            with psycopg.connect(database_url, row_factory=dict_row) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute("delete from saved_monitors")
+
+        except Exception:
+            logger.exception(
+                "saved_monitor_clear_failed",
+                extra={"event": "saved_monitor_clear_failed"},
+            )
 
 
 saved_monitor_repository = SavedMonitorRepository()
