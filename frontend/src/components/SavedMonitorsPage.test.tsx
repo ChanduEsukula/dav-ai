@@ -54,7 +54,7 @@ describe('SavedMonitorsPage', () => {
     })
   })
 
-  it('renders saved monitors returned by the API with latest and previous values', async () => {
+  it('renders saved monitors returned by the API with latest, previous, and change values', async () => {
     vi.mocked(listSavedMonitors).mockResolvedValue([
       {
         ...baseMonitor,
@@ -79,7 +79,54 @@ describe('SavedMonitorsPage', () => {
       expect(screen.getByText('68')).toBeInTheDocument()
       expect(screen.getByText('5')).toBeInTheDocument()
       expect(screen.getByText('3')).toBeInTheDocument()
+      expect(screen.getByText('Score +6')).toBeInTheDocument()
+      expect(screen.getByText('Records +2')).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'View Audit' })).toBeInTheDocument()
+    })
+  })
+
+  it('renders unchanged and negative change indicators', async () => {
+    vi.mocked(listSavedMonitors).mockResolvedValue([
+      {
+        ...baseMonitor,
+        id: 'monitor-2',
+        name: 'Metformin monitor',
+        query: 'metformin',
+        module: 'drugsignal',
+        latest_score: 80,
+        previous_score: 80,
+        latest_record_count: 6,
+        previous_record_count: 9,
+        status: 'checked',
+      },
+    ])
+
+    render(<SavedMonitorsPage />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Metformin monitor')).toBeInTheDocument()
+      expect(screen.getByText('Score unchanged')).toBeInTheDocument()
+      expect(screen.getByText('Records -3')).toBeInTheDocument()
+    })
+  })
+
+  it('renders N/A change indicators when previous values do not exist', async () => {
+    vi.mocked(listSavedMonitors).mockResolvedValue([
+      {
+        ...baseMonitor,
+        latest_score: 70,
+        previous_score: null,
+        latest_record_count: 8,
+        previous_record_count: null,
+      },
+    ])
+
+    render(<SavedMonitorsPage />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Eye drops monitor')).toBeInTheDocument()
+      expect(screen.getByText('Score N/A')).toBeInTheDocument()
+      expect(screen.getByText('Records N/A')).toBeInTheDocument()
     })
   })
 
@@ -122,6 +169,8 @@ describe('SavedMonitorsPage', () => {
       expect(screen.getByText('Metformin monitor')).toBeInTheDocument()
       expect(screen.getByText('metformin')).toBeInTheDocument()
       expect(screen.getAllByText('DrugSignal').length).toBeGreaterThan(0)
+      expect(screen.getByText('Score N/A')).toBeInTheDocument()
+      expect(screen.getByText('Records N/A')).toBeInTheDocument()
     })
   })
 
@@ -197,7 +246,7 @@ describe('SavedMonitorsPage', () => {
     expect(createSavedMonitor).not.toHaveBeenCalled()
   })
 
-  it('runs a saved monitor check and updates latest and previous row values', async () => {
+  it('runs a saved monitor check and updates latest, previous, and change row values', async () => {
     vi.mocked(listSavedMonitors).mockResolvedValue([
       {
         ...baseMonitor,
@@ -233,6 +282,8 @@ describe('SavedMonitorsPage', () => {
       expect(screen.getByText('70')).toBeInTheDocument()
       expect(screen.getByText('12')).toBeInTheDocument()
       expect(screen.getByText('8')).toBeInTheDocument()
+      expect(screen.getByText('Score +18')).toBeInTheDocument()
+      expect(screen.getByText('Records +4')).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'View Audit' })).toBeInTheDocument()
     })
   })

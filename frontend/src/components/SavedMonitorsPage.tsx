@@ -34,6 +34,53 @@ function formatNullableNumber(value: number | null): string {
   return value === null ? "N/A" : String(value);
 }
 
+function formatSignedChange(value: number): string {
+  if (value > 0) {
+    return `+${value}`;
+  }
+
+  return String(value);
+}
+
+function formatChangeLabel(
+  label: string,
+  latestValue: number | null,
+  previousValue: number | null,
+): string {
+  if (latestValue === null || previousValue === null) {
+    return `${label} N/A`;
+  }
+
+  const change = latestValue - previousValue;
+
+  if (change === 0) {
+    return `${label} unchanged`;
+  }
+
+  return `${label} ${formatSignedChange(change)}`;
+}
+
+function getChangeTone(
+  latestValue: number | null,
+  previousValue: number | null,
+): "neutral" | "up" | "down" {
+  if (latestValue === null || previousValue === null) {
+    return "neutral";
+  }
+
+  const change = latestValue - previousValue;
+
+  if (change > 0) {
+    return "up";
+  }
+
+  if (change < 0) {
+    return "down";
+  }
+
+  return "neutral";
+}
+
 function getCreateErrorMessage(error: unknown): string {
   if (error instanceof AxiosError) {
     const detail = error.response?.data?.detail;
@@ -164,7 +211,7 @@ export default function SavedMonitorsPage() {
   return (
     <section className="saved-monitors-page" aria-labelledby="saved-monitors-title">
       <div className="saved-monitors-hero">
-        <p className="eyebrow">Saved Monitors v2 foundation</p>
+        <p className="eyebrow">Saved Monitors v2.1</p>
         <h1 id="saved-monitors-title">Saved Monitors</h1>
         <p>
           Save repeatable RecallRadar or DrugSignal searches, run checks
@@ -247,59 +294,91 @@ export default function SavedMonitorsPage() {
                   <th>Previous score</th>
                   <th>Records</th>
                   <th>Previous records</th>
+                  <th>Change</th>
                   <th>Last checked</th>
                   <th>Latest audit</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {monitors.map((monitor) => (
-                  <tr key={monitor.id}>
-                    <td>{monitor.name}</td>
-                    <td>{monitor.query}</td>
-                    <td>{moduleLabels[monitor.module]}</td>
-                    <td>{monitor.status.replace("_", " ")}</td>
-                    <td>{formatNullableNumber(monitor.latest_score)}</td>
-                    <td>{formatNullableNumber(monitor.previous_score)}</td>
-                    <td>{formatNullableNumber(monitor.latest_record_count)}</td>
-                    <td>{formatNullableNumber(monitor.previous_record_count)}</td>
-                    <td>{formatDate(monitor.last_checked_at)}</td>
-                    <td>
-                      {monitor.latest_audit_id ? (
-                        <button
-                          type="button"
-                          className="audit-link-button"
-                          onClick={() =>
-                            openAuditDetail(monitor.latest_audit_id as string)
-                          }
-                        >
-                          View Audit
-                        </button>
-                      ) : (
-                        "N/A"
-                      )}
-                    </td>
-                    <td>
-                      <div className="saved-monitor-actions">
-                        <button
-                          type="button"
-                          onClick={() => void handleRunCheck(monitor.id)}
-                          disabled={runningMonitorId === monitor.id}
-                        >
-                          {runningMonitorId === monitor.id ? "Running..." : "Run Check"}
-                        </button>
+                {monitors.map((monitor) => {
+                  const scoreTone = getChangeTone(
+                    monitor.latest_score,
+                    monitor.previous_score,
+                  );
+                  const recordTone = getChangeTone(
+                    monitor.latest_record_count,
+                    monitor.previous_record_count,
+                  );
 
-                        <button
-                          type="button"
-                          className="danger-button"
-                          onClick={() => void handleDelete(monitor.id)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                  return (
+                    <tr key={monitor.id}>
+                      <td>{monitor.name}</td>
+                      <td>{monitor.query}</td>
+                      <td>{moduleLabels[monitor.module]}</td>
+                      <td>{monitor.status.replace("_", " ")}</td>
+                      <td>{formatNullableNumber(monitor.latest_score)}</td>
+                      <td>{formatNullableNumber(monitor.previous_score)}</td>
+                      <td>{formatNullableNumber(monitor.latest_record_count)}</td>
+                      <td>{formatNullableNumber(monitor.previous_record_count)}</td>
+                      <td>
+                        <div className="saved-monitor-change-stack">
+                          <span className={`change-pill change-pill-${scoreTone}`}>
+                            {formatChangeLabel(
+                              "Score",
+                              monitor.latest_score,
+                              monitor.previous_score,
+                            )}
+                          </span>
+                          <span className={`change-pill change-pill-${recordTone}`}>
+                            {formatChangeLabel(
+                              "Records",
+                              monitor.latest_record_count,
+                              monitor.previous_record_count,
+                            )}
+                          </span>
+                        </div>
+                      </td>
+                      <td>{formatDate(monitor.last_checked_at)}</td>
+                      <td>
+                        {monitor.latest_audit_id ? (
+                          <button
+                            type="button"
+                            className="audit-link-button"
+                            onClick={() =>
+                              openAuditDetail(monitor.latest_audit_id as string)
+                            }
+                          >
+                            View Audit
+                          </button>
+                        ) : (
+                          "N/A"
+                        )}
+                      </td>
+                      <td>
+                        <div className="saved-monitor-actions">
+                          <button
+                            type="button"
+                            onClick={() => void handleRunCheck(monitor.id)}
+                            disabled={runningMonitorId === monitor.id}
+                          >
+                            {runningMonitorId === monitor.id
+                              ? "Running..."
+                              : "Run Check"}
+                          </button>
+
+                          <button
+                            type="button"
+                            className="danger-button"
+                            onClick={() => void handleDelete(monitor.id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -308,9 +387,9 @@ export default function SavedMonitorsPage() {
 
       <div className="saved-monitor-note">
         <strong>Current scope:</strong> Saved Monitors currently support manual
-        run checks, Supabase persistence, latest/previous result comparison, and
-        audit linking. Scheduled refresh and alert notifications are future
-        Saved Monitors v2 steps.
+        run checks, Supabase persistence, latest/previous result comparison,
+        change indicators, duplicate prevention, and audit linking. Scheduled
+        refresh and alert notifications are future Saved Monitors v2 steps.
       </div>
     </section>
   );
