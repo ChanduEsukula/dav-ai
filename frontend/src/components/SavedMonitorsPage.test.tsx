@@ -35,6 +35,7 @@ const baseMonitor: SavedMonitor = {
 describe('SavedMonitorsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.restoreAllMocks()
     window.history.replaceState(null, '', '/')
   })
 
@@ -52,13 +53,15 @@ describe('SavedMonitorsPage', () => {
     })
   })
 
-  it('renders saved monitors returned by the API', async () => {
+  it('renders saved monitors returned by the API with latest and previous values', async () => {
     vi.mocked(listSavedMonitors).mockResolvedValue([
       {
         ...baseMonitor,
         latest_audit_id: '11111111-1111-1111-1111-111111111111',
         latest_score: 74,
+        previous_score: 68,
         latest_record_count: 5,
+        previous_record_count: 3,
         status: 'checked',
         last_checked_at: '2026-05-11T13:00:00Z',
       },
@@ -72,7 +75,9 @@ describe('SavedMonitorsPage', () => {
       expect(screen.getAllByText('RecallRadar').length).toBeGreaterThan(0)
       expect(screen.getByText('checked')).toBeInTheDocument()
       expect(screen.getByText('74')).toBeInTheDocument()
+      expect(screen.getByText('68')).toBeInTheDocument()
       expect(screen.getByText('5')).toBeInTheDocument()
+      expect(screen.getByText('3')).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'View Audit' })).toBeInTheDocument()
     })
   })
@@ -145,13 +150,23 @@ describe('SavedMonitorsPage', () => {
     expect(createSavedMonitor).not.toHaveBeenCalled()
   })
 
-  it('runs a saved monitor check and updates the row', async () => {
-    vi.mocked(listSavedMonitors).mockResolvedValue([baseMonitor])
+  it('runs a saved monitor check and updates latest and previous row values', async () => {
+    vi.mocked(listSavedMonitors).mockResolvedValue([
+      {
+        ...baseMonitor,
+        latest_score: 70,
+        previous_score: null,
+        latest_record_count: 8,
+        previous_record_count: null,
+      },
+    ])
     vi.mocked(runSavedMonitor).mockResolvedValue({
       ...baseMonitor,
       status: 'checked',
       latest_score: 88,
+      previous_score: 70,
       latest_record_count: 12,
+      previous_record_count: 8,
       latest_audit_id: '22222222-2222-2222-2222-222222222222',
       last_checked_at: '2026-05-11T14:00:00Z',
     })
@@ -168,14 +183,17 @@ describe('SavedMonitorsPage', () => {
       expect(runSavedMonitor).toHaveBeenCalledWith('monitor-1')
       expect(screen.getByText('checked')).toBeInTheDocument()
       expect(screen.getByText('88')).toBeInTheDocument()
+      expect(screen.getByText('70')).toBeInTheDocument()
       expect(screen.getByText('12')).toBeInTheDocument()
+      expect(screen.getByText('8')).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'View Audit' })).toBeInTheDocument()
     })
   })
 
-  it('deletes a saved monitor from the list', async () => {
+  it('deletes a saved monitor from the list when confirmed', async () => {
     vi.mocked(listSavedMonitors).mockResolvedValue([baseMonitor])
     vi.mocked(deleteSavedMonitor).mockResolvedValue()
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true)
 
     render(<SavedMonitorsPage />)
 
@@ -186,9 +204,32 @@ describe('SavedMonitorsPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
 
     await waitFor(() => {
+      expect(confirmSpy).toHaveBeenCalledWith(
+        'Are you sure you want to delete this saved monitor?',
+      )
       expect(deleteSavedMonitor).toHaveBeenCalledWith('monitor-1')
       expect(screen.queryByText('Eye drops monitor')).not.toBeInTheDocument()
     })
+  })
+
+  it('does not delete a saved monitor when delete confirmation is cancelled', async () => {
+    vi.mocked(listSavedMonitors).mockResolvedValue([baseMonitor])
+    vi.mocked(deleteSavedMonitor).mockResolvedValue()
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false)
+
+    render(<SavedMonitorsPage />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Eye drops monitor')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+
+    expect(confirmSpy).toHaveBeenCalledWith(
+      'Are you sure you want to delete this saved monitor?',
+    )
+    expect(deleteSavedMonitor).not.toHaveBeenCalled()
+    expect(screen.getByText('Eye drops monitor')).toBeInTheDocument()
   })
 
   it('opens Audit History URL state from View Audit button', async () => {

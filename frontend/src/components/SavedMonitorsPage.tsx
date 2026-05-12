@@ -103,6 +103,14 @@ export default function SavedMonitorsPage() {
   async function handleDelete(monitorId: string) {
     setErrorMessage("");
 
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this saved monitor?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
     try {
       await deleteSavedMonitor(monitorId);
       setMonitors((current) =>
@@ -112,7 +120,6 @@ export default function SavedMonitorsPage() {
       setErrorMessage("Unable to delete saved monitor.");
     }
   }
-
 
   async function handleRunCheck(monitorId: string) {
     setErrorMessage("");
@@ -138,8 +145,9 @@ export default function SavedMonitorsPage() {
         <p className="eyebrow">Saved Monitors v2 foundation</p>
         <h1 id="saved-monitors-title">Saved Monitors</h1>
         <p>
-          Save repeatable RecallRadar or DrugSignal searches before adding
-          scheduled refresh, alerts, or automated run checks.
+          Save repeatable RecallRadar or DrugSignal searches, run checks
+          manually, compare latest and previous results, and open the related
+          audit event for traceability.
         </p>
       </div>
 
@@ -214,7 +222,9 @@ export default function SavedMonitorsPage() {
                   <th>Module</th>
                   <th>Status</th>
                   <th>Latest score</th>
+                  <th>Previous score</th>
                   <th>Records</th>
+                  <th>Previous records</th>
                   <th>Last checked</th>
                   <th>Latest audit</th>
                   <th>Actions</th>
@@ -228,14 +238,18 @@ export default function SavedMonitorsPage() {
                     <td>{moduleLabels[monitor.module]}</td>
                     <td>{monitor.status.replace("_", " ")}</td>
                     <td>{formatNullableNumber(monitor.latest_score)}</td>
+                    <td>{formatNullableNumber(monitor.previous_score)}</td>
                     <td>{formatNullableNumber(monitor.latest_record_count)}</td>
+                    <td>{formatNullableNumber(monitor.previous_record_count)}</td>
                     <td>{formatDate(monitor.last_checked_at)}</td>
                     <td>
                       {monitor.latest_audit_id ? (
                         <button
                           type="button"
                           className="audit-link-button"
-                          onClick={() => openAuditDetail(monitor.latest_audit_id as string)}
+                          onClick={() =>
+                            openAuditDetail(monitor.latest_audit_id as string)
+                          }
                         >
                           View Audit
                         </button>
@@ -271,8 +285,9 @@ export default function SavedMonitorsPage() {
       </div>
 
       <div className="saved-monitor-note">
-        <strong>Current scope:</strong> this page stores monitor definitions only.
-        Run checks, score comparison, scheduled refresh, and alerts are future
+        <strong>Current scope:</strong> Saved Monitors currently support manual
+        run checks, Supabase persistence, latest/previous result comparison, and
+        audit linking. Scheduled refresh and alert notifications are future
         Saved Monitors v2 steps.
       </div>
     </section>
