@@ -123,3 +123,37 @@ Observed persisted run result:
 - Latest audit ID: populated
 
 Supabase/Postgres persistence verification: Passed.
+
+## Duplicate Monitor Verification
+
+Verified duplicate prevention after adding module/query uniqueness rules.
+
+Manual browser steps:
+
+1. Created a RecallRadar saved monitor:
+   - Name: Duplicate test monitor
+   - Query: ibuprofen
+   - Module: RecallRadar
+
+2. Attempted to create another RecallRadar saved monitor with the same normalized query:
+   - Name: Another duplicate test
+   - Query: Ibuprofen
+   - Module: RecallRadar
+
+3. Confirmed the UI blocked the duplicate and displayed:
+   - A saved monitor already exists for this module and query.
+
+4. Created a monitor with the same query but a different module:
+   - Name: Ibuprofen DrugSignal monitor
+   - Query: ibuprofen
+   - Module: DrugSignal
+
+5. Confirmed this was allowed because uniqueness is scoped to module plus normalized query.
+
+Observed result:
+
+- Duplicate RecallRadar monitor was blocked.
+- DrugSignal monitor with the same query was created successfully.
+- Validation message after form reset was expected when Save Monitor was clicked with empty fields.
+
+Duplicate saved monitor verification: Passed.
