@@ -90,3 +90,36 @@ Local saved monitors may reset when the backend reloads if the application is us
 ## Verification Status
 
 Saved Monitors v2 foundation manual verification: Passed.
+
+## Supabase Persistence Verification
+
+Additional verification was completed after reconciling Alembic migration state.
+
+Alembic initially reported the database at revision `20260505_0001`, while the `saved_monitors` table already existed in Supabase/Postgres. The existing table was inspected and confirmed to contain the expected columns and indexes for the Saved Monitors v2 migration. Alembic version drift was then reconciled with:
+
+    alembic stamp head
+
+After stamping, Alembic reported:
+
+    20260511_0002 (head)
+
+Persistence verification steps:
+
+1. Confirmed backend health returned healthy.
+2. Created a saved monitor through the API.
+3. Confirmed the saved monitor appeared in the saved monitor list.
+4. Confirmed older saved monitors still existed after backend restart.
+5. Ran the saved monitor through the manual run endpoint.
+6. Confirmed the persisted monitor updated with checked status, latest audit ID, latest score, record count, and last checked timestamp.
+
+Observed persisted run result:
+
+- Monitor: Persistence verification monitor
+- Query: eye drops
+- Module: RecallRadar
+- Status: checked
+- Latest score: 85
+- Latest record count: 5
+- Latest audit ID: populated
+
+Supabase/Postgres persistence verification: Passed.
