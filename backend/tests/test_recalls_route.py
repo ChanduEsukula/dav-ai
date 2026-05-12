@@ -1,11 +1,16 @@
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.routes import recalls
+from app.services.search_workflows import recall_search
 
 
 class MockOpenFDAClientSuccess:
-    async def search_drug_recalls(self, query: str, limit: int = 10):
+    async def search_drug_recalls(
+        self,
+        query: str,
+        limit: int = 10,
+        request_id: str | None = None,
+    ):
         return {
             "source_id": "openfda_drug_enforcement",
             "source_name": "openFDA Drug Enforcement API",
@@ -30,7 +35,12 @@ class MockOpenFDAClientSuccess:
 
 
 class MockOpenFDAClientEmpty:
-    async def search_drug_recalls(self, query: str, limit: int = 10):
+    async def search_drug_recalls(
+        self,
+        query: str,
+        limit: int = 10,
+        request_id: str | None = None,
+    ):
         return {
             "source_id": "openfda_drug_enforcement",
             "source_name": "openFDA Drug Enforcement API",
@@ -45,12 +55,17 @@ class MockOpenFDAClientEmpty:
 
 
 class MockOpenFDAClientFailure:
-    async def search_drug_recalls(self, query: str, limit: int = 10):
+    async def search_drug_recalls(
+        self,
+        query: str,
+        limit: int = 10,
+        request_id: str | None = None,
+    ):
         raise RuntimeError("openFDA unavailable")
 
 
 def test_search_recalls_returns_normalized_results():
-    recalls.client = MockOpenFDAClientSuccess()
+    recall_search.client = MockOpenFDAClientSuccess()
 
     test_client = TestClient(app)
     response = test_client.get("/api/v1/recalls/search", params={"q": "eye drops", "limit": 5})
@@ -82,7 +97,7 @@ def test_search_recalls_returns_normalized_results():
 
 
 def test_search_recalls_returns_empty_results_for_no_matches():
-    recalls.client = MockOpenFDAClientEmpty()
+    recall_search.client = MockOpenFDAClientEmpty()
 
     test_client = TestClient(app)
     response = test_client.get(
@@ -110,7 +125,7 @@ def test_search_recalls_returns_empty_results_for_no_matches():
 
 
 def test_search_recalls_returns_502_and_persists_error_audit(monkeypatch):
-    recalls.client = MockOpenFDAClientFailure()
+    recall_search.client = MockOpenFDAClientFailure()
     saved_audits = []
 
     def fake_save_audit_event(audit_event, request_id=None):
@@ -122,7 +137,10 @@ def test_search_recalls_returns_502_and_persists_error_audit(monkeypatch):
         )
         return {"status": "saved", "reason": "audit_event_persisted"}
 
-    monkeypatch.setattr("app.routes.recalls.save_audit_event", fake_save_audit_event)
+    monkeypatch.setattr(
+        "app.services.search_workflows.recall_search.save_audit_event",
+        fake_save_audit_event,
+    )
 
     test_client = TestClient(app)
     response = test_client.get("/api/v1/recalls/search", params={"q": "eye drops", "limit": 5})

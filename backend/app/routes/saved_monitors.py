@@ -6,13 +6,13 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, Request, status
 
 from app.db.saved_monitor_repository import saved_monitor_repository
-from app.routes.drug_events import search_drug_events
-from app.routes.recalls import search_recalls
 from app.schemas.saved_monitors import (
     SavedMonitor,
     SavedMonitorCreate,
     SavedMonitorModule,
 )
+from app.services.search_workflows.drug_signal_search import execute_drug_signal_search
+from app.services.search_workflows.recall_search import execute_recall_search
 
 router = APIRouter(prefix="/api/v1/saved-monitors", tags=["saved-monitors"])
 
@@ -89,19 +89,21 @@ async def run_saved_monitor(monitor_id: UUID, request: Request) -> SavedMonitor:
             detail="Saved monitor not found",
         )
 
+    request_id = getattr(request.state, "request_id", None)
+
     try:
         if monitor.module == SavedMonitorModule.RECALLRADAR:
-            response = await search_recalls(
-                request=request,
-                q=monitor.query,
+            response = await execute_recall_search(
+                query=monitor.query,
                 limit=5,
+                request_id=request_id,
             )
             latest_score = _extract_recall_score(response)
         elif monitor.module == SavedMonitorModule.DRUGSIGNAL:
-            response = await search_drug_events(
-                request=request,
-                q=monitor.query,
+            response = await execute_drug_signal_search(
+                query=monitor.query,
                 limit=10,
+                request_id=request_id,
             )
             latest_score = _extract_drug_signal_score(response)
         else:
@@ -136,7 +138,7 @@ async def run_saved_monitor(monitor_id: UUID, request: Request) -> SavedMonitor:
                 "message": "Unable to run saved monitor.",
                 "error": str(exc),
             },
-        )
+        ) from exc
 
 
 @router.delete("/{monitor_id}", status_code=status.HTTP_204_NO_CONTENT)

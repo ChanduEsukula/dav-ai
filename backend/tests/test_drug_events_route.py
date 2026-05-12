@@ -1,11 +1,16 @@
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.routes import drug_events
+from app.services.search_workflows import drug_signal_search
 
 
 class MockDrugEventClientSuccess:
-    async def search_drug_events(self, query: str, limit: int = 10):
+    async def search_drug_events(
+        self,
+        query: str,
+        limit: int = 10,
+        request_id: str | None = None,
+    ):
         return {
             "source_id": "openfda_drug_event",
             "source_name": "openFDA Drug Event API",
@@ -35,7 +40,12 @@ class MockDrugEventClientSuccess:
 
 
 class MockDrugEventClientEmpty:
-    async def search_drug_events(self, query: str, limit: int = 10):
+    async def search_drug_events(
+        self,
+        query: str,
+        limit: int = 10,
+        request_id: str | None = None,
+    ):
         return {
             "source_id": "openfda_drug_event",
             "source_name": "openFDA Drug Event API",
@@ -50,12 +60,17 @@ class MockDrugEventClientEmpty:
 
 
 class MockDrugEventClientFailure:
-    async def search_drug_events(self, query: str, limit: int = 10):
+    async def search_drug_events(
+        self,
+        query: str,
+        limit: int = 10,
+        request_id: str | None = None,
+    ):
         raise RuntimeError("openFDA drug event unavailable")
 
 
 def test_search_drug_events_returns_top_reactions():
-    drug_events.client = MockDrugEventClientSuccess()
+    drug_signal_search.client = MockDrugEventClientSuccess()
 
     test_client = TestClient(app)
     response = test_client.get("/api/v1/drug-events/search", params={"q": "metformin", "limit": 5})
@@ -100,7 +115,7 @@ def test_search_drug_events_returns_top_reactions():
 
 
 def test_search_drug_events_returns_empty_results_for_no_matches():
-    drug_events.client = MockDrugEventClientEmpty()
+    drug_signal_search.client = MockDrugEventClientEmpty()
 
     test_client = TestClient(app)
     response = test_client.get(
@@ -128,7 +143,7 @@ def test_search_drug_events_returns_empty_results_for_no_matches():
 
 
 def test_search_drug_events_returns_502_and_persists_error_audit(monkeypatch):
-    drug_events.client = MockDrugEventClientFailure()
+    drug_signal_search.client = MockDrugEventClientFailure()
     saved_audits = []
 
     def fake_save_audit_event(audit_event, request_id=None):
@@ -140,7 +155,10 @@ def test_search_drug_events_returns_502_and_persists_error_audit(monkeypatch):
         )
         return {"status": "saved", "reason": "audit_event_persisted"}
 
-    monkeypatch.setattr("app.routes.drug_events.save_audit_event", fake_save_audit_event)
+    monkeypatch.setattr(
+        "app.services.search_workflows.drug_signal_search.save_audit_event",
+        fake_save_audit_event,
+    )
 
     test_client = TestClient(app)
     response = test_client.get("/api/v1/drug-events/search", params={"q": "metformin", "limit": 5})
@@ -192,8 +210,9 @@ def test_search_drug_events_rejects_limit_above_maximum():
 
     assert response.status_code == 422
 
+
 def test_search_drug_events_returns_trend_snapshot_with_previous_audit(monkeypatch):
-    drug_events.client = MockDrugEventClientSuccess()
+    drug_signal_search.client = MockDrugEventClientSuccess()
 
     def fake_get_latest_audit_event_for_query(
         module: str,
@@ -216,7 +235,7 @@ def test_search_drug_events_returns_trend_snapshot_with_previous_audit(monkeypat
         }
 
     monkeypatch.setattr(
-        "app.routes.drug_events.get_latest_audit_event_for_query",
+        "app.services.search_workflows.drug_signal_search.get_latest_audit_event_for_query",
         fake_get_latest_audit_event_for_query,
     )
 

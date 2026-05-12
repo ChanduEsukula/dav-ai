@@ -133,9 +133,13 @@ def test_reject_too_short_name() -> None:
 
 
 def test_run_recallradar_saved_monitor(monkeypatch) -> None:
-    async def fake_search_recalls(request, q: str, limit: int):
+    async def fake_search_recalls(
+        query: str,
+        limit: int,
+        request_id: str | None = None,
+    ):
         return {
-            "query": q,
+            "query": query,
             "count": 5,
             "audit": {
                 "audit_id": RECALL_AUDIT_ID,
@@ -150,7 +154,7 @@ def test_run_recallradar_saved_monitor(monkeypatch) -> None:
         }
 
     monkeypatch.setattr(
-        "app.routes.saved_monitors.search_recalls",
+        "app.routes.saved_monitors.execute_recall_search",
         fake_search_recalls,
     )
 
@@ -179,9 +183,13 @@ def test_run_recallradar_saved_monitor(monkeypatch) -> None:
 
 
 def test_run_drugsignal_saved_monitor(monkeypatch) -> None:
-    async def fake_search_drug_events(request, q: str, limit: int):
+    async def fake_search_drug_events(
+        query: str,
+        limit: int,
+        request_id: str | None = None,
+    ):
         return {
-            "query": q,
+            "query": query,
             "count": 10,
             "audit": {
                 "audit_id": DRUG_AUDIT_ID,
@@ -192,7 +200,7 @@ def test_run_drugsignal_saved_monitor(monkeypatch) -> None:
         }
 
     monkeypatch.setattr(
-        "app.routes.saved_monitors.search_drug_events",
+        "app.routes.saved_monitors.execute_drug_signal_search",
         fake_search_drug_events,
     )
 
@@ -223,27 +231,31 @@ def test_run_drugsignal_saved_monitor(monkeypatch) -> None:
 def test_run_saved_monitor_preserves_previous_values(monkeypatch) -> None:
     calls = 0
 
-    async def fake_search_recalls(request, q: str, limit: int):
+    async def fake_search_recalls(
+        query: str,
+        limit: int,
+        request_id: str | None = None,
+    ):
         nonlocal calls
         calls += 1
 
         if calls == 1:
             return {
-                "query": q,
+                "query": query,
                 "count": 5,
                 "audit": {"audit_id": FIRST_AUDIT_ID},
                 "results": [{"risk_score": {"score": 52}}],
             }
 
         return {
-            "query": q,
+            "query": query,
             "count": 7,
             "audit": {"audit_id": SECOND_AUDIT_ID},
             "results": [{"risk_score": {"score": 61}}],
         }
 
     monkeypatch.setattr(
-        "app.routes.saved_monitors.search_recalls",
+        "app.routes.saved_monitors.execute_recall_search",
         fake_search_recalls,
     )
 
