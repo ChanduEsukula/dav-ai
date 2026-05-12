@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import {
@@ -31,6 +32,27 @@ function formatDate(value: string | null): string {
 
 function formatNullableNumber(value: number | null): string {
   return value === null ? "N/A" : String(value);
+}
+
+function getCreateErrorMessage(error: unknown): string {
+  if (error instanceof AxiosError) {
+    const detail = error.response?.data?.detail;
+
+    if (typeof detail === "string") {
+      return detail;
+    }
+
+    if (
+      typeof detail === "object" &&
+      detail !== null &&
+      "message" in detail &&
+      typeof detail.message === "string"
+    ) {
+      return detail.message;
+    }
+  }
+
+  return "Unable to create saved monitor.";
 }
 
 function openAuditDetail(auditId: string) {
@@ -93,8 +115,8 @@ export default function SavedMonitorsPage() {
       setName("");
       setQuery("");
       setModule("recallradar");
-    } catch {
-      setErrorMessage("Unable to create saved monitor.");
+    } catch (error) {
+      setErrorMessage(getCreateErrorMessage(error));
     } finally {
       setIsSaving(false);
     }

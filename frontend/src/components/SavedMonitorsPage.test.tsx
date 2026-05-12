@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -121,6 +122,52 @@ describe('SavedMonitorsPage', () => {
       expect(screen.getByText('Metformin monitor')).toBeInTheDocument()
       expect(screen.getByText('metformin')).toBeInTheDocument()
       expect(screen.getAllByText('DrugSignal').length).toBeGreaterThan(0)
+    })
+  })
+
+  it('shows duplicate saved monitor error from the API', async () => {
+    vi.mocked(listSavedMonitors).mockResolvedValue([])
+    vi.mocked(createSavedMonitor).mockRejectedValue(
+      new AxiosError(
+        'duplicate monitor',
+        'ERR_BAD_REQUEST',
+        undefined,
+        undefined,
+        {
+          data: {
+            detail: 'A saved monitor already exists for this module and query.',
+          },
+          status: 409,
+          statusText: 'Conflict',
+          headers: {},
+          config: {
+            headers: {} as never,
+          },
+        },
+      ),
+    )
+
+    render(<SavedMonitorsPage />)
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('No saved monitors yet. Create one above to start the monitoring workflow.'),
+      ).toBeInTheDocument()
+    })
+
+    fireEvent.change(screen.getByLabelText('Monitor name'), {
+      target: { value: 'Eye drops duplicate' },
+    })
+    fireEvent.change(screen.getByLabelText('Search query'), {
+      target: { value: 'eye drops' },
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save Monitor' }))
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('A saved monitor already exists for this module and query.'),
+      ).toBeInTheDocument()
     })
   })
 
