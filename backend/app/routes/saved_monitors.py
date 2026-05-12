@@ -71,9 +71,20 @@ def list_saved_monitors() -> list[SavedMonitor]:
 def create_saved_monitor(payload: SavedMonitorCreate) -> SavedMonitor:
     """Create a saved monitor.
 
-    This foundation stores monitor definitions only. Run checks are manual and
-    triggered separately through the run endpoint.
+    Saved monitors are unique by module and normalized query so users do not
+    accidentally create duplicate monitors for the same public-data workflow.
     """
+
+    duplicate_exists = saved_monitor_repository.exists_by_module_and_query(
+        module=payload.module,
+        query=payload.query,
+    )
+
+    if duplicate_exists:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="A saved monitor already exists for this module and query.",
+        )
 
     return saved_monitor_repository.create(payload)
 

@@ -45,6 +45,83 @@ def test_create_saved_monitor() -> None:
     assert data["status"] == "not_checked"
 
 
+def test_reject_duplicate_saved_monitor_same_module_and_query() -> None:
+    first_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Eye drops monitor",
+            "query": "eye drops",
+            "module": "recallradar",
+        },
+    )
+
+    duplicate_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Duplicate eye drops monitor",
+            "query": "eye drops",
+            "module": "recallradar",
+        },
+    )
+
+    assert first_response.status_code == 201
+    assert duplicate_response.status_code == 409
+    assert (
+        duplicate_response.json()["detail"]
+        == "A saved monitor already exists for this module and query."
+    )
+
+
+def test_reject_duplicate_saved_monitor_with_normalized_query() -> None:
+    first_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Eye drops monitor",
+            "query": "eye drops",
+            "module": "recallradar",
+        },
+    )
+
+    duplicate_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Duplicate eye drops monitor",
+            "query": "  Eye Drops  ",
+            "module": "recallradar",
+        },
+    )
+
+    assert first_response.status_code == 201
+    assert duplicate_response.status_code == 409
+    assert (
+        duplicate_response.json()["detail"]
+        == "A saved monitor already exists for this module and query."
+    )
+
+
+def test_allow_same_query_for_different_saved_monitor_module() -> None:
+    recall_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Metformin recall monitor",
+            "query": "metformin",
+            "module": "recallradar",
+        },
+    )
+
+    drug_signal_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Metformin drug signal monitor",
+            "query": "metformin",
+            "module": "drugsignal",
+        },
+    )
+
+    assert recall_response.status_code == 201
+    assert drug_signal_response.status_code == 201
+
+
 def test_list_saved_monitors() -> None:
     client.post(
         "/api/v1/saved-monitors",

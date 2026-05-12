@@ -143,6 +143,55 @@ class SavedMonitorRepository:
             )
             return self._items.get(monitor_id)
 
+    def exists_by_module_and_query(
+        self,
+        *,
+        module: SavedMonitorModule,
+        query: str,
+    ) -> bool:
+        """Return True when a saved monitor already exists for module/query."""
+
+        normalized_query = query.strip().lower()
+
+        database_url = self._database_url()
+        if not database_url:
+            return any(
+                monitor.module == module
+                and monitor.query.strip().lower() == normalized_query
+                for monitor in self._items.values()
+            )
+
+        try:
+            with psycopg.connect(database_url, row_factory=dict_row) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        select 1
+                        from saved_monitors
+                        where module = %(module)s
+                          and lower(trim(query)) = %(query)s
+                        limit 1
+                        """,
+                        {
+                            "module": module.value,
+                            "query": normalized_query,
+                        },
+                    )
+                    row = cursor.fetchone()
+
+            return row is not None
+
+        except Exception:
+            logger.exception(
+                "saved_monitor_duplicate_check_failed",
+                extra={"event": "saved_monitor_duplicate_check_failed"},
+            )
+            return any(
+                monitor.module == module
+                and monitor.query.strip().lower() == normalized_query
+                for monitor in self._items.values()
+            )
+
     def create(self, payload: SavedMonitorCreate) -> SavedMonitor:
         """Create a saved monitor with default not-checked state."""
 
