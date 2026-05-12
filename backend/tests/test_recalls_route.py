@@ -109,8 +109,20 @@ def test_search_recalls_returns_empty_results_for_no_matches():
     assert body["audit"]["audit_id"]
 
 
-def test_search_recalls_returns_502_for_upstream_failure():
+def test_search_recalls_returns_502_and_persists_error_audit(monkeypatch):
     recalls.client = MockOpenFDAClientFailure()
+    saved_audits = []
+
+    def fake_save_audit_event(audit_event, request_id=None):
+        saved_audits.append(
+            {
+                "audit_event": audit_event,
+                "request_id": request_id,
+            }
+        )
+        return {"status": "saved", "reason": "audit_event_persisted"}
+
+    monkeypatch.setattr("app.routes.recalls.save_audit_event", fake_save_audit_event)
 
     test_client = TestClient(app)
     response = test_client.get("/api/v1/recalls/search", params={"q": "eye drops", "limit": 5})
@@ -120,6 +132,23 @@ def test_search_recalls_returns_502_for_upstream_failure():
     body = response.json()
     assert body["detail"]["message"] == "Unable to retrieve recall data from openFDA."
     assert "openFDA unavailable" in body["detail"]["error"]
+
+    assert len(saved_audits) == 1
+    audit_event = saved_audits[0]["audit_event"]
+
+    assert audit_event["module"] == "RecallRadar"
+    assert audit_event["source_id"] == "openfda-drug-enforcement"
+    assert audit_event["source_name"] == "openFDA Drug Enforcement API"
+    assert audit_event["endpoint"] == "https://api.fda.gov/drug/enforcement.json"
+    assert audit_event["query"] == "eye drops"
+    assert audit_event["query_params"] == {"q": "eye drops", "limit": 5}
+    assert audit_event["upstream_status"] == "error"
+    assert audit_event["record_count"] == 0
+    assert audit_event["transform_version"] == "recall-transform-v0.1"
+    assert audit_event["score_version"] == "recall-risk-v0.1"
+    assert "openFDA unavailable" in audit_event["error_message"]
+    assert audit_event["audit_id"]
+    assert audit_event["retrieval_timestamp"]
 
 
 def test_search_recalls_rejects_short_query():
