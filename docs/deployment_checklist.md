@@ -6,9 +6,12 @@ Prepare MedTrek AI for a clean frontend/backend/database deployment without chan
 
 ## Current Local Baseline
 
-- Backend tests: 45 passing
-- Alembic current revision: `20260505_0001`
-- Core workflows verified locally: RecallRadar, DrugSignal, Audit History
+- Backend tests: 76 passed
+- Frontend tests: 49 passed
+- Frontend lint: passed
+- Frontend production build: passed
+- Alembic current revision: `20260511_0002`
+- Core workflows verified locally: RecallRadar, DrugSignal, Audit History, Saved Monitors v2.1
 - Demo script available: `docs/demo_script.md`
 
 ## Backend Deployment Requirements
@@ -39,14 +42,16 @@ Prepare MedTrek AI for a clean frontend/backend/database deployment without chan
 Run backend checks from repository root:
 
 ```bash
+cd backend
 source .venv/bin/activate
-python3 -m pytest backend/tests -q
+python -m pytest
 ```
 
 Run frontend checks from `frontend/`:
 
 ```bash
 npm test
+npm run lint
 npm run build
 ```
 
@@ -58,6 +63,7 @@ npm run build
 4. Open Audit History
 5. Confirm latest audit rows appear
 6. Confirm source metadata and safety boundary are visible
+7. Confirm Saved Monitors can create, list, manually run, compare latest/previous values, and link to Audit History
 
 ## Do Not Deploy Yet If
 

@@ -13,7 +13,7 @@
 - Backend host: Render
 - Database: Supabase PostgreSQL
 - Migration tool: Alembic
-- Current migration revision: `20260505_0001`
+- Current migration revision: `20260511_0002`
 
 ## Smoke Tests Passed
 
@@ -33,6 +33,7 @@
 - DrugSignal search for `aspirin` returned 10 FAERS records
 - Audit History showed recent RecallRadar and DrugSignal rows
 - Selected audit detail panel showed audit ID, query, source, endpoint, retrieval timestamp, transform version, and record count
+- Failed-upstream audit events use registry source IDs consistently: `openfda_drug_enforcement` and `openfda_drug_event`
 
 ## Deployment Fixes Applied
 

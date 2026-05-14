@@ -68,7 +68,10 @@ Because the app summarizes public FDA/openFDA safety data, every result should b
 
 ## Current Database Tables
 
-MedTrek AI has Alembic migration tooling, and the initial migration creates `source_registry` and `audit_events`. The SQL schema also includes newer Saved Monitors fields, so migration/schema drift must be reconciled before treating all persistence features as production-ready.
+MedTrek AI has Alembic migration tooling for the current persistence tables:
+
+- `20260505_0001` creates `source_registry` and `audit_events`.
+- `20260511_0002` creates `saved_monitors`.
 
 ### source_registry
 
@@ -106,6 +109,15 @@ Current fields include:
 - disclaimer_version
 - error_message
 - created_at
+
+### Source ID consistency
+
+Audit events must use source IDs that exist in `source_registry`, including failed upstream/error audit events. Current valid source IDs are:
+
+- `openfda_drug_enforcement`
+- `openfda_drug_event`
+
+The failed-upstream audit source ID consistency issue was fixed in commit `2e3bb54`.
 
 ---
 
@@ -175,7 +187,7 @@ Audit trail data must not contain personal health information.
 
 The MVP should only store public-data queries and source metadata. If user accounts or saved monitors are added later, privacy controls must be designed before storing user-specific health interests.
 
-Saved Monitors v2 foundation now exists for repeatable public-data monitor definitions and manual run checks. It still needs migration coverage, monitor-run audit events, privacy controls, and scheduled refresh design before it should be treated as production-ready monitoring.
+Saved Monitors v2.1 exists for repeatable public-data monitor definitions and manual run checks. It still needs monitor-run audit events, privacy controls, and scheduled refresh design before it should be treated as scheduled monitoring or alerting.
 
 ---
 
@@ -188,7 +200,6 @@ Current audit architecture does not yet include:
 - Scheduled ingestion audit events
 - Change detection history
 - Raw upstream snapshot storage
-- Full migration/schema alignment for newer tables such as `saved_monitors`
 - Full production observability with dashboards, alerts, or SLOs
 - PHI-safe user-specific privacy model
 
@@ -199,9 +210,9 @@ Current audit architecture does not yet include:
 1. Keep current audit metadata visible in API responses and UI.
 2. Keep fail-soft audit persistence stable.
 3. Keep README/docs aligned with implemented features and partial features.
-4. Reconcile Alembic migration coverage with the current SQL schema.
-5. Add monitor-run audit events for Saved Monitors v2 manual checks.
-6. Harden Saved Monitors v2 with migration coverage, privacy controls, and scheduled refresh design.
+4. Keep Alembic migrations and SQL schema aligned as persistence evolves.
+5. Add monitor-run audit events for Saved Monitors v2.1 manual checks.
+6. Harden Saved Monitors v2.1 with privacy controls and scheduled refresh design.
 
 ## Audit History API and UI
 

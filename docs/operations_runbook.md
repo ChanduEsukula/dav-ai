@@ -155,7 +155,7 @@ Expected app behavior:
 Recommended checks:
 1. Confirm Render environment has DATABASE_URL.
 2. Confirm Supabase database is active.
-3. Confirm Alembic migration 20260505_0001 has been applied.
+3. Confirm Alembic migrations are at head, currently `20260511_0002`.
 4. Call /api/v1/audit-events?limit=10.
 5. Search Render logs using the request ID.
 

@@ -23,7 +23,7 @@ MedTrek AI currently has:
 - Supabase/PostgreSQL schema for source registry and audit events
 - Fail-soft audit repository
 - Audit-event persistence wired into RecallRadar and DrugSignal routes
-- Saved monitor persistence is partially implemented in repository code and `backend/db/schema.sql`
+- Saved Monitors v2.1 persistence in repository code, `backend/db/schema.sql`, and Alembic migration `20260511_0002`
 - Backend tests passing
 - Frontend tests passing
 - GitHub Actions CI running backend tests, frontend tests, lint, and build
@@ -31,13 +31,19 @@ MedTrek AI currently has:
 Current backend test status:
 
 ```bash
-45 passed
+76 passed
 ```
 
 Current frontend test status:
 
 ```bash
-27 passed
+49 passed
+```
+
+Current frontend lint and production build status:
+
+```bash
+passed
 ```
 
 ---
@@ -49,13 +55,13 @@ The current database phase supports:
 1. Source registry metadata
 2. Audit event storage
 3. Source/search traceability
-4. Future briefing traceability foundation
-5. Future deployment readiness
-6. Partial Saved Monitors v2 persistence foundation
+4. Saved monitor definitions and latest manual run state
+5. Future briefing traceability foundation
+6. Future deployment readiness
 
 The current implementation intentionally does not store personal health information.
 
-Saved monitor persistence should not be treated as production-complete until Alembic migration coverage, frontend tests, authentication/RBAC, and deployed persistence verification are complete.
+Saved Monitors v2.1 supports manual run checks and persisted latest/previous state. It is not scheduled monitoring, alerting, authentication/RBAC, or user-specific clinical tracking.
 
 ---
 
@@ -116,7 +122,7 @@ Stores one audit event per search/API workflow.
 
 ### saved_monitors
 
-Stores repeatable public-data monitor definitions and latest manual run state when the table exists.
+Stores repeatable public-data monitor definitions and latest manual run state.
 
 | Field | Type | Notes |
 |---|---|---|
@@ -133,9 +139,9 @@ Stores repeatable public-data monitor definitions and latest manual run state wh
 | previous_record_count | integer nullable | Previous returned record count |
 | status | text | not_checked, checked, or error |
 
-Important limitation:
+Migration status:
 
-`saved_monitors` is present in `backend/db/schema.sql` and repository code, but additional Alembic migration coverage is needed before this table should be treated as production-ready.
+`saved_monitors` is present in `backend/db/schema.sql`, repository code, and Alembic migration `20260511_0002_create_saved_monitors.py`.
 
 ---
 
@@ -178,7 +184,17 @@ Responsibilities:
 - Defines `saved_monitors`
 - Seeds current openFDA source metadata
 - Provides the SQL foundation for current persistence tables
-- Must be reconciled with Alembic migrations for newer tables such as `saved_monitors`
+
+### Audit source ID consistency
+
+Audit event `source_id` values must match `source_registry.source_id`, including failed upstream/error audit events.
+
+Current valid source IDs:
+
+- `openfda_drug_enforcement`
+- `openfda_drug_event`
+
+The failed-upstream audit source ID consistency issue was fixed in commit `2e3bb54`.
 
 ---
 
@@ -228,7 +244,6 @@ Persistence does not yet include:
 - Alerts
 - Briefing storage
 - Raw upstream payload snapshots
-- Additional Alembic migration coverage for newer tables such as `saved_monitors`
 - Source registry synchronization from code to database
 - User-specific health profiles
 - PHI workflows
@@ -250,16 +265,16 @@ This prevents database downtime from breaking public source search.
 Recommended next database steps:
 
 1. Keep current audit persistence stable.
-2. Reconcile Alembic migrations with the current SQL schema, especially `saved_monitors`.
+2. Keep Alembic migrations and `backend/db/schema.sql` aligned as persistence evolves.
 3. Decide whether source registry should be code-first, database-first, or synchronized.
 4. Add briefing audit events only after Briefing Engine behavior stabilizes.
-5. Harden Saved Monitors v2 persistence only after migration coverage, privacy boundaries, and auth/RBAC design are clearer.
+5. Harden Saved Monitors beyond manual checks only after privacy boundaries and auth/RBAC design are clearer.
 6. Avoid raw payload storage until there is a clear reason to store full upstream responses.
 
 ---
 
 ## Current Recommendation
 
-Do not treat the Saved Monitors persistence foundation as production-complete yet.
+Treat Saved Monitors v2.1 as a verified manual monitoring workflow, not as scheduled monitoring or alerting.
 
-The next immediate persistence step should be documentation refresh and migration reconciliation. Scheduled monitor refresh and alerts should come after Saved Monitors v2 persistence is verified end to end.
+Scheduled monitor refresh and alerts should come after the current manual workflow remains stable and privacy/auth boundaries are designed.
