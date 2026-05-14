@@ -6,13 +6,15 @@ import SavedMonitorsPage from './SavedMonitorsPage'
 import {
   createSavedMonitor,
   deleteSavedMonitor,
+  listSavedMonitorRuns,
   listSavedMonitors,
   runSavedMonitor,
 } from '../api/savedMonitors'
-import type { SavedMonitor } from '../api/savedMonitors'
+import type { SavedMonitor, SavedMonitorRun } from '../api/savedMonitors'
 
 vi.mock('../api/savedMonitors', () => ({
   listSavedMonitors: vi.fn(),
+  listSavedMonitorRuns: vi.fn(),
   createSavedMonitor: vi.fn(),
   deleteSavedMonitor: vi.fn(),
   runSavedMonitor: vi.fn(),
@@ -33,10 +35,25 @@ const baseMonitor: SavedMonitor = {
   status: 'not_checked',
 }
 
+const baseRun: SavedMonitorRun = {
+  run_id: 'run-1',
+  monitor_id: 'monitor-1',
+  module: 'recallradar',
+  query: 'eye drops',
+  status: 'success',
+  record_count: 5,
+  score: 74,
+  score_label: 'Medium',
+  audit_id: '11111111-1111-1111-1111-111111111111',
+  created_at: '2026-05-11T13:05:00Z',
+  error_message: null,
+}
+
 describe('SavedMonitorsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.restoreAllMocks()
+    vi.mocked(listSavedMonitorRuns).mockResolvedValue([])
     window.history.replaceState(null, '', '/')
   })
 
@@ -82,7 +99,62 @@ describe('SavedMonitorsPage', () => {
       expect(screen.getByText('Score +6')).toBeInTheDocument()
       expect(screen.getByText('Records +2')).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'View Audit' })).toBeInTheDocument()
+      expect(screen.getByText('No manual run history yet.')).toBeInTheDocument()
     })
+  })
+
+  it('renders saved monitor run history returned by the API', async () => {
+    vi.mocked(listSavedMonitors).mockResolvedValue([
+      {
+        ...baseMonitor,
+        status: 'checked',
+        latest_score: 74,
+        latest_record_count: 5,
+      },
+    ])
+    vi.mocked(listSavedMonitorRuns).mockResolvedValue([baseRun])
+
+    render(<SavedMonitorsPage />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Eye drops monitor')).toBeInTheDocument()
+      expect(screen.getByText(/RecallRadar · success/i)).toBeInTheDocument()
+      expect(screen.getByText('Records 5')).toBeInTheDocument()
+      expect(screen.getByText('74 Medium')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'View run audit' })).toBeInTheDocument()
+    })
+  })
+
+  it('renders run history empty state for a monitor with no runs', async () => {
+    vi.mocked(listSavedMonitors).mockResolvedValue([baseMonitor])
+    vi.mocked(listSavedMonitorRuns).mockResolvedValue([])
+
+    render(<SavedMonitorsPage />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Eye drops monitor')).toBeInTheDocument()
+      expect(screen.getByText('No manual run history yet.')).toBeInTheDocument()
+    })
+  })
+
+  it('opens Audit History URL state from a run-history audit link', async () => {
+    vi.mocked(listSavedMonitors).mockResolvedValue([baseMonitor])
+    vi.mocked(listSavedMonitorRuns).mockResolvedValue([baseRun])
+    const dispatchSpy = vi.spyOn(window, 'dispatchEvent')
+
+    render(<SavedMonitorsPage />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'View run audit' })).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'View run audit' }))
+
+    expect(window.location.search).toContain('page=audit')
+    expect(window.location.search).toContain('audit_id=11111111-1111-1111-1111-111111111111')
+    expect(dispatchSpy).toHaveBeenCalled()
+
+    dispatchSpy.mockRestore()
   })
 
   it('renders unchanged and negative change indicators', async () => {
@@ -277,6 +349,7 @@ describe('SavedMonitorsPage', () => {
 
     await waitFor(() => {
       expect(runSavedMonitor).toHaveBeenCalledWith('monitor-1')
+      expect(listSavedMonitorRuns).toHaveBeenCalledWith('monitor-1')
       expect(screen.getByText('checked')).toBeInTheDocument()
       expect(screen.getByText('88')).toBeInTheDocument()
       expect(screen.getByText('70')).toBeInTheDocument()

@@ -8,8 +8,8 @@ This is not production-ready healthcare software. It should not be used for clin
 
 ## Verified Checks
 
-- Backend tests: 76 passed
-- Frontend tests: 51 passed
+- Backend tests: 79 passed
+- Frontend tests: 54 passed
 - Frontend lint: passed
 - Frontend production build: passed
 - Playwright E2E smoke test: 1 passed locally
@@ -49,7 +49,7 @@ This is not production-ready healthcare software. It should not be used for clin
 - Audit History
 - Data Sources
 - System/Data Quality
-- Saved Monitors v2.1 manual monitoring
+- Saved Monitors v2.2 manual monitoring foundation with run history
 
 ## Live Deployment Verified
 
@@ -71,7 +71,6 @@ Remaining gaps include:
 - No auth/RBAC.
 - No scheduled monitor refresh.
 - No alerts.
-- No monitor run-history table beyond latest/previous comparison.
 - No raw source snapshot or payload hashing.
 - No immutable audit/retention policy.
 - No production observability dashboard/SLOs.
@@ -91,7 +90,7 @@ Remaining gaps include:
 
 ## Next Recommended Sprint
 
-- Improve saved monitor run history.
+- Expand saved monitor run-history review.
 - Plan scheduled monitoring and alerts.
 - Add a clearer production observability roadmap.
 - Decide whether the next major product step should be scheduled monitor refresh, alerting, or auth/RBAC.

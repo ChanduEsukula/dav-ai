@@ -23,6 +23,13 @@ class SavedMonitorStatus(str, Enum):
     ERROR = "error"
 
 
+class SavedMonitorRunStatus(str, Enum):
+    """Saved monitor run-history status values."""
+
+    SUCCESS = "success"
+    ERROR = "error"
+
+
 class SavedMonitorCreate(BaseModel):
     """Request body for creating a saved monitor."""
 
@@ -46,3 +53,19 @@ class SavedMonitor(BaseModel):
     latest_record_count: Optional[int] = None
     previous_record_count: Optional[int] = None
     status: SavedMonitorStatus = SavedMonitorStatus.NOT_CHECKED
+
+
+class SavedMonitorRun(BaseModel):
+    """Saved monitor manual run-history response model."""
+
+    run_id: UUID
+    monitor_id: UUID
+    module: SavedMonitorModule
+    query: str
+    status: SavedMonitorRunStatus
+    record_count: Optional[int] = None
+    score: Optional[int] = None
+    score_label: Optional[str] = None
+    audit_id: Optional[str] = None
+    created_at: datetime
+    error_message: Optional[str] = None

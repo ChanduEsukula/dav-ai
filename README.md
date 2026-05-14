@@ -8,9 +8,9 @@ This project is an MVP and portfolio-grade engineering prototype. It is not a me
 
 ---
 
-## Recent Milestone: Saved Monitors v2.1
+## Recent Milestone: Saved Monitors v2.2 Foundation
 
-Saved Monitors v2.1 adds a monitoring workflow foundation to MedTrek AI. Users can save repeatable RecallRadar or DrugSignal searches, manually run checks, persist monitor state with Supabase/PostgreSQL, compare latest and previous results, view change indicators, prevent duplicate monitors, and open related Audit History events for traceability.
+Saved Monitors v2.2 foundation adds manual run history to MedTrek AI's monitoring workflow foundation. Users can save repeatable RecallRadar or DrugSignal searches, manually run checks, persist monitor state with Supabase/PostgreSQL, compare latest and previous results, review recent manual runs, view change indicators, prevent duplicate monitors, and open related Audit History events for traceability.
 
 This milestone was verified through backend tests, frontend tests, production build checks, GitHub Actions CI, and manual browser verification.
 
@@ -35,7 +35,7 @@ MedTrek AI currently includes:
 - **Safety Briefing Engine** for deterministic role-aware public-data safety briefings.
 - **Source Registry** for public data source transparency.
 - **Audit History** for persisted source/search traceability.
-- **Saved Monitors v2.1** for saved repeatable searches, manual run checks, latest/previous comparison, change indicators, duplicate prevention, and audit linking.
+- **Saved Monitors v2.2 foundation** for saved repeatable searches, manual run checks, latest/previous comparison, manual run history, change indicators, duplicate prevention, and audit linking.
 - **System/Data Quality views** for operational and audit-persistence visibility.
 - **Supabase/PostgreSQL audit and saved-monitor persistence** through fail-soft backend repositories.
 - **GitHub Actions CI** for backend tests, frontend tests, frontend lint, and frontend production build.
@@ -67,9 +67,9 @@ MedTrek AI is intentionally focused on public-data traceability, operational rea
 
 | Status | Features |
 |---|---|
-| Implemented | RecallRadar; DrugSignal; Audit History; System Status / Data Quality; Data Sources; deterministic safety briefings; Saved Monitors v2.1 manual monitoring workflow. |
+| Implemented | RecallRadar; DrugSignal; Audit History; System Status / Data Quality; Data Sources; deterministic safety briefings; Saved Monitors v2.2 manual monitoring workflow with run history. |
 | Partial | Deployment hardening; production observability; authentication/RBAC planning. |
-| Planned | Scheduled saved monitor refresh; automated alerts; authentication/RBAC; briefing persistence/history; saved monitor run history; raw snapshot/hash-based reproducibility; Regional Health Pulse; EnviroHealth Signal; CNN/OCR label scanner; RAG/LLM upgrades. |
+| Planned | Scheduled saved monitor refresh; automated alerts; authentication/RBAC; briefing persistence/history; raw snapshot/hash-based reproducibility; Regional Health Pulse; EnviroHealth Signal; CNN/OCR label scanner; RAG/LLM upgrades. |
 
 ---
 
@@ -144,14 +144,14 @@ Briefings are generated from structured RecallRadar and DrugSignal response data
 
 DrugSignal briefing output has been upgraded to use DrugSignal Intelligence Score v1 and Reaction Classification v1, with source/audit details and limitations kept visible.
 
-### Saved Monitors v2.1
+### Saved Monitors v2.2 Foundation
 
-Saved Monitors v2.1 lets users save repeatable RecallRadar or DrugSignal searches and manually run checks over time.
+Saved Monitors v2.2 foundation lets users save repeatable RecallRadar or DrugSignal searches, manually run checks over time, and review recent manual run history for a monitor.
 
 Current manual workflow:
 
 ```text
-Save monitor → Run check → Review latest score/count/audit ID → Run again later → Compare latest and previous values
+Save monitor → Run check → Review latest score/count/audit ID → Review recent manual runs → Run again later → Compare latest and previous values
 ```
 
 The current implementation supports:
@@ -167,10 +167,11 @@ The current implementation supports:
 - `Score unchanged` and `Records unchanged` when values match across runs.
 - Latest audit ID and last-checked timestamp.
 - A link from the latest saved-monitor audit ID to Audit History.
+- Manual run-history rows with run time, module, status, record count, score/label, and audit link when available.
 - Duplicate prevention by module and normalized query.
 - Clear frontend duplicate-monitor error display.
 
-Saved Monitors is not scheduled monitoring yet. It does not include scheduled refresh, automated alerts, user accounts, authentication/RBAC, briefing history, saved monitor run history, or alert delivery preferences.
+Saved Monitors is not scheduled monitoring yet. It does not include scheduled refresh, automated alerts, user accounts, authentication/RBAC, briefing history, or alert delivery preferences.
 
 Documentation:
 
@@ -209,8 +210,8 @@ docs/manual_saved_monitors_v1.md
 - Supabase/PostgreSQL `saved_monitors` table.
 - Audit History list/detail API.
 - Audit History frontend page with filters, detail panel, CSV export, and copy actions.
-- Saved Monitors v2.1 for creating, listing, deleting, duplicate prevention, and manually running repeatable RecallRadar or DrugSignal monitors.
-- Saved monitor latest/previous comparison and change indicators.
+- Saved Monitors v2.2 foundation for creating, listing, deleting, duplicate prevention, manually running repeatable RecallRadar or DrugSignal monitors, and reviewing recent manual run history.
+- Saved monitor latest/previous comparison, manual run history, and change indicators.
 - System Status page.
 - Data Quality panel.
 - Request ID propagation and `X-Request-ID` response headers.
@@ -230,7 +231,7 @@ docs/manual_saved_monitors_v1.md
 - Scheduled monitor refresh.
 - Automated alerts.
 - Briefing persistence.
-- Saved monitor run history beyond latest/previous fields.
+- Scheduled monitor run history and alerting beyond manual checks.
 - Alert delivery preferences.
 - Formal ML model training.
 - Embedding search or clustering model.
@@ -243,7 +244,7 @@ docs/manual_saved_monitors_v1.md
 
 ## Current Engineering Status
 
-The active MVP modules are RecallRadar, DrugSignal, Audit History, Safety Briefing Engine, Source Registry, System Status, Data Quality, and Saved Monitors v2.1.
+The active MVP modules are RecallRadar, DrugSignal, Audit History, Safety Briefing Engine, Source Registry, System Status, Data Quality, and Saved Monitors v2.2 foundation.
 
 Current engineering support includes:
 
@@ -266,13 +267,13 @@ Current engineering support includes:
 Current backend test status:
 
 ```bash
-76 passed
+79 passed
 ```
 
 Current frontend test status:
 
 ```bash
-51 passed
+54 passed
 ```
 
 ---
@@ -555,11 +556,12 @@ Current Saved Monitors endpoints:
 ```text
 GET /api/v1/saved-monitors
 POST /api/v1/saved-monitors
+GET /api/v1/saved-monitors/{monitor_id}/runs
 POST /api/v1/saved-monitors/{monitor_id}/run
 DELETE /api/v1/saved-monitors/{monitor_id}
 ```
 
-Saved Monitors endpoints support repeatable public-data searches and manual run checks. They are not scheduled monitoring or alerting yet.
+Saved Monitors endpoints support repeatable public-data searches, manual run checks, and manual run history. They are not scheduled monitoring or alerting yet.
 
 ---
 
@@ -730,6 +732,7 @@ GET /api/v1/audit-events
 GET /api/v1/audit-events/{audit_id}
 GET /api/v1/saved-monitors
 POST /api/v1/saved-monitors
+GET /api/v1/saved-monitors/{monitor_id}/runs
 POST /api/v1/saved-monitors/{monitor_id}/run
 DELETE /api/v1/saved-monitors/{monitor_id}
 ```
@@ -868,7 +871,7 @@ pytest
 Current backend test status:
 
 ```bash
-76 passed
+79 passed
 ```
 
 Backend test coverage includes:
@@ -891,6 +894,7 @@ Backend test coverage includes:
 - Saved monitor duplicate prevention.
 - Saved monitor manual run checks.
 - Saved monitor latest/previous value preservation.
+- Saved monitor manual run-history behavior.
 
 Run frontend tests:
 
@@ -902,7 +906,7 @@ npm test
 Current frontend test status:
 
 ```bash
-51 passed
+54 passed
 ```
 
 Frontend test coverage includes:
@@ -914,7 +918,7 @@ Frontend test coverage includes:
 - Safety briefing generator behavior.
 - Audit History filters, copy actions, CSV export, and URL state.
 - System Status / Data Quality page behavior.
-- Saved Monitors loading, empty state, creation, duplicate error handling, validation, run checks, latest/previous values, change indicators, delete confirmation, audit linking, and error states.
+- Saved Monitors loading, empty state, creation, duplicate error handling, validation, run checks, manual run history, latest/previous values, change indicators, delete confirmation, audit linking, and error states.
 
 Run frontend lint and production build:
 
@@ -994,11 +998,11 @@ These docs support reproducibility, reviewer confidence, and production-readines
 
 Recommended next steps:
 
-1. Keep RecallRadar, DrugSignal, Audit History, Source Registry, System/Data Quality, Safety Briefing Engine, and Saved Monitors v2.1 stable.
+1. Keep RecallRadar, DrugSignal, Audit History, Source Registry, System/Data Quality, Safety Briefing Engine, and Saved Monitors v2.2 foundation stable.
 2. Refresh roadmap/docs as features move from planned to implemented.
 3. Improve Trend Snapshot examples using repeated-query audit history.
 4. Add frontend trend comparison visualization improvements.
-5. Add saved monitor detail page and run history.
+5. Expand saved monitor detail and run-history review.
 6. Add scheduled refresh and alert workflows after saved monitors are stable.
 7. Add authentication and role-aware access control.
 8. Add a production observability dashboard or monitoring summary beyond current request tracing and operational transparency.

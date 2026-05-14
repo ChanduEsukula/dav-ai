@@ -72,6 +72,7 @@ MedTrek AI has Alembic migration tooling for the current persistence tables:
 
 - `20260505_0001` creates `source_registry` and `audit_events`.
 - `20260511_0002` creates `saved_monitors`.
+- `20260514_0003` creates `saved_monitor_runs`.
 
 ### source_registry
 
@@ -187,7 +188,7 @@ Audit trail data must not contain personal health information.
 
 The MVP should only store public-data queries and source metadata. If user accounts or saved monitors are added later, privacy controls must be designed before storing user-specific health interests.
 
-Saved Monitors v2.1 exists for repeatable public-data monitor definitions and manual run checks. It still needs monitor-run audit events, privacy controls, and scheduled refresh design before it should be treated as scheduled monitoring or alerting.
+Saved Monitors v2.2 exists for repeatable public-data monitor definitions, manual run checks, and manual run history. It still needs privacy controls and scheduled refresh design before it should be treated as scheduled monitoring or alerting.
 
 ---
 
@@ -211,8 +212,8 @@ Current audit architecture does not yet include:
 2. Keep fail-soft audit persistence stable.
 3. Keep README/docs aligned with implemented features and partial features.
 4. Keep Alembic migrations and SQL schema aligned as persistence evolves.
-5. Add monitor-run audit events for Saved Monitors v2.1 manual checks.
-6. Harden Saved Monitors v2.1 with privacy controls and scheduled refresh design.
+5. Expand Saved Monitors v2.2 run-history review.
+6. Harden Saved Monitors v2.2 with privacy controls and scheduled refresh design.
 
 ## Audit History API and UI
 

@@ -4,6 +4,7 @@ import type { FormEvent } from "react";
 import {
   createSavedMonitor,
   deleteSavedMonitor,
+  listSavedMonitorRuns,
   listSavedMonitors,
   runSavedMonitor,
 } from "../api/savedMonitors";
@@ -11,6 +12,7 @@ import type {
   CreateSavedMonitorPayload,
   SavedMonitor,
   SavedMonitorModule,
+  SavedMonitorRun,
 } from "../api/savedMonitors";
 import "./SavedMonitorsPage.css";
 
@@ -32,6 +34,14 @@ function formatDate(value: string | null): string {
 
 function formatNullableNumber(value: number | null): string {
   return value === null ? "N/A" : String(value);
+}
+
+function formatScore(run: SavedMonitorRun): string {
+  if (run.score === null) {
+    return "Score N/A";
+  }
+
+  return run.score_label ? `${run.score} ${run.score_label}` : String(run.score);
 }
 
 function formatSignedChange(value: number): string {
@@ -119,6 +129,28 @@ export default function SavedMonitorsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [runningMonitorId, setRunningMonitorId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [runHistoryByMonitor, setRunHistoryByMonitor] = useState<
+    Record<string, SavedMonitorRun[]>
+  >({});
+
+  async function loadRunHistoryForMonitor(monitorId: string) {
+    try {
+      const runs = await listSavedMonitorRuns(monitorId);
+      setRunHistoryByMonitor((current) => ({
+        ...current,
+        [monitorId]: runs,
+      }));
+    } catch {
+      setRunHistoryByMonitor((current) => ({
+        ...current,
+        [monitorId]: [],
+      }));
+    }
+  }
+
+  async function loadRunHistoryForMonitors(items: SavedMonitor[]) {
+    await Promise.all(items.map((monitor) => loadRunHistoryForMonitor(monitor.id)));
+  }
 
   async function loadMonitors() {
     setIsLoading(true);
@@ -127,6 +159,7 @@ export default function SavedMonitorsPage() {
     try {
       const data = await listSavedMonitors();
       setMonitors(data);
+      await loadRunHistoryForMonitors(data);
     } catch {
       setErrorMessage("Unable to load saved monitors.");
     } finally {
@@ -137,6 +170,7 @@ export default function SavedMonitorsPage() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadMonitors();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -159,6 +193,10 @@ export default function SavedMonitorsPage() {
     try {
       const created = await createSavedMonitor(payload);
       setMonitors((current) => [created, ...current]);
+      setRunHistoryByMonitor((current) => ({
+        ...current,
+        [created.id]: [],
+      }));
       setName("");
       setQuery("");
       setModule("recallradar");
@@ -185,6 +223,11 @@ export default function SavedMonitorsPage() {
       setMonitors((current) =>
         current.filter((monitor) => monitor.id !== monitorId),
       );
+      setRunHistoryByMonitor((current) => {
+        const next = { ...current };
+        delete next[monitorId];
+        return next;
+      });
     } catch {
       setErrorMessage("Unable to delete saved monitor.");
     }
@@ -201,8 +244,10 @@ export default function SavedMonitorsPage() {
           monitor.id === monitorId ? updated : monitor,
         ),
       );
+      await loadRunHistoryForMonitor(monitorId);
     } catch {
       setErrorMessage("Unable to run saved monitor check.");
+      await loadRunHistoryForMonitor(monitorId);
     } finally {
       setRunningMonitorId(null);
     }
@@ -211,7 +256,7 @@ export default function SavedMonitorsPage() {
   return (
     <section className="saved-monitors-page" aria-labelledby="saved-monitors-title">
       <div className="saved-monitors-hero">
-        <p className="eyebrow">Saved Monitors v2.1</p>
+        <p className="eyebrow">Saved Monitors v2.2</p>
         <h1 id="saved-monitors-title">Saved Monitors</h1>
         <p>
           Save repeatable RecallRadar or DrugSignal searches, run checks
@@ -295,6 +340,7 @@ export default function SavedMonitorsPage() {
                   <th>Records</th>
                   <th>Previous records</th>
                   <th>Change</th>
+                  <th>Recent manual runs</th>
                   <th>Last checked</th>
                   <th>Latest audit</th>
                   <th>Actions</th>
@@ -337,6 +383,37 @@ export default function SavedMonitorsPage() {
                               monitor.previous_record_count,
                             )}
                           </span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="saved-monitor-run-history">
+                          {(runHistoryByMonitor[monitor.id] ?? []).length === 0 ? (
+                            <span className="saved-monitor-muted-inline">
+                              No manual run history yet.
+                            </span>
+                          ) : (
+                            (runHistoryByMonitor[monitor.id] ?? []).slice(0, 3).map((run) => (
+                              <div className="saved-monitor-run-item" key={run.run_id}>
+                                <div>
+                                  <strong>{formatDate(run.created_at)}</strong>
+                                  <span>{moduleLabels[run.module]} · {run.status}</span>
+                                </div>
+                                <div>
+                                  <span>Records {formatNullableNumber(run.record_count)}</span>
+                                  <span>{formatScore(run)}</span>
+                                </div>
+                                {run.audit_id ? (
+                                  <button
+                                    type="button"
+                                    className="audit-link-button"
+                                    onClick={() => openAuditDetail(run.audit_id as string)}
+                                  >
+                                    View run audit
+                                  </button>
+                                ) : null}
+                              </div>
+                            ))
+                          )}
                         </div>
                       </td>
                       <td>{formatDate(monitor.last_checked_at)}</td>
@@ -388,7 +465,7 @@ export default function SavedMonitorsPage() {
       <div className="saved-monitor-note">
         <strong>Current scope:</strong> Saved Monitors currently support manual
         run checks, Supabase persistence, latest/previous result comparison,
-        change indicators, duplicate prevention, and audit linking. Scheduled
+        run history, change indicators, duplicate prevention, and audit linking. Scheduled
         refresh and alert notifications are future Saved Monitors v2 steps.
       </div>
     </section>

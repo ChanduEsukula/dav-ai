@@ -225,6 +225,7 @@ def test_run_recallradar_saved_monitor(monkeypatch) -> None:
                 {
                     "risk_score": {
                         "score": 52,
+                        "label": "Medium",
                     }
                 }
             ],
@@ -258,6 +259,22 @@ def test_run_recallradar_saved_monitor(monkeypatch) -> None:
     assert data["previous_record_count"] is None
     assert data["last_checked_at"] is not None
 
+    runs_response = client.get(f"/api/v1/saved-monitors/{monitor_id}/runs")
+    assert runs_response.status_code == 200
+    runs = runs_response.json()
+
+    assert len(runs) == 1
+    assert runs[0]["monitor_id"] == monitor_id
+    assert runs[0]["module"] == "recallradar"
+    assert runs[0]["query"] == "eye drops"
+    assert runs[0]["status"] == "success"
+    assert runs[0]["record_count"] == 5
+    assert runs[0]["score"] == 52
+    assert runs[0]["score_label"] == "Medium"
+    assert runs[0]["audit_id"] == RECALL_AUDIT_ID
+    assert runs[0]["created_at"]
+    assert runs[0]["error_message"] is None
+
 
 def test_run_drugsignal_saved_monitor(monkeypatch) -> None:
     async def fake_search_drug_events(
@@ -273,6 +290,7 @@ def test_run_drugsignal_saved_monitor(monkeypatch) -> None:
             },
             "intelligence_score": {
                 "score": 80,
+                "label": "High",
             },
         }
 
@@ -303,6 +321,19 @@ def test_run_drugsignal_saved_monitor(monkeypatch) -> None:
     assert data["previous_score"] is None
     assert data["previous_record_count"] is None
     assert data["last_checked_at"] is not None
+
+    runs_response = client.get(f"/api/v1/saved-monitors/{monitor_id}/runs")
+    assert runs_response.status_code == 200
+    runs = runs_response.json()
+
+    assert len(runs) == 1
+    assert runs[0]["module"] == "drugsignal"
+    assert runs[0]["query"] == "metformin"
+    assert runs[0]["status"] == "success"
+    assert runs[0]["record_count"] == 10
+    assert runs[0]["score"] == 80
+    assert runs[0]["score_label"] == "High"
+    assert runs[0]["audit_id"] == DRUG_AUDIT_ID
 
 
 def test_run_saved_monitor_preserves_previous_values(monkeypatch) -> None:
@@ -359,6 +390,82 @@ def test_run_saved_monitor_preserves_previous_values(monkeypatch) -> None:
     assert data["latest_record_count"] == 7
     assert data["previous_score"] == 52
     assert data["previous_record_count"] == 5
+
+    runs_response = client.get(f"/api/v1/saved-monitors/{monitor_id}/runs")
+    assert runs_response.status_code == 200
+    runs = runs_response.json()
+
+    assert [run["audit_id"] for run in runs] == [SECOND_AUDIT_ID, FIRST_AUDIT_ID]
+
+
+def test_list_saved_monitor_runs_empty_state() -> None:
+    create_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Eye drops monitor",
+            "query": "eye drops",
+            "module": "recallradar",
+        },
+    )
+    monitor_id = create_response.json()["id"]
+
+    response = client.get(f"/api/v1/saved-monitors/{monitor_id}/runs")
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+def test_list_saved_monitor_runs_not_found() -> None:
+    response = client.get("/api/v1/saved-monitors/00000000-0000-0000-0000-000000000000/runs")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Saved monitor not found"
+
+
+def test_failed_saved_monitor_run_records_history(monkeypatch) -> None:
+    async def fake_search_recalls(
+        query: str,
+        limit: int,
+        request_id: str | None = None,
+    ):
+        raise RuntimeError("openFDA unavailable")
+
+    monkeypatch.setattr(
+        "app.routes.saved_monitors.execute_recall_search",
+        fake_search_recalls,
+    )
+
+    create_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Eye drops monitor",
+            "query": "eye drops",
+            "module": "recallradar",
+        },
+    )
+    monitor_id = create_response.json()["id"]
+
+    run_response = client.post(f"/api/v1/saved-monitors/{monitor_id}/run")
+
+    assert run_response.status_code == 502
+
+    list_response = client.get("/api/v1/saved-monitors")
+    assert list_response.status_code == 200
+    assert list_response.json()[0]["status"] == "error"
+
+    runs_response = client.get(f"/api/v1/saved-monitors/{monitor_id}/runs")
+    assert runs_response.status_code == 200
+    runs = runs_response.json()
+
+    assert len(runs) == 1
+    assert runs[0]["status"] == "error"
+    assert runs[0]["module"] == "recallradar"
+    assert runs[0]["query"] == "eye drops"
+    assert runs[0]["record_count"] == 0
+    assert runs[0]["score"] is None
+    assert runs[0]["score_label"] is None
+    assert runs[0]["audit_id"] is None
+    assert "openFDA unavailable" in runs[0]["error_message"]
 
 
 def test_run_saved_monitor_not_found() -> None:

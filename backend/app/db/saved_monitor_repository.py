@@ -6,6 +6,8 @@ This keeps local/test development safe while enabling persistence in deployed
 environments after the saved_monitors table is created.
 """
 
+from __future__ import annotations
+
 import logging
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
@@ -18,6 +20,8 @@ from app.schemas.saved_monitors import (
     SavedMonitor,
     SavedMonitorCreate,
     SavedMonitorModule,
+    SavedMonitorRun,
+    SavedMonitorRunStatus,
     SavedMonitorStatus,
 )
 
@@ -29,6 +33,7 @@ class SavedMonitorRepository:
 
     def __init__(self) -> None:
         self._items: dict[UUID, SavedMonitor] = {}
+        self._runs: dict[UUID, list[SavedMonitorRun]] = {}
 
     def _database_url(self) -> str | None:
         return get_database_url()
@@ -49,10 +54,32 @@ class SavedMonitorRepository:
             status=SavedMonitorStatus(row["status"]),
         )
 
+    def _row_to_run(self, row) -> SavedMonitorRun:
+        return SavedMonitorRun(
+            run_id=row["run_id"],
+            monitor_id=row["monitor_id"],
+            module=SavedMonitorModule(row["module"]),
+            query=row["query"],
+            status=SavedMonitorRunStatus(row["status"]),
+            record_count=row["record_count"],
+            score=row["score"],
+            score_label=row["score_label"],
+            audit_id=str(row["audit_id"]) if row["audit_id"] else None,
+            created_at=row["created_at"],
+            error_message=row["error_message"],
+        )
+
     def _list_memory(self) -> list[SavedMonitor]:
         return sorted(
             self._items.values(),
             key=lambda monitor: monitor.created_at,
+            reverse=True,
+        )
+
+    def _list_runs_memory(self, monitor_id: UUID) -> list[SavedMonitorRun]:
+        return sorted(
+            self._runs.get(monitor_id, []),
+            key=lambda run: run.created_at,
             reverse=True,
         )
 
@@ -347,6 +374,147 @@ class SavedMonitorRepository:
             self._items[monitor_id] = updated
             return updated
 
+    def create_run(
+        self,
+        monitor: SavedMonitor,
+        *,
+        status: SavedMonitorRunStatus,
+        record_count: int | None = None,
+        score: int | None = None,
+        score_label: str | None = None,
+        audit_id: str | None = None,
+        error_message: str | None = None,
+    ) -> SavedMonitorRun:
+        """Persist one manual saved monitor run-history row."""
+
+        run = SavedMonitorRun(
+            run_id=uuid4(),
+            monitor_id=monitor.id,
+            module=monitor.module,
+            query=monitor.query,
+            status=status,
+            record_count=record_count,
+            score=score,
+            score_label=score_label,
+            audit_id=audit_id,
+            created_at=datetime.now(timezone.utc),
+            error_message=error_message,
+        )
+
+        database_url = self._database_url()
+        if not database_url:
+            self._runs.setdefault(monitor.id, []).append(run)
+            return run
+
+        try:
+            with psycopg.connect(database_url, row_factory=dict_row) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        insert into saved_monitor_runs (
+                            run_id,
+                            monitor_id,
+                            module,
+                            query,
+                            status,
+                            record_count,
+                            score,
+                            score_label,
+                            audit_id,
+                            created_at,
+                            error_message
+                        )
+                        values (
+                            %(run_id)s,
+                            %(monitor_id)s,
+                            %(module)s,
+                            %(query)s,
+                            %(status)s,
+                            %(record_count)s,
+                            %(score)s,
+                            %(score_label)s,
+                            %(audit_id)s,
+                            %(created_at)s,
+                            %(error_message)s
+                        )
+                        """,
+                        {
+                            "run_id": run.run_id,
+                            "monitor_id": run.monitor_id,
+                            "module": run.module.value,
+                            "query": run.query,
+                            "status": run.status.value,
+                            "record_count": run.record_count,
+                            "score": run.score,
+                            "score_label": run.score_label,
+                            "audit_id": run.audit_id,
+                            "created_at": run.created_at,
+                            "error_message": run.error_message,
+                        },
+                    )
+
+            return run
+
+        except Exception:
+            logger.exception(
+                "saved_monitor_run_create_failed",
+                extra={
+                    "event": "saved_monitor_run_create_failed",
+                    "monitor_id": str(monitor.id),
+                },
+            )
+            self._runs.setdefault(monitor.id, []).append(run)
+            return run
+
+    def list_runs(self, monitor_id: UUID, limit: int = 10) -> list[SavedMonitorRun]:
+        """Return recent manual run-history rows for one saved monitor."""
+
+        safe_limit = max(1, min(limit, 50))
+        database_url = self._database_url()
+        if not database_url:
+            return self._list_runs_memory(monitor_id)[:safe_limit]
+
+        try:
+            with psycopg.connect(database_url, row_factory=dict_row) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        select
+                            run_id,
+                            monitor_id,
+                            module,
+                            query,
+                            status,
+                            record_count,
+                            score,
+                            score_label,
+                            audit_id,
+                            created_at,
+                            error_message
+                        from saved_monitor_runs
+                        where monitor_id = %(monitor_id)s
+                        order by created_at desc
+                        limit %(limit)s
+                        """,
+                        {
+                            "monitor_id": monitor_id,
+                            "limit": safe_limit,
+                        },
+                    )
+                    rows = cursor.fetchall()
+
+            return [self._row_to_run(row) for row in rows]
+
+        except Exception:
+            logger.exception(
+                "saved_monitor_run_list_failed",
+                extra={
+                    "event": "saved_monitor_run_list_failed",
+                    "monitor_id": str(monitor_id),
+                },
+            )
+            return self._list_runs_memory(monitor_id)[:safe_limit]
+
     def mark_error(self, monitor_id: UUID) -> SavedMonitor | None:
         """Mark a saved monitor run as failed."""
 
@@ -422,6 +590,7 @@ class SavedMonitorRepository:
 
             if deleted:
                 self._items.pop(monitor_id, None)
+                self._runs.pop(monitor_id, None)
 
             return deleted
 
@@ -438,12 +607,14 @@ class SavedMonitorRepository:
                 return False
 
             del self._items[monitor_id]
+            self._runs.pop(monitor_id, None)
             return True
 
     def clear(self) -> None:
         """Clear all saved monitors. Used by tests."""
 
         self._items.clear()
+        self._runs.clear()
 
         database_url = self._database_url()
         if not database_url:
@@ -452,6 +623,14 @@ class SavedMonitorRepository:
         try:
             with psycopg.connect(database_url, row_factory=dict_row) as connection:
                 with connection.cursor() as cursor:
+                    try:
+                        cursor.execute("delete from saved_monitor_runs")
+                    except Exception:
+                        logger.exception(
+                            "saved_monitor_runs_clear_failed",
+                            extra={"event": "saved_monitor_runs_clear_failed"},
+                        )
+                        connection.rollback()
                     cursor.execute("delete from saved_monitors")
 
         except Exception:

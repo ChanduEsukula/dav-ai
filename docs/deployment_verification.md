@@ -13,7 +13,7 @@
 - Backend host: Render
 - Database: Supabase PostgreSQL
 - Migration tool: Alembic
-- Current migration revision: `20260511_0002`
+- Current migration revision: `20260514_0003`
 
 ## Live Smoke Tests Passed
 
@@ -66,6 +66,6 @@ Open unless confirmed completed: the Supabase database password should be rotate
 
 ## Current Status
 
-MedTrek AI is deployed end-to-end with live public FDA data, role-based safety briefings, source metadata, audit history, PostgreSQL persistence, Saved Monitors v2.1 manual monitoring, and API documentation.
+MedTrek AI is deployed end-to-end with live public FDA data, role-based safety briefings, source metadata, audit history, PostgreSQL persistence, Saved Monitors v2.2 manual monitoring, and API documentation.
 
-Remaining production-readiness gaps include no auth/RBAC, no scheduled monitor refresh, no alerts, no full monitor run-history table, no raw payload hashing, no immutable audit/retention policy, and no production observability dashboard/SLOs.
+Remaining production-readiness gaps include no auth/RBAC, no scheduled monitor refresh, no alerts, no scheduled run-history workflow beyond manual runs, no raw payload hashing, no immutable audit/retention policy, and no production observability dashboard/SLOs.

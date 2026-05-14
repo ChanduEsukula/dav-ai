@@ -23,7 +23,7 @@ MedTrek AI currently has:
 - Supabase/PostgreSQL schema for source registry and audit events
 - Fail-soft audit repository
 - Audit-event persistence wired into RecallRadar and DrugSignal routes
-- Saved Monitors v2.1 persistence in repository code, `backend/db/schema.sql`, and Alembic migration `20260511_0002`
+- Saved Monitors v2.2 persistence in repository code, `backend/db/schema.sql`, and Alembic migrations through `20260514_0003`
 - Backend tests passing
 - Frontend tests passing
 - GitHub Actions CI running backend tests, frontend tests, lint, and build
@@ -31,13 +31,13 @@ MedTrek AI currently has:
 Current backend test status:
 
 ```bash
-76 passed
+79 passed
 ```
 
 Current frontend test status:
 
 ```bash
-49 passed
+54 passed
 ```
 
 Current frontend lint and production build status:
@@ -61,7 +61,7 @@ The current database phase supports:
 
 The current implementation intentionally does not store personal health information.
 
-Saved Monitors v2.1 supports manual run checks and persisted latest/previous state. It is not scheduled monitoring, alerting, authentication/RBAC, or user-specific clinical tracking.
+Saved Monitors v2.2 supports manual run checks, persisted latest/previous state, and manual run history. It is not scheduled monitoring, alerting, authentication/RBAC, or user-specific clinical tracking.
 
 ---
 
@@ -141,7 +141,7 @@ Stores repeatable public-data monitor definitions and latest manual run state.
 
 Migration status:
 
-`saved_monitors` is present in `backend/db/schema.sql`, repository code, and Alembic migration `20260511_0002_create_saved_monitors.py`.
+`saved_monitors` is present in `backend/db/schema.sql`, repository code, and Alembic migration `20260511_0002_create_saved_monitors.py`. `saved_monitor_runs` is present in `backend/db/schema.sql`, repository code, and Alembic migration `20260514_0003_create_saved_monitor_runs.py`.
 
 ---
 
@@ -275,6 +275,6 @@ Recommended next database steps:
 
 ## Current Recommendation
 
-Treat Saved Monitors v2.1 as a verified manual monitoring workflow, not as scheduled monitoring or alerting.
+Treat Saved Monitors v2.2 as a verified manual monitoring workflow, not as scheduled monitoring or alerting.
 
 Scheduled monitor refresh and alerts should come after the current manual workflow remains stable and privacy/auth boundaries are designed.

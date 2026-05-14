@@ -129,3 +129,39 @@ create index if not exists idx_saved_monitors_created_at
 
 create index if not exists idx_saved_monitors_last_checked_at
     on saved_monitors(last_checked_at desc);
+
+-- Saved Monitor Run History v2.2
+-- Stores one row for each manual saved monitor run.
+-- This is not scheduled monitoring and does not store raw source payloads.
+
+create table if not exists saved_monitor_runs (
+    run_id uuid primary key,
+    monitor_id uuid not null references saved_monitors(id) on delete cascade,
+    module text not null,
+    query text not null,
+    status text not null,
+    record_count integer,
+    score integer,
+    score_label text,
+    audit_id uuid,
+    created_at timestamptz not null default now(),
+    error_message text,
+
+    constraint saved_monitor_runs_module_check
+        check (module in ('recallradar', 'drugsignal')),
+
+    constraint saved_monitor_runs_status_check
+        check (status in ('success', 'error')),
+
+    constraint saved_monitor_runs_record_count_check
+        check (record_count is null or record_count >= 0),
+
+    constraint saved_monitor_runs_score_check
+        check (score is null or score >= 0)
+);
+
+create index if not exists idx_saved_monitor_runs_monitor_id_created_at
+    on saved_monitor_runs(monitor_id, created_at desc);
+
+create index if not exists idx_saved_monitor_runs_status
+    on saved_monitor_runs(status);
