@@ -33,7 +33,7 @@ jobs:
         run: python -m pytest
 
   frontend-build:
-    name: Frontend lint, test, and build
+    name: Frontend lint, test, build, and E2E
     runs-on: ubuntu-latest
 
     defaults:
@@ -62,3 +62,9 @@ jobs:
 
       - name: Run frontend build
         run: npm run build
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright E2E smoke test
+        run: npm run test:e2e
