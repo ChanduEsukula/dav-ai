@@ -12,6 +12,7 @@ This is not production-ready healthcare software. It should not be used for clin
 - Frontend tests: 49 passed
 - Frontend lint: passed
 - Frontend production build: passed
+- Live deployment smoke verification: passed
 
 ## Key Fix Included
 
@@ -61,7 +62,6 @@ Remaining gaps include:
 
 ## Next Recommended Sprint
 
-- Complete deployment smoke verification.
 - Hide or clearly label placeholder account, signup, and profile pages.
 - Add a Playwright E2E smoke test.
 - Improve saved monitor run history.
