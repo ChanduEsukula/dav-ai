@@ -2,6 +2,7 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.services.search_workflows import drug_signal_search
+from app.sources.registry import OPENFDA_DRUG_EVENT
 
 
 class MockDrugEventClientSuccess:
@@ -173,9 +174,9 @@ def test_search_drug_events_returns_502_and_persists_error_audit(monkeypatch):
     audit_event = saved_audits[0]["audit_event"]
 
     assert audit_event["module"] == "DrugSignal"
-    assert audit_event["source_id"] == "openfda-drug-event"
-    assert audit_event["source_name"] == "openFDA Drug Event API"
-    assert audit_event["endpoint"] == "https://api.fda.gov/drug/event.json"
+    assert audit_event["source_id"] == OPENFDA_DRUG_EVENT["source_id"]
+    assert audit_event["source_name"] == OPENFDA_DRUG_EVENT["source_name"]
+    assert audit_event["endpoint"] == OPENFDA_DRUG_EVENT["endpoint"]
     assert audit_event["query"] == "metformin"
     assert audit_event["query_params"] == {"q": "metformin", "limit": 5}
     assert audit_event["upstream_status"] == "error"

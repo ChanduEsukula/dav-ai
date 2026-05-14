@@ -2,6 +2,7 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.services.search_workflows import recall_search
+from app.sources.registry import OPENFDA_DRUG_ENFORCEMENT
 
 
 class MockOpenFDAClientSuccess:
@@ -155,9 +156,9 @@ def test_search_recalls_returns_502_and_persists_error_audit(monkeypatch):
     audit_event = saved_audits[0]["audit_event"]
 
     assert audit_event["module"] == "RecallRadar"
-    assert audit_event["source_id"] == "openfda-drug-enforcement"
-    assert audit_event["source_name"] == "openFDA Drug Enforcement API"
-    assert audit_event["endpoint"] == "https://api.fda.gov/drug/enforcement.json"
+    assert audit_event["source_id"] == OPENFDA_DRUG_ENFORCEMENT["source_id"]
+    assert audit_event["source_name"] == OPENFDA_DRUG_ENFORCEMENT["source_name"]
+    assert audit_event["endpoint"] == OPENFDA_DRUG_ENFORCEMENT["endpoint"]
     assert audit_event["query"] == "eye drops"
     assert audit_event["query_params"] == {"q": "eye drops", "limit": 5}
     assert audit_event["upstream_status"] == "error"

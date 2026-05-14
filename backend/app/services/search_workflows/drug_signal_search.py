@@ -10,6 +10,7 @@ from app.scoring.reaction_classifier import (
     classify_reactions,
 )
 from app.services.openfda_drug_event_client import OpenFDADrugEventClient
+from app.sources.registry import OPENFDA_DRUG_EVENT
 from app.trends.drug_signal_trend import build_drug_signal_trend_snapshot
 
 client = OpenFDADrugEventClient()
@@ -69,9 +70,9 @@ def _persist_drug_event_error_audit(
 ):
     audit_event = build_audit_event(
         module="DrugSignal",
-        source_id="openfda-drug-event",
-        source_name="openFDA Drug Event API",
-        endpoint="https://api.fda.gov/drug/event.json",
+        source_id=OPENFDA_DRUG_EVENT["source_id"],
+        source_name=OPENFDA_DRUG_EVENT["source_name"],
+        endpoint=OPENFDA_DRUG_EVENT["endpoint"],
         query=query,
         query_params={"q": query, "limit": limit},
         retrieval_timestamp=datetime.now(timezone.utc).isoformat(),

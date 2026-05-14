@@ -5,6 +5,7 @@ from app.audit.audit_event import build_audit_event
 from app.db.audit_repository import save_audit_event
 from app.scoring.recall_score import calculate_recall_risk_score
 from app.services.openfda_client import OpenFDAClient
+from app.sources.registry import OPENFDA_DRUG_ENFORCEMENT
 
 client = OpenFDAClient()
 
@@ -44,9 +45,9 @@ def _persist_recall_error_audit(
 ):
     audit_event = build_audit_event(
         module="RecallRadar",
-        source_id="openfda-drug-enforcement",
-        source_name="openFDA Drug Enforcement API",
-        endpoint="https://api.fda.gov/drug/enforcement.json",
+        source_id=OPENFDA_DRUG_ENFORCEMENT["source_id"],
+        source_name=OPENFDA_DRUG_ENFORCEMENT["source_name"],
+        endpoint=OPENFDA_DRUG_ENFORCEMENT["endpoint"],
         query=query,
         query_params={"q": query, "limit": limit},
         retrieval_timestamp=datetime.now(timezone.utc).isoformat(),
