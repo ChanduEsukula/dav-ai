@@ -62,6 +62,6 @@ Remaining gaps include:
 
 ## Next Recommended Sprint
 
-- Add a Playwright E2E smoke test.
+- Install Playwright browser binaries in local/CI environments and run the E2E smoke test.
 - Improve saved monitor run history.
 - Plan scheduled monitoring and alerts.
