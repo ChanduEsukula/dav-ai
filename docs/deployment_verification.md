@@ -14,6 +14,7 @@
 - Database: Supabase PostgreSQL
 - Migration tool: Alembic
 - Current migration revision: `20260514_0003`
+- Latest saved monitor run-history migration applied: `20260514_0003_create_saved_monitor_runs.py`
 
 ## Live Smoke Tests Passed
 
@@ -29,21 +30,44 @@ This confirms deployment smoke verification only. It does not mean MedTrek AI is
 - `GET /api/v1/system/status` returned `200`.
 - `GET /api/v1/system/data-quality` returned `200`.
 - `GET /api/v1/saved-monitors` returned `200`.
+- Saved Monitor Run History v2.2 smoke flow passed.
 
 Live backend verification details:
 
-- `database.configured`: true.
-- `database.audit_readable`: true.
-- `source_registry_count`: 2.
-- `recent_audit_count`: 25.
-- `upstream_status_counts` included `success` and `empty`, with `error` at 0 at the time of test.
+- `database.configured`: true
+- `database.audit_readable`: true
+- `source_registry_count`: 2
+- `recent_audit_count`: 25
+- `upstream_status_counts` included `success` and `empty`, with `error` at 0 at the time of test
 - Live source IDs were correct:
   - `openfda_drug_enforcement`
   - `openfda_drug_event`
 
+### Saved Monitor Run History v2.2
+
+Commit `811d7d4` implemented Saved Monitor Run History. Live backend smoke verification passed for the deployed Render backend.
+
+Verified flow:
+
+- `GET /api/v1/saved-monitors` returned `200` and initially `[]`.
+- `POST /api/v1/saved-monitors` created a temporary smoke monitor.
+- `POST /api/v1/saved-monitors/{monitor_id}/run` returned `200`.
+- `GET /api/v1/saved-monitors/{monitor_id}/runs` returned `200` with a persisted run-history row.
+- `DELETE /api/v1/saved-monitors/{monitor_id}` returned `204`.
+- `GET /api/v1/saved-monitors` returned `200` and `[]` after cleanup.
+
+The smoke run-history row had:
+
+- `status`: `success`
+- `record_count`: `0`
+- `audit_id`: present
+- `error_message`: `null`
+
+This verified saved-monitor run-history persistence and endpoint behavior. It did not verify clinical correctness.
+
 ### Frontend
 
-- Vercel frontend loaded successfully
+- Vercel frontend loaded successfully.
 - RecallRadar search for `eye drops` worked.
 - Source/audit details were visible.
 - Role-based briefing was visible.
@@ -56,16 +80,31 @@ Live backend verification details:
 
 ## Deployment Fixes Applied
 
-- Set Vercel `VITE_API_BASE_URL` to `https://medtrek-ai.onrender.com`
-- Set Render `ALLOWED_ORIGINS` to include `https://medtrek-ai.vercel.app` and `http://localhost:5173`
-- Corrected Render `DATABASE_URL` value so it contains only the PostgreSQL connection string, not the `DATABASE_URL=` prefix
+- Set Vercel `VITE_API_BASE_URL` to `https://medtrek-ai.onrender.com`.
+- Set Render `ALLOWED_ORIGINS` to include `https://medtrek-ai.vercel.app` and `http://localhost:5173`.
+- Corrected Render `DATABASE_URL` value so it contains only the PostgreSQL connection string, not the `DATABASE_URL=` prefix.
+- Applied Alembic migration `20260514_0003_create_saved_monitor_runs.py`.
+- Rotated the Supabase database password after accidental exposure.
+- Updated Render `DATABASE_URL` after password rotation.
+- Redeployed the backend after credential rotation.
+- Verified `/health`, `/api/v1/system/status`, and `/api/v1/system/data-quality` after rotation and redeploy.
 
-## Security Follow-Up
+## Security Follow-Up Status
 
-Open unless confirmed completed: the Supabase database password should be rotated because it was exposed during deployment troubleshooting. After rotation, update Render `DATABASE_URL` and redeploy the backend.
+Completed: the exposed Supabase database password was rotated, Render `DATABASE_URL` was updated, and the backend was redeployed successfully.
+
+Do not include old or new database URLs, passwords, or connection strings in docs, logs, tickets, screenshots, prompts, terminal output, or copied troubleshooting notes.
 
 ## Current Status
 
-MedTrek AI is deployed end-to-end with live public FDA data, role-based safety briefings, source metadata, audit history, PostgreSQL persistence, Saved Monitors v2.2 manual monitoring, and API documentation.
+MedTrek AI is deployed end-to-end with live public FDA data, role-based safety briefings, source metadata, audit history, PostgreSQL persistence, Saved Monitors v2.2 manual monitoring, saved monitor run history, and API documentation.
 
-Remaining production-readiness gaps include no auth/RBAC, no scheduled monitor refresh, no alerts, no scheduled run-history workflow beyond manual runs, no raw payload hashing, no immutable audit/retention policy, and no production observability dashboard/SLOs.
+Remaining production-readiness gaps include:
+
+- No auth/RBAC.
+- No scheduled monitor refresh.
+- No alerts.
+- No scheduled run-history workflow beyond manual runs.
+- No raw payload hashing.
+- No immutable audit/retention policy.
+- No production observability dashboard/SLOs.

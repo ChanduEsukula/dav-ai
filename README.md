@@ -10,9 +10,11 @@ This project is an MVP and portfolio-grade engineering prototype. It is not a me
 
 ## Recent Milestone: Saved Monitors v2.2 Foundation
 
-Saved Monitors v2.2 foundation adds manual run history to MedTrek AI's monitoring workflow foundation. Users can save repeatable RecallRadar or DrugSignal searches, manually run checks, persist monitor state with Supabase/PostgreSQL, compare latest and previous results, review recent manual runs, view change indicators, prevent duplicate monitors, and open related Audit History events for traceability.
+Saved Monitors v2.2 foundation, implemented in commit `811d7d4`, adds manual run history to MedTrek AI's monitoring workflow foundation. Users can save repeatable RecallRadar or DrugSignal searches, manually run checks, persist monitor state with Supabase/PostgreSQL, compare latest and previous results, review recent manual runs, view change indicators, prevent duplicate monitors, and open related Audit History events for traceability.
 
 This milestone was verified through backend tests, frontend tests, production build checks, GitHub Actions CI, and manual browser verification.
+
+Live deployment smoke verification also confirmed that migration `20260514_0003_create_saved_monitor_runs.py` was applied and that a temporary saved monitor could be created, manually run, reviewed through `GET /api/v1/saved-monitors/{monitor_id}/runs`, and deleted with cleanup back to an empty monitor list. The persisted smoke row had `status: success`, `record_count: 0`, an audit ID, and `error_message: null`. This verifies persistence and endpoint behavior, not clinical correctness.
 
 See:
 
@@ -854,8 +856,11 @@ Production safety checks:
 - Confirm Saved Monitors can create, list, run, compare, and delete monitors.
 - Confirm Supabase audit rows are created after successful searches.
 - Confirm Supabase saved monitor rows are created after saved monitor creation.
+- Confirm Supabase saved monitor run-history rows are created after manual monitor runs.
 - Confirm CORS only allows trusted frontend origins.
 - Confirm no real `.env` files or secrets are committed.
+
+Credential hygiene checkpoint: after accidental database credential exposure, the Supabase database password was rotated, Render `DATABASE_URL` was updated, the backend was redeployed, and health, system status, and data-quality endpoints were verified successfully. Do not record database URLs or passwords in documentation.
 
 ---
 
@@ -947,10 +952,21 @@ Verified saved monitor persistence includes:
 - Saved monitor creation.
 - Saved monitor list retrieval after backend restart.
 - Manual saved monitor run check.
+- Manual saved monitor run-history persistence.
 - Latest/previous score persistence.
 - Latest/previous record-count persistence.
 - Latest audit ID persistence.
 - Last checked timestamp persistence.
+
+Live v2.2 run-history smoke verification confirmed:
+
+- `GET /api/v1/saved-monitors` returned `200` with `[]` before the smoke run.
+- `POST /api/v1/saved-monitors` created a temporary smoke monitor.
+- `POST /api/v1/saved-monitors/{monitor_id}/run` returned `200`.
+- `GET /api/v1/saved-monitors/{monitor_id}/runs` returned `200` with a persisted run-history row.
+- `DELETE /api/v1/saved-monitors/{monitor_id}` returned `204`.
+- `GET /api/v1/saved-monitors` returned `200` with `[]` after cleanup.
+- The persisted smoke row had `status: success`, `record_count: 0`, an audit ID, and `error_message: null`.
 
 Related docs:
 
