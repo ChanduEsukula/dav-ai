@@ -39,9 +39,7 @@ function getInitialPage(): ActivePage {
     page === 'saved-monitors' ||
     page === 'about' ||
     page === 'faq' ||
-    page === 'help' ||
-    page === 'profile' ||
-    page === 'signup'
+    page === 'help'
   ) {
     return page
   }
@@ -190,10 +188,6 @@ function App() {
       {activePage === 'faq' && <FaqPage />}
 
       {activePage === 'help' && <InfoPage {...infoPages.help} />}
-
-      {activePage === 'profile' && <InfoPage {...infoPages.profile} />}
-
-      {activePage === 'signup' && <InfoPage {...infoPages.signup} />}
     </main>
   )
 }

@@ -272,7 +272,7 @@ Current backend test status:
 Current frontend test status:
 
 ```bash
-49 passed
+51 passed
 ```
 
 ---
@@ -902,7 +902,7 @@ npm test
 Current frontend test status:
 
 ```bash
-49 passed
+51 passed
 ```
 
 Frontend test coverage includes:

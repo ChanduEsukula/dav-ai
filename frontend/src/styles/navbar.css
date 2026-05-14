@@ -95,19 +95,6 @@
   transform: translateY(-1px);
 }
 
-.nav-links .signup-button {
-  color: #ffffff;
-  background: linear-gradient(135deg, var(--clinical-blue), var(--deep-teal));
-  box-shadow: 0 12px 28px rgba(0, 123, 135, 0.24);
-}
-
-.nav-links .signup-button:hover,
-.nav-links .signup-button.active {
-  color: #ffffff;
-  background: linear-gradient(135deg, var(--clinical-blue), var(--deep-teal));
-  box-shadow: 0 16px 34px rgba(0, 123, 135, 0.3);
-}
-
 @media (max-width: 960px) {
   .nav {
     margin: 0 auto;

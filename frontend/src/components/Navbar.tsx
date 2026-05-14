@@ -85,20 +85,6 @@ function Navbar({
         <button className={activePage === 'help' ? 'active' : ''} onClick={() => goToPage('help')}>
           Help
         </button>
-
-        <button
-          className={activePage === 'profile' ? 'active' : ''}
-          onClick={() => goToPage('profile')}
-        >
-          Profile
-        </button>
-
-        <button
-          className={`signup-button ${activePage === 'signup' ? 'active' : ''}`}
-          onClick={() => goToPage('signup')}
-        >
-          Sign Up
-        </button>
       </div>
     </nav>
   )

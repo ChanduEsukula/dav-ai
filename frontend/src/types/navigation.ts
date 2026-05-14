@@ -9,5 +9,3 @@ export type ActivePage =
   | 'about'
   | 'faq'
   | 'help'
-  | 'profile'
-  | 'signup'
