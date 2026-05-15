@@ -33,6 +33,7 @@ This confirms deployment smoke verification only. It does not mean MedTrek AI is
 - `GET /api/v1/saved-monitors` returned `200`.
 - Saved Monitor Run History v2.2 smoke flow passed.
 - Saved Monitor Scheduled Refresh Foundation v2.3 smoke flow passed.
+- Saved Monitor Scheduler Guardrails v2.4 smoke behavior passed locally.
 
 Live backend verification details:
 
@@ -81,6 +82,22 @@ Verified after deployment:
 
 This confirms the scheduled refresh foundation is wired safely, but production scheduling is not enabled yet. No Render Cron, alerts, auth/RBAC, or public scheduling UI were added.
 
+### Saved Monitor Scheduler Guardrails v2.4
+
+Commit `e4f313c` added scheduler guardrails for the backend CLI job.
+
+Verified behavior:
+
+- Backend tests passed with `89 passed`.
+- The scheduled monitor CLI clamps requested limits to a safe range of `1` to `50`.
+- The default CLI limit is `10`.
+- A high requested limit such as `--limit 500` returns `safe_limit: 50`.
+- CLI output includes both `requested_limit` and `safe_limit`.
+- Local CLI smoke returned `status: ok`.
+- Production Cron is still intentionally disabled.
+
+This improves safety for a future Render Cron setup without enabling automated production scheduling yet.
+
 ### Frontend
 
 - Vercel frontend loaded successfully.
@@ -114,7 +131,7 @@ Do not include old or new database URLs, passwords, or connection strings in doc
 
 ## Current Status
 
-MedTrek AI is deployed end-to-end with live public FDA data, role-based safety briefings, source metadata, audit history, PostgreSQL persistence, Saved Monitors v2.2 manual monitoring, saved monitor run history, Saved Monitors v2.3 scheduled-refresh foundation, and API documentation.
+MedTrek AI is deployed end-to-end with live public FDA data, role-based safety briefings, source metadata, audit history, PostgreSQL persistence, Saved Monitors v2.2 manual monitoring, saved monitor run history, Saved Monitors v2.3 scheduled-refresh foundation, Saved Monitors v2.4 scheduler guardrails, and API documentation.
 
 Remaining production-readiness gaps include:
 
