@@ -64,8 +64,14 @@ def _extract_drug_signal_score(result: dict[str, Any]) -> tuple[int | None, str 
 async def _run_monitor(monitor: SavedMonitor) -> dict[str, Any]:
     """Run one saved monitor through the existing search workflow."""
 
+    request_id = f"scheduled-monitor-{monitor.monitor_id}"
+
     if monitor.module == SavedMonitorModule.RECALLRADAR:
-        result = await execute_recall_search(query=monitor.query, limit=5)
+        result = await execute_recall_search(
+            query=monitor.query,
+            limit=5,
+            request_id=request_id,
+        )
         score, score_label = _extract_recall_score(result)
         return {
             "record_count": result.get("count", 0),
@@ -75,7 +81,11 @@ async def _run_monitor(monitor: SavedMonitor) -> dict[str, Any]:
         }
 
     if monitor.module == SavedMonitorModule.DRUGSIGNAL:
-        result = await execute_drug_signal_search(query=monitor.query, limit=5)
+        result = await execute_drug_signal_search(
+            query=monitor.query,
+            limit=5,
+            request_id=request_id,
+        )
         score, score_label = _extract_drug_signal_score(result)
         return {
             "record_count": result.get("count", 0),
