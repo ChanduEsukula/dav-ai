@@ -6,6 +6,7 @@ from uuid import uuid4
 import pytest
 
 from app.db.saved_monitor_repository import saved_monitor_repository
+from app.db.scheduler_lock_repository import scheduler_lock_repository
 from app.schemas.saved_monitors import (
     SavedMonitor,
     SavedMonitorCreate,
@@ -24,8 +25,10 @@ def clear_saved_monitors(monkeypatch):
 
     monkeypatch.setenv("DATABASE_URL", "")
     saved_monitor_repository.clear()
+    scheduler_lock_repository.clear()
     yield
     saved_monitor_repository.clear()
+    scheduler_lock_repository.clear()
 
 
 def _create_monitor(
@@ -157,8 +160,6 @@ async def test_run_due_saved_monitors_creates_success_run_and_advances_schedule(
 
     assert summary["status"] == "ok"
     assert summary["job_run_id"].startswith("scheduled-refresh-")
-    assert summary["status"] == "ok"
-    assert summary["job_run_id"].startswith("scheduled-refresh-")
     assert summary["due_count"] == 1
     assert summary["attempted_count"] == 1
     assert summary["success_count"] == 1
@@ -182,6 +183,13 @@ async def test_run_due_saved_monitors_creates_success_run_and_advances_schedule(
     assert runs[0].audit_id is not None
     assert runs[0].error_message is None
 
+    assert (
+        scheduler_lock_repository.get_lock(
+            scheduled_monitor_refresh.SCHEDULER_LOCK_NAME
+        )
+        is None
+    )
+
 
 @pytest.mark.anyio
 async def test_run_due_saved_monitors_records_error_run(monkeypatch):
@@ -204,6 +212,8 @@ async def test_run_due_saved_monitors_records_error_run(monkeypatch):
     updated = saved_monitor_repository.get(monitor.id)
     runs = saved_monitor_repository.list_runs(monitor.id)
 
+    assert summary["status"] == "ok"
+    assert summary["job_run_id"].startswith("scheduled-refresh-")
     assert summary["due_count"] == 1
     assert summary["attempted_count"] == 1
     assert summary["success_count"] == 0
@@ -221,3 +231,102 @@ async def test_run_due_saved_monitors_records_error_run(monkeypatch):
     assert runs[0].status == SavedMonitorRunStatus.ERROR
     assert runs[0].record_count == 0
     assert runs[0].error_message == "upstream failed"
+
+    assert (
+        scheduler_lock_repository.get_lock(
+            scheduled_monitor_refresh.SCHEDULER_LOCK_NAME
+        )
+        is None
+    )
+
+
+@pytest.mark.anyio
+async def test_run_due_saved_monitors_skips_when_active_lock_exists():
+    now = datetime.now(timezone.utc)
+
+    scheduler_lock_repository.acquire_lock(
+        lock_name=scheduled_monitor_refresh.SCHEDULER_LOCK_NAME,
+        locked_by="existing-job",
+        locked_until=now + timedelta(minutes=15),
+        now=now,
+    )
+
+    summary = await run_due_saved_monitors(now=now, limit=10)
+
+    assert summary["status"] == "skipped"
+    assert summary["reason"] == "active_scheduler_lock"
+    assert summary["lock_name"] == scheduled_monitor_refresh.SCHEDULER_LOCK_NAME
+    assert summary["job_run_id"].startswith("scheduled-refresh-")
+    assert summary["due_count"] == 0
+    assert summary["attempted_count"] == 0
+    assert summary["success_count"] == 0
+    assert summary["error_count"] == 0
+    assert summary["skipped_count"] == 0
+    assert summary["run_ids"] == []
+
+    lock = scheduler_lock_repository.get_lock(
+        scheduled_monitor_refresh.SCHEDULER_LOCK_NAME
+    )
+    assert lock is not None
+    assert lock.locked_by == "existing-job"
+
+
+@pytest.mark.anyio
+async def test_run_due_saved_monitors_releases_lock_after_success(monkeypatch):
+    now = datetime.now(timezone.utc)
+    monitor = _create_monitor(query="eye drops")
+    _set_schedule(
+        monitor,
+        enabled=True,
+        interval_minutes=60,
+        next_run_at=now - timedelta(minutes=1),
+    )
+
+    async def fake_run_monitor(_monitor):
+        return {
+            "record_count": 1,
+            "score": 50,
+            "score_label": "Moderate",
+            "audit_id": str(uuid4()),
+        }
+
+    monkeypatch.setattr(scheduled_monitor_refresh, "_run_monitor", fake_run_monitor)
+
+    summary = await run_due_saved_monitors(now=now, limit=10)
+
+    assert summary["status"] == "ok"
+    assert summary["success_count"] == 1
+    assert (
+        scheduler_lock_repository.get_lock(
+            scheduled_monitor_refresh.SCHEDULER_LOCK_NAME
+        )
+        is None
+    )
+
+
+@pytest.mark.anyio
+async def test_run_due_saved_monitors_releases_lock_after_error(monkeypatch):
+    now = datetime.now(timezone.utc)
+    monitor = _create_monitor(query="eye drops")
+    _set_schedule(
+        monitor,
+        enabled=True,
+        interval_minutes=60,
+        next_run_at=now - timedelta(minutes=1),
+    )
+
+    async def fake_run_monitor(_monitor):
+        raise RuntimeError("upstream failed")
+
+    monkeypatch.setattr(scheduled_monitor_refresh, "_run_monitor", fake_run_monitor)
+
+    summary = await run_due_saved_monitors(now=now, limit=10)
+
+    assert summary["status"] == "ok"
+    assert summary["error_count"] == 1
+    assert (
+        scheduler_lock_repository.get_lock(
+            scheduled_monitor_refresh.SCHEDULER_LOCK_NAME
+        )
+        is None
+    )

@@ -13,6 +13,7 @@ from typing import Any
 from uuid import uuid4
 
 from app.db.saved_monitor_repository import saved_monitor_repository
+from app.db.scheduler_lock_repository import scheduler_lock_repository
 from app.schemas.saved_monitors import (
     SavedMonitor,
     SavedMonitorModule,
@@ -23,6 +24,9 @@ from app.services.search_workflows.drug_signal_search import execute_drug_signal
 from app.services.search_workflows.recall_search import execute_recall_search
 
 logger = logging.getLogger("medtrek.scheduled_monitor_refresh")
+
+SCHEDULER_LOCK_NAME = "saved-monitor-refresh"
+SCHEDULER_LOCK_TTL_MINUTES = 15
 
 
 def _utc_now() -> datetime:
@@ -111,95 +115,125 @@ async def run_due_saved_monitors(
     """
 
     run_started_at = now or _utc_now()
-    due_monitors = saved_monitor_repository.list_due_for_refresh(
-        now=run_started_at,
-        limit=limit,
-    )
-
     job_run_id = (
         f"scheduled-refresh-{run_started_at.strftime('%Y%m%d-%H%M%S')}-"
         f"{uuid4().hex[:8]}"
     )
+    locked_until = run_started_at + timedelta(minutes=SCHEDULER_LOCK_TTL_MINUTES)
 
-    summary: dict[str, Any] = {
-        "status": "ok",
-        "job_run_id": job_run_id,
-        "job_started_at": run_started_at.isoformat(),
-        "due_count": len(due_monitors),
-        "attempted_count": 0,
-        "success_count": 0,
-        "error_count": 0,
-        "skipped_count": 0,
-        "run_ids": [],
-    }
+    lock_acquired = scheduler_lock_repository.acquire_lock(
+        lock_name=SCHEDULER_LOCK_NAME,
+        locked_by=job_run_id,
+        locked_until=locked_until,
+        now=run_started_at,
+    )
 
-    for monitor in due_monitors:
-        summary["attempted_count"] += 1
-        scheduled_run_at = _utc_now()
-        next_run_at = _calculate_next_run_at(
-            base_time=scheduled_run_at,
-            refresh_interval_minutes=monitor.refresh_interval_minutes,
+    if not lock_acquired:
+        return {
+            "status": "skipped",
+            "reason": "active_scheduler_lock",
+            "lock_name": SCHEDULER_LOCK_NAME,
+            "job_run_id": job_run_id,
+            "job_started_at": run_started_at.isoformat(),
+            "due_count": 0,
+            "attempted_count": 0,
+            "success_count": 0,
+            "error_count": 0,
+            "skipped_count": 0,
+            "run_ids": [],
+        }
+
+    try:
+        due_monitors = saved_monitor_repository.list_due_for_refresh(
+            now=run_started_at,
+            limit=limit,
         )
 
-        try:
-            run_result = await _run_monitor(monitor)
+        summary: dict[str, Any] = {
+            "status": "ok",
+            "job_run_id": job_run_id,
+            "job_started_at": run_started_at.isoformat(),
+            "due_count": len(due_monitors),
+            "attempted_count": 0,
+            "success_count": 0,
+            "error_count": 0,
+            "skipped_count": 0,
+            "run_ids": [],
+        }
 
-            updated_monitor = saved_monitor_repository.update_after_run(
-                monitor.id,
-                latest_audit_id=run_result["audit_id"],
-                latest_score=run_result["score"],
-                latest_record_count=run_result["record_count"],
+        for monitor in due_monitors:
+            summary["attempted_count"] += 1
+            scheduled_run_at = _utc_now()
+            next_run_at = _calculate_next_run_at(
+                base_time=scheduled_run_at,
+                refresh_interval_minutes=monitor.refresh_interval_minutes,
             )
 
-            run = saved_monitor_repository.create_run(
-                updated_monitor or monitor,
-                status=SavedMonitorRunStatus.SUCCESS,
-                record_count=run_result["record_count"],
-                score=run_result["score"],
-                score_label=run_result["score_label"],
-                audit_id=run_result["audit_id"],
-                error_message=None,
-            )
+            try:
+                run_result = await _run_monitor(monitor)
 
-            saved_monitor_repository.update_schedule_after_run(
-                monitor.id,
-                next_run_at=next_run_at,
-                last_scheduled_run_at=scheduled_run_at,
-                last_scheduled_status=SavedMonitorScheduledStatus.SUCCESS,
-            )
+                updated_monitor = saved_monitor_repository.update_after_run(
+                    monitor.id,
+                    latest_audit_id=run_result["audit_id"],
+                    latest_score=run_result["score"],
+                    latest_record_count=run_result["record_count"],
+                )
 
-            summary["success_count"] += 1
-            summary["run_ids"].append(str(run.run_id))
+                run = saved_monitor_repository.create_run(
+                    updated_monitor or monitor,
+                    status=SavedMonitorRunStatus.SUCCESS,
+                    record_count=run_result["record_count"],
+                    score=run_result["score"],
+                    score_label=run_result["score_label"],
+                    audit_id=run_result["audit_id"],
+                    error_message=None,
+                )
 
-        except Exception as exc:
-            logger.exception(
-                "scheduled_saved_monitor_run_failed",
-                extra={
-                    "event": "scheduled_saved_monitor_run_failed",
-                    "monitor_id": str(monitor.id),
-                    "monitor_module": monitor.module.value,
-                },
-            )
+                saved_monitor_repository.update_schedule_after_run(
+                    monitor.id,
+                    next_run_at=next_run_at,
+                    last_scheduled_run_at=scheduled_run_at,
+                    last_scheduled_status=SavedMonitorScheduledStatus.SUCCESS,
+                )
 
-            run = saved_monitor_repository.create_run(
-                monitor,
-                status=SavedMonitorRunStatus.ERROR,
-                record_count=0,
-                score=None,
-                score_label=None,
-                audit_id=None,
-                error_message=str(exc),
-            )
+                summary["success_count"] += 1
+                summary["run_ids"].append(str(run.run_id))
 
-            saved_monitor_repository.mark_error(monitor.id)
-            saved_monitor_repository.update_schedule_after_run(
-                monitor.id,
-                next_run_at=next_run_at,
-                last_scheduled_run_at=scheduled_run_at,
-                last_scheduled_status=SavedMonitorScheduledStatus.ERROR,
-            )
+            except Exception as exc:
+                logger.exception(
+                    "scheduled_saved_monitor_run_failed",
+                    extra={
+                        "event": "scheduled_saved_monitor_run_failed",
+                        "monitor_id": str(monitor.id),
+                        "monitor_module": monitor.module.value,
+                    },
+                )
 
-            summary["error_count"] += 1
-            summary["run_ids"].append(str(run.run_id))
+                run = saved_monitor_repository.create_run(
+                    monitor,
+                    status=SavedMonitorRunStatus.ERROR,
+                    record_count=0,
+                    score=None,
+                    score_label=None,
+                    audit_id=None,
+                    error_message=str(exc),
+                )
 
-    return summary
+                saved_monitor_repository.mark_error(monitor.id)
+                saved_monitor_repository.update_schedule_after_run(
+                    monitor.id,
+                    next_run_at=next_run_at,
+                    last_scheduled_run_at=scheduled_run_at,
+                    last_scheduled_status=SavedMonitorScheduledStatus.ERROR,
+                )
+
+                summary["error_count"] += 1
+                summary["run_ids"].append(str(run.run_id))
+
+        return summary
+
+    finally:
+        scheduler_lock_repository.release_lock(
+            lock_name=SCHEDULER_LOCK_NAME,
+            locked_by=job_run_id,
+        )
