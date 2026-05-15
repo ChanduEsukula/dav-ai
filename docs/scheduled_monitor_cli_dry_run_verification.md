@@ -8,7 +8,7 @@ May 15, 2026
 
 This document records manual dry-run verification for the Saved Monitor scheduled-refresh CLI foundation.
 
-Production Cron remains disabled. This verification only confirms that the backend CLI entrypoint runs safely from the backend service context and applies limit guardrails correctly.
+Production Cron remains disabled. This verification only confirms that the backend CLI entrypoint runs safely from the backend service context, applies limit guardrails correctly, and emits a traceable `job_run_id` for scheduler observability.
 
 ## Commands Run
 
@@ -32,14 +32,15 @@ Command:
 python -m app.jobs.run_due_saved_monitors --limit 10
 ```
 
-Observed result:
+Observed result after adding `job_run_id` support:
 
 ```json
 {
   "attempted_count": 0,
   "due_count": 0,
   "error_count": 0,
-  "job_started_at": "2026-05-15T17:46:44.330346+00:00",
+  "job_run_id": "scheduled-refresh-20260515-184620-6e8d1fe3",
+  "job_started_at": "2026-05-15T18:46:20.326143+00:00",
   "requested_limit": 10,
   "run_ids": [],
   "safe_limit": 10,
@@ -109,6 +110,7 @@ Verified behavior:
 - `--limit 0` clamped to `safe_limit: 1`.
 - `--limit 999` clamped to `safe_limit: 50`.
 - JSON summaries included `requested_limit` and `safe_limit`.
+- JSON summaries now include a traceable `job_run_id`.
 - No due monitors were found during this dry run.
 - No monitor runs were attempted.
 - No alerts or notifications were sent.
@@ -116,7 +118,7 @@ Verified behavior:
 
 ## Current Status
 
-The scheduled-refresh CLI foundation is verified for no-due-monitor dry-run behavior and limit guardrails.
+The scheduled-refresh CLI foundation is verified for no-due-monitor dry-run behavior, limit guardrails, and traceable job-run IDs.
 
 This does not verify production recurring execution, alerting, scheduler locking, monitor ownership, or production observability.
 
