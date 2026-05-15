@@ -22,6 +22,7 @@ from app.schemas.saved_monitors import (
     SavedMonitorModule,
     SavedMonitorRun,
     SavedMonitorRunStatus,
+    SavedMonitorScheduledStatus,
     SavedMonitorStatus,
 )
 
@@ -52,6 +53,15 @@ class SavedMonitorRepository:
             latest_record_count=row["latest_record_count"],
             previous_record_count=row["previous_record_count"],
             status=SavedMonitorStatus(row["status"]),
+            refresh_enabled=row.get("refresh_enabled", False),
+            refresh_interval_minutes=row.get("refresh_interval_minutes"),
+            next_run_at=row.get("next_run_at"),
+            last_scheduled_run_at=row.get("last_scheduled_run_at"),
+            last_scheduled_status=(
+                SavedMonitorScheduledStatus(row["last_scheduled_status"])
+                if row.get("last_scheduled_status")
+                else None
+            ),
         )
 
     def _row_to_run(self, row) -> SavedMonitorRun:
@@ -68,6 +78,27 @@ class SavedMonitorRepository:
             created_at=row["created_at"],
             error_message=row["error_message"],
         )
+
+    def _monitor_select_columns(self) -> str:
+        return """
+            id,
+            name,
+            query,
+            module,
+            created_at,
+            last_checked_at,
+            latest_audit_id,
+            latest_score,
+            previous_score,
+            latest_record_count,
+            previous_record_count,
+            status,
+            refresh_enabled,
+            refresh_interval_minutes,
+            next_run_at,
+            last_scheduled_run_at,
+            last_scheduled_status
+        """
 
     def _list_memory(self) -> list[SavedMonitor]:
         return sorted(
@@ -94,20 +125,9 @@ class SavedMonitorRepository:
             with psycopg.connect(database_url, row_factory=dict_row) as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        """
+                        f"""
                         select
-                            id,
-                            name,
-                            query,
-                            module,
-                            created_at,
-                            last_checked_at,
-                            latest_audit_id,
-                            latest_score,
-                            previous_score,
-                            latest_record_count,
-                            previous_record_count,
-                            status
+                            {self._monitor_select_columns()}
                         from saved_monitors
                         order by created_at desc
                         """
@@ -134,20 +154,9 @@ class SavedMonitorRepository:
             with psycopg.connect(database_url, row_factory=dict_row) as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        """
+                        f"""
                         select
-                            id,
-                            name,
-                            query,
-                            module,
-                            created_at,
-                            last_checked_at,
-                            latest_audit_id,
-                            latest_score,
-                            previous_score,
-                            latest_record_count,
-                            previous_record_count,
-                            status
+                            {self._monitor_select_columns()}
                         from saved_monitors
                         where id = %(id)s
                         """,
@@ -235,6 +244,11 @@ class SavedMonitorRepository:
             latest_record_count=None,
             previous_record_count=None,
             status=SavedMonitorStatus.NOT_CHECKED,
+            refresh_enabled=False,
+            refresh_interval_minutes=None,
+            next_run_at=None,
+            last_scheduled_run_at=None,
+            last_scheduled_status=None,
         )
 
         database_url = self._database_url()
@@ -259,7 +273,12 @@ class SavedMonitorRepository:
                             previous_score,
                             latest_record_count,
                             previous_record_count,
-                            status
+                            status,
+                            refresh_enabled,
+                            refresh_interval_minutes,
+                            next_run_at,
+                            last_scheduled_run_at,
+                            last_scheduled_status
                         )
                         values (
                             %(id)s,
@@ -273,7 +292,12 @@ class SavedMonitorRepository:
                             %(previous_score)s,
                             %(latest_record_count)s,
                             %(previous_record_count)s,
-                            %(status)s
+                            %(status)s,
+                            %(refresh_enabled)s,
+                            %(refresh_interval_minutes)s,
+                            %(next_run_at)s,
+                            %(last_scheduled_run_at)s,
+                            %(last_scheduled_status)s
                         )
                         """,
                         {
@@ -289,6 +313,15 @@ class SavedMonitorRepository:
                             "latest_record_count": monitor.latest_record_count,
                             "previous_record_count": monitor.previous_record_count,
                             "status": monitor.status.value,
+                            "refresh_enabled": monitor.refresh_enabled,
+                            "refresh_interval_minutes": monitor.refresh_interval_minutes,
+                            "next_run_at": monitor.next_run_at,
+                            "last_scheduled_run_at": monitor.last_scheduled_run_at,
+                            "last_scheduled_status": (
+                                monitor.last_scheduled_status.value
+                                if monitor.last_scheduled_status
+                                else None
+                            ),
                         },
                     )
 
@@ -302,6 +335,132 @@ class SavedMonitorRepository:
             self._items[monitor.id] = monitor
             return monitor
 
+    def list_due_for_refresh(
+        self,
+        *,
+        now: datetime,
+        limit: int = 10,
+    ) -> list[SavedMonitor]:
+        """Return enabled saved monitors due for scheduled refresh."""
+
+        safe_limit = max(1, min(limit, 50))
+
+        database_url = self._database_url()
+        if not database_url:
+            due_monitors = [
+                monitor
+                for monitor in self._items.values()
+                if monitor.refresh_enabled
+                and monitor.next_run_at is not None
+                and monitor.next_run_at <= now
+            ]
+            return sorted(due_monitors, key=lambda monitor: monitor.next_run_at)[
+                :safe_limit
+            ]
+
+        try:
+            with psycopg.connect(database_url, row_factory=dict_row) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        f"""
+                        select
+                            {self._monitor_select_columns()}
+                        from saved_monitors
+                        where refresh_enabled = true
+                          and next_run_at is not null
+                          and next_run_at <= %(now)s
+                        order by next_run_at asc
+                        limit %(limit)s
+                        """,
+                        {
+                            "now": now,
+                            "limit": safe_limit,
+                        },
+                    )
+                    rows = cursor.fetchall()
+
+            return [self._row_to_monitor(row) for row in rows]
+
+        except Exception:
+            logger.exception(
+                "saved_monitor_due_list_failed",
+                extra={"event": "saved_monitor_due_list_failed"},
+            )
+            due_monitors = [
+                monitor
+                for monitor in self._items.values()
+                if monitor.refresh_enabled
+                and monitor.next_run_at is not None
+                and monitor.next_run_at <= now
+            ]
+            return sorted(due_monitors, key=lambda monitor: monitor.next_run_at)[
+                :safe_limit
+            ]
+
+    def update_schedule_after_run(
+        self,
+        monitor_id: UUID,
+        *,
+        next_run_at: datetime | None,
+        last_scheduled_run_at: datetime,
+        last_scheduled_status: SavedMonitorScheduledStatus,
+    ) -> SavedMonitor | None:
+        """Update scheduling metadata after a scheduled refresh attempt."""
+
+        existing = self.get(monitor_id)
+        if existing is None:
+            return None
+
+        updated = existing.model_copy(
+            update={
+                "next_run_at": next_run_at,
+                "last_scheduled_run_at": last_scheduled_run_at,
+                "last_scheduled_status": last_scheduled_status,
+            }
+        )
+
+        database_url = self._database_url()
+        if not database_url:
+            self._items[monitor_id] = updated
+            return updated
+
+        try:
+            with psycopg.connect(database_url, row_factory=dict_row) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        update saved_monitors
+                        set
+                            next_run_at = %(next_run_at)s,
+                            last_scheduled_run_at = %(last_scheduled_run_at)s,
+                            last_scheduled_status = %(last_scheduled_status)s
+                        where id = %(id)s
+                        """,
+                        {
+                            "id": monitor_id,
+                            "next_run_at": updated.next_run_at,
+                            "last_scheduled_run_at": updated.last_scheduled_run_at,
+                            "last_scheduled_status": (
+                                updated.last_scheduled_status.value
+                                if updated.last_scheduled_status
+                                else None
+                            ),
+                        },
+                    )
+
+            return updated
+
+        except Exception:
+            logger.exception(
+                "saved_monitor_schedule_update_failed",
+                extra={
+                    "event": "saved_monitor_schedule_update_failed",
+                    "monitor_id": str(monitor_id),
+                },
+            )
+            self._items[monitor_id] = updated
+            return updated
+
     def update_after_run(
         self,
         monitor_id: UUID,
@@ -310,7 +469,7 @@ class SavedMonitorRepository:
         latest_score: int | None,
         latest_record_count: int | None,
     ) -> SavedMonitor | None:
-        """Update a saved monitor after a manual run check."""
+        """Update a saved monitor after a manual or scheduled run check."""
 
         existing = self.get(monitor_id)
         if existing is None:
@@ -385,7 +544,7 @@ class SavedMonitorRepository:
         audit_id: str | None = None,
         error_message: str | None = None,
     ) -> SavedMonitorRun:
-        """Persist one manual saved monitor run-history row."""
+        """Persist one saved monitor run-history row."""
 
         run = SavedMonitorRun(
             run_id=uuid4(),
@@ -467,7 +626,7 @@ class SavedMonitorRepository:
             return run
 
     def list_runs(self, monitor_id: UUID, limit: int = 10) -> list[SavedMonitorRun]:
-        """Return recent manual run-history rows for one saved monitor."""
+        """Return recent run-history rows for one saved monitor."""
 
         safe_limit = max(1, min(limit, 50))
         database_url = self._database_url()
@@ -574,6 +733,7 @@ class SavedMonitorRepository:
                 return False
 
             del self._items[monitor_id]
+            self._runs.pop(monitor_id, None)
             return True
 
         try:

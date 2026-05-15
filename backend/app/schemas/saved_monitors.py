@@ -5,7 +5,7 @@ from enum import Enum
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class SavedMonitorModule(str, Enum):
@@ -30,12 +30,41 @@ class SavedMonitorRunStatus(str, Enum):
     ERROR = "error"
 
 
+class SavedMonitorScheduledStatus(str, Enum):
+    """Saved monitor scheduled refresh status values."""
+
+    SUCCESS = "success"
+    ERROR = "error"
+    SKIPPED = "skipped"
+
+
 class SavedMonitorCreate(BaseModel):
     """Request body for creating a saved monitor."""
 
     name: str = Field(..., min_length=2, max_length=120)
     query: str = Field(..., min_length=2, max_length=200)
     module: SavedMonitorModule
+
+
+class SavedMonitorScheduleUpdate(BaseModel):
+    """Request body for future saved monitor schedule updates.
+
+    This model is backend foundation only. Scheduled refresh UI and protected
+    schedule-update routes should be added in a later sprint.
+    """
+
+    refresh_enabled: bool
+    refresh_interval_minutes: Optional[int] = None
+    next_run_at: Optional[datetime] = None
+
+    @field_validator("refresh_interval_minutes")
+    @classmethod
+    def validate_refresh_interval(cls, value: Optional[int]) -> Optional[int]:
+        """Require positive refresh intervals when one is provided."""
+
+        if value is not None and value <= 0:
+            raise ValueError("refresh_interval_minutes must be greater than 0")
+        return value
 
 
 class SavedMonitor(BaseModel):
@@ -53,10 +82,15 @@ class SavedMonitor(BaseModel):
     latest_record_count: Optional[int] = None
     previous_record_count: Optional[int] = None
     status: SavedMonitorStatus = SavedMonitorStatus.NOT_CHECKED
+    refresh_enabled: bool = False
+    refresh_interval_minutes: Optional[int] = None
+    next_run_at: Optional[datetime] = None
+    last_scheduled_run_at: Optional[datetime] = None
+    last_scheduled_status: Optional[SavedMonitorScheduledStatus] = None
 
 
 class SavedMonitorRun(BaseModel):
-    """Saved monitor manual run-history response model."""
+    """Saved monitor manual or scheduled run-history response model."""
 
     run_id: UUID
     monitor_id: UUID

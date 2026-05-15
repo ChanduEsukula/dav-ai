@@ -8,7 +8,7 @@ This is not production-ready healthcare software. It should not be used for clin
 
 ## Verified Checks
 
-- Backend tests: 79 passed
+- Backend tests: 85 passed
 - Frontend tests: 54 passed
 - Frontend lint: passed
 - Frontend production build: passed
@@ -49,7 +49,7 @@ This is not production-ready healthcare software. It should not be used for clin
 - Audit History
 - Data Sources
 - System/Data Quality
-- Saved Monitors v2.2 manual monitoring foundation with run history
+- Saved Monitors v2.3 scheduled refresh foundation is implemented as backend infrastructure only. It includes migration `20260514_0004`, schedule metadata fields, due-refresh selection, a CLI job entrypoint, and unit tests. No production scheduler, auth/RBAC, or alerts were added.
 
 ## Live Deployment Verified
 

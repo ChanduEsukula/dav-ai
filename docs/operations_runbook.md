@@ -1,6 +1,6 @@
 # MedTrek AI Operations Runbook
 
-This runbook explains how to verify the deployed MedTrek AI backend, trace requests with X-Request-ID, and troubleshoot public-data and audit-persistence issues.
+This runbook explains how to verify the deployed MedTrek AI backend, trace requests with X-Request-ID, and troubleshoot public-data, audit-persistence, saved-monitor, and scheduled-refresh foundation issues.
 
 ## 1. Health check
 
@@ -155,9 +155,44 @@ Expected app behavior:
 Recommended checks:
 1. Confirm Render environment has DATABASE_URL.
 2. Confirm Supabase database is active.
-3. Confirm Alembic migrations are at head, currently `20260514_0003`.
+3. Confirm Alembic migrations are at head, currently `20260514_0004`.
 4. Call /api/v1/audit-events?limit=10.
 5. Search Render logs using the request ID.
+
+
+## Saved Monitor Scheduled Refresh Foundation
+
+The backend includes a CLI entrypoint for future scheduled refresh jobs:
+
+```bash
+cd backend
+python -m app.jobs.run_due_saved_monitors --limit 10
+```
+
+This command runs only monitors where `refresh_enabled=true` and `next_run_at` is due. It records run-history rows but does not send alerts.
+
+Current boundary:
+
+- Scheduled refresh infrastructure exists.
+- Migration `20260514_0004` adds schedule metadata fields.
+- The CLI job exists for a future Render Cron or similar scheduler.
+- Production scheduling is not enabled until a Render Cron or equivalent scheduler is configured.
+- Alerts are not implemented.
+- Auth/RBAC is not implemented.
+
+Expected no-due-monitor response shape:
+
+```json
+{
+  "attempted_count": 0,
+  "due_count": 0,
+  "error_count": 0,
+  "run_ids": [],
+  "skipped_count": 0,
+  "status": "ok",
+  "success_count": 0
+}
+```
 
 ## 9. Local verification checklist
 

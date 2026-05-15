@@ -81,6 +81,7 @@ on conflict (source_id) do update set
     description = excluded.description,
     update_cadence = excluded.update_cadence,
     updated_at = now();
+
 -- Saved Monitors v2
 -- Stores repeatable public-data monitor definitions and latest manual run state.
 -- No personal health information should be stored in this table.
@@ -98,6 +99,11 @@ create table if not exists saved_monitors (
     latest_record_count integer,
     previous_record_count integer,
     status text not null default 'not_checked',
+    refresh_enabled boolean not null default false,
+    refresh_interval_minutes integer,
+    next_run_at timestamptz,
+    last_scheduled_run_at timestamptz,
+    last_scheduled_status text,
 
     constraint saved_monitors_module_check
         check (module in ('recallradar', 'drugsignal')),
@@ -115,7 +121,16 @@ create table if not exists saved_monitors (
         check (latest_record_count is null or latest_record_count >= 0),
 
     constraint saved_monitors_previous_record_count_check
-        check (previous_record_count is null or previous_record_count >= 0)
+        check (previous_record_count is null or previous_record_count >= 0),
+
+    constraint saved_monitors_refresh_interval_check
+        check (refresh_interval_minutes is null or refresh_interval_minutes > 0),
+
+    constraint saved_monitors_last_scheduled_status_check
+        check (
+            last_scheduled_status is null
+            or last_scheduled_status in ('success', 'error', 'skipped')
+        )
 );
 
 create index if not exists idx_saved_monitors_module
@@ -130,9 +145,12 @@ create index if not exists idx_saved_monitors_created_at
 create index if not exists idx_saved_monitors_last_checked_at
     on saved_monitors(last_checked_at desc);
 
+create index if not exists idx_saved_monitors_due_refresh
+    on saved_monitors(refresh_enabled, next_run_at);
+
 -- Saved Monitor Run History v2.2
--- Stores one row for each manual saved monitor run.
--- This is not scheduled monitoring and does not store raw source payloads.
+-- Stores one row for each manual or scheduled saved monitor run.
+-- This is run-history persistence and does not store raw source payloads.
 
 create table if not exists saved_monitor_runs (
     run_id uuid primary key,
