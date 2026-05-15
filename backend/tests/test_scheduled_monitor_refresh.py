@@ -155,6 +155,10 @@ async def test_run_due_saved_monitors_creates_success_run_and_advances_schedule(
     updated = saved_monitor_repository.get(monitor.id)
     runs = saved_monitor_repository.list_runs(monitor.id)
 
+    assert summary["status"] == "ok"
+    assert summary["job_run_id"].startswith("scheduled-refresh-")
+    assert summary["status"] == "ok"
+    assert summary["job_run_id"].startswith("scheduled-refresh-")
     assert summary["due_count"] == 1
     assert summary["attempted_count"] == 1
     assert summary["success_count"] == 1

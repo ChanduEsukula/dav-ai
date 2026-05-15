@@ -10,6 +10,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timedelta, timezone
 from typing import Any
+from uuid import uuid4
 
 from app.db.saved_monitor_repository import saved_monitor_repository
 from app.schemas.saved_monitors import (
@@ -115,8 +116,14 @@ async def run_due_saved_monitors(
         limit=limit,
     )
 
+    job_run_id = (
+        f"scheduled-refresh-{run_started_at.strftime('%Y%m%d-%H%M%S')}-"
+        f"{uuid4().hex[:8]}"
+    )
+
     summary: dict[str, Any] = {
         "status": "ok",
+        "job_run_id": job_run_id,
         "job_started_at": run_started_at.isoformat(),
         "due_count": len(due_monitors),
         "attempted_count": 0,
