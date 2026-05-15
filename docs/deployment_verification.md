@@ -13,8 +13,9 @@
 - Backend host: Render
 - Database: Supabase PostgreSQL
 - Migration tool: Alembic
-- Current migration revision: `20260514_0003`
+- Current migration revision: `20260514_0004`
 - Latest saved monitor run-history migration applied: `20260514_0003_create_saved_monitor_runs.py`
+- Latest saved monitor scheduled-refresh foundation migration applied: `20260514_0004_add_saved_monitor_schedule_fields.py`
 
 ## Live Smoke Tests Passed
 
@@ -31,6 +32,7 @@ This confirms deployment smoke verification only. It does not mean MedTrek AI is
 - `GET /api/v1/system/data-quality` returned `200`.
 - `GET /api/v1/saved-monitors` returned `200`.
 - Saved Monitor Run History v2.2 smoke flow passed.
+- Saved Monitor Scheduled Refresh Foundation v2.3 smoke flow passed.
 
 Live backend verification details:
 
@@ -65,6 +67,20 @@ The smoke run-history row had:
 
 This verified saved-monitor run-history persistence and endpoint behavior. It did not verify clinical correctness.
 
+### Saved Monitor Scheduled Refresh Foundation v2.3
+
+Commit `d8a6df4` added the backend-only scheduled refresh foundation for Saved Monitors.
+
+Verified after deployment:
+
+- Production backend `/health` returned `200`.
+- Production `/api/v1/system/status` returned `200`.
+- Production `/api/v1/saved-monitors` returned `200` with `[]`.
+- Alembic current revision confirmed `20260514_0004 (head)`.
+- Local CLI smoke against the configured database returned `status: ok` and `due_count: 0`.
+
+This confirms the scheduled refresh foundation is wired safely, but production scheduling is not enabled yet. No Render Cron, alerts, auth/RBAC, or public scheduling UI were added.
+
 ### Frontend
 
 - Vercel frontend loaded successfully.
@@ -84,10 +100,11 @@ This verified saved-monitor run-history persistence and endpoint behavior. It di
 - Set Render `ALLOWED_ORIGINS` to include `https://medtrek-ai.vercel.app` and `http://localhost:5173`.
 - Corrected Render `DATABASE_URL` value so it contains only the PostgreSQL connection string, not the `DATABASE_URL=` prefix.
 - Applied Alembic migration `20260514_0003_create_saved_monitor_runs.py`.
+- Applied Alembic migration `20260514_0004_add_saved_monitor_schedule_fields.py`.
 - Rotated the Supabase database password after accidental exposure.
 - Updated Render `DATABASE_URL` after password rotation.
 - Redeployed the backend after credential rotation.
-- Verified `/health`, `/api/v1/system/status`, and `/api/v1/system/data-quality` after rotation and redeploy.
+- Verified `/health`, `/api/v1/system/status`, `/api/v1/system/data-quality`, and `/api/v1/saved-monitors` after migration and redeploy.
 
 ## Security Follow-Up Status
 
@@ -97,14 +114,15 @@ Do not include old or new database URLs, passwords, or connection strings in doc
 
 ## Current Status
 
-MedTrek AI is deployed end-to-end with live public FDA data, role-based safety briefings, source metadata, audit history, PostgreSQL persistence, Saved Monitors v2.2 manual monitoring, saved monitor run history, and API documentation.
+MedTrek AI is deployed end-to-end with live public FDA data, role-based safety briefings, source metadata, audit history, PostgreSQL persistence, Saved Monitors v2.2 manual monitoring, saved monitor run history, Saved Monitors v2.3 scheduled-refresh foundation, and API documentation.
 
 Remaining production-readiness gaps include:
 
 - No auth/RBAC.
-- No scheduled monitor refresh.
+- No production scheduler or Render Cron enabled yet.
 - No alerts.
-- No scheduled run-history workflow beyond manual runs.
+- No public scheduling UI.
+- No scheduled run-history workflow beyond the backend-only CLI foundation.
 - No raw payload hashing.
 - No immutable audit/retention policy.
 - No production observability dashboard/SLOs.
