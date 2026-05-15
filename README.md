@@ -990,6 +990,8 @@ Important verification docs include:
 docs/deployment_verification.md
 docs/deployment_checklist.md
 docs/backend_deployment_setup.md
+docs/operations_runbook.md
+docs/render_cron_saved_monitors_plan.md
 docs/production_observability_verification.md
 docs/frontend_request_id_verification.md
 docs/system_status_verification.md
