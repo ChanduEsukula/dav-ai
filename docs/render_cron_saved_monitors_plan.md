@@ -1,6 +1,4 @@
-cd /Users/chanduesukula/medtrek-ai
-
-python -c 'from pathlib import Path; Path("docs/render_cron_saved_monitors_plan.md").write_text("""# Render Cron Plan for Saved Monitor Refresh
+# Render Cron Plan for Saved Monitor Refresh
 
 ## Purpose
 
