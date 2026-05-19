@@ -427,27 +427,36 @@ def get_latest_audit_event_for_query(
     try:
         with psycopg.connect(database_url, row_factory=dict_row) as connection:
             with connection.cursor() as cursor:
-                cursor.execute(
+                params: dict[str, Any] = {
+                    "module": module,
+                    "query": query,
+                }
+
+                exclude_clause = ""
+
+                if exclude_audit_id:
+                    exclude_clause = """
+                      and audit_id::text != %(exclude_audit_id)s
                     """
+                    params["exclude_audit_id"] = exclude_audit_id
+
+                cursor.execute(
+                    f"""
                     select
                         audit_id,
                         module,
                         query,
                         record_count,
                         upstream_status,
-                        created_at
+                        created_at::text as created_at
                     from audit_events
                     where module = %(module)s
                       and lower(query) = lower(%(query)s)
-                      and (%(exclude_audit_id)s is null or audit_id::text != %(exclude_audit_id)s)
+                    {exclude_clause}
                     order by created_at desc
                     limit 1
                     """,
-                    {
-                        "module": module,
-                        "query": query,
-                        "exclude_audit_id": exclude_audit_id,
-                    },
+                    params,
                 )
 
                 row = cursor.fetchone()

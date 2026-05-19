@@ -4,11 +4,11 @@ This repository provides a small lock abstraction for scheduled jobs such as
 Saved Monitor refresh.
 
 When DATABASE_URL is configured and the scheduler_locks table exists, the
-repository uses database-backed locks so scheduled jobs are protected across
-processes, deployments, and restarts.
+global repository uses database-backed locks so scheduled jobs are protected
+across processes, deployments, and restarts.
 
-When DATABASE_URL is not configured, or when database lock persistence fails,
-it falls back to in-memory locks for local development and tests.
+Manually-created repository instances default to in-memory behavior for local
+unit tests. The global singleton at the bottom opts into database-backed locks.
 """
 
 from __future__ import annotations
@@ -39,8 +39,9 @@ class SchedulerLock:
 class SchedulerLockRepository:
     """Scheduler lock repository with DB-backed and in-memory lease behavior."""
 
-    def __init__(self) -> None:
+    def __init__(self, *, use_database: bool = False) -> None:
         self._locks: dict[str, SchedulerLock] = {}
+        self._use_database = use_database
 
     def acquire_lock(
         self,
@@ -55,11 +56,11 @@ class SchedulerLockRepository:
         Returns True when the lock is acquired.
         Returns False when another active lock exists.
 
-        DB-backed behavior is preferred when available. In-memory behavior is
-        retained as a safe local/test fallback.
+        DB-backed behavior is preferred for the global repository when
+        available. In-memory behavior is retained as a safe local/test fallback.
         """
 
-        database_url = get_database_url()
+        database_url = get_database_url() if self._use_database else None
 
         if database_url:
             try:
@@ -89,7 +90,7 @@ class SchedulerLockRepository:
     def release_lock(self, *, lock_name: str, locked_by: str) -> bool:
         """Release a lock only when owned by the current job."""
 
-        database_url = get_database_url()
+        database_url = get_database_url() if self._use_database else None
 
         if database_url:
             try:
@@ -112,7 +113,7 @@ class SchedulerLockRepository:
     def get_lock(self, lock_name: str) -> SchedulerLock | None:
         """Return the current lock for inspection/testing."""
 
-        database_url = get_database_url()
+        database_url = get_database_url() if self._use_database else None
 
         if database_url:
             try:
@@ -319,4 +320,4 @@ class SchedulerLockRepository:
         )
 
 
-scheduler_lock_repository = SchedulerLockRepository()
+scheduler_lock_repository = SchedulerLockRepository(use_database=True)
