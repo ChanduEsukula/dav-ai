@@ -256,12 +256,12 @@ export default function SavedMonitorsPage() {
   return (
     <section className="saved-monitors-page" aria-labelledby="saved-monitors-title">
       <div className="saved-monitors-hero">
-        <p className="eyebrow">Saved Monitors v2.2</p>
+        <p className="eyebrow">Saved Monitors v2.6</p>
         <h1 id="saved-monitors-title">Saved Monitors</h1>
         <p>
           Save repeatable RecallRadar or DrugSignal searches, run checks
-          manually, compare latest and previous results, and open the related
-          audit event for traceability.
+          manually, compare latest and previous results, review run history, and
+          open related audit events for traceability.
         </p>
       </div>
 
@@ -392,27 +392,38 @@ export default function SavedMonitorsPage() {
                               No manual run history yet.
                             </span>
                           ) : (
-                            (runHistoryByMonitor[monitor.id] ?? []).slice(0, 3).map((run) => (
-                              <div className="saved-monitor-run-item" key={run.run_id}>
-                                <div>
-                                  <strong>{formatDate(run.created_at)}</strong>
-                                  <span>{moduleLabels[run.module]} · {run.status}</span>
+                            (runHistoryByMonitor[monitor.id] ?? [])
+                              .slice(0, 3)
+                              .map((run) => (
+                                <div
+                                  className="saved-monitor-run-item"
+                                  key={run.run_id}
+                                >
+                                  <div>
+                                    <strong>{formatDate(run.created_at)}</strong>
+                                    <span>
+                                      {moduleLabels[run.module]} · {run.status}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <span>
+                                      Records {formatNullableNumber(run.record_count)}
+                                    </span>
+                                    <span>{formatScore(run)}</span>
+                                  </div>
+                                  {run.audit_id ? (
+                                    <button
+                                      type="button"
+                                      className="audit-link-button"
+                                      onClick={() =>
+                                        openAuditDetail(run.audit_id as string)
+                                      }
+                                    >
+                                      View run audit
+                                    </button>
+                                  ) : null}
                                 </div>
-                                <div>
-                                  <span>Records {formatNullableNumber(run.record_count)}</span>
-                                  <span>{formatScore(run)}</span>
-                                </div>
-                                {run.audit_id ? (
-                                  <button
-                                    type="button"
-                                    className="audit-link-button"
-                                    onClick={() => openAuditDetail(run.audit_id as string)}
-                                  >
-                                    View run audit
-                                  </button>
-                                ) : null}
-                              </div>
-                            ))
+                              ))
                           )}
                         </div>
                       </td>
@@ -464,9 +475,10 @@ export default function SavedMonitorsPage() {
 
       <div className="saved-monitor-note">
         <strong>Current scope:</strong> Saved Monitors currently support manual
-        run checks, Supabase persistence, latest/previous result comparison,
-        run history, change indicators, duplicate prevention, and audit linking. Scheduled
-        refresh and alert notifications are future Saved Monitors v2 steps.
+        run checks, Supabase persistence, latest/previous result comparison, run
+        history, change indicators, duplicate prevention, audit linking, and
+        backend scheduler-lock protection. Production Cron, alert notifications,
+        and public scheduling UI are not enabled yet.
       </div>
     </section>
   );
