@@ -55,13 +55,13 @@ The MVP must not store PHI, patient identifiers, diagnosis history, treatment hi
 
 ## Verified Local Status
 
-- Backend tests: 79 passed
+- Backend tests: 98 passed
 - Frontend tests: 54 passed
 - Frontend lint: passed
 - Frontend production build: passed
 - Audit History API route tests added
 - Frontend Audit History page tests added
-- Alembic migration system added and current migration head is `20260514_0003`
+- Alembic migration system added and current migration head is `20260519_0005`
 - RecallRadar, DrugSignal, Audit History, and Saved Monitors v2.2 verified end-to-end locally
 - Failed-upstream audit events use registry source IDs consistently: `openfda_drug_enforcement` and `openfda_drug_event`
 

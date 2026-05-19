@@ -8,7 +8,7 @@ This is not production-ready healthcare software. It should not be used for clin
 
 ## Verified Checks
 
-- Backend tests: 89 passed
+- Backend tests: 98 passed
 - Frontend tests: 54 passed
 - Frontend lint: passed
 - Frontend production build: passed
@@ -16,6 +16,7 @@ This is not production-ready healthcare software. It should not be used for clin
 - Playwright E2E smoke test is included in GitHub Actions CI
 - Live deployment smoke verification: passed
 - Scheduled refresh CLI smoke check: passed with `status: ok` and `due_count: 0`
+- Scheduler lock verification: DB-backed `scheduler_locks` acquisition/release verified manually
 
 ## Key Fix Included
 
@@ -101,12 +102,27 @@ This added:
 
 This still does not enable production cron, alerts, auth/RBAC, or public scheduling UI.
 
+## Saved Monitors v2.6 Scheduler Locks and Test Isolation
+
+Saved Monitors v2.6 adds database-backed scheduler locks for the backend scheduled-refresh foundation and isolates backend tests from the real `DATABASE_URL` by default.
+
+This added:
+
+- `scheduler_locks` persistence through migration `20260519_0005_create_scheduler_locks.py`
+- DB-backed scheduler lock acquisition and release for scheduled monitor refresh
+- In-memory lock fallback for local/test-created repository instances
+- Backend test isolation through `backend/tests/conftest.py`
+- Manual verification of a real temporary due DrugSignal monitor for `aspirin`
+- Confirmation that `scheduler_locks` was empty after the job, proving lock release
+
+Production Cron, public scheduling UI, alerts, auth/RBAC, notification preferences, production scheduler observability, and alert delivery are still not enabled.
+
 ## Live Deployment Verified
 
 - Frontend: Vercel
 - Backend: Render
 - Database: Supabase PostgreSQL
-- Current Alembic revision verified: `20260514_0004`
+- Current Alembic revision verified: `20260519_0005`
 - Backend health endpoint returned healthy.
 - Source registry endpoint returned the expected openFDA sources.
 - RecallRadar live search worked.

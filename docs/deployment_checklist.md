@@ -6,11 +6,11 @@ Prepare MedTrek AI for a clean frontend/backend/database deployment without chan
 
 ## Current Local Baseline
 
-- Backend tests: 79 passed
+- Backend tests: 98 passed
 - Frontend tests: 54 passed
 - Frontend lint: passed
 - Frontend production build: passed
-- Alembic current revision: `20260514_0003`
+- Alembic current revision: `20260519_0005`
 - Core workflows verified locally: RecallRadar, DrugSignal, Audit History, Saved Monitors v2.2
 - Demo script available: `docs/demo_script.md`
 

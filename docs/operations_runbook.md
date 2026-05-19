@@ -155,7 +155,7 @@ Expected app behavior:
 Recommended checks:
 1. Confirm Render environment has DATABASE_URL.
 2. Confirm Supabase database is active.
-3. Confirm Alembic migrations are at head, currently `20260514_0004`.
+3. Confirm Alembic migrations are at head, currently `20260519_0005`.
 4. Call /api/v1/audit-events?limit=10.
 5. Search Render logs using the request ID.
 
@@ -165,7 +165,7 @@ Recommended checks:
 The backend includes a CLI entrypoint for future scheduled refresh jobs:
 
 ```bash
-cd backend
+cd /Users/chanduesukula/medtrek-ai/backend
 python -m app.jobs.run_due_saved_monitors --limit 10
 ```
 
@@ -175,10 +175,15 @@ Current boundary:
 
 - Scheduled refresh infrastructure exists.
 - Migration `20260514_0004` adds schedule metadata fields.
+- Migration `20260519_0005_create_scheduler_locks.py` adds the `scheduler_locks` table.
+- DB-backed scheduler locking is implemented for scheduled refresh jobs.
+- In-memory scheduler lock fallback remains available for local/test-created repository instances.
 - The CLI job exists for a future Render Cron or similar scheduler.
-- Production scheduling is not enabled until a Render Cron or equivalent scheduler is configured.
+- Production scheduling is not enabled until a Render Cron or equivalent scheduler is configured and lock behavior is re-verified in that deployment environment.
 - Alerts are not implemented.
 - Auth/RBAC is not implemented.
+- Public scheduling UI is not implemented.
+- Notification preferences and alert delivery are not implemented.
 
 Expected no-due-monitor response shape:
 
@@ -187,12 +192,38 @@ Expected no-due-monitor response shape:
   "attempted_count": 0,
   "due_count": 0,
   "error_count": 0,
+  "job_run_id": "scheduled-refresh-20260519-120000-abc12345",
+  "job_started_at": "2026-05-19T12:00:00+00:00",
+  "requested_limit": 10,
   "run_ids": [],
+  "safe_limit": 10,
   "skipped_count": 0,
   "status": "ok",
   "success_count": 0
 }
 ```
+
+## Scheduler locking
+
+Scheduled monitor refresh uses a scheduler lock named `saved-monitor-refresh`.
+
+Current lock behavior:
+
+- The job acquires a row in `scheduler_locks` before selecting due monitors.
+- If an active lock exists, the job skips safely with `status: skipped` and `reason: active_scheduler_lock`.
+- If a lock is expired, a later job can take it over.
+- The job releases the lock when it finishes, including after handled monitor errors.
+- Manual verification confirmed that `scheduler_locks` was empty after a successful real temporary due DrugSignal monitor run, confirming lock release.
+
+Operational checks:
+
+1. Confirm migration `20260519_0005_create_scheduler_locks.py` has been applied.
+2. Run the CLI manually from the backend service context.
+3. Confirm the JSON summary includes `job_run_id`, `requested_limit`, and `safe_limit`.
+4. Confirm due monitor runs create `saved_monitor_runs` rows.
+5. Confirm `scheduler_locks` does not retain a stale active lock after the job completes.
+
+Production Cron remains disabled until final deployment-environment verification, scheduler observability, and rollback guidance are complete.
 
 ## 9. Local verification checklist
 

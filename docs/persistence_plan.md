@@ -23,7 +23,7 @@ MedTrek AI currently has:
 - Supabase/PostgreSQL schema for source registry and audit events
 - Fail-soft audit repository
 - Audit-event persistence wired into RecallRadar and DrugSignal routes
-- Saved Monitors v2.2 persistence in repository code, `backend/db/schema.sql`, and Alembic migrations through `20260514_0003`
+- Saved Monitors persistence in repository code, `backend/db/schema.sql`, and Alembic migrations through `20260519_0005`
 - Backend tests passing
 - Frontend tests passing
 - GitHub Actions CI running backend tests, frontend tests, lint, and build
@@ -31,7 +31,7 @@ MedTrek AI currently has:
 Current backend test status:
 
 ```bash
-79 passed
+98 passed
 ```
 
 Current frontend test status:
@@ -141,7 +141,7 @@ Stores repeatable public-data monitor definitions and latest manual run state.
 
 Migration status:
 
-`saved_monitors` is present in `backend/db/schema.sql`, repository code, and Alembic migration `20260511_0002_create_saved_monitors.py`. `saved_monitor_runs` is present in `backend/db/schema.sql`, repository code, and Alembic migration `20260514_0003_create_saved_monitor_runs.py`.
+`saved_monitors` is present in `backend/db/schema.sql`, repository code, and Alembic migration `20260511_0002_create_saved_monitors.py`. `saved_monitor_runs` is present in `backend/db/schema.sql`, repository code, and Alembic migration `20260514_0003_create_saved_monitor_runs.py`. Scheduled-refresh metadata is added by `20260514_0004_add_saved_monitor_schedule_fields.py`, and DB-backed scheduler locks are added by `20260519_0005_create_scheduler_locks.py`.
 
 ---
 

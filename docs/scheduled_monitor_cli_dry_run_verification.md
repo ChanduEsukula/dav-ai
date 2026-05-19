@@ -8,7 +8,7 @@ May 15, 2026
 
 This document records manual dry-run verification for the Saved Monitor scheduled-refresh CLI foundation.
 
-Production Cron remains disabled. This verification only confirms that the backend CLI entrypoint runs safely from the backend service context, applies limit guardrails correctly, and emits a traceable `job_run_id` for scheduler observability.
+Production Cron remains disabled. This verification confirms that the backend CLI entrypoint runs safely from the backend service context, applies limit guardrails correctly, emits a traceable `job_run_id` for scheduler observability, and now runs with DB-backed scheduler locking when the configured database includes `scheduler_locks`.
 
 ## Commands Run
 
@@ -20,6 +20,13 @@ source ../.venv/bin/activate
 python -m app.jobs.run_due_saved_monitors --limit 10
 python -m app.jobs.run_due_saved_monitors --limit 0
 python -m app.jobs.run_due_saved_monitors --limit 999
+```
+
+Current manual verification command:
+
+```bash
+cd /Users/chanduesukula/medtrek-ai/backend
+python -m app.jobs.run_due_saved_monitors --limit 10
 ```
 
 ## Results
@@ -116,17 +123,27 @@ Verified behavior:
 - No alerts or notifications were sent.
 - Production Cron was not enabled.
 
+Additional scheduler-lock verification has since confirmed:
+
+- DB-backed scheduler locks are implemented through the `scheduler_locks` table.
+- Alembic migration `20260519_0005_create_scheduler_locks.py` creates the lock table.
+- Backend tests isolate the real `DATABASE_URL` by default through `backend/tests/conftest.py`.
+- A real temporary due DrugSignal saved monitor for `aspirin` ran successfully through the CLI.
+- A `saved_monitor_runs` row was created.
+- `scheduler_locks` was empty after the job, confirming lock release.
+- Temporary monitor rows were cleaned up.
+
 ## Current Status
 
-The scheduled-refresh CLI foundation is verified for no-due-monitor dry-run behavior, limit guardrails, and traceable job-run IDs.
+The scheduled-refresh CLI foundation is verified for no-due-monitor dry-run behavior, limit guardrails, traceable job-run IDs, DB-backed scheduler lock acquisition/release, and real due-monitor execution against a temporary DrugSignal monitor.
 
-This does not verify production recurring execution, alerting, scheduler locking, monitor ownership, or production observability.
+This does not enable or verify production recurring execution, alerting, monitor ownership, production scheduler observability, public scheduling UI, auth/RBAC, notification preferences, or alert delivery.
 
 ## Do Not Enable Production Cron Until
 
 Before enabling recurring production Cron, the project still needs:
 
-- Scheduler locking or lease protection.
+- Target deployment environment verification of DB-backed scheduler locking.
 - Better scheduler observability.
 - Searchable job/run IDs in production logs.
 - Clear rollback instructions.

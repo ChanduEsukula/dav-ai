@@ -2,16 +2,32 @@
 
 ## Purpose
 
-This document defines the design for scheduler locking / lease protection before enabling production Cron for Saved Monitor refresh.
+This document defines the design and current implementation status for scheduler locking before enabling production Cron for Saved Monitor refresh.
 
-Production Cron is not enabled yet. This design is a prerequisite for safer future recurring execution.
+Production Cron is not enabled yet. The scheduler lock design has now been implemented for the backend scheduled monitor refresh job, but recurring production execution still requires deployment-environment verification, observability, and rollback guidance.
+
+## Implementation Status
+
+Status: implemented for the scheduled monitor refresh foundation.
+
+Implemented components:
+
+- Database-backed lock table: `scheduler_locks`
+- Alembic migration: `backend/migrations/versions/20260519_0005_create_scheduler_locks.py`
+- Repository: `backend/app/db/scheduler_lock_repository.py`
+- Scheduled job integration: `backend/app/services/scheduled_monitor_refresh.py`
+- CLI entrypoint: `backend/app/jobs/run_due_saved_monitors.py`
+- In-memory fallback for local/test-created repository instances
+- Backend tests for lock acquisition, active-lock skipping, expired-lock takeover, release behavior, and test isolation from the real `DATABASE_URL`
+
+Manual verification confirmed that the CLI can run with zero due monitors, a real temporary due DrugSignal monitor for `aspirin` can run successfully, a `saved_monitor_runs` row is created, and `scheduler_locks` is empty after the job, confirming lock release.
 
 ## Problem
 
 The scheduled monitor refresh foundation can be triggered through the backend CLI job:
 
 ```bash
-cd backend
+cd /Users/chanduesukula/medtrek-ai/backend
 python -m app.jobs.run_due_saved_monitors --limit 10
 ```
 
@@ -30,6 +46,8 @@ Without locking, two scheduler jobs could:
 
 Add a simple scheduler lock / lease so only one saved-monitor scheduled refresh job runs at a time.
 
+Current status: this goal is implemented for the backend scheduled-refresh foundation through `scheduler_locks`.
+
 ## Non-Goals
 
 This design does not add:
@@ -43,17 +61,17 @@ This design does not add:
 - Celery, Redis, or background workers.
 - Clinical or medical decision logic.
 
-## Recommended Lock Model
+## Lock Model
 
 Use a database-backed lock table.
 
-Suggested table name:
+Table name:
 
 ```text
 scheduler_locks
 ```
 
-Suggested columns:
+Columns:
 
 ```text
 lock_name TEXT PRIMARY KEY
@@ -140,7 +158,7 @@ If another scheduler job already holds a valid lock:
 
 ## Repository Behavior
 
-Add a small scheduler lock repository with methods such as:
+The scheduler lock repository provides methods such as:
 
 ```text
 acquire_lock(lock_name, locked_by, locked_until, now) -> bool
@@ -156,7 +174,7 @@ Expected behavior:
 
 ## Local / Test Fallback
 
-For local tests, support an in-memory lock fallback similar to saved monitor and audit repository patterns.
+For local tests and repository instances created without database configuration, an in-memory lock fallback is available similar to saved monitor and audit repository patterns.
 
 The fallback should support:
 
@@ -168,7 +186,7 @@ The fallback should support:
 
 ## Test Plan
 
-Backend tests should cover:
+Backend tests cover:
 
 1. Acquiring a new lock succeeds.
 2. Active lock causes scheduler job to return `status: skipped`.
@@ -185,6 +203,7 @@ Scheduler locking does not make the system production-ready by itself.
 
 Before enabling production Cron, MedTrek AI still needs:
 
+- Deployment-environment verification of lock behavior.
 - Scheduler observability.
 - Clear rollback instructions.
 - Auth/RBAC and monitor ownership.
@@ -194,6 +213,6 @@ Before enabling production Cron, MedTrek AI still needs:
 
 ## Current Recommendation
 
-Implement scheduler locking before enabling any recurring production Cron job.
+Keep production Cron disabled until the implemented DB-backed lock behavior is re-verified in the target deployment environment and paired with scheduler observability and rollback guidance.
 
-Keep production Cron disabled until lock behavior is implemented, tested, documented, and manually verified.
+Do not add public scheduling UI, alerts, notification delivery, or user-specific scheduling until auth/RBAC, monitor ownership, and alerting behavior are designed.

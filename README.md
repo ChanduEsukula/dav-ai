@@ -8,15 +8,17 @@ This project is an MVP and portfolio-grade engineering prototype. It is not a me
 
 ---
 
-## Recent Milestone: Saved Monitors v2.5 Scheduler Foundation and Render Cron Dry-Run Plan
+## Recent Milestone: Saved Monitors v2.6 Scheduler Locking and Test Isolation
 
-Saved Monitors has moved beyond manual saved searches into a stronger monitoring foundation. The current v2.5 state includes persisted run history, latest/previous comparison, change indicators, audit links, backend scheduled-refresh foundation, scheduler CLI guardrails, and a documented Render Cron dry-run plan.
+Saved Monitors has moved beyond manual saved searches into a stronger monitoring foundation. The current v2.6 state includes persisted run history, latest/previous comparison, change indicators, audit links, backend scheduled-refresh foundation, scheduler CLI guardrails, database-backed scheduler locks, test-isolated backend persistence behavior, and a documented Render Cron dry-run plan.
 
-This milestone was verified through backend tests, frontend tests, production build checks, GitHub Actions CI, and manual browser verification.
+This milestone was verified through backend tests, frontend tests, production build checks, GitHub Actions CI, manual browser verification, and manual scheduled-monitor CLI verification.
 
-Production Cron is not enabled. Alerts, public scheduling UI, auth/RBAC, notification preferences, scheduler locking, and production scheduler observability are not implemented yet.
+Production Cron is not enabled. Alerts, public scheduling UI, auth/RBAC, notification preferences, alert delivery, and production scheduler observability are not implemented yet.
 
 Live deployment smoke verification also confirmed that migration `20260514_0003_create_saved_monitor_runs.py` was applied and that a temporary saved monitor could be created, manually run, reviewed through `GET /api/v1/saved-monitors/{monitor_id}/runs`, and deleted with cleanup back to an empty monitor list. The persisted smoke row had `status: success`, `record_count: 0`, an audit ID, and `error_message: null`. This verifies persistence and endpoint behavior, not clinical correctness.
+
+Scheduler-lock verification confirmed that migration `20260519_0005_create_scheduler_locks.py` creates the `scheduler_locks` table, the configured database can acquire and release the saved-monitor scheduler lock, `python -m app.jobs.run_due_saved_monitors --limit 10` works with zero due monitors, and a real temporary due DrugSignal monitor for `aspirin` can run successfully and create a `saved_monitor_runs` row. After the manual run, `scheduler_locks` was empty, confirming lock release. Temporary monitor rows were cleaned up.
 
 See:
 
@@ -42,7 +44,7 @@ MedTrek AI currently includes:
 - **Safety Briefing Engine** for deterministic role-aware public-data safety briefings.
 - **Source Registry** for public data source transparency.
 - **Audit History** for persisted source/search traceability.
-- **Saved Monitors v2.5 foundation** for saved repeatable searches, manual run checks, latest/previous comparison, run history, change indicators, duplicate prevention, audit linking, backend scheduled-refresh foundation, CLI guardrails, and Render Cron dry-run planning.
+- **Saved Monitors v2.6 foundation** for saved repeatable searches, manual run checks, latest/previous comparison, run history, change indicators, duplicate prevention, audit linking, backend scheduled-refresh foundation, CLI guardrails, database-backed scheduler locks, and Render Cron dry-run planning.
 - **System/Data Quality views** for operational and audit-persistence visibility.
 - **Supabase/PostgreSQL audit and saved-monitor persistence** through fail-soft backend repositories.
 - **GitHub Actions CI** for backend tests, frontend tests, frontend lint, frontend production build, and Playwright smoke testing.
@@ -74,9 +76,9 @@ MedTrek AI is intentionally focused on public-data traceability, operational rea
 
 | Status | Features |
 |---|---|
-| Implemented | RecallRadar; DrugSignal; Audit History; System Status / Data Quality; Data Sources; deterministic safety briefings; Saved Monitors run history; saved-monitor latest/previous comparison; backend scheduled-refresh foundation; scheduler CLI guardrails; Render Cron dry-run documentation. |
+| Implemented | RecallRadar; DrugSignal; Audit History; System Status / Data Quality; Data Sources; deterministic safety briefings; Saved Monitors run history; saved-monitor latest/previous comparison; backend scheduled-refresh foundation; scheduler CLI guardrails; database-backed scheduler locks; Render Cron dry-run documentation. |
 | Partial | Deployment hardening; production observability; scheduled refresh backend foundation; authentication/RBAC planning. |
-| Planned | Production Cron activation; automated alerts; public scheduling UI; authentication/RBAC; scheduler locking; notification preferences; briefing persistence/history; raw snapshot/hash-based reproducibility; Regional Health Pulse; EnviroHealth Signal; CNN/OCR label scanner; RAG/LLM upgrades. |
+| Planned | Production Cron activation; automated alerts; public scheduling UI; authentication/RBAC; notification preferences; briefing persistence/history; raw snapshot/hash-based reproducibility; Regional Health Pulse; EnviroHealth Signal; CNN/OCR label scanner; RAG/LLM upgrades. |
 
 ---
 
@@ -151,9 +153,9 @@ Briefings are generated from structured RecallRadar and DrugSignal response data
 
 DrugSignal briefing output has been upgraded to use DrugSignal Intelligence Score v1 and Reaction Classification v1, with source/audit details and limitations kept visible.
 
-### Saved Monitors v2.5 Foundation
+### Saved Monitors v2.6 Foundation
 
-Saved Monitors v2.5 foundation lets users save repeatable RecallRadar or DrugSignal searches, manually run checks over time, review run history, compare latest and previous values, and rely on a backend scheduled-refresh foundation for future Cron-based execution.
+Saved Monitors v2.6 foundation lets users save repeatable RecallRadar or DrugSignal searches, manually run checks over time, review run history, compare latest and previous values, and rely on a backend scheduled-refresh foundation for future Cron-based execution.
 
 Current manual workflow:
 
@@ -181,9 +183,11 @@ The current implementation supports:
 - Due-monitor selection foundation.
 - Backend CLI job for future scheduled execution.
 - CLI guardrails with safe limit clamping.
+- Database-backed scheduler locking through the `scheduler_locks` table.
+- In-memory scheduler lock fallback for local/test-created repository instances.
 - Render Cron dry-run documentation.
 
-Saved Monitors includes a backend scheduled-refresh foundation and CLI guardrails, but production Cron is not enabled. It does not include automated alerts, public scheduling UI, user accounts, authentication/RBAC, briefing history, scheduler locking, production scheduler observability, or alert delivery preferences.
+Saved Monitors includes a backend scheduled-refresh foundation, CLI guardrails, and database-backed scheduler locking, but production Cron is not enabled. It does not include automated alerts, public scheduling UI, user accounts, authentication/RBAC, briefing history, production scheduler observability, or alert delivery preferences.
 
 Documentation:
 
@@ -225,10 +229,12 @@ docs/render_cron_saved_monitors_plan.md
 - Supabase/PostgreSQL saved monitor schedule metadata support.
 - Audit History list/detail API.
 - Audit History frontend page with filters, detail panel, CSV export, and copy actions.
-- Saved Monitors v2.5 foundation for creating, listing, deleting, duplicate prevention, manually running repeatable RecallRadar or DrugSignal monitors, reviewing run history, and supporting backend scheduled-refresh groundwork.
+- Saved Monitors v2.6 foundation for creating, listing, deleting, duplicate prevention, manually running repeatable RecallRadar or DrugSignal monitors, reviewing run history, and supporting backend scheduled-refresh groundwork.
 - Saved monitor latest/previous comparison, run history, and change indicators.
 - Backend scheduled-refresh foundation.
 - Scheduler CLI guardrails.
+- Database-backed scheduler locks through `scheduler_locks`.
+- Backend tests isolated from the real `DATABASE_URL` by `backend/tests/conftest.py`.
 - Render Cron dry-run documentation.
 - System Status page.
 - Data Quality panel.
@@ -256,7 +262,6 @@ docs/render_cron_saved_monitors_plan.md
 - Embedding search or clustering model.
 - Formal classifier evaluation dataset.
 - Product analytics.
-- Scheduler locking or lease protection.
 - Production observability dashboard.
 - Production security hardening beyond current MVP configuration.
 
@@ -264,7 +269,7 @@ docs/render_cron_saved_monitors_plan.md
 
 ## Current Engineering Status
 
-The active MVP modules are RecallRadar, DrugSignal, Audit History, Safety Briefing Engine, Source Registry, System Status, Data Quality, and Saved Monitors v2.5 foundation.
+The active MVP modules are RecallRadar, DrugSignal, Audit History, Safety Briefing Engine, Source Registry, System Status, Data Quality, and Saved Monitors v2.6 foundation.
 
 Current engineering support includes:
 
@@ -281,6 +286,8 @@ Current engineering support includes:
 - Saved monitor change indicators.
 - Backend scheduled-refresh foundation.
 - Scheduler CLI guardrails.
+- Database-backed scheduler lock repository and migration.
+- Test isolation from the real `DATABASE_URL` by default.
 - Render Cron dry-run planning with production Cron disabled.
 - Request ID middleware and frontend request ID propagation.
 - Production verification documentation for deployed behavior.
@@ -290,7 +297,7 @@ Current engineering support includes:
 Current backend test status:
 
 ```bash
-89 passed
+98 passed
 ```
 
 Current frontend test status:
@@ -584,7 +591,7 @@ POST /api/v1/saved-monitors/{monitor_id}/run
 DELETE /api/v1/saved-monitors/{monitor_id}
 ```
 
-Saved Monitors endpoints support repeatable public-data searches, manual run checks, and run history. The backend also includes a scheduled-refresh foundation and CLI job for future Cron execution. Production Cron, public scheduling UI, and alerting are not enabled yet.
+Saved Monitors endpoints support repeatable public-data searches, manual run checks, and run history. The backend also includes a scheduled-refresh foundation, scheduler lock repository, and CLI job for future Cron execution. Production Cron, public scheduling UI, and alerting are not enabled yet.
 
 ---
 
@@ -595,7 +602,7 @@ MedTrek AI includes Supabase/PostgreSQL audit persistence and saved monitor pers
 Current persistence support includes:
 
 - `backend/db/schema.sql`.
-- Alembic migrations for `source_registry`, `audit_events`, `saved_monitors`, saved monitor run history, and saved monitor schedule metadata.
+- Alembic migrations for `source_registry`, `audit_events`, `saved_monitors`, saved monitor run history, saved monitor schedule metadata, and scheduler locks.
 - `backend/app/db/database.py`.
 - `backend/app/db/audit_repository.py`.
 - `backend/app/db/saved_monitor_repository.py`.
@@ -605,6 +612,7 @@ Current persistence support includes:
 - Source metadata stored in `source_registry`.
 - Search/source audit events stored in `audit_events`.
 - Saved monitor definitions, latest manual run state, schedule metadata, and run-history rows stored for saved-monitor workflows.
+- Scheduler lock state stored in `scheduler_locks` while a scheduled-refresh job is active.
 
 The current persistence layer stores:
 
@@ -623,6 +631,7 @@ The current persistence layer stores:
 - Error message when applicable.
 - Created timestamp.
 - Saved monitor name, query, module, status, latest/previous score, latest/previous record count, latest audit ID, last-checked timestamp, schedule metadata, and run-history state.
+- Scheduler lock name, lock owner, lock expiration, and timestamps while a job lock is active.
 
 The current persistence layer does **not** store:
 
@@ -695,10 +704,11 @@ Users should verify official source records and consult qualified healthcare pro
 ### Persistence
 
 - Supabase PostgreSQL.
-- SQL schema for source registry, audit events, saved monitors, saved monitor runs, and saved monitor schedule metadata.
-- Alembic migrations for source registry, audit events, saved monitors, saved monitor runs, and saved monitor schedule metadata.
+- SQL schema for source registry, audit events, saved monitors, saved monitor runs, saved monitor schedule metadata, and scheduler locks.
+- Alembic migrations for source registry, audit events, saved monitors, saved monitor runs, saved monitor schedule metadata, and `scheduler_locks`.
 - Fail-soft audit persistence repository.
 - Fail-soft saved monitor repository.
+- Database-backed scheduler lock repository with in-memory fallback for local/test-created repository instances.
 
 ### CI/CD
 
@@ -776,11 +786,13 @@ The scheduled monitor refresh foundation includes a backend CLI job for future C
 From the backend service context:
 
 ```bash
-cd backend
+cd /Users/chanduesukula/medtrek-ai/backend
 python -m app.jobs.run_due_saved_monitors --limit 10
 ```
 
 This command is for dry-run/manual verification only. Production Cron is not enabled.
+
+The CLI uses database-backed scheduler locks when `DATABASE_URL` is configured and the `scheduler_locks` table exists. Migration `backend/migrations/versions/20260519_0005_create_scheduler_locks.py` creates that table. In-memory locking remains available for local/test-created repository instances.
 
 ### Frontend
 
@@ -911,7 +923,7 @@ pytest
 Current backend test status:
 
 ```bash
-89 passed
+98 passed
 ```
 
 Backend test coverage includes:
@@ -937,6 +949,8 @@ Backend test coverage includes:
 - Saved monitor run-history behavior.
 - Scheduled refresh due-monitor selection and summary behavior.
 - Scheduled monitor CLI guardrails.
+- Database-backed scheduler lock behavior.
+- Backend test isolation from the real `DATABASE_URL` through `backend/tests/conftest.py`.
 
 Run frontend tests:
 
@@ -995,6 +1009,7 @@ Verified saved monitor persistence includes:
 - Latest audit ID persistence.
 - Last checked timestamp persistence.
 - Schedule metadata persistence foundation.
+- Scheduler lock acquisition and release through `scheduler_locks`.
 
 Live v2.2 run-history smoke verification confirmed:
 
@@ -1005,6 +1020,16 @@ Live v2.2 run-history smoke verification confirmed:
 - `DELETE /api/v1/saved-monitors/{monitor_id}` returned `204`.
 - `GET /api/v1/saved-monitors` returned `200` with `[]` after cleanup.
 - The persisted smoke row had `status: success`, `record_count: 0`, an audit ID, and `error_message: null`.
+
+Manual scheduled-monitor verification also confirmed:
+
+- Migration `20260519_0005_create_scheduler_locks.py` was applied.
+- `scheduler_locks` existed in the configured database.
+- `python -m app.jobs.run_due_saved_monitors --limit 10` worked with zero due monitors.
+- A real temporary due DrugSignal saved monitor for `aspirin` ran successfully.
+- A `saved_monitor_runs` row was created.
+- `scheduler_locks` was empty after the job, confirming lock release.
+- Temporary monitor rows were cleaned up.
 
 Related docs:
 
@@ -1055,12 +1080,12 @@ These docs support reproducibility, reviewer confidence, and production-readines
 
 Recommended next steps:
 
-1. Keep RecallRadar, DrugSignal, Audit History, Source Registry, System/Data Quality, Safety Briefing Engine, and Saved Monitors v2.5 foundation stable.
-2. Keep production Cron disabled until scheduler observability, locking, and rollback guidance are stronger.
+1. Keep RecallRadar, DrugSignal, Audit History, Source Registry, System/Data Quality, Safety Briefing Engine, and Saved Monitors v2.6 foundation stable.
+2. Keep production Cron disabled until deployment-environment scheduler verification, scheduler observability, and rollback guidance are stronger.
 3. Improve Trend Snapshot examples using repeated-query audit history.
 4. Add frontend trend comparison visualization improvements.
 5. Expand saved monitor detail and run-history review.
-6. Add scheduler locking or lease behavior before any recurring production job.
+6. Re-verify database-backed scheduler locking in the target deployment environment before any recurring production job.
 7. Add authentication and role-aware access control before user-specific scheduling or alerts.
 8. Add a production observability dashboard or monitoring summary beyond current request tracing and operational transparency.
 9. Add formal NLP/ML evaluation dataset for reaction classification.

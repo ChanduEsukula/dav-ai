@@ -2,7 +2,7 @@
 
 Date: May 8, 2026
 
-Historical/manual workflow note: this document describes the manual monitor workflow before the Saved Monitors v2 foundation. Current code now includes saved monitor definitions and manual run checks, but scheduled refresh and alerts remain planned.
+Historical/manual workflow note: this document describes the manual monitor workflow before the Saved Monitors v2 foundation. Current code now includes saved monitor definitions, manual run checks, run history, scheduled-refresh backend foundation, and DB-backed scheduler locks. Production Cron, public scheduling UI, and alerts remain disabled/not implemented.
 
 ## Purpose
 

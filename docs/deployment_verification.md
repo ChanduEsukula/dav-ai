@@ -13,9 +13,10 @@
 - Backend host: Render
 - Database: Supabase PostgreSQL
 - Migration tool: Alembic
-- Current migration revision: `20260514_0004`
+- Current migration revision: `20260519_0005`
 - Latest saved monitor run-history migration applied: `20260514_0003_create_saved_monitor_runs.py`
 - Latest saved monitor scheduled-refresh foundation migration applied: `20260514_0004_add_saved_monitor_schedule_fields.py`
+- Latest saved monitor scheduler-lock migration applied: `20260519_0005_create_scheduler_locks.py`
 
 ## Live Smoke Tests Passed
 
@@ -77,7 +78,7 @@ Verified after deployment:
 - Production backend `/health` returned `200`.
 - Production `/api/v1/system/status` returned `200`.
 - Production `/api/v1/saved-monitors` returned `200` with `[]`.
-- Alembic current revision confirmed `20260514_0004 (head)`.
+- Alembic current revision confirmed `20260519_0005 (head)`.
 - Local CLI smoke against the configured database returned `status: ok` and `due_count: 0`.
 
 This confirms the scheduled refresh foundation is wired safely, but production scheduling is not enabled yet. No Render Cron, alerts, auth/RBAC, or public scheduling UI were added.
@@ -88,7 +89,7 @@ Commit `e4f313c` added scheduler guardrails for the backend CLI job.
 
 Verified behavior:
 
-- Backend tests passed with `89 passed`.
+- Backend tests passed with `98 passed`.
 - The scheduled monitor CLI clamps requested limits to a safe range of `1` to `50`.
 - The default CLI limit is `10`.
 - A high requested limit such as `--limit 500` returns `safe_limit: 50`.
@@ -97,6 +98,23 @@ Verified behavior:
 - Production Cron is still intentionally disabled.
 
 This improves safety for a future Render Cron setup without enabling automated production scheduling yet.
+
+### Saved Monitor Scheduler Locks v2.6
+
+Commit `8c8b78f` added database-backed scheduler locks for the backend scheduled monitor refresh job.
+
+Verified behavior:
+
+- Migration `20260519_0005_create_scheduler_locks.py` created the `scheduler_locks` table.
+- Backend tests isolate the real `DATABASE_URL` by default through `backend/tests/conftest.py`.
+- Backend tests passed with `98 passed`.
+- `python -m app.jobs.run_due_saved_monitors --limit 10` worked with zero due monitors.
+- A real temporary due DrugSignal saved monitor for `aspirin` ran successfully.
+- A `saved_monitor_runs` row was created.
+- `scheduler_locks` was empty after the job, confirming lock release.
+- Temporary monitor rows were cleaned up.
+
+This confirms lock acquisition/release behavior for manual verification. Production Cron is still intentionally disabled until final deployment-environment verification, scheduler observability, and rollback guidance are complete.
 
 ### Frontend
 
@@ -118,6 +136,7 @@ This improves safety for a future Render Cron setup without enabling automated p
 - Corrected Render `DATABASE_URL` value so it contains only the PostgreSQL connection string, not the `DATABASE_URL=` prefix.
 - Applied Alembic migration `20260514_0003_create_saved_monitor_runs.py`.
 - Applied Alembic migration `20260514_0004_add_saved_monitor_schedule_fields.py`.
+- Applied Alembic migration `20260519_0005_create_scheduler_locks.py`.
 - Rotated the Supabase database password after accidental exposure.
 - Updated Render `DATABASE_URL` after password rotation.
 - Redeployed the backend after credential rotation.
@@ -131,7 +150,7 @@ Do not include old or new database URLs, passwords, or connection strings in doc
 
 ## Current Status
 
-MedTrek AI is deployed end-to-end with live public FDA data, role-based safety briefings, source metadata, audit history, PostgreSQL persistence, Saved Monitors v2.2 manual monitoring, saved monitor run history, Saved Monitors v2.3 scheduled-refresh foundation, Saved Monitors v2.4 scheduler guardrails, and API documentation.
+MedTrek AI is deployed end-to-end with live public FDA data, role-based safety briefings, source metadata, audit history, PostgreSQL persistence, Saved Monitors v2.2 manual monitoring, saved monitor run history, Saved Monitors v2.3 scheduled-refresh foundation, Saved Monitors v2.4 scheduler guardrails, Saved Monitors v2.6 DB-backed scheduler locks, and API documentation.
 
 Remaining production-readiness gaps include:
 
@@ -139,7 +158,7 @@ Remaining production-readiness gaps include:
 - No production scheduler or Render Cron enabled yet.
 - No alerts.
 - No public scheduling UI.
-- No scheduled run-history workflow beyond the backend-only CLI foundation.
+- No recurring scheduled run workflow beyond manual CLI verification.
 - No raw payload hashing.
 - No immutable audit/retention policy.
 - No production observability dashboard/SLOs.

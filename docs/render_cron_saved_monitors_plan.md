@@ -18,6 +18,9 @@ Implemented:
 - Limit clamping from `1` to `50`
 - JSON job summary with `requested_limit` and `safe_limit`
 - Scheduled workflow request IDs for RecallRadar and DrugSignal runs
+- Database-backed scheduler locking through `scheduler_locks`
+- Alembic migration `20260519_0005_create_scheduler_locks.py`
+- In-memory scheduler lock fallback for local/test-created repository instances
 
 Not implemented:
 
@@ -27,7 +30,6 @@ Not implemented:
 - Production Cron activation
 - Notification preferences
 - On-call/incident workflow
-- Scheduler locking or lease protection
 - Production scheduler observability dashboard
 
 ## Proposed Render Cron Command
@@ -35,10 +37,17 @@ Not implemented:
 From the backend service context:
 
 ```bash
+cd /Users/chanduesukula/medtrek-ai/backend
 python -m app.jobs.run_due_saved_monitors --limit 10
 ```
 
-The command should be tested manually before any scheduled Render Cron activation.
+The command should be tested manually in the target deployment environment before any scheduled Render Cron activation.
+
+## Current Locking Status
+
+DB-backed scheduler locking is implemented for the scheduled monitor refresh job. The lock repository uses the `scheduler_locks` table when database persistence is configured and falls back to in-memory lock behavior for local/test-created repository instances.
+
+Manual verification confirmed that `python -m app.jobs.run_due_saved_monitors --limit 10` works with zero due monitors, a real temporary due DrugSignal saved monitor for `aspirin` can run successfully, a `saved_monitor_runs` row is created, and `scheduler_locks` is empty after the run, confirming lock release.
 
 ## Dry-Run Checklist
 
@@ -55,8 +64,9 @@ Before enabling any recurring production Cron job:
 9. Confirm successful runs preserve audit IDs when available.
 10. Confirm failed runs are recorded as error rows.
 11. Confirm logs include enough detail to trace the job.
-12. Confirm no alerts or notifications are sent.
-13. Confirm production Cron remains disabled after the dry run.
+12. Confirm `scheduler_locks` acquires during the job and releases afterward.
+13. Confirm no alerts or notifications are sent.
+14. Confirm production Cron remains disabled after the dry run.
 
 ## Expected No-Due-Monitors Output Shape
 
@@ -81,9 +91,9 @@ Exact timestamps and optional fields may vary.
 
 Production Cron should remain disabled until the following are addressed:
 
-- Direct scheduled refresh integration is tested against the real workflow path.
+- Direct scheduled refresh integration is re-tested in the target deployment environment.
 - Scheduler job logs are easy to search by job ID, request ID, or run ID.
-- Job locking or lease behavior prevents overlapping scheduled jobs.
+- DB-backed job locking behavior is verified in the same environment where Cron will run.
 - Scheduler failures are observable from production logs or a dashboard.
 - Alerting behavior is designed separately from scheduler execution.
 - Notification preferences exist before any user-facing alerts are sent.
@@ -100,4 +110,4 @@ It does not diagnose, recommend treatment, send medical advice, claim causation,
 
 Keep Render Cron disabled.
 
-Use the CLI manually for dry-run verification and continue hardening scheduler observability, job locking, auth/RBAC, and alert design before enabling recurring production execution.
+Use the CLI manually for dry-run verification and continue hardening deployment-environment scheduler verification, scheduler observability, auth/RBAC, and alert design before enabling recurring production execution.
