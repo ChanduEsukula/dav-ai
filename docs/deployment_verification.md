@@ -18,6 +18,101 @@
 - Latest saved monitor scheduled-refresh foundation migration applied: `20260514_0004_add_saved_monitor_schedule_fields.py`
 - Latest saved monitor scheduler-lock migration applied: `20260519_0005_create_scheduler_locks.py`
 
+---
+
+## Deployment Verification After Scheduler Lock and Saved Monitors v2.6 Updates
+
+Date: 2026-05-19
+
+Verified latest deployed versions after scheduler-lock, test-isolation, documentation, and frontend-copy updates.
+
+### Backend Render Verification
+
+Render backend service was verified live after deployment.
+
+Latest relevant backend/docs deployment observed:
+
+- `256dd2a docs: update scheduler lock and saved monitor status`
+
+Verified deployed backend URLs:
+
+- `GET /health`
+- `GET /docs`
+- `GET /api/v1/system/status`
+- `GET /api/v1/system/data-quality`
+
+Observed results:
+
+- `/health` returned `{"status":"healthy"}`.
+- `/docs` loaded the FastAPI Swagger UI.
+- `/api/v1/system/status` returned `status: ok`.
+- `/api/v1/system/status` confirmed database configured and audit readable.
+- `/api/v1/system/status` confirmed source registry available with 2 registered sources.
+- `/api/v1/system/data-quality` returned `status: ok`.
+- `/api/v1/system/data-quality` confirmed `database_configured: true`, `audit_readable: true`, and `source_registry_count: 2`.
+
+### Frontend Vercel Verification
+
+Vercel frontend was verified live after deployment.
+
+Latest frontend deployment observed:
+
+- `f413cac fix: update saved monitors frontend scope copy`
+
+Verified frontend URL:
+
+- `https://medtrek-ai.vercel.app/?page=saved-monitors`
+
+Observed results:
+
+- Saved Monitors page loaded successfully.
+- Page label now shows `Saved Monitors v2.6`.
+- Updated scope note is live.
+- Stale `Saved Monitors v2.2` label is gone.
+- Stale wording that scheduled refresh is future Saved Monitors v2 work is gone.
+- Current scope note now states that backend scheduler-lock protection exists while Production Cron, alert notifications, and public scheduling UI are not enabled yet.
+
+### Saved Monitors Production Smoke Check
+
+A temporary DrugSignal saved monitor was created and manually run from the Vercel frontend against the Render backend.
+
+Observed results:
+
+- Temporary monitor creation succeeded.
+- Manual `Run Check` succeeded.
+- Monitor status moved from `not checked` to checked state.
+- Latest result showed records returned.
+- Latest score and label were displayed.
+- Recent manual run history was displayed.
+- `View Audit` and `View run audit` actions were available.
+
+Temporary verification monitor should be deleted after the smoke check to keep production data clean.
+
+### Current Deployment Boundary
+
+Production Cron remains disabled.
+
+The deployment currently verifies:
+
+- Render backend availability.
+- Vercel frontend availability.
+- Database connectivity.
+- Source registry readability.
+- Audit history readability.
+- Saved Monitor create/run/history UI path.
+- Frontend copy alignment with Saved Monitors v2.6 status.
+
+The deployment does not yet enable:
+
+- Render Cron scheduled execution.
+- Public scheduling UI.
+- Automated alerts.
+- Notification preferences.
+- Auth/RBAC.
+- Production scheduler observability dashboard.
+
+---
+
 ## Live Smoke Tests Passed
 
 This confirms deployment smoke verification only. It does not mean MedTrek AI is production-ready healthcare software.
@@ -25,6 +120,7 @@ This confirms deployment smoke verification only. It does not mean MedTrek AI is
 ### Backend
 
 - `GET /health` returned `200` healthy.
+- `GET /docs` loaded FastAPI Swagger UI.
 - `GET /api/v1/sources` returned `200` with 2 sources.
 - `GET /api/v1/recalls/search?q=eye%20drops&limit=5` returned `200`.
 - `GET /api/v1/drug-events/search?q=metformin&limit=5` returned `200`.
@@ -35,13 +131,15 @@ This confirms deployment smoke verification only. It does not mean MedTrek AI is
 - Saved Monitor Run History v2.2 smoke flow passed.
 - Saved Monitor Scheduled Refresh Foundation v2.3 smoke flow passed.
 - Saved Monitor Scheduler Guardrails v2.4 smoke behavior passed locally.
+- Saved Monitor Scheduler Locks v2.6 manual verification passed.
+- Saved Monitors v2.6 frontend smoke flow passed.
 
 Live backend verification details:
 
 - `database.configured`: true
 - `database.audit_readable`: true
 - `source_registry_count`: 2
-- `recent_audit_count`: 25
+- `recent_audit_count`: 25 at the time of test
 - `upstream_status_counts` included `success` and `empty`, with `error` at 0 at the time of test
 - Live source IDs were correct:
   - `openfda_drug_enforcement`
@@ -116,6 +214,31 @@ Verified behavior:
 
 This confirms lock acquisition/release behavior for manual verification. Production Cron is still intentionally disabled until final deployment-environment verification, scheduler observability, and rollback guidance are complete.
 
+### Saved Monitors v2.6 Frontend Smoke Verification
+
+Commit `f413cac` updated the Saved Monitors frontend copy so the deployed UI matches the backend/docs status.
+
+Verified behavior:
+
+- Vercel production deployment was live on commit `f413cac`.
+- Saved Monitors page loaded successfully at `https://medtrek-ai.vercel.app/?page=saved-monitors`.
+- Page label showed `Saved Monitors v2.6`.
+- Page description referenced manual checks, latest/previous comparison, run history, and audit events.
+- Current scope note stated that backend scheduler-lock protection exists.
+- Current scope note correctly stated that Production Cron, alert notifications, and public scheduling UI are not enabled yet.
+- The stale `Saved Monitors v2.2` label was no longer visible.
+- The stale wording that scheduled refresh was a future Saved Monitors v2 step was no longer visible.
+
+Temporary production smoke behavior:
+
+- A temporary DrugSignal monitor for `aspirin` was created from the Vercel frontend.
+- Manual `Run Check` succeeded.
+- Latest result showed returned records.
+- Latest score and label were displayed.
+- Recent manual run history appeared.
+- `View Audit` and `View run audit` actions were available.
+- Temporary verification monitor should be deleted after verification to keep production data clean.
+
 ### Frontend
 
 - Vercel frontend loaded successfully.
@@ -128,6 +251,10 @@ This confirms lock acquisition/release behavior for manual verification. Product
 - Audit page loaded recent events.
 - System/Data Quality page loaded.
 - Monitors page loaded.
+- Saved Monitors v2.6 copy was visible after latest frontend deployment.
+- Saved Monitor manual create/run/history path worked from the frontend.
+
+---
 
 ## Deployment Fixes Applied
 
@@ -140,7 +267,10 @@ This confirms lock acquisition/release behavior for manual verification. Product
 - Rotated the Supabase database password after accidental exposure.
 - Updated Render `DATABASE_URL` after password rotation.
 - Redeployed the backend after credential rotation.
-- Verified `/health`, `/api/v1/system/status`, `/api/v1/system/data-quality`, and `/api/v1/saved-monitors` after migration and redeploy.
+- Verified `/health`, `/docs`, `/api/v1/system/status`, `/api/v1/system/data-quality`, and `/api/v1/saved-monitors` after migration and redeploy.
+- Verified Vercel frontend after Saved Monitors v2.6 frontend-copy update.
+
+---
 
 ## Security Follow-Up Status
 
@@ -148,9 +278,11 @@ Completed: the exposed Supabase database password was rotated, Render `DATABASE_
 
 Do not include old or new database URLs, passwords, or connection strings in docs, logs, tickets, screenshots, prompts, terminal output, or copied troubleshooting notes.
 
+---
+
 ## Current Status
 
-MedTrek AI is deployed end-to-end with live public FDA data, role-based safety briefings, source metadata, audit history, PostgreSQL persistence, Saved Monitors v2.2 manual monitoring, saved monitor run history, Saved Monitors v2.3 scheduled-refresh foundation, Saved Monitors v2.4 scheduler guardrails, Saved Monitors v2.6 DB-backed scheduler locks, and API documentation.
+MedTrek AI is deployed end-to-end with live public FDA data, role-based safety briefings, source metadata, audit history, PostgreSQL persistence, Saved Monitors manual monitoring, saved monitor run history, Saved Monitors v2.3 scheduled-refresh foundation, Saved Monitors v2.4 scheduler guardrails, Saved Monitors v2.6 DB-backed scheduler locks, Saved Monitors v2.6 frontend copy alignment, and API documentation.
 
 Remaining production-readiness gaps include:
 
@@ -162,3 +294,18 @@ Remaining production-readiness gaps include:
 - No raw payload hashing.
 - No immutable audit/retention policy.
 - No production observability dashboard/SLOs.
+
+---
+
+## Deployment Boundary
+
+This deployment verification confirms the current MVP deployment state only.
+
+MedTrek AI remains:
+
+- A public-data safety intelligence prototype.
+- Not a medical device.
+- Not clinical decision support.
+- Not a replacement for official FDA, CDC, clinician, pharmacist, or emergency guidance.
+
+Production Cron should remain disabled until the deployment environment has documented scheduler observability, rollback guidance, recurring-job verification, and operational alerting expectations.
