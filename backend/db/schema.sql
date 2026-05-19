@@ -183,3 +183,19 @@ create index if not exists idx_saved_monitor_runs_monitor_id_created_at
 
 create index if not exists idx_saved_monitor_runs_status
     on saved_monitor_runs(status);
+
+-- Scheduler Locks v2.4
+-- Stores durable job leases for scheduled backend jobs.
+-- This prevents overlapping scheduled refresh jobs across processes,
+-- deployments, restarts, or production Cron overlap.
+
+create table if not exists scheduler_locks (
+    lock_name text primary key,
+    locked_by text not null,
+    locked_until timestamptz not null,
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now()
+);
+
+create index if not exists idx_scheduler_locks_locked_until
+    on scheduler_locks(locked_until);
