@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
+import { getSources, type SourceRecord, type SourceRegistryResponse } from '../api/sources'
 import {
   getDataQuality,
   getSystemStatus,
@@ -11,25 +12,73 @@ function formatBoolean(value: boolean) {
   return value ? 'Yes' : 'No'
 }
 
+function formatTimestamp(value: string | null) {
+  if (!value) {
+    return 'No audit record yet'
+  }
+
+  const parsed = new Date(value)
+
+  if (Number.isNaN(parsed.getTime())) {
+    return value
+  }
+
+  return parsed.toLocaleString()
+}
+
+function getFreshnessClass(status: SourceRecord['freshness_status']) {
+  if (status === 'fresh') {
+    return 'freshness-badge freshness-badge--fresh'
+  }
+
+  if (status === 'delayed') {
+    return 'freshness-badge freshness-badge--delayed'
+  }
+
+  if (status === 'error') {
+    return 'freshness-badge freshness-badge--error'
+  }
+
+  return 'freshness-badge freshness-badge--unknown'
+}
+
 function SystemStatusPage() {
   const [status, setStatus] = useState<SystemStatusResponse | null>(null)
   const [dataQuality, setDataQuality] = useState<DataQualityResponse | null>(null)
+  const [sources, setSources] = useState<SourceRegistryResponse | null>(null)
   const [lastChecked, setLastChecked] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+  const freshnessCounts = useMemo(() => {
+    const counts = {
+      fresh: 0,
+      delayed: 0,
+      error: 0,
+      unknown: 0,
+    }
+
+    for (const source of sources?.sources ?? []) {
+      counts[source.freshness_status] += 1
+    }
+
+    return counts
+  }, [sources])
 
   async function loadStatus() {
     setLoading(true)
     setError('')
 
     try {
-      const [systemResult, dataQualityResult] = await Promise.all([
+      const [systemResult, dataQualityResult, sourcesResult] = await Promise.all([
         getSystemStatus(),
         getDataQuality(),
+        getSources(),
       ])
 
       setStatus(systemResult)
       setDataQuality(dataQualityResult)
+      setSources(sourcesResult)
       setLastChecked(new Date().toLocaleString())
     } catch {
       setError('Unable to load system status. Please check the backend deployment.')
@@ -50,7 +99,7 @@ function SystemStatusPage() {
         <h1>System Status</h1>
         <p>
           A quick operational snapshot of the MedTrek AI backend, audit persistence,
-          registered public-data sources, and recent audit data quality.
+          registered public-data sources, source freshness, and recent audit data quality.
         </p>
       </div>
 
@@ -67,6 +116,15 @@ function SystemStatusPage() {
               <span>Audit readable: {formatBoolean(status.database.audit_readable)}</span>
               <span>Sources: {status.sources.registered_count}</span>
             </div>
+
+            {sources && (
+              <div className="source-summary">
+                <span>Fresh sources: {freshnessCounts.fresh}</span>
+                <span>Delayed: {freshnessCounts.delayed}</span>
+                <span>Error: {freshnessCounts.error}</span>
+                <span>Unknown: {freshnessCounts.unknown}</span>
+              </div>
+            )}
 
             <div className="source-card-grid">
               <article className="source-card">
@@ -189,6 +247,53 @@ function SystemStatusPage() {
                   </div>
                 </article>
               )}
+
+              {sources?.sources.map((source) => (
+                <article className="source-card" key={source.source_id}>
+                  <div className="source-card-top">
+                    <span>{source.module}</span>
+                    <small>{source.source_id}</small>
+                  </div>
+
+                  <h3>{source.source_name}</h3>
+                  <p>{source.freshness_reason}</p>
+
+                  <div className="source-freshness-panel">
+                    <div className="source-freshness-header">
+                      <small>Freshness</small>
+                      <span className={getFreshnessClass(source.freshness_status)}>
+                        {source.freshness_label}
+                      </span>
+                    </div>
+
+                    <div className="source-freshness-grid">
+                      <div>
+                        <small>Last successful retrieval</small>
+                        <span>{formatTimestamp(source.last_successful_retrieval_at)}</span>
+                      </div>
+
+                      <div>
+                        <small>Last record count</small>
+                        <span>
+                          {source.last_record_count === null ? 'N/A' : source.last_record_count}
+                        </span>
+                      </div>
+
+                      <div>
+                        <small>Update cadence</small>
+                        <span>{source.update_cadence}</span>
+                      </div>
+
+                      {source.last_error_message && (
+                        <div>
+                          <small>Last error</small>
+                          <span>{source.last_error_message}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              ))}
             </div>
           </>
         )}

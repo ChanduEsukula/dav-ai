@@ -1,5 +1,35 @@
 import { useEffect, useState } from 'react'
-import { getSources, type SourceRegistryResponse } from '../api/sources'
+import { getSources, type SourceRecord, type SourceRegistryResponse } from '../api/sources'
+
+function formatTimestamp(value: string | null) {
+  if (!value) {
+    return 'No audit record yet'
+  }
+
+  const parsed = new Date(value)
+
+  if (Number.isNaN(parsed.getTime())) {
+    return value
+  }
+
+  return parsed.toLocaleString()
+}
+
+function getFreshnessClass(status: SourceRecord['freshness_status']) {
+  if (status === 'fresh') {
+    return 'freshness-badge freshness-badge--fresh'
+  }
+
+  if (status === 'delayed') {
+    return 'freshness-badge freshness-badge--delayed'
+  }
+
+  if (status === 'error') {
+    return 'freshness-badge freshness-badge--error'
+  }
+
+  return 'freshness-badge freshness-badge--unknown'
+}
 
 function DataSourcesPage() {
   const [data, setData] = useState<SourceRegistryResponse | null>(null)
@@ -28,7 +58,7 @@ function DataSourcesPage() {
         <h2>Registered public data sources.</h2>
         <p>
           MedTrek AI keeps source metadata visible so every recall or drug-event signal can be
-          traced back to a public endpoint and module.
+          traced back to a public endpoint, audit history, and current freshness status.
         </p>
       </div>
 
@@ -40,7 +70,7 @@ function DataSourcesPage() {
         <div className="source-summary">
           <span>{data.count} registered sources</span>
           <span>Public-data only</span>
-          <span>Audit foundation</span>
+          <span>Audit-backed freshness</span>
         </div>
       )}
 
@@ -54,6 +84,38 @@ function DataSourcesPage() {
 
             <h3>{source.source_name}</h3>
             <p>{source.description}</p>
+
+            <div className="source-freshness-panel">
+              <div className="source-freshness-header">
+                <small>Freshness</small>
+                <span className={getFreshnessClass(source.freshness_status)}>
+                  {source.freshness_label}
+                </span>
+              </div>
+
+              <p>{source.freshness_reason}</p>
+
+              <div className="source-freshness-grid">
+                <div>
+                  <small>Last successful retrieval</small>
+                  <span>{formatTimestamp(source.last_successful_retrieval_at)}</span>
+                </div>
+
+                <div>
+                  <small>Last record count</small>
+                  <span>
+                    {source.last_record_count === null ? 'N/A' : source.last_record_count}
+                  </span>
+                </div>
+
+                {source.last_error_message && (
+                  <div>
+                    <small>Last error</small>
+                    <span>{source.last_error_message}</span>
+                  </div>
+                )}
+              </div>
+            </div>
 
             <div className="source-metadata">
               <div>

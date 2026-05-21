@@ -10,6 +10,7 @@ from app.routes import saved_monitors
 from app.routes.audit_events import router as audit_events_router
 from app.routes.drug_events import router as drug_events_router
 from app.routes.recalls import router as recalls_router
+from app.routes.reports import router as reports_router
 from app.routes.sources import router as sources_router
 from app.routes.system import router as system_router
 
@@ -32,7 +33,7 @@ def get_allowed_origins() -> list[str]:
 
 app = FastAPI(
     title="MedTrek AI API",
-    description="Healthcare safety intelligence API for recalls, adverse-event signals, source transparency, and audit-aware safety briefings.",
+    description="Healthcare safety intelligence API for recalls, adverse-event signals, source transparency, audit-aware safety briefings, and public-data PDF reports.",
     version="0.1.0",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -110,6 +111,7 @@ app.include_router(sources_router, prefix="/api/v1/sources", tags=["Sources"])
 app.include_router(audit_events_router, tags=["Audit History"])
 app.include_router(system_router, tags=["System"])
 app.include_router(saved_monitors.router)
+app.include_router(reports_router)
 
 
 @app.get("/")
@@ -123,6 +125,7 @@ def root():
             "Sources",
             "Audit History",
             "Saved Monitors",
+            "Reports",
         ],
         "docs": "/docs",
     }
