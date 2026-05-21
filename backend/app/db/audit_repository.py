@@ -495,3 +495,104 @@ def get_latest_audit_event_for_query(
         )
 
         return "error", None
+
+def get_latest_audit_event_for_source(
+    source_id: str,
+    request_id: str | None = None,
+) -> tuple[str, dict[str, Any] | None]:
+    """
+    Return the most recent audit event for one source.
+
+    Status values:
+    - saved: database returned a row or confirmed no rows
+    - skipped: DATABASE_URL is not configured
+    - error: database read failed
+    """
+    database_url = get_database_url()
+
+    logger.info(
+        "audit_latest_for_source_started",
+        extra={
+            "event": "audit_latest_for_source_started",
+            "request_id": request_id,
+            "source_id": source_id,
+        },
+    )
+
+    if not database_url:
+        logger.info(
+            "audit_latest_for_source_skipped",
+            extra={
+                "event": "audit_latest_for_source_skipped",
+                "request_id": request_id,
+                "source_id": source_id,
+                "reason": "database_not_configured",
+            },
+        )
+        return "skipped", None
+
+    start_time = time.perf_counter()
+
+    try:
+        with psycopg.connect(database_url, row_factory=dict_row) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    select
+                        audit_id,
+                        module,
+                        source_id,
+                        source_name,
+                        endpoint,
+                        query,
+                        query_params,
+                        retrieval_timestamp,
+                        upstream_status,
+                        record_count,
+                        transform_version,
+                        score_version,
+                        disclaimer_version,
+                        error_message,
+                        created_at
+                    from audit_events
+                    where source_id = %(source_id)s
+                    order by created_at desc
+                    limit 1
+                    """,
+                    {"source_id": source_id},
+                )
+
+                row = cursor.fetchone()
+
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+
+        logger.info(
+            "audit_latest_for_source_completed",
+            extra={
+                "event": "audit_latest_for_source_completed",
+                "request_id": request_id,
+                "source_id": source_id,
+                "status": "saved",
+                "found": row is not None,
+                "duration_ms": duration_ms,
+            },
+        )
+
+        return "saved", row
+
+    except Exception:
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+
+        logger.exception(
+            "audit_latest_for_source_failed",
+            extra={
+                "event": "audit_latest_for_source_failed",
+                "request_id": request_id,
+                "source_id": source_id,
+                "status": "error",
+                "duration_ms": duration_ms,
+                "error_category": "audit_latest_for_source_failed",
+            },
+        )
+
+        return "error", None
