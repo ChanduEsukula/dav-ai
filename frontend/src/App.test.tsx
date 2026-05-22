@@ -5,11 +5,11 @@ beforeEach(() => {
   window.history.replaceState(null, '', '/')
 })
 
-test('renders MedTrek AI landing page', () => {
+test('renders Dav AI landing page', () => {
   render(<App />)
 
   expect(
-    screen.getByRole('button', { name: /MedTrek AI/i })
+    screen.getByRole('button', { name: /Dav AI/i })
   ).toBeInTheDocument()
 
   expect(

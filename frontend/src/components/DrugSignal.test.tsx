@@ -25,7 +25,7 @@ const mockResponse: DrugEventSearchResponse = {
   endpoint: 'https://api.fda.gov/drug/event.json',
   retrieval_timestamp: '2026-05-03T12:00:00Z',
   medical_disclaimer:
-    'MedTrek AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.',
+    'Dav AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.',
   faers_disclaimer:
     'FAERS reports are safety signals only and do not prove causation.',
   audit: {
@@ -68,7 +68,7 @@ const mockResponse: DrugEventSearchResponse = {
     previous_audit_id: 'previous-audit-123',
     previous_created_at: '2026-05-02T12:00:00Z',
     explanation: 'Compared with the most recent stored DrugSignal audit event for this query.',
-    limitation: 'Trend is based only on stored public-data searches in MedTrek AI, not all FDA activity.',
+    limitation: 'Trend is based only on stored public-data searches in Dav AI, not all FDA activity.',
     trend_version: 'drug-signal-trend-v0.1',
   },
   top_reactions: [

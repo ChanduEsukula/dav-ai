@@ -23,7 +23,7 @@ function Hero({ data, goToRecallRadar, goToAbout }: HeroProps) {
         </h1>
 
         <p className="subtitle">
-          MedTrek AI turns public recall and drug-safety data into clear, source-aware
+          Dav AI turns public recall and drug-safety data into clear, source-aware
           intelligence.
         </p>
 

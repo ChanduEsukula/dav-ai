@@ -15,7 +15,7 @@ def test_system_status_returns_core_operational_fields(monkeypatch):
     data = response.json()
 
     assert data["status"] == "ok"
-    assert data["app"] == "MedTrek AI API"
+    assert data["app"] == "Dav AI API"
     assert data["version"] == "0.1.0"
     assert data["database"]["configured"] is False
     assert data["database"]["audit_readable"] is False

@@ -32,7 +32,7 @@ def get_allowed_origins() -> list[str]:
 
 
 app = FastAPI(
-    title="MedTrek AI API",
+    title="Dav AI API",
     description="Healthcare safety intelligence API for recalls, adverse-event signals, source transparency, audit-aware safety briefings, and public-data PDF reports.",
     version="0.1.0",
     docs_url="/docs",
@@ -117,7 +117,7 @@ app.include_router(reports_router)
 @app.get("/")
 def root():
     return {
-        "message": "MedTrek AI backend is running",
+        "message": "Dav AI backend is running",
         "status": "ok",
         "modules": [
             "RecallRadar",

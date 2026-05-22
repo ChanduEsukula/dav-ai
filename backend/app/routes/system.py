@@ -28,7 +28,7 @@ def get_system_status() -> SystemStatusResponse:
 
     return SystemStatusResponse(
         status="ok",
-        app="MedTrek AI API",
+        app="Dav AI API",
         version="0.1.0",
         database={
             "configured": database_configured,

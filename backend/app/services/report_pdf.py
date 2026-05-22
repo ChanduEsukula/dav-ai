@@ -217,7 +217,7 @@ def _draw_header(
 
     c.setFillColor(DEEP_INK)
     c.setFont("Helvetica-Bold", 12)
-    c.drawString(MARGIN + 56, y_top - 24, "MedTrek AI")
+    c.drawString(MARGIN + 56, y_top - 24, "Dav AI")
 
     c.setFillColor(MUTED)
     c.setFont("Helvetica", 7.5)
@@ -254,7 +254,7 @@ def _draw_footer(c: canvas.Canvas, page_number: int) -> None:
     c.drawString(
         MARGIN,
         17,
-        "MedTrek AI · Public FDA/openFDA safety intelligence · Not medical advice",
+        "Dav AI · Public FDA/openFDA safety intelligence · Not medical advice",
     )
     c.drawRightString(PAGE_WIDTH - MARGIN, 17, f"Page {page_number}")
 
@@ -984,11 +984,11 @@ def build_safety_intelligence_pdf(
     recall_result: dict[str, Any] | None = None,
     drug_signal_result: dict[str, Any] | None = None,
 ) -> bytes:
-    """Build a compact MedTrek-branded public-data PDF report."""
+    """Build a compact Dav AI-branded public-data PDF report."""
 
     buffer = BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=LETTER)
-    pdf.setTitle("MedTrek AI Safety Intelligence Report")
+    pdf.setTitle("Dav AI Safety Intelligence Report")
 
     generated_at = datetime.now(timezone.utc).isoformat()
 
