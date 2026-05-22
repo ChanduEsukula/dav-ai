@@ -191,15 +191,15 @@ describe('AuditHistoryPage', () => {
 
     render(<AuditHistoryPage />)
 
-    expect(await screen.findByText('Source Pull Provenance')).toBeInTheDocument()
+    expect(await screen.findByText('Provenance verified')).toBeInTheDocument()
 
     await waitFor(() => {
       expect(mockedGetAuditEventSourcePull).toHaveBeenCalledWith(
         '11111111-1111-4111-8111-111111111111',
       )
-      expect(screen.getByText('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa')).toBeInTheDocument()
-      expect(screen.getByText('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb')).toBeInTheDocument()
-      expect(screen.getByText('a'.repeat(64))).toBeInTheDocument()
+      expect(screen.getByText(/a{10}\.\.\.a{10}/)).toBeInTheDocument()
+      expect(screen.getAllByText('openFDA Drug Enforcement API').length).toBeGreaterThan(0)
+      expect(screen.getByText('Technical provenance details')).toBeInTheDocument()
     })
 
     expect(

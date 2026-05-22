@@ -20,6 +20,22 @@ function formatTimestamp(value: string) {
   }
 }
 
+function shortenIdentifier(
+  value: string | null | undefined,
+  prefixLength = 8,
+  suffixLength = 8,
+) {
+  if (!value) {
+    return 'N/A'
+  }
+
+  if (value.length <= prefixLength + suffixLength + 3) {
+    return value
+  }
+
+  return `${value.slice(0, prefixLength)}...${value.slice(-suffixLength)}`
+}
+
 function formatQueryParams(params: Record<string, unknown> | null) {
   return JSON.stringify(params ?? {}, null, 2)
 }
@@ -549,81 +565,98 @@ export default function AuditHistoryPage() {
                   <div className="audit-source-pull-header">
                     <div>
                       <p className="eyebrow">Provenance</p>
-                      <h4>Source Pull Provenance</h4>
+                      <h4>Provenance verified</h4>
                     </div>
                     <span className={`audit-status audit-status-${sourcePullStatus}`}>
                       {sourcePullStatus}
                     </span>
                   </div>
 
-                  {sourcePullStatus === 'loading' && (
-                    <p className="muted-text">Loading source-pull provenance...</p>
-                  )}
-
-                  {sourcePullMessage && sourcePullStatus !== 'ok' && (
-                    <p className="muted-text">{sourcePullMessage}</p>
+                  {sourcePullMessage && (
+                    <p className="audit-source-pull-note">{sourcePullMessage}</p>
                   )}
 
                   {sourcePull && (
                     <>
-                      <p className="audit-source-pull-note">
-                        Metadata-only provenance for this audit event. Raw public-source
-                        payloads are not exposed in the UI.
+                      <p className="audit-source-pull-summary">
+                        Dav AI stored a reproducible public-source pull for this
+                        audit event. Raw public-source payloads are not exposed in
+                        the UI.
                       </p>
 
-                      <dl className="audit-source-pull-grid">
+                      <div className="audit-source-pull-summary-grid">
                         <div>
-                          <dt>Pull ID</dt>
-                          <dd>{sourcePull.pull_id}</dd>
+                          <span>Source</span>
+                          <strong>{sourcePull.source_name ?? 'N/A'}</strong>
                         </div>
 
                         <div>
-                          <dt>Snapshot ID</dt>
-                          <dd>{sourcePull.snapshot_id ?? 'N/A'}</dd>
+                          <span>Records</span>
+                          <strong>{sourcePull.record_count ?? 'N/A'}</strong>
                         </div>
 
                         <div>
-                          <dt>Payload hash</dt>
-                          <dd>{sourcePull.payload_hash}</dd>
-                        </div>
-
-                        <div>
-                          <dt>Source</dt>
-                          <dd>{sourcePull.source_name ?? 'N/A'}</dd>
-                        </div>
-
-                        <div>
-                          <dt>Endpoint</dt>
-                          <dd>{sourcePull.endpoint ?? 'N/A'}</dd>
-                        </div>
-
-                        <div>
-                          <dt>Record count</dt>
-                          <dd>{sourcePull.record_count ?? 'N/A'}</dd>
-                        </div>
-
-                        <div>
-                          <dt>Transform version</dt>
-                          <dd>{sourcePull.transform_version ?? 'N/A'}</dd>
-                        </div>
-
-                        <div>
-                          <dt>Retrieved</dt>
-                          <dd>
+                          <span>Retrieved</span>
+                          <strong>
                             {sourcePull.retrieval_timestamp
                               ? formatTimestamp(sourcePull.retrieval_timestamp)
                               : 'N/A'}
-                          </dd>
+                          </strong>
                         </div>
-                      </dl>
 
-                      <div className="audit-query-params">
-                        <h4>Source pull query parameters</h4>
-                        <pre>{formatQueryParams(sourcePull.query_params)}</pre>
+                        <div>
+                          <span>Payload hash</span>
+                          <strong title={sourcePull.payload_hash}>
+                            {shortenIdentifier(sourcePull.payload_hash, 10, 10)}
+                          </strong>
+                        </div>
                       </div>
+
+                      <details className="audit-source-pull-details">
+                        <summary>Technical provenance details</summary>
+
+                        <dl className="audit-source-pull-grid">
+                          <div>
+                            <dt>Pull ID</dt>
+                            <dd title={sourcePull.pull_id}>
+                              {shortenIdentifier(sourcePull.pull_id)}
+                            </dd>
+                          </div>
+
+                          <div>
+                            <dt>Snapshot ID</dt>
+                            <dd title={sourcePull.snapshot_id ?? undefined}>
+                              {shortenIdentifier(sourcePull.snapshot_id)}
+                            </dd>
+                          </div>
+
+                          <div>
+                            <dt>Full payload hash</dt>
+                            <dd title={sourcePull.payload_hash}>
+                              {sourcePull.payload_hash}
+                            </dd>
+                          </div>
+
+                          <div>
+                            <dt>Endpoint</dt>
+                            <dd>{sourcePull.endpoint ?? 'N/A'}</dd>
+                          </div>
+
+                          <div>
+                            <dt>Transform version</dt>
+                            <dd>{sourcePull.transform_version ?? 'N/A'}</dd>
+                          </div>
+                        </dl>
+
+                        <div className="audit-query-params">
+                          <h4>Source pull query parameters</h4>
+                          <pre>{formatQueryParams(sourcePull.query_params)}</pre>
+                        </div>
+                      </details>
                     </>
                   )}
                 </div>
+
               </aside>
             )}
           </div>
