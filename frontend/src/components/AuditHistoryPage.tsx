@@ -8,6 +8,7 @@ import {
 
 type ModuleFilter = 'all' | 'RecallRadar' | 'DrugSignal'
 type StatusFilter = 'all' | 'success' | 'empty' | 'error'
+type AuditDetailViewMode = 'basic' | 'technical'
 
 function formatTimestamp(value: string) {
   try {
@@ -171,6 +172,7 @@ export default function AuditHistoryPage() {
   const [appliedStatusFilter, setAppliedStatusFilter] = useState<StatusFilter>('all')
   const [appliedSearchText, setAppliedSearchText] = useState('')
   const [copyMessage, setCopyMessage] = useState('')
+  const [detailViewMode, setDetailViewMode] = useState<AuditDetailViewMode>('basic')
   const [sourcePull, setSourcePull] = useState<SourcePullProvenanceItem | null>(null)
   const [sourcePullStatus, setSourcePullStatus] = useState<string>('idle')
   const [sourcePullMessage, setSourcePullMessage] = useState('')
@@ -508,6 +510,23 @@ export default function AuditHistoryPage() {
                 <p className="eyebrow">Selected audit event</p>
                 <h3>{selectedItem.module}</h3>
 
+                <div className="audit-detail-view-toggle" aria-label="Audit detail view mode">
+                  <button
+                    type="button"
+                    className={detailViewMode === 'basic' ? 'active' : ''}
+                    onClick={() => setDetailViewMode('basic')}
+                  >
+                    Basic view
+                  </button>
+                  <button
+                    type="button"
+                    className={detailViewMode === 'technical' ? 'active' : ''}
+                    onClick={() => setDetailViewMode('technical')}
+                  >
+                    Technical view
+                  </button>
+                </div>
+
                 <div className="audit-detail-actions">
                   <button type="button" onClick={() => copyAuditId(selectedItem)}>
                     Copy audit ID
@@ -527,10 +546,12 @@ export default function AuditHistoryPage() {
                 )}
 
                 <dl>
+                  {detailViewMode === 'technical' && (
                   <div>
                     <dt>Audit ID</dt>
                     <dd>{selectedItem.audit_id}</dd>
                   </div>
+                  )}
 
                   <div>
                     <dt>Query</dt>
@@ -542,10 +563,12 @@ export default function AuditHistoryPage() {
                     <dd>{selectedItem.source_name}</dd>
                   </div>
 
+                  {detailViewMode === 'technical' && (
                   <div>
                     <dt>Endpoint</dt>
                     <dd>{selectedItem.endpoint}</dd>
                   </div>
+                  )}
 
                   <div>
                     <dt>Retrieval timestamp</dt>
@@ -557,20 +580,26 @@ export default function AuditHistoryPage() {
                     <dd>{formatTimestamp(selectedItem.created_at)}</dd>
                   </div>
 
+                  {detailViewMode === 'technical' && (
                   <div>
                     <dt>Transform version</dt>
                     <dd>{selectedItem.transform_version}</dd>
                   </div>
+                  )}
 
+                  {detailViewMode === 'technical' && (
                   <div>
                     <dt>Score version</dt>
                     <dd>{selectedItem.score_version ?? 'N/A'}</dd>
                   </div>
+                  )}
 
+                  {detailViewMode === 'technical' && (
                   <div>
                     <dt>Disclaimer version</dt>
                     <dd>{selectedItem.disclaimer_version ?? 'N/A'}</dd>
                   </div>
+                  )}
 
                   <div>
                     <dt>Record count</dt>
@@ -585,10 +614,12 @@ export default function AuditHistoryPage() {
                   )}
                 </dl>
 
-                <div className="audit-query-params">
-                  <h4>Query parameters</h4>
-                  <pre>{formatQueryParams(selectedItem.query_params)}</pre>
-                </div>
+                {detailViewMode === 'technical' && (
+                  <div className="audit-query-params">
+                    <h4>Query parameters</h4>
+                    <pre>{formatQueryParams(selectedItem.query_params)}</pre>
+                  </div>
+                )}
 
                 <div className="audit-source-pull-card">
                   <div className="audit-source-pull-header">
@@ -649,8 +680,9 @@ export default function AuditHistoryPage() {
                         </div>
                       </div>
 
-                      <details className="audit-source-pull-details">
-                        <summary>Technical provenance details</summary>
+                      {detailViewMode === 'technical' && (
+                        <details className="audit-source-pull-details" open>
+                          <summary>Technical provenance details</summary>
 
                         <dl className="audit-source-pull-grid">
                           <div>
@@ -689,7 +721,8 @@ export default function AuditHistoryPage() {
                           <h4>Source pull query parameters</h4>
                           <pre>{formatQueryParams(sourcePull.query_params)}</pre>
                         </div>
-                      </details>
+                        </details>
+                      )}
                     </>
                   )}
                 </div>

@@ -125,6 +125,11 @@ describe('AuditHistoryPage', () => {
 
     expect(await screen.findByText('Selected audit event')).toBeInTheDocument()
     expect(screen.getAllByText('RecallRadar').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('eye drops').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('openFDA Drug Enforcement API').length).toBeGreaterThan(0)
+
+    fireEvent.click(screen.getByText('Technical view'))
+
     expect(screen.getByText('11111111-1111-4111-8111-111111111111')).toBeInTheDocument()
     expect(screen.getByText('https://api.fda.gov/drug/enforcement.json')).toBeInTheDocument()
   })
@@ -146,8 +151,12 @@ describe('AuditHistoryPage', () => {
     render(<AuditHistoryPage />)
 
     expect(await screen.findByText('Selected audit event')).toBeInTheDocument()
-    expect(screen.getByText('22222222-2222-4222-8222-222222222222')).toBeInTheDocument()
     expect(screen.getAllByText('DrugSignal').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('metformin').length).toBeGreaterThan(0)
+
+    fireEvent.click(screen.getByText('Technical view'))
+
+    expect(screen.getByText('22222222-2222-4222-8222-222222222222')).toBeInTheDocument()
 
     window.history.replaceState(null, '', '/')
   })
@@ -164,6 +173,7 @@ describe('AuditHistoryPage', () => {
 
     const metforminRowText = await screen.findByText('metformin')
     fireEvent.click(metforminRowText.closest('tr') as HTMLTableRowElement)
+    fireEvent.click(screen.getByText('Technical view'))
 
     expect(screen.getByText('22222222-2222-4222-8222-222222222222')).toBeInTheDocument()
     expect(screen.getByText('https://api.fda.gov/drug/event.json')).toBeInTheDocument()
@@ -192,6 +202,7 @@ describe('AuditHistoryPage', () => {
     render(<AuditHistoryPage />)
 
     expect(await screen.findByText('Provenance verified')).toBeInTheDocument()
+    fireEvent.click(screen.getByText('Technical view'))
 
     await waitFor(() => {
       expect(mockedGetAuditEventSourcePull).toHaveBeenCalledWith(
