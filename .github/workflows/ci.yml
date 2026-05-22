@@ -1,4 +1,4 @@
-name: MedSignal AI CI
+name: Dav AI CI
 
 on:
   push:

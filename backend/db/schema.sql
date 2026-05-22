@@ -1,4 +1,4 @@
--- MedTrek AI database schema
+-- Dav AI database schema
 -- Phase 1: source registry and audit events
 -- No personal health information should be stored in this schema.
 

@@ -11,12 +11,12 @@ def test_get_database_url_returns_none_when_missing(monkeypatch):
 def test_get_database_url_returns_value_when_configured(monkeypatch):
     monkeypatch.setenv(
         "DATABASE_URL",
-        "postgresql+psycopg://user:password@localhost:5432/medsignal",
+        "postgresql+psycopg://user:password@localhost:5432/dav_ai",
     )
 
     assert (
         get_database_url()
-        == "postgresql+psycopg://user:password@localhost:5432/medsignal"
+        == "postgresql+psycopg://user:password@localhost:5432/dav_ai"
     )
     assert is_database_configured() is True
 
