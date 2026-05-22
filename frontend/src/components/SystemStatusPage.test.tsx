@@ -22,7 +22,7 @@ describe('SystemStatusPage', () => {
   it('renders system status, source freshness, and data quality details', async () => {
     vi.mocked(getSystemStatus).mockResolvedValue({
       status: 'ok',
-      app: 'MedTrek AI API',
+      app: 'Dav AI API',
       version: '0.1.0',
       database: {
         configured: true,

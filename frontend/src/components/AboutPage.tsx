@@ -2,10 +2,10 @@ function AboutPage() {
   return (
     <section className="about-page reveal">
       <div className="about-hero">
-        <p className="eyebrow">About MedTrek AI</p>
+        <p className="eyebrow">About Dav AI</p>
         <h2>Healthcare safety intelligence from public FDA signals.</h2>
         <p>
-          MedTrek AI is a full-stack public safety intelligence platform that turns
+          Dav AI is a full-stack public safety intelligence platform that turns
           fragmented recall and adverse-event data into clear, source-aware review
           workflows. The current MVP includes RecallRadar, DrugSignal, and a deterministic
           Safety Briefing Engine v1 powered by public openFDA data.
@@ -17,7 +17,7 @@ function AboutPage() {
           <span>01</span>
           <h3>What the app does</h3>
           <p>
-            MedTrek AI helps users search public FDA recall records, explore FAERS
+            Dav AI helps users search public FDA recall records, explore FAERS
             adverse-event reporting patterns, review source metadata, and generate
             role-based safety briefings grounded in structured public data.
           </p>
@@ -60,7 +60,7 @@ function AboutPage() {
           <h3>Not another health app. A source-audited safety workflow.</h3>
         </div>
         <p>
-          MedTrek AI is designed for users who need to review public safety information
+          Dav AI is designed for users who need to review public safety information
           without manually searching multiple government portals. The current system focuses
           on RecallRadar, DrugSignal, role-based briefings, source transparency, and audit
           persistence. Future phases may add saved monitors, alert workflows, audit history,
@@ -90,7 +90,7 @@ function AboutPage() {
       <div className="safety-note">
         <strong>Important safety boundary:</strong>
         <span>
-          MedTrek AI is not FDA approved, not medical advice, and not a replacement for FDA,
+          Dav AI is not FDA approved, not medical advice, and not a replacement for FDA,
           CDC, clinician, pharmacist, or emergency guidance. FAERS reports are safety signals
           only and do not prove causation.
         </span>

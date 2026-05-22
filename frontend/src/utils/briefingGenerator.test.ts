@@ -14,7 +14,7 @@ const recallResponse: RecallSearchResponse = {
   retrieval_timestamp: '2026-05-03T12:00:00Z',
   score_version: 'recall-score-v1',
   medical_disclaimer:
-    'MedTrek AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.',
+    'Dav AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.',
   audit: {
     audit_id: 'audit-123',
     source_id: 'openfda-drug-enforcement',
@@ -61,7 +61,7 @@ const drugEventResponse: DrugEventSearchResponse = {
   endpoint: 'https://api.fda.gov/drug/event.json',
   retrieval_timestamp: '2026-05-03T12:00:00Z',
   medical_disclaimer:
-    'MedTrek AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.',
+    'Dav AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.',
   faers_disclaimer:
     'FAERS reports are safety signals only and do not prove causation.',
   audit: {
@@ -104,7 +104,7 @@ const drugEventResponse: DrugEventSearchResponse = {
     previous_audit_id: 'previous-audit-123',
     previous_created_at: '2026-05-02T12:00:00Z',
     explanation: 'Compared with the most recent stored DrugSignal audit event for this query.',
-    limitation: 'Trend is based only on stored public-data searches in MedTrek AI, not all FDA activity.',
+    limitation: 'Trend is based only on stored public-data searches in Dav AI, not all FDA activity.',
     trend_version: 'drug-signal-trend-v0.1',
   },
   top_reactions: [

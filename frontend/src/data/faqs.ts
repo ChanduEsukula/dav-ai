@@ -1,13 +1,13 @@
 export const faqs = [
   {
-    question: 'Is MedTrek AI FDA approved?',
+    question: 'Is Dav AI FDA approved?',
     answer:
-      'No. MedTrek AI is not FDA approved and does not claim to be a regulated medical device. It uses public FDA/openFDA data to help users review public safety information more easily.',
+      'No. Dav AI is not FDA approved and does not claim to be a regulated medical device. It uses public FDA/openFDA data to help users review public safety information more easily.',
   },
   {
     question: 'Is this medical advice?',
     answer:
-      'No. MedTrek AI is a public-data review and safety-intelligence tool. It does not diagnose, prescribe, recommend treatment, or tell users to start, stop, or change medication. Users should consult a qualified clinician or pharmacist for medical decisions.',
+      'No. Dav AI is a public-data review and safety-intelligence tool. It does not diagnose, prescribe, recommend treatment, or tell users to start, stop, or change medication. Users should consult a qualified clinician or pharmacist for medical decisions.',
   },
   {
     question: 'Where does the recall data come from?',
@@ -40,13 +40,13 @@ export const faqs = [
       'Not automatically. A matched record may apply only to a specific lot, package, manufacturer, date range, or distribution area. Users must review the exact FDA record and product details before making decisions.',
   },
   {
-    question: 'Who is MedTrek AI for?',
+    question: 'Who is Dav AI for?',
     answer:
       'The early users are consumers, pharmacy teams, clinic administrators, public-health teams, university health centers, and small healthcare organizations that need a clearer way to review public safety signals.',
   },
   {
     question: 'Why not just use the FDA website directly?',
     answer:
-      'Public portals are useful, but they can be hard to review quickly. MedTrek AI adds a cleaner workflow: search, normalized cards, review-priority scoring, FAERS reporting-pattern summaries, role-based briefings, source timestamps, and audit details.',
+      'Public portals are useful, but they can be hard to review quickly. Dav AI adds a cleaner workflow: search, normalized cards, review-priority scoring, FAERS reporting-pattern summaries, role-based briefings, source timestamps, and audit details.',
   },
 ]

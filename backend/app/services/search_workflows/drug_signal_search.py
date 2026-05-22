@@ -198,7 +198,7 @@ async def execute_drug_signal_search(
             "source_name": payload["source_name"],
             "endpoint": payload["endpoint"],
             "retrieval_timestamp": payload["retrieval_timestamp"],
-            "medical_disclaimer": "MedTrek AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.",
+            "medical_disclaimer": "Dav AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.",
             "faers_disclaimer": "FAERS adverse-event reports do not prove that a drug caused a reaction. Reports may be incomplete, duplicated, or influenced by reporting patterns.",
             "audit": {
                 "audit_id": audit_event["audit_id"],

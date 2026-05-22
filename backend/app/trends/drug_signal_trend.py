@@ -3,7 +3,7 @@ from typing import Any
 
 DRUG_SIGNAL_TREND_VERSION = "drug-signal-trend-v0.1"
 TREND_LIMITATION = (
-    "Trend is based only on stored public-data searches in MedTrek AI, not all FDA activity."
+    "Trend is based only on stored public-data searches in Dav AI, not all FDA activity."
 )
 
 

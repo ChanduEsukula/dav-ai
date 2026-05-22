@@ -21,7 +21,7 @@ function Navbar({
     <nav className="nav">
       <button className="brand brand-button" onClick={goHome}>
         <span className="brand-mark">✚</span>
-        <span>MedTrek AI</span>
+        <span>Dav AI</span>
       </button>
 
       <div className="nav-links">

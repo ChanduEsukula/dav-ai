@@ -57,7 +57,7 @@ function DataSourcesPage() {
         <p className="eyebrow">Source transparency</p>
         <h2>Registered public data sources.</h2>
         <p>
-          MedTrek AI keeps source metadata visible so every recall or drug-event signal can be
+          Dav AI keeps source metadata visible so every recall or drug-event signal can be
           traced back to a public endpoint, audit history, and current freshness status.
         </p>
       </div>

@@ -40,7 +40,7 @@ function RecallRadar({
         <p className="eyebrow">RecallRadar live module</p>
         <h2>Search public FDA recall signals.</h2>
         <p>
-          Enter a product, drug, brand, or category. MedTrek AI fetches live public
+          Enter a product, drug, brand, or category. Dav AI fetches live public
           recall records, scores the signal, and keeps source details visible.
         </p>
       </div>

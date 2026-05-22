@@ -98,7 +98,7 @@ function SystemStatusPage() {
         <p className="eyebrow">Operations</p>
         <h1>System Status</h1>
         <p>
-          A quick operational snapshot of the MedTrek AI backend, audit persistence,
+          A quick operational snapshot of the Dav AI backend, audit persistence,
           registered public-data sources, source freshness, and recent audit data quality.
         </p>
       </div>

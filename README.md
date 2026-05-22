@@ -1,23 +1,23 @@
-# MedTrek AI
+# Dav AI
 
 **Healthcare safety intelligence from public FDA signals.**
 
-MedTrek AI is a full-stack healthcare public-data safety intelligence prototype. It turns public FDA/openFDA recall and adverse-event data into source-aware, explainable review workflows with audit trails, versioned scoring, reaction classification, trend snapshots, deterministic role-based safety briefings, and repeatable saved-monitor workflows.
+Dav AI is a full-stack healthcare public-data safety intelligence prototype. It turns public FDA/openFDA recall and adverse-event data into source-aware, explainable review workflows with audit trails, versioned scoring, reaction classification, trend snapshots, deterministic role-based safety briefings, and repeatable saved-monitor workflows.
 
 This project is an MVP and portfolio-grade engineering prototype. It is not a medical device, not clinical decision support, and not a replacement for official FDA, CDC, clinician, pharmacist, or emergency guidance.
 
 ## Engineering Highlights
 
-MedTrek AI is designed as a public-data healthcare safety intelligence platform with an emphasis on traceability, reproducibility, and operational transparency.
+Dav AI is designed as a public-data healthcare safety intelligence platform with an emphasis on traceability, reproducibility, and operational transparency.
 
 - Audit-backed source freshness for registered public FDA/openFDA data sources.
 - Operational visibility through Data Sources freshness indicators and System Status source-freshness summaries.
 - Reproducible source pulls with persisted `source_pulls` records, raw public-source snapshots, and stable SHA-256 payload hashing.
 - Audit-linked traceability from API response to audit event to source pull to raw public openFDA payload.
-- Safety/privacy boundary limited to public FDA/openFDA data only; MedTrek AI does not use PHI, private medical history, diagnoses, insurance information, prescription history, addresses, or private user records.
+- Safety/privacy boundary limited to public FDA/openFDA data only; Dav AI does not use PHI, private medical history, diagnoses, insurance information, prescription history, addresses, or private user records.
 - Tested full-stack workflow covering backend behavior, frontend surfaces, production build checks, CI, and manual deployment smoke verification.
 
-MedTrek AI is not medical advice or clinical decision support.
+Dav AI is not medical advice or clinical decision support.
 
 ---
 
@@ -46,7 +46,7 @@ docs/saved_monitors_v2_1_release_checkpoint.md
 
 ## Current Project Status
 
-MedTrek AI currently includes:
+Dav AI currently includes:
 
 - **RecallRadar** for live openFDA Drug Enforcement recall search.
 - **DrugSignal** for openFDA Drug Event / FAERS-style adverse-event reporting-pattern review.
@@ -75,13 +75,13 @@ Search → Score → Audit → Briefing → Monitor → Compare → Alert
 
 The current product foundation is built around five ideas:
 
-1. **Public-data safety intelligence**: MedTrek AI uses public FDA/openFDA data, not private medical records.
+1. **Public-data safety intelligence**: Dav AI uses public FDA/openFDA data, not private medical records.
 2. **Source transparency**: Results expose source names, endpoints, retrieval timestamps, source IDs, and update context.
 3. **Auditability**: Searches generate audit IDs and persisted audit events for later review.
 4. **Explainability**: Recall and DrugSignal scores are rule-based, versioned, and visible.
 5. **Healthcare safety guardrails**: The app avoids medical advice, diagnosis, treatment guidance, medication-change recommendations, and FAERS causation claims.
 
-MedTrek AI is intentionally focused on public-data traceability, operational readiness, and healthcare safety boundaries rather than generic chatbot behavior.
+Dav AI is intentionally focused on public-data traceability, operational readiness, and healthcare safety boundaries rather than generic chatbot behavior.
 
 ---
 
@@ -323,7 +323,7 @@ Current frontend test status:
 
 ## Recall Review Score
 
-MedTrek AI uses a transparent, rule-based **Recall Review Score** for RecallRadar.
+Dav AI uses a transparent, rule-based **Recall Review Score** for RecallRadar.
 
 The score is not a medical diagnosis, treatment recommendation, or official FDA replacement. It is a review-priority signal that helps users understand which public recall records may deserve closer attention.
 
@@ -475,7 +475,7 @@ drug-signal-trend-v0.1
 
 Current limitation:
 
-Trend Snapshot v1 is based only on stored public-data searches in MedTrek AI. It does not represent all FDA activity and should not be interpreted as a complete surveillance signal.
+Trend Snapshot v1 is based only on stored public-data searches in Dav AI. It does not represent all FDA activity and should not be interpreted as a complete surveillance signal.
 
 Documentation:
 
@@ -522,7 +522,7 @@ docs/drug_signal_briefing_v2_verification.md
 
 ## Sources Registry
 
-MedTrek AI includes a backend source registry to make public-data usage transparent and auditable.
+Dav AI includes a backend source registry to make public-data usage transparent and auditable.
 
 Current registered sources:
 
@@ -550,7 +550,7 @@ The frontend Data Sources page consumes this endpoint and displays registered pu
 
 ## Audit Architecture
 
-MedTrek AI separates public response metadata from internal audit event construction.
+Dav AI separates public response metadata from internal audit event construction.
 
 The backend currently supports:
 
@@ -610,7 +610,7 @@ Saved Monitors endpoints support repeatable public-data searches, manual run che
 
 ## Persistence
 
-MedTrek AI includes Supabase/PostgreSQL audit persistence and saved monitor persistence.
+Dav AI includes Supabase/PostgreSQL audit persistence and saved monitor persistence.
 
 Current persistence support includes:
 
@@ -663,7 +663,7 @@ Database credentials must be stored only in local or deployment environment vari
 
 ## Safety Boundary
 
-MedTrek AI provides public-data safety intelligence only.
+Dav AI provides public-data safety intelligence only.
 
 It is not:
 
@@ -840,7 +840,7 @@ Use local `.env` files for development and deployment environment variables for 
 
 ## Docker Local Development
 
-MedTrek AI can run locally with Docker Compose.
+Dav AI can run locally with Docker Compose.
 
 From the repository root:
 
@@ -880,7 +880,7 @@ Do not commit real `.env` files or secrets to GitHub.
 
 ## Deployment Environment Notes
 
-MedTrek AI is designed to deploy as separate frontend, backend, and database services.
+Dav AI is designed to deploy as separate frontend, backend, and database services.
 
 Recommended MVP deployment path:
 
@@ -1108,7 +1108,7 @@ Recommended next steps:
 
 ## Project Direction
 
-MedTrek AI should remain focused on healthcare public-data safety intelligence, source transparency, auditability, monitoring, and responsible AI guardrails.
+Dav AI should remain focused on healthcare public-data safety intelligence, source transparency, auditability, monitoring, and responsible AI guardrails.
 
 It should not become a generic chatbot, generic dashboard, or medical advice tool.
 
