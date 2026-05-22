@@ -1,11 +1,14 @@
 """Routes for Saved Monitors v2 backend foundation."""
 
+from dataclasses import asdict
 from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, Request, status
 
+from app.analytics.monitor_insights import build_monitor_insight
 from app.db.saved_monitor_repository import saved_monitor_repository
+from app.schemas.monitor_insights import MonitorInsightResponse
 from app.schemas.saved_monitors import (
     SavedMonitor,
     SavedMonitorCreate,
@@ -87,6 +90,28 @@ def list_saved_monitor_runs(
         )
 
     return saved_monitor_repository.list_runs(monitor_id, limit=limit)
+
+
+@router.get("/{monitor_id}/insights", response_model=MonitorInsightResponse)
+def get_saved_monitor_insight(monitor_id: UUID) -> MonitorInsightResponse:
+    """Return deterministic AI Monitor Insight for one saved monitor.
+
+    This insight is based only on stored Dav AI public-data monitor history.
+    It is not medical advice, diagnosis, treatment guidance, clinical decision
+    support, or proof of causality.
+    """
+
+    monitor = saved_monitor_repository.get(monitor_id)
+    if monitor is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Saved monitor not found",
+        )
+
+    runs = saved_monitor_repository.list_runs(monitor_id, limit=10)
+    insight = build_monitor_insight(monitor=monitor, runs=runs)
+
+    return MonitorInsightResponse(**asdict(insight))
 
 
 @router.post(

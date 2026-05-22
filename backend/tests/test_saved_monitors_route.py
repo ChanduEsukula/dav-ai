@@ -473,3 +473,38 @@ def test_run_saved_monitor_not_found() -> None:
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Saved monitor not found"
+
+
+def test_saved_monitor_insight_returns_insufficient_history():
+    create_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Insight aspirin monitor",
+            "query": "aspirin insight route",
+            "module": "recallradar",
+        },
+    )
+    assert create_response.status_code == 201
+
+    monitor = create_response.json()
+
+    response = client.get(f"/api/v1/saved-monitors/{monitor['id']}/insights")
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["monitor_id"] == monitor["id"]
+    assert data["label"] == "insufficient_history"
+    assert data["headline"] == "Insufficient history"
+    assert data["confidence"] == "low"
+    assert data["insight_version"] == "monitor-insight-v0.1"
+    assert "not medical advice" in data["limitation"]
+
+
+def test_saved_monitor_insight_returns_404_for_unknown_monitor():
+    response = client.get(
+        "/api/v1/saved-monitors/11111111-1111-1111-1111-111111111111/insights"
+    )
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Saved monitor not found"
