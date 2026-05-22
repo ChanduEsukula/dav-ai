@@ -1,13 +1,15 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import AuditHistoryPage from './AuditHistoryPage'
-import { getAuditEvents } from '../api/auditEvents'
+import { getAuditEventSourcePull, getAuditEvents } from '../api/auditEvents'
 
 vi.mock('../api/auditEvents', () => ({
   getAuditEvents: vi.fn(),
+  getAuditEventSourcePull: vi.fn(),
 }))
 
 const mockedGetAuditEvents = vi.mocked(getAuditEvents)
+const mockedGetAuditEventSourcePull = vi.mocked(getAuditEventSourcePull)
 
 const mockAuditItems = [
   {
@@ -52,9 +54,36 @@ const mockAuditItems = [
   },
 ]
 
+const mockSourcePull = {
+  pull_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+  audit_id: '11111111-1111-4111-8111-111111111111',
+  source_id: 'openfda_drug_enforcement',
+  source_name: 'openFDA Drug Enforcement API',
+  endpoint: 'https://api.fda.gov/drug/enforcement.json',
+  query: 'eye drops',
+  query_params: {
+    q: 'eye drops',
+    limit: 5,
+  },
+  retrieval_timestamp: '2026-05-01T10:30:00Z',
+  upstream_status: 'success',
+  record_count: 1,
+  payload_hash: 'a'.repeat(64),
+  transform_version: 'recall-transform-v0.1',
+  created_at: '2026-05-05T00:08:55.761053Z',
+  snapshot_id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+}
+
 describe('AuditHistoryPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    window.history.replaceState(null, '', '/')
+    mockedGetAuditEventSourcePull.mockResolvedValue({
+      status: 'not_found',
+      persistence_available: true,
+      item: null,
+      message: 'No source pull found for this audit_id.',
+    })
   })
 
   test('renders loading state before audit history resolves', () => {
@@ -143,6 +172,63 @@ describe('AuditHistoryPage', () => {
     expect(window.location.search).toContain('audit_id=22222222-2222-4222-8222-222222222222')
   })
 
+
+
+  test('renders source pull provenance for the selected audit event', async () => {
+    mockedGetAuditEvents.mockResolvedValue({
+      status: 'ok',
+      persistence_available: true,
+      count: mockAuditItems.length,
+      items: mockAuditItems,
+    })
+
+    mockedGetAuditEventSourcePull.mockResolvedValue({
+      status: 'ok',
+      persistence_available: true,
+      item: mockSourcePull,
+      message: null,
+    })
+
+    render(<AuditHistoryPage />)
+
+    expect(await screen.findByText('Source Pull Provenance')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(mockedGetAuditEventSourcePull).toHaveBeenCalledWith(
+        '11111111-1111-4111-8111-111111111111',
+      )
+      expect(screen.getByText('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa')).toBeInTheDocument()
+      expect(screen.getByText('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb')).toBeInTheDocument()
+      expect(screen.getByText('a'.repeat(64))).toBeInTheDocument()
+    })
+
+    expect(
+      screen.getByText(/Raw public-source payloads are not exposed in the UI/i),
+    ).toBeInTheDocument()
+    expect(screen.queryByText(/raw_payload/i)).not.toBeInTheDocument()
+  })
+
+  test('renders source pull provenance not-found message', async () => {
+    mockedGetAuditEvents.mockResolvedValue({
+      status: 'ok',
+      persistence_available: true,
+      count: mockAuditItems.length,
+      items: mockAuditItems,
+    })
+
+    mockedGetAuditEventSourcePull.mockResolvedValue({
+      status: 'not_found',
+      persistence_available: true,
+      item: null,
+      message: 'No source pull found for this audit_id.',
+    })
+
+    render(<AuditHistoryPage />)
+
+    expect(
+      await screen.findByText('No source pull found for this audit_id.'),
+    ).toBeInTheDocument()
+  })
 
   test('requests backend-filtered audit history when filters change', async () => {
     mockedGetAuditEvents.mockResolvedValue({
