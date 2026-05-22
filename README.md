@@ -4,6 +4,12 @@
 
 Dav AI is a full-stack healthcare public-data safety intelligence prototype. It turns public FDA/openFDA recall and adverse-event data into source-aware, explainable review workflows with audit trails, versioned scoring, reaction classification, trend snapshots, deterministic role-based safety briefings, and repeatable saved-monitor workflows.
 
+## Recent Highlight: Monitor Insights
+
+Saved Monitors now include deterministic Monitor Insights for repeatable public-data searches. Each insight compares recent saved monitor runs and summarizes whether public-data activity appears stable, increased, decreased, notably changed, or insufficient for comparison.
+
+Monitor Insights show record deltas, percent change, confidence level, insight versioning, related audit context, and a clear safety limitation. They are based only on stored Dav AI public-data monitor history and do not provide medical advice, diagnosis, treatment guidance, clinical decision support, or proof of causality.
+
 This project is an MVP and portfolio-grade engineering prototype. It is not a medical device, not clinical decision support, and not a replacement for official FDA, CDC, clinician, pharmacist, or emergency guidance.
 
 ## Engineering Highlights
