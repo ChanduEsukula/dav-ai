@@ -6,15 +6,21 @@ import SavedMonitorsPage from './SavedMonitorsPage'
 import {
   createSavedMonitor,
   deleteSavedMonitor,
+  getSavedMonitorInsight,
   listSavedMonitorRuns,
   listSavedMonitors,
   runSavedMonitor,
 } from '../api/savedMonitors'
-import type { SavedMonitor, SavedMonitorRun } from '../api/savedMonitors'
+import type {
+  MonitorInsight,
+  SavedMonitor,
+  SavedMonitorRun,
+} from '../api/savedMonitors'
 
 vi.mock('../api/savedMonitors', () => ({
   listSavedMonitors: vi.fn(),
   listSavedMonitorRuns: vi.fn(),
+  getSavedMonitorInsight: vi.fn(),
   createSavedMonitor: vi.fn(),
   deleteSavedMonitor: vi.fn(),
   runSavedMonitor: vi.fn(),
@@ -35,6 +41,17 @@ const baseMonitor: SavedMonitor = {
   status: 'not_checked',
 }
 
+const checkedMonitor: SavedMonitor = {
+  ...baseMonitor,
+  latest_audit_id: '11111111-1111-1111-1111-111111111111',
+  latest_score: 74,
+  previous_score: 68,
+  latest_record_count: 5,
+  previous_record_count: 3,
+  status: 'checked',
+  last_checked_at: '2026-05-11T13:00:00Z',
+}
+
 const baseRun: SavedMonitorRun = {
   run_id: 'run-1',
   monitor_id: 'monitor-1',
@@ -49,11 +66,49 @@ const baseRun: SavedMonitorRun = {
   error_message: null,
 }
 
+const baseInsight: MonitorInsight = {
+  monitor_id: 'monitor-1',
+  label: 'stable',
+  headline: 'Stable public-data activity',
+  explanation:
+    'The latest successful saved monitor run is similar to the previous successful run in stored Dav AI public-data history.',
+  latest_run_id: 'run-2',
+  previous_run_id: 'run-1',
+  latest_record_count: 5,
+  previous_record_count: 3,
+  record_count_delta: 2,
+  percent_change: 66.67,
+  latest_score: 74,
+  previous_score: 68,
+  score_delta: 6,
+  confidence: 'medium',
+  insight_version: 'monitor-insight-v0.1',
+  limitation:
+    'This insight is based only on stored Dav AI public-data monitor history. It is not medical advice, diagnosis, treatment guidance, clinical decision support, or proof of causality.',
+}
+
+
+
+function expectTextContent(pattern: RegExp) {
+  expect(
+    screen.getByText((_, element) => {
+      const text = element?.textContent ?? ''
+      const children = Array.from(element?.children ?? [])
+
+      return (
+        pattern.test(text) &&
+        children.every((child) => !pattern.test(child.textContent ?? ''))
+      )
+    }),
+  ).toBeInTheDocument()
+}
+
 describe('SavedMonitorsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.restoreAllMocks()
     vi.mocked(listSavedMonitorRuns).mockResolvedValue([])
+    vi.mocked(getSavedMonitorInsight).mockResolvedValue(baseInsight)
     window.history.replaceState(null, '', '/')
   })
 
@@ -66,38 +121,36 @@ describe('SavedMonitorsPage', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText('No saved monitors yet. Create one above to start the monitoring workflow.'),
+        screen.getByText(
+          'No saved monitors yet. Create one above to start the monitoring workflow.',
+        ),
       ).toBeInTheDocument()
     })
   })
 
-  it('renders saved monitors returned by the API with latest, previous, and change values', async () => {
-    vi.mocked(listSavedMonitors).mockResolvedValue([
-      {
-        ...baseMonitor,
-        latest_audit_id: '11111111-1111-1111-1111-111111111111',
-        latest_score: 74,
-        previous_score: 68,
-        latest_record_count: 5,
-        previous_record_count: 3,
-        status: 'checked',
-        last_checked_at: '2026-05-11T13:00:00Z',
-      },
-    ])
+  it('renders saved monitors returned by the API with latest, previous, change values, and AI insight', async () => {
+    vi.mocked(listSavedMonitors).mockResolvedValue([checkedMonitor])
 
     render(<SavedMonitorsPage />)
 
     await waitFor(() => {
       expect(screen.getByText('Eye drops monitor')).toBeInTheDocument()
-      expect(screen.getByText('eye drops')).toBeInTheDocument()
+      expectTextContent(/Query:\s*eye drops/i)
       expect(screen.getAllByText('RecallRadar').length).toBeGreaterThan(0)
-      expect(screen.getByText('checked')).toBeInTheDocument()
+      expectTextContent(/RecallRadar\s*·\s*checked/i)
+      expect(screen.getByText('Latest score')).toBeInTheDocument()
       expect(screen.getByText('74')).toBeInTheDocument()
-      expect(screen.getByText('68')).toBeInTheDocument()
+      expectTextContent(/Previous:\s*68/i)
+      expect(screen.getByText('Records')).toBeInTheDocument()
       expect(screen.getByText('5')).toBeInTheDocument()
-      expect(screen.getByText('3')).toBeInTheDocument()
+      expectTextContent(/Previous:\s*3/i)
       expect(screen.getByText('Score +6')).toBeInTheDocument()
       expect(screen.getByText('Records +2')).toBeInTheDocument()
+      expect(screen.getByText('AI Monitor Insight')).toBeInTheDocument()
+      expect(screen.getByText('Stable')).toBeInTheDocument()
+      expect(screen.getByText('Stable public-data activity')).toBeInTheDocument()
+      expect(screen.getByText('monitor-insight-v0.1')).toBeInTheDocument()
+      expect(screen.getByText(/not medical advice/i)).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'View Audit' })).toBeInTheDocument()
       expect(screen.getByText('No manual run history yet.')).toBeInTheDocument()
     })
@@ -151,7 +204,9 @@ describe('SavedMonitorsPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'View run audit' }))
 
     expect(window.location.search).toContain('page=audit')
-    expect(window.location.search).toContain('audit_id=11111111-1111-1111-1111-111111111111')
+    expect(window.location.search).toContain(
+      'audit_id=11111111-1111-1111-1111-111111111111',
+    )
     expect(dispatchSpy).toHaveBeenCalled()
 
     dispatchSpy.mockRestore()
@@ -172,13 +227,23 @@ describe('SavedMonitorsPage', () => {
         status: 'checked',
       },
     ])
+    vi.mocked(getSavedMonitorInsight).mockResolvedValue({
+      ...baseInsight,
+      monitor_id: 'monitor-2',
+      label: 'decreased',
+      headline: 'Public-data activity decreased',
+      record_count_delta: -3,
+      percent_change: -33.33,
+    })
 
     render(<SavedMonitorsPage />)
 
     await waitFor(() => {
       expect(screen.getByText('Metformin monitor')).toBeInTheDocument()
+      expect(screen.getAllByText('DrugSignal').length).toBeGreaterThan(0)
       expect(screen.getByText('Score unchanged')).toBeInTheDocument()
       expect(screen.getByText('Records -3')).toBeInTheDocument()
+      expect(screen.getByText('Public-data activity decreased')).toBeInTheDocument()
     })
   })
 
@@ -211,12 +276,25 @@ describe('SavedMonitorsPage', () => {
       query: 'metformin',
       module: 'drugsignal',
     })
+    vi.mocked(getSavedMonitorInsight).mockResolvedValue({
+      ...baseInsight,
+      monitor_id: 'monitor-created',
+      label: 'insufficient_history',
+      headline: 'Insufficient history',
+      latest_record_count: null,
+      previous_record_count: null,
+      record_count_delta: null,
+      percent_change: null,
+      confidence: 'low',
+    })
 
     render(<SavedMonitorsPage />)
 
     await waitFor(() => {
       expect(
-        screen.getByText('No saved monitors yet. Create one above to start the monitoring workflow.'),
+        screen.getByText(
+          'No saved monitors yet. Create one above to start the monitoring workflow.',
+        ),
       ).toBeInTheDocument()
     })
 
@@ -239,10 +317,11 @@ describe('SavedMonitorsPage', () => {
         module: 'drugsignal',
       })
       expect(screen.getByText('Metformin monitor')).toBeInTheDocument()
-      expect(screen.getByText('metformin')).toBeInTheDocument()
+      expectTextContent(/Query:\s*metformin/i)
       expect(screen.getAllByText('DrugSignal').length).toBeGreaterThan(0)
       expect(screen.getByText('Score N/A')).toBeInTheDocument()
       expect(screen.getByText('Records N/A')).toBeInTheDocument()
+      expect(screen.getByText('Insufficient history')).toBeInTheDocument()
     })
   })
 
@@ -272,7 +351,9 @@ describe('SavedMonitorsPage', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText('No saved monitors yet. Create one above to start the monitoring workflow.'),
+        screen.getByText(
+          'No saved monitors yet. Create one above to start the monitoring workflow.',
+        ),
       ).toBeInTheDocument()
     })
 
@@ -299,7 +380,9 @@ describe('SavedMonitorsPage', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText('No saved monitors yet. Create one above to start the monitoring workflow.'),
+        screen.getByText(
+          'No saved monitors yet. Create one above to start the monitoring workflow.',
+        ),
       ).toBeInTheDocument()
     })
 
@@ -318,7 +401,7 @@ describe('SavedMonitorsPage', () => {
     expect(createSavedMonitor).not.toHaveBeenCalled()
   })
 
-  it('runs a saved monitor check and updates latest, previous, and change row values', async () => {
+  it('runs a saved monitor check and updates latest, previous, change values, and insight', async () => {
     vi.mocked(listSavedMonitors).mockResolvedValue([
       {
         ...baseMonitor,
@@ -338,11 +421,22 @@ describe('SavedMonitorsPage', () => {
       latest_audit_id: '22222222-2222-2222-2222-222222222222',
       last_checked_at: '2026-05-11T14:00:00Z',
     })
+    vi.mocked(getSavedMonitorInsight).mockResolvedValue({
+      ...baseInsight,
+      latest_record_count: 12,
+      previous_record_count: 8,
+      record_count_delta: 4,
+      percent_change: 50,
+      latest_score: 88,
+      previous_score: 70,
+      score_delta: 18,
+    })
 
     render(<SavedMonitorsPage />)
 
     await waitFor(() => {
       expect(screen.getByText('Eye drops monitor')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Run Check' })).toBeInTheDocument()
     })
 
     fireEvent.click(screen.getByRole('button', { name: 'Run Check' }))
@@ -350,14 +444,16 @@ describe('SavedMonitorsPage', () => {
     await waitFor(() => {
       expect(runSavedMonitor).toHaveBeenCalledWith('monitor-1')
       expect(listSavedMonitorRuns).toHaveBeenCalledWith('monitor-1')
-      expect(screen.getByText('checked')).toBeInTheDocument()
+      expect(getSavedMonitorInsight).toHaveBeenCalledWith('monitor-1')
+      expectTextContent(/RecallRadar\s*·\s*checked/i)
       expect(screen.getByText('88')).toBeInTheDocument()
-      expect(screen.getByText('70')).toBeInTheDocument()
+      expectTextContent(/Previous:\s*70/i)
       expect(screen.getByText('12')).toBeInTheDocument()
-      expect(screen.getByText('8')).toBeInTheDocument()
+      expectTextContent(/Previous:\s*8/i)
       expect(screen.getByText('Score +18')).toBeInTheDocument()
       expect(screen.getByText('Records +4')).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'View Audit' })).toBeInTheDocument()
+      expect(screen.getByText('Stable public-data activity')).toBeInTheDocument()
     })
   })
 
@@ -422,7 +518,9 @@ describe('SavedMonitorsPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'View Audit' }))
 
     expect(window.location.search).toContain('page=audit')
-    expect(window.location.search).toContain('audit_id=33333333-3333-3333-3333-333333333333')
+    expect(window.location.search).toContain(
+      'audit_id=33333333-3333-3333-3333-333333333333',
+    )
     expect(dispatchSpy).toHaveBeenCalled()
 
     dispatchSpy.mockRestore()
@@ -446,6 +544,7 @@ describe('SavedMonitorsPage', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Eye drops monitor')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Run Check' })).toBeInTheDocument()
     })
 
     fireEvent.click(screen.getByRole('button', { name: 'Run Check' }))

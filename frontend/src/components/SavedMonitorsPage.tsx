@@ -389,197 +389,224 @@ export default function SavedMonitorsPage() {
             workflow.
           </p>
         ) : (
-          <div className="saved-monitor-table-wrap">
-            <table className="saved-monitor-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Query</th>
-                  <th>Module</th>
-                  <th>Status</th>
-                  <th>Latest score</th>
-                  <th>Previous score</th>
-                  <th>Records</th>
-                  <th>Previous records</th>
-                  <th>Change</th>
-                  <th>AI insight</th>
-                  <th>Recent manual runs</th>
-                  <th>Last checked</th>
-                  <th>Latest audit</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {monitors.map((monitor) => {
-                  const scoreTone = getChangeTone(
-                    monitor.latest_score,
-                    monitor.previous_score,
-                  );
-                  const recordTone = getChangeTone(
-                    monitor.latest_record_count,
-                    monitor.previous_record_count,
-                  );
-                  const insight = insightsByMonitor[monitor.id];
-                  const insightTone = insight
-                    ? getInsightTone(insight.label)
-                    : "neutral";
+          <div className="saved-monitor-card-list">
+            {monitors.map((monitor) => {
+              const scoreTone = getChangeTone(
+                monitor.latest_score,
+                monitor.previous_score,
+              );
+              const recordTone = getChangeTone(
+                monitor.latest_record_count,
+                monitor.previous_record_count,
+              );
+              const insight = insightsByMonitor[monitor.id];
+              const insightTone = insight
+                ? getInsightTone(insight.label)
+                : "neutral";
+              const runs = runHistoryByMonitor[monitor.id] ?? [];
 
-                  return (
-                    <tr key={monitor.id}>
-                      <td>{monitor.name}</td>
-                      <td>{monitor.query}</td>
-                      <td>{moduleLabels[monitor.module]}</td>
-                      <td>{monitor.status.replace("_", " ")}</td>
-                      <td>{formatNullableNumber(monitor.latest_score)}</td>
-                      <td>{formatNullableNumber(monitor.previous_score)}</td>
-                      <td>{formatNullableNumber(monitor.latest_record_count)}</td>
-                      <td>{formatNullableNumber(monitor.previous_record_count)}</td>
-                      <td>
-                        <div className="saved-monitor-change-stack">
-                          <span className={`change-pill change-pill-${scoreTone}`}>
-                            {formatChangeLabel(
-                              "Score",
-                              monitor.latest_score,
-                              monitor.previous_score,
-                            )}
-                          </span>
-                          <span className={`change-pill change-pill-${recordTone}`}>
-                            {formatChangeLabel(
-                              "Records",
-                              monitor.latest_record_count,
-                              monitor.previous_record_count,
-                            )}
-                          </span>
-                        </div>
-                      </td>
-                      <td>
-                        {insight ? (
-                          <div className="monitor-insight-card">
-                            <div className="monitor-insight-card-top">
-                              <span
-                                className={`change-pill change-pill-${insightTone}`}
-                              >
-                                {formatInsightLabel(insight.label)}
-                              </span>
-                              <small>{insight.insight_version}</small>
-                            </div>
-                            <strong>{insight.headline}</strong>
-                            <p>{insight.explanation}</p>
-                            <div className="monitor-insight-grid">
-                              <span>
-                                Latest records:{" "}
-                                {formatNullableNumber(insight.latest_record_count)}
-                              </span>
-                              <span>
-                                Previous records:{" "}
-                                {formatNullableNumber(insight.previous_record_count)}
-                              </span>
-                              <span>
-                                Delta:{" "}
-                                {insight.record_count_delta === null
-                                  ? "N/A"
-                                  : formatSignedChange(insight.record_count_delta)}
-                              </span>
-                              <span>
-                                Change:{" "}
-                                {formatNullablePercent(insight.percent_change)}
-                              </span>
-                              <span>Confidence: {insight.confidence}</span>
-                            </div>
-                            <small className="monitor-insight-limitation">
-                              {insight.limitation}
-                            </small>
-                          </div>
-                        ) : (
-                          <span className="saved-monitor-muted-inline">
-                            Insight unavailable.
-                          </span>
+              return (
+                <article className="saved-monitor-card" key={monitor.id}>
+                  <div className="saved-monitor-card-header">
+                    <div>
+                      <p className="saved-monitor-card-kicker">
+                        {moduleLabels[monitor.module]} ·{" "}
+                        {monitor.status.replace("_", " ")}
+                      </p>
+                      <h3>{monitor.name}</h3>
+                      <p className="saved-monitor-query">
+                        Query: {monitor.query}
+                      </p>
+                    </div>
+
+                    <div className="saved-monitor-actions">
+                      <button
+                        type="button"
+                        onClick={() => void handleRunCheck(monitor.id)}
+                        disabled={runningMonitorId === monitor.id}
+                      >
+                        {runningMonitorId === monitor.id
+                          ? "Running..."
+                          : "Run Check"}
+                      </button>
+
+                      <button
+                        type="button"
+                        className="danger-button"
+                        onClick={() => void handleDelete(monitor.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="saved-monitor-card-grid">
+                    <div className="saved-monitor-metric-card">
+                      <span>Latest score</span>
+                      <strong>{formatNullableNumber(monitor.latest_score)}</strong>
+                      <small>
+                        Previous:{" "}
+                        {formatNullableNumber(monitor.previous_score)}
+                      </small>
+                    </div>
+
+                    <div className="saved-monitor-metric-card">
+                      <span>Records</span>
+                      <strong>
+                        {formatNullableNumber(monitor.latest_record_count)}
+                      </strong>
+                      <small>
+                        Previous:{" "}
+                        {formatNullableNumber(monitor.previous_record_count)}
+                      </small>
+                    </div>
+
+                    <div className="saved-monitor-metric-card">
+                      <span>Last checked</span>
+                      <strong>{formatDate(monitor.last_checked_at)}</strong>
+                    </div>
+
+                    <div className="saved-monitor-change-stack saved-monitor-card-change">
+                      <span className={`change-pill change-pill-${scoreTone}`}>
+                        {formatChangeLabel(
+                          "Score",
+                          monitor.latest_score,
+                          monitor.previous_score,
                         )}
-                      </td>
-                      <td>
-                        <div className="saved-monitor-run-history">
-                          {(runHistoryByMonitor[monitor.id] ?? []).length === 0 ? (
-                            <span className="saved-monitor-muted-inline">
-                              No manual run history yet.
+                      </span>
+                      <span className={`change-pill change-pill-${recordTone}`}>
+                        {formatChangeLabel(
+                          "Records",
+                          monitor.latest_record_count,
+                          monitor.previous_record_count,
+                        )}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="saved-monitor-card-body">
+                    <section className="saved-monitor-card-section">
+                      <div className="saved-monitor-section-heading">
+                        <h4>AI Monitor Insight</h4>
+                        {insight ? (
+                          <span
+                            className={`change-pill change-pill-${insightTone}`}
+                          >
+                            {formatInsightLabel(insight.label)}
+                          </span>
+                        ) : null}
+                      </div>
+
+                      {insight ? (
+                        <div className="monitor-insight-card monitor-insight-card-wide">
+                          <div className="monitor-insight-card-top">
+                            <strong>{insight.headline}</strong>
+                            <small>{insight.insight_version}</small>
+                          </div>
+
+                          <p>{insight.explanation}</p>
+
+                          <div className="monitor-insight-grid">
+                            <span>
+                              Latest records:{" "}
+                              {formatNullableNumber(
+                                insight.latest_record_count,
+                              )}
                             </span>
-                          ) : (
-                            (runHistoryByMonitor[monitor.id] ?? [])
-                              .slice(0, 3)
-                              .map((run) => (
-                                <div
-                                  className="saved-monitor-run-item"
-                                  key={run.run_id}
-                                >
-                                  <div>
-                                    <strong>{formatDate(run.created_at)}</strong>
-                                    <span>
-                                      {moduleLabels[run.module]} · {run.status}
-                                    </span>
-                                  </div>
-                                  <div>
-                                    <span>
-                                      Records {formatNullableNumber(run.record_count)}
-                                    </span>
-                                    <span>{formatScore(run)}</span>
-                                  </div>
-                                  {run.audit_id ? (
-                                    <button
-                                      type="button"
-                                      className="audit-link-button"
-                                      onClick={() =>
-                                        openAuditDetail(run.audit_id as string)
-                                      }
-                                    >
-                                      View run audit
-                                    </button>
-                                  ) : null}
-                                </div>
-                              ))
-                          )}
+                            <span>
+                              Previous records:{" "}
+                              {formatNullableNumber(
+                                insight.previous_record_count,
+                              )}
+                            </span>
+                            <span>
+                              Delta:{" "}
+                              {insight.record_count_delta === null
+                                ? "N/A"
+                                : formatSignedChange(
+                                    insight.record_count_delta,
+                                  )}
+                            </span>
+                            <span>
+                              Change:{" "}
+                              {formatNullablePercent(insight.percent_change)}
+                            </span>
+                            <span>Confidence: {insight.confidence}</span>
+                          </div>
+
+                          <small className="monitor-insight-limitation">
+                            {insight.limitation}
+                          </small>
                         </div>
-                      </td>
-                      <td>{formatDate(monitor.last_checked_at)}</td>
-                      <td>
+                      ) : (
+                        <span className="saved-monitor-muted-inline">
+                          Insight unavailable.
+                        </span>
+                      )}
+                    </section>
+
+                    <section className="saved-monitor-card-section">
+                      <div className="saved-monitor-section-heading">
+                        <h4>Recent manual runs</h4>
                         {monitor.latest_audit_id ? (
                           <button
                             type="button"
                             className="audit-link-button"
                             onClick={() =>
-                              openAuditDetail(monitor.latest_audit_id as string)
+                              openAuditDetail(
+                                monitor.latest_audit_id as string,
+                              )
                             }
                           >
                             View Audit
                           </button>
-                        ) : (
-                          "N/A"
-                        )}
-                      </td>
-                      <td>
-                        <div className="saved-monitor-actions">
-                          <button
-                            type="button"
-                            onClick={() => void handleRunCheck(monitor.id)}
-                            disabled={runningMonitorId === monitor.id}
-                          >
-                            {runningMonitorId === monitor.id
-                              ? "Running..."
-                              : "Run Check"}
-                          </button>
+                        ) : null}
+                      </div>
 
-                          <button
-                            type="button"
-                            className="danger-button"
-                            onClick={() => void handleDelete(monitor.id)}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                      <div className="saved-monitor-run-history saved-monitor-run-history-cards">
+                        {runs.length === 0 ? (
+                          <span className="saved-monitor-muted-inline">
+                            No manual run history yet.
+                          </span>
+                        ) : (
+                          runs.slice(0, 3).map((run) => (
+                            <div
+                              className="saved-monitor-run-item"
+                              key={run.run_id}
+                            >
+                              <div>
+                                <strong>{formatDate(run.created_at)}</strong>
+                                <span>
+                                  {moduleLabels[run.module]} · {run.status}
+                                </span>
+                              </div>
+                              <div>
+                                <span>
+                                  Records{" "}
+                                  {formatNullableNumber(run.record_count)}
+                                </span>
+                                <span>{formatScore(run)}</span>
+                              </div>
+                              {run.audit_id ? (
+                                <button
+                                  type="button"
+                                  className="audit-link-button"
+                                  onClick={() =>
+                                    openAuditDetail(run.audit_id as string)
+                                  }
+                                >
+                                  View run audit
+                                </button>
+                              ) : null}
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </section>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         )}
       </div>
@@ -589,8 +616,8 @@ export default function SavedMonitorsPage() {
         run checks, Supabase persistence, latest/previous result comparison, run
         history, change indicators, duplicate prevention, audit linking,
         deterministic AI monitor insights, and backend scheduler-lock protection.
-        Production Cron, alert notifications,
-        and public scheduling UI are not enabled yet.
+        Production Cron, alert notifications, and public scheduling UI are not
+        enabled yet.
       </div>
     </section>
   );
