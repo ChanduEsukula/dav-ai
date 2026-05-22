@@ -146,7 +146,7 @@ describe('SavedMonitorsPage', () => {
       expectTextContent(/Previous:\s*3/i)
       expect(screen.getByText('Score +6')).toBeInTheDocument()
       expect(screen.getByText('Records +2')).toBeInTheDocument()
-      expect(screen.getByText('AI Monitor Insight')).toBeInTheDocument()
+      expect(screen.getByText('Monitor Insight')).toBeInTheDocument()
       expect(screen.getByText('Stable')).toBeInTheDocument()
       expect(screen.getByText('Stable public-data activity')).toBeInTheDocument()
       expect(screen.getByText('monitor-insight-v0.1')).toBeInTheDocument()

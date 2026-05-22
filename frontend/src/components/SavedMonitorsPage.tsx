@@ -318,12 +318,12 @@ export default function SavedMonitorsPage() {
   return (
     <section className="saved-monitors-page" aria-labelledby="saved-monitors-title">
       <div className="saved-monitors-hero">
-        <p className="eyebrow">Saved Monitors v2.6</p>
+        <p className="eyebrow">Saved Monitors</p>
         <h1 id="saved-monitors-title">Saved Monitors</h1>
         <p>
-          Save repeatable RecallRadar or DrugSignal searches, run checks
-          manually, compare latest and previous results, review run history, and
-          open related audit events for traceability.
+          Save repeatable RecallRadar or DrugSignal searches, run checks manually,
+          compare changes over time, and review deterministic monitor insights
+          based on stored public-data history.
         </p>
       </div>
 
@@ -487,7 +487,7 @@ export default function SavedMonitorsPage() {
                   <div className="saved-monitor-card-body">
                     <section className="saved-monitor-card-section">
                       <div className="saved-monitor-section-heading">
-                        <h4>AI Monitor Insight</h4>
+                        <h4>Monitor Insight</h4>
                         {insight ? (
                           <span
                             className={`change-pill change-pill-${insightTone}`}
@@ -535,7 +535,7 @@ export default function SavedMonitorsPage() {
                           </div>
 
                           <small className="monitor-insight-limitation">
-                            {insight.limitation}
+                            Based only on stored Dav AI public-data monitor history. Not medical advice or proof of causality.
                           </small>
                         </div>
                       ) : (
@@ -615,7 +615,7 @@ export default function SavedMonitorsPage() {
         <strong>Current scope:</strong> Saved Monitors currently support manual
         run checks, Supabase persistence, latest/previous result comparison, run
         history, change indicators, duplicate prevention, audit linking,
-        deterministic AI monitor insights, and backend scheduler-lock protection.
+        deterministic monitor insights, and backend scheduler-lock protection.
         Production Cron, alert notifications, and public scheduling UI are not
         enabled yet.
       </div>
