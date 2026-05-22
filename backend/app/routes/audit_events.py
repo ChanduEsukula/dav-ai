@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Query, Request
 
 from app.db.audit_repository import get_audit_event_by_id, list_audit_events
+from app.db.source_pull_repository import get_source_pull_by_audit_id
 from app.schemas.audit_history import (
     AuditHistoryDetailResponse,
     AuditHistoryItem,
     AuditHistoryListResponse,
 )
+from app.schemas.source_pulls import SourcePullProvenanceItem, SourcePullProvenanceResponse
 
 router = APIRouter(prefix="/api/v1/audit-events")
 
@@ -38,6 +40,15 @@ def _get_audit_event_by_id_with_request_id(audit_id: str, request_id: str | None
         if "request_id" not in str(exc):
             raise
         return get_audit_event_by_id(audit_id=audit_id)
+
+
+def _get_source_pull_by_audit_id_with_request_id(audit_id: str, request_id: str | None):
+    try:
+        return get_source_pull_by_audit_id(audit_id=audit_id, request_id=request_id)
+    except TypeError as exc:
+        if "request_id" not in str(exc):
+            raise
+        return get_source_pull_by_audit_id(audit_id=audit_id)
 
 
 @router.get("/", response_model=AuditHistoryListResponse)
@@ -119,3 +130,51 @@ def get_audit_event(request: Request, audit_id: str) -> AuditHistoryDetailRespon
         item=AuditHistoryItem(**row),
         message=None,
     )
+
+@router.get("/{audit_id}/source-pull", response_model=SourcePullProvenanceResponse)
+def get_audit_event_source_pull(
+    request: Request,
+    audit_id: str,
+) -> SourcePullProvenanceResponse:
+    """Return metadata-only source-pull provenance for an audit event.
+
+    Raw public-source payloads are intentionally not returned by this endpoint.
+    """
+
+    request_id = getattr(request.state, "request_id", None)
+    persistence_status, row = _get_source_pull_by_audit_id_with_request_id(
+        audit_id=audit_id,
+        request_id=request_id,
+    )
+
+    if persistence_status == "skipped":
+        return SourcePullProvenanceResponse(
+            status="skipped",
+            persistence_available=False,
+            item=None,
+            message="Source-pull persistence is not configured.",
+        )
+
+    if persistence_status == "error":
+        return SourcePullProvenanceResponse(
+            status="error",
+            persistence_available=False,
+            item=None,
+            message="Source-pull provenance could not be read.",
+        )
+
+    if row is None:
+        return SourcePullProvenanceResponse(
+            status="not_found",
+            persistence_available=True,
+            item=None,
+            message="No source pull found for this audit_id.",
+        )
+
+    return SourcePullProvenanceResponse(
+        status="ok",
+        persistence_available=True,
+        item=SourcePullProvenanceItem(**row),
+        message=None,
+    )
+
