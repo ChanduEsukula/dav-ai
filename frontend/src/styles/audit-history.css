@@ -498,3 +498,19 @@
     grid-template-columns: 1fr;
   }
 }
+
+.audit-provenance-copy-button {
+  width: 100%;
+  margin: 10px 0 16px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 123, 135, 0.22);
+  background: rgba(0, 123, 135, 0.08);
+  color: var(--deep-teal);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.audit-provenance-copy-button:hover {
+  background: rgba(0, 123, 135, 0.14);
+}
