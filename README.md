@@ -6,6 +6,19 @@ MedTrek AI is a full-stack healthcare public-data safety intelligence prototype.
 
 This project is an MVP and portfolio-grade engineering prototype. It is not a medical device, not clinical decision support, and not a replacement for official FDA, CDC, clinician, pharmacist, or emergency guidance.
 
+## Engineering Highlights
+
+MedTrek AI is designed as a public-data healthcare safety intelligence platform with an emphasis on traceability, reproducibility, and operational transparency.
+
+- Audit-backed source freshness for registered public FDA/openFDA data sources.
+- Operational visibility through Data Sources freshness indicators and System Status source-freshness summaries.
+- Reproducible source pulls with persisted `source_pulls` records, raw public-source snapshots, and stable SHA-256 payload hashing.
+- Audit-linked traceability from API response to audit event to source pull to raw public openFDA payload.
+- Safety/privacy boundary limited to public FDA/openFDA data only; MedTrek AI does not use PHI, private medical history, diagnoses, insurance information, prescription history, addresses, or private user records.
+- Tested full-stack workflow covering backend behavior, frontend surfaces, production build checks, CI, and manual deployment smoke verification.
+
+MedTrek AI is not medical advice or clinical decision support.
+
 ---
 
 ## Recent Milestone: Saved Monitors v2.6 Scheduler Locking and Test Isolation
