@@ -34,6 +34,34 @@ export interface SavedMonitorRun {
   error_message: string | null
 }
 
+export type MonitorInsightLabel =
+  | 'insufficient_history'
+  | 'stable'
+  | 'increased'
+  | 'decreased'
+  | 'notable_increase'
+  | 'notable_decrease'
+  | 'source_warning'
+
+export interface MonitorInsight {
+  monitor_id: string
+  label: MonitorInsightLabel
+  headline: string
+  explanation: string
+  latest_run_id: string | null
+  previous_run_id: string | null
+  latest_record_count: number | null
+  previous_record_count: number | null
+  record_count_delta: number | null
+  percent_change: number | null
+  latest_score: number | null
+  previous_score: number | null
+  score_delta: number | null
+  confidence: string
+  insight_version: string
+  limitation: string
+}
+
 export interface CreateSavedMonitorPayload {
   name: string
   query: string
@@ -71,6 +99,15 @@ export async function listSavedMonitorRuns(
 ): Promise<SavedMonitorRun[]> {
   const response = await apiClient.get<SavedMonitorRun[]>(
     `/api/v1/saved-monitors/${monitorId}/runs`,
+  )
+  return response.data
+}
+
+export async function getSavedMonitorInsight(
+  monitorId: string,
+): Promise<MonitorInsight> {
+  const response = await apiClient.get<MonitorInsight>(
+    `/api/v1/saved-monitors/${monitorId}/insights`,
   )
   return response.data
 }

@@ -4,12 +4,14 @@ import type { FormEvent } from "react";
 import {
   createSavedMonitor,
   deleteSavedMonitor,
+  getSavedMonitorInsight,
   listSavedMonitorRuns,
   listSavedMonitors,
   runSavedMonitor,
 } from "../api/savedMonitors";
 import type {
   CreateSavedMonitorPayload,
+  MonitorInsight,
   SavedMonitor,
   SavedMonitorModule,
   SavedMonitorRun,
@@ -34,6 +36,29 @@ function formatDate(value: string | null): string {
 
 function formatNullableNumber(value: number | null): string {
   return value === null ? "N/A" : String(value);
+}
+
+function formatNullablePercent(value: number | null): string {
+  return value === null ? "N/A" : `${value}%`;
+}
+
+function formatInsightLabel(label: string): string {
+  return label
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function getInsightTone(label: string): "neutral" | "up" | "down" {
+  if (label.includes("increase")) {
+    return "up";
+  }
+
+  if (label.includes("decrease") || label === "source_warning") {
+    return "down";
+  }
+
+  return "neutral";
 }
 
 function formatScore(run: SavedMonitorRun): string {
@@ -132,6 +157,9 @@ export default function SavedMonitorsPage() {
   const [runHistoryByMonitor, setRunHistoryByMonitor] = useState<
     Record<string, SavedMonitorRun[]>
   >({});
+  const [insightsByMonitor, setInsightsByMonitor] = useState<
+    Record<string, MonitorInsight | null>
+  >({});
 
   async function loadRunHistoryForMonitor(monitorId: string) {
     try {
@@ -148,8 +176,27 @@ export default function SavedMonitorsPage() {
     }
   }
 
+  async function loadInsightForMonitor(monitorId: string) {
+    try {
+      const insight = await getSavedMonitorInsight(monitorId);
+      setInsightsByMonitor((current) => ({
+        ...current,
+        [monitorId]: insight,
+      }));
+    } catch {
+      setInsightsByMonitor((current) => ({
+        ...current,
+        [monitorId]: null,
+      }));
+    }
+  }
+
   async function loadRunHistoryForMonitors(items: SavedMonitor[]) {
     await Promise.all(items.map((monitor) => loadRunHistoryForMonitor(monitor.id)));
+  }
+
+  async function loadInsightsForMonitors(items: SavedMonitor[]) {
+    await Promise.all(items.map((monitor) => loadInsightForMonitor(monitor.id)));
   }
 
   async function loadMonitors() {
@@ -159,7 +206,10 @@ export default function SavedMonitorsPage() {
     try {
       const data = await listSavedMonitors();
       setMonitors(data);
-      await loadRunHistoryForMonitors(data);
+      await Promise.all([
+        loadRunHistoryForMonitors(data),
+        loadInsightsForMonitors(data),
+      ]);
     } catch {
       setErrorMessage("Unable to load saved monitors.");
     } finally {
@@ -197,6 +247,7 @@ export default function SavedMonitorsPage() {
         ...current,
         [created.id]: [],
       }));
+      await loadInsightForMonitor(created.id);
       setName("");
       setQuery("");
       setModule("recallradar");
@@ -228,6 +279,11 @@ export default function SavedMonitorsPage() {
         delete next[monitorId];
         return next;
       });
+      setInsightsByMonitor((current) => {
+        const next = { ...current };
+        delete next[monitorId];
+        return next;
+      });
     } catch {
       setErrorMessage("Unable to delete saved monitor.");
     }
@@ -244,10 +300,16 @@ export default function SavedMonitorsPage() {
           monitor.id === monitorId ? updated : monitor,
         ),
       );
-      await loadRunHistoryForMonitor(monitorId);
+      await Promise.all([
+        loadRunHistoryForMonitor(monitorId),
+        loadInsightForMonitor(monitorId),
+      ]);
     } catch {
       setErrorMessage("Unable to run saved monitor check.");
-      await loadRunHistoryForMonitor(monitorId);
+      await Promise.all([
+        loadRunHistoryForMonitor(monitorId),
+        loadInsightForMonitor(monitorId),
+      ]);
     } finally {
       setRunningMonitorId(null);
     }
@@ -340,6 +402,7 @@ export default function SavedMonitorsPage() {
                   <th>Records</th>
                   <th>Previous records</th>
                   <th>Change</th>
+                  <th>AI insight</th>
                   <th>Recent manual runs</th>
                   <th>Last checked</th>
                   <th>Latest audit</th>
@@ -356,6 +419,10 @@ export default function SavedMonitorsPage() {
                     monitor.latest_record_count,
                     monitor.previous_record_count,
                   );
+                  const insight = insightsByMonitor[monitor.id];
+                  const insightTone = insight
+                    ? getInsightTone(insight.label)
+                    : "neutral";
 
                   return (
                     <tr key={monitor.id}>
@@ -384,6 +451,50 @@ export default function SavedMonitorsPage() {
                             )}
                           </span>
                         </div>
+                      </td>
+                      <td>
+                        {insight ? (
+                          <div className="monitor-insight-card">
+                            <div className="monitor-insight-card-top">
+                              <span
+                                className={`change-pill change-pill-${insightTone}`}
+                              >
+                                {formatInsightLabel(insight.label)}
+                              </span>
+                              <small>{insight.insight_version}</small>
+                            </div>
+                            <strong>{insight.headline}</strong>
+                            <p>{insight.explanation}</p>
+                            <div className="monitor-insight-grid">
+                              <span>
+                                Latest records:{" "}
+                                {formatNullableNumber(insight.latest_record_count)}
+                              </span>
+                              <span>
+                                Previous records:{" "}
+                                {formatNullableNumber(insight.previous_record_count)}
+                              </span>
+                              <span>
+                                Delta:{" "}
+                                {insight.record_count_delta === null
+                                  ? "N/A"
+                                  : formatSignedChange(insight.record_count_delta)}
+                              </span>
+                              <span>
+                                Change:{" "}
+                                {formatNullablePercent(insight.percent_change)}
+                              </span>
+                              <span>Confidence: {insight.confidence}</span>
+                            </div>
+                            <small className="monitor-insight-limitation">
+                              {insight.limitation}
+                            </small>
+                          </div>
+                        ) : (
+                          <span className="saved-monitor-muted-inline">
+                            Insight unavailable.
+                          </span>
+                        )}
                       </td>
                       <td>
                         <div className="saved-monitor-run-history">
@@ -476,8 +587,9 @@ export default function SavedMonitorsPage() {
       <div className="saved-monitor-note">
         <strong>Current scope:</strong> Saved Monitors currently support manual
         run checks, Supabase persistence, latest/previous result comparison, run
-        history, change indicators, duplicate prevention, audit linking, and
-        backend scheduler-lock protection. Production Cron, alert notifications,
+        history, change indicators, duplicate prevention, audit linking,
+        deterministic AI monitor insights, and backend scheduler-lock protection.
+        Production Cron, alert notifications,
         and public scheduling UI are not enabled yet.
       </div>
     </section>
