@@ -235,3 +235,116 @@ def test_list_audit_events_passes_filter_params_to_repository(monkeypatch):
     assert captured_filters["upstream_status"] == "success"
     assert captured_filters["search_text"] == "eye"
     assert captured_filters["request_id"] is not None
+
+
+def sample_source_pull() -> dict:
+    return {
+        "pull_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+        "audit_id": "123e4567-e89b-12d3-a456-426614174000",
+        "source_id": "openfda_drug_enforcement",
+        "source_name": "openFDA Drug Enforcement",
+        "endpoint": "https://api.fda.gov/drug/enforcement.json",
+        "query": "eye drops",
+        "query_params": {"search": "product_description:eye drops", "limit": 5},
+        "retrieval_timestamp": "2026-05-05T12:00:00Z",
+        "upstream_status": "success",
+        "record_count": 2,
+        "payload_hash": "a" * 64,
+        "transform_version": "recall-transform-v1",
+        "created_at": "2026-05-05T12:00:01Z",
+        "snapshot_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+    }
+
+
+def test_get_audit_event_source_pull_returns_metadata_without_raw_payload(monkeypatch):
+    def fake_get_source_pull_by_audit_id(audit_id: str, request_id: str | None = None):
+        assert audit_id == "123e4567-e89b-12d3-a456-426614174000"
+        assert request_id is not None
+        row = sample_source_pull()
+        row["raw_payload"] = {"results": [{"secret": "should-not-leak"}]}
+        return "saved", row
+
+    monkeypatch.setattr(
+        "app.routes.audit_events.get_source_pull_by_audit_id",
+        fake_get_source_pull_by_audit_id,
+    )
+
+    response = client.get(
+        "/api/v1/audit-events/123e4567-e89b-12d3-a456-426614174000/source-pull"
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["status"] == "ok"
+    assert data["persistence_available"] is True
+    assert data["message"] is None
+    assert data["item"]["audit_id"] == "123e4567-e89b-12d3-a456-426614174000"
+    assert data["item"]["pull_id"] == "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+    assert data["item"]["snapshot_id"] == "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+    assert data["item"]["payload_hash"] == "a" * 64
+    assert "raw_payload" not in data["item"]
+
+
+def test_get_audit_event_source_pull_returns_not_found(monkeypatch):
+    def fake_get_source_pull_by_audit_id(audit_id: str, request_id: str | None = None):
+        return "saved", None
+
+    monkeypatch.setattr(
+        "app.routes.audit_events.get_source_pull_by_audit_id",
+        fake_get_source_pull_by_audit_id,
+    )
+
+    response = client.get("/api/v1/audit-events/missing-audit-id/source-pull")
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["status"] == "not_found"
+    assert data["persistence_available"] is True
+    assert data["item"] is None
+    assert data["message"] == "No source pull found for this audit_id."
+
+
+def test_get_audit_event_source_pull_returns_skipped_when_persistence_unavailable(monkeypatch):
+    def fake_get_source_pull_by_audit_id(audit_id: str, request_id: str | None = None):
+        return "skipped", None
+
+    monkeypatch.setattr(
+        "app.routes.audit_events.get_source_pull_by_audit_id",
+        fake_get_source_pull_by_audit_id,
+    )
+
+    response = client.get(
+        "/api/v1/audit-events/123e4567-e89b-12d3-a456-426614174000/source-pull"
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["status"] == "skipped"
+    assert data["persistence_available"] is False
+    assert data["item"] is None
+    assert data["message"] == "Source-pull persistence is not configured."
+
+
+def test_get_audit_event_source_pull_returns_error_when_read_fails(monkeypatch):
+    def fake_get_source_pull_by_audit_id(audit_id: str, request_id: str | None = None):
+        return "error", None
+
+    monkeypatch.setattr(
+        "app.routes.audit_events.get_source_pull_by_audit_id",
+        fake_get_source_pull_by_audit_id,
+    )
+
+    response = client.get(
+        "/api/v1/audit-events/123e4567-e89b-12d3-a456-426614174000/source-pull"
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["status"] == "error"
+    assert data["persistence_available"] is False
+    assert data["item"] is None
+    assert data["message"] == "Source-pull provenance could not be read."

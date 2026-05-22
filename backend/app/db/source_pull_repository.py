@@ -206,3 +206,79 @@ def save_source_pull_with_snapshot(
             "snapshot_id": None,
             "payload_hash": payload_hash,
         }
+
+
+def get_source_pull_by_audit_id(
+    *,
+    audit_id: str,
+    request_id: str | None = None,
+) -> tuple[str, dict[str, Any] | None]:
+    """
+    Return metadata-only source pull provenance for one audit event.
+
+    Status values:
+    - saved: database read succeeded
+    - skipped: DATABASE_URL is not configured
+    - error: persistence read failed
+
+    This intentionally does not return raw_source_snapshots.raw_payload.
+    """
+
+    database_url = get_database_url()
+
+    if not database_url:
+        logger.info(
+            "source_pull_read_skipped",
+            extra={
+                "event": "source_pull_read_skipped",
+                "request_id": request_id,
+                "audit_id": audit_id,
+                "reason": "database_not_configured",
+            },
+        )
+        return "skipped", None
+
+    try:
+        with psycopg.connect(database_url, row_factory=dict_row) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    select
+                        sp.pull_id::text as pull_id,
+                        sp.audit_id::text as audit_id,
+                        sp.source_id,
+                        sp.source_name,
+                        sp.endpoint,
+                        sp.query,
+                        sp.query_params,
+                        sp.retrieval_timestamp::text as retrieval_timestamp,
+                        sp.upstream_status,
+                        sp.record_count,
+                        sp.payload_hash,
+                        sp.transform_version,
+                        sp.created_at::text as created_at,
+                        rss.snapshot_id::text as snapshot_id
+                    from source_pulls sp
+                    left join raw_source_snapshots rss
+                        on rss.pull_id = sp.pull_id
+                    where sp.audit_id = %(audit_id)s
+                    order by sp.created_at desc
+                    limit 1
+                    """,
+                    {"audit_id": audit_id},
+                )
+                row = cursor.fetchone()
+
+        return "saved", row
+
+    except Exception:
+        logger.exception(
+            "source_pull_read_failed",
+            extra={
+                "event": "source_pull_read_failed",
+                "request_id": request_id,
+                "audit_id": audit_id,
+                "error_category": "source_pull_read_failed",
+            },
+        )
+        return "error", None
