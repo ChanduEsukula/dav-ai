@@ -32,6 +32,30 @@ export type AuditHistoryDetailResponse = {
   message: string | null
 }
 
+export type SourcePullProvenanceItem = {
+  pull_id: string
+  audit_id: string
+  source_id: string | null
+  source_name: string | null
+  endpoint: string | null
+  query: string | null
+  query_params: Record<string, unknown> | null
+  retrieval_timestamp: string | null
+  upstream_status: string | null
+  record_count: number | null
+  payload_hash: string
+  transform_version: string | null
+  created_at: string | null
+  snapshot_id: string | null
+}
+
+export type SourcePullProvenanceResponse = {
+  status: string
+  persistence_available: boolean
+  item: SourcePullProvenanceItem | null
+  message: string | null
+}
+
 export type AuditHistoryFilters = {
   module?: string
   upstreamStatus?: string
@@ -62,6 +86,16 @@ export async function getAuditEventById(
 ): Promise<AuditHistoryDetailResponse> {
   const response = await apiClient.get<AuditHistoryDetailResponse>(
     `/api/v1/audit-events/${auditId}`,
+  )
+
+  return response.data
+}
+
+export async function getAuditEventSourcePull(
+  auditId: string,
+): Promise<SourcePullProvenanceResponse> {
+  const response = await apiClient.get<SourcePullProvenanceResponse>(
+    `/api/v1/audit-events/${auditId}/source-pull`,
   )
 
   return response.data

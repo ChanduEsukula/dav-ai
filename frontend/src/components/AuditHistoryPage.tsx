@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import {
+  getAuditEventSourcePull,
   getAuditEvents,
   type AuditHistoryItem,
+  type SourcePullProvenanceItem,
 } from '../api/auditEvents'
 
 type ModuleFilter = 'all' | 'RecallRadar' | 'DrugSignal'
@@ -18,8 +20,8 @@ function formatTimestamp(value: string) {
   }
 }
 
-function formatQueryParams(params: Record<string, unknown>) {
-  return JSON.stringify(params, null, 2)
+function formatQueryParams(params: Record<string, unknown> | null) {
+  return JSON.stringify(params ?? {}, null, 2)
 }
 
 function escapeCsvValue(value: string | number | null | undefined) {
@@ -132,6 +134,9 @@ export default function AuditHistoryPage() {
   const [appliedStatusFilter, setAppliedStatusFilter] = useState<StatusFilter>('all')
   const [appliedSearchText, setAppliedSearchText] = useState('')
   const [copyMessage, setCopyMessage] = useState('')
+  const [sourcePull, setSourcePull] = useState<SourcePullProvenanceItem | null>(null)
+  const [sourcePullStatus, setSourcePullStatus] = useState<string>('idle')
+  const [sourcePullMessage, setSourcePullMessage] = useState('')
 
   const appliedFilterSummary = buildAppliedFilterSummary(
     appliedModuleFilter,
@@ -194,6 +199,44 @@ export default function AuditHistoryPage() {
       isMounted = false
     }
   }, [appliedModuleFilter, appliedSearchText, appliedStatusFilter])
+
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadSourcePullProvenance() {
+      if (!selectedItem) {
+        setSourcePull(null)
+        setSourcePullStatus('idle')
+        setSourcePullMessage('')
+        return
+      }
+
+      setSourcePullStatus('loading')
+      setSourcePullMessage('')
+
+      try {
+        const response = await getAuditEventSourcePull(selectedItem.audit_id)
+
+        if (!isMounted) return
+
+        setSourcePullStatus(response.status)
+        setSourcePull(response.item)
+        setSourcePullMessage(response.message ?? '')
+      } catch {
+        if (!isMounted) return
+
+        setSourcePullStatus('error')
+        setSourcePull(null)
+        setSourcePullMessage('Source-pull provenance API is unavailable.')
+      }
+    }
+
+    void loadSourcePullProvenance()
+
+    return () => {
+      isMounted = false
+    }
+  }, [selectedItem])
 
   function applyFilters() {
     setAppliedModuleFilter(draftModuleFilter)
@@ -500,6 +543,86 @@ export default function AuditHistoryPage() {
                 <div className="audit-query-params">
                   <h4>Query parameters</h4>
                   <pre>{formatQueryParams(selectedItem.query_params)}</pre>
+                </div>
+
+                <div className="audit-source-pull-card">
+                  <div className="audit-source-pull-header">
+                    <div>
+                      <p className="eyebrow">Provenance</p>
+                      <h4>Source Pull Provenance</h4>
+                    </div>
+                    <span className={`audit-status audit-status-${sourcePullStatus}`}>
+                      {sourcePullStatus}
+                    </span>
+                  </div>
+
+                  {sourcePullStatus === 'loading' && (
+                    <p className="muted-text">Loading source-pull provenance...</p>
+                  )}
+
+                  {sourcePullMessage && sourcePullStatus !== 'ok' && (
+                    <p className="muted-text">{sourcePullMessage}</p>
+                  )}
+
+                  {sourcePull && (
+                    <>
+                      <p className="audit-source-pull-note">
+                        Metadata-only provenance for this audit event. Raw public-source
+                        payloads are not exposed in the UI.
+                      </p>
+
+                      <dl className="audit-source-pull-grid">
+                        <div>
+                          <dt>Pull ID</dt>
+                          <dd>{sourcePull.pull_id}</dd>
+                        </div>
+
+                        <div>
+                          <dt>Snapshot ID</dt>
+                          <dd>{sourcePull.snapshot_id ?? 'N/A'}</dd>
+                        </div>
+
+                        <div>
+                          <dt>Payload hash</dt>
+                          <dd>{sourcePull.payload_hash}</dd>
+                        </div>
+
+                        <div>
+                          <dt>Source</dt>
+                          <dd>{sourcePull.source_name ?? 'N/A'}</dd>
+                        </div>
+
+                        <div>
+                          <dt>Endpoint</dt>
+                          <dd>{sourcePull.endpoint ?? 'N/A'}</dd>
+                        </div>
+
+                        <div>
+                          <dt>Record count</dt>
+                          <dd>{sourcePull.record_count ?? 'N/A'}</dd>
+                        </div>
+
+                        <div>
+                          <dt>Transform version</dt>
+                          <dd>{sourcePull.transform_version ?? 'N/A'}</dd>
+                        </div>
+
+                        <div>
+                          <dt>Retrieved</dt>
+                          <dd>
+                            {sourcePull.retrieval_timestamp
+                              ? formatTimestamp(sourcePull.retrieval_timestamp)
+                              : 'N/A'}
+                          </dd>
+                        </div>
+                      </dl>
+
+                      <div className="audit-query-params">
+                        <h4>Source pull query parameters</h4>
+                        <pre>{formatQueryParams(sourcePull.query_params)}</pre>
+                      </div>
+                    </>
+                  )}
                 </div>
               </aside>
             )}
