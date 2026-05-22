@@ -199,3 +199,50 @@ create table if not exists scheduler_locks (
 
 create index if not exists idx_scheduler_locks_locked_until
     on scheduler_locks(locked_until);
+-- Source Pulls and Raw Source Snapshots v2.5
+-- Stores reproducible public-source retrieval records and raw openFDA payloads.
+-- This stores public API payloads only; no PHI or user medical history should be stored.
+
+create table if not exists source_pulls (
+    pull_id uuid primary key,
+    audit_id uuid references audit_events(audit_id) on delete set null,
+    source_id text not null references source_registry(source_id),
+    source_name text not null,
+    endpoint text not null,
+    query text not null,
+    query_params jsonb not null default '{}'::jsonb,
+    retrieval_timestamp timestamptz not null,
+    upstream_status text not null,
+    record_count integer not null default 0,
+    payload_hash text not null,
+    transform_version text not null,
+    created_at timestamptz not null default now(),
+
+    constraint source_pulls_upstream_status_check
+        check (upstream_status in ('success', 'empty', 'error')),
+
+    constraint source_pulls_record_count_check
+        check (record_count >= 0)
+);
+
+create table if not exists raw_source_snapshots (
+    snapshot_id uuid primary key,
+    pull_id uuid not null references source_pulls(pull_id) on delete cascade,
+    raw_payload jsonb not null,
+    created_at timestamptz not null default now()
+);
+
+create index if not exists idx_source_pulls_audit_id
+    on source_pulls(audit_id);
+
+create index if not exists idx_source_pulls_source_id_created_at
+    on source_pulls(source_id, created_at desc);
+
+create index if not exists idx_source_pulls_upstream_status
+    on source_pulls(upstream_status);
+
+create index if not exists idx_source_pulls_payload_hash
+    on source_pulls(payload_hash);
+
+create index if not exists idx_raw_source_snapshots_pull_id
+    on raw_source_snapshots(pull_id);

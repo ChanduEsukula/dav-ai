@@ -3,6 +3,7 @@ from typing import Any
 
 from app.audit.audit_event import build_audit_event
 from app.db.audit_repository import save_audit_event
+from app.db.source_pull_repository import save_source_pull_with_snapshot
 from app.scoring.recall_score import calculate_recall_risk_score
 from app.services.openfda_client import OpenFDAClient
 from app.sources.registry import OPENFDA_DRUG_ENFORCEMENT
@@ -34,6 +35,27 @@ def _save_audit_event_with_request_id(audit_event, request_id: str | None):
         if "request_id" not in str(exc):
             raise
         return save_audit_event(audit_event)
+
+
+def _save_source_pull_with_request_id(
+    *,
+    audit_event: dict[str, Any],
+    raw_payload: dict[str, Any],
+    request_id: str | None,
+):
+    try:
+        return save_source_pull_with_snapshot(
+            audit_event=audit_event,
+            raw_payload=raw_payload,
+            request_id=request_id,
+        )
+    except TypeError as exc:
+        if "request_id" not in str(exc):
+            raise
+        return save_source_pull_with_snapshot(
+            audit_event=audit_event,
+            raw_payload=raw_payload,
+        )
 
 
 def _persist_recall_error_audit(
@@ -76,7 +98,8 @@ async def execute_recall_search(
 
     This shared workflow is used by both the RecallRadar API route and
     Saved Monitors manual runs. It fetches openFDA recall data, normalizes
-    results, calculates review-priority scores, and persists audit metadata.
+    results, calculates review-priority scores, persists audit metadata, and
+    attempts to store a reproducible public-source pull snapshot.
     """
 
     try:
@@ -128,6 +151,12 @@ async def execute_recall_search(
 
         _save_audit_event_with_request_id(audit_event, request_id=request_id)
 
+        source_pull_result = _save_source_pull_with_request_id(
+            audit_event=audit_event,
+            raw_payload=payload["raw"],
+            request_id=request_id,
+        )
+
         return {
             "query": query,
             "count": len(normalized_results),
@@ -144,6 +173,9 @@ async def execute_recall_search(
                 "upstream_status": audit_event["upstream_status"],
                 "record_count": audit_event["record_count"],
                 "transform_version": audit_event["transform_version"],
+                "source_snapshot_status": source_pull_result["status"],
+                "source_pull_id": source_pull_result["pull_id"],
+                "source_payload_hash": source_pull_result["payload_hash"],
             },
             "results": normalized_results,
         }
