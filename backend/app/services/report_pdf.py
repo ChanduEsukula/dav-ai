@@ -85,7 +85,7 @@ def _safe_filename_part(value: str) -> str:
 
 
 def build_report_filename(query: str) -> str:
-    return f"medtrek-safety-report-{_safe_filename_part(query)}.pdf"
+    return f"dav-ai-safety-report-{_safe_filename_part(query)}.pdf"
 
 
 def _style(

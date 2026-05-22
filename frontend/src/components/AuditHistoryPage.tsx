@@ -225,7 +225,7 @@ export default function AuditHistoryPage() {
     const link = document.createElement('a')
 
     link.href = url
-    link.download = `medtrek-audit-history-${new Date().toISOString().slice(0, 10)}.csv`
+    link.download = `dav-ai-audit-history-${new Date().toISOString().slice(0, 10)}.csv`
     document.body.appendChild(link)
     link.click()
     link.remove()

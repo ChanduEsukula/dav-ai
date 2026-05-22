@@ -35,7 +35,7 @@ def test_save_audit_event_skips_when_database_missing(monkeypatch):
 def test_save_audit_event_returns_saved_when_insert_succeeds(monkeypatch):
     monkeypatch.setenv(
         "DATABASE_URL",
-        "postgresql://user:password@localhost:5432/medsignal",
+        "postgresql://user:password@localhost:5432/dav_ai",
     )
 
     class MockCursor:
@@ -76,7 +76,7 @@ def test_save_audit_event_returns_saved_when_insert_succeeds(monkeypatch):
 def test_save_audit_event_fails_softly_when_insert_fails(monkeypatch):
     monkeypatch.setenv(
         "DATABASE_URL",
-        "postgresql://user:password@localhost:5432/medsignal",
+        "postgresql://user:password@localhost:5432/dav_ai",
     )
 
     def mock_connect(*args, **kwargs):
