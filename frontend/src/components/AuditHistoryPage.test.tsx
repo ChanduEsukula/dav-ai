@@ -208,6 +208,67 @@ describe('AuditHistoryPage', () => {
     expect(screen.queryByText(/raw_payload/i)).not.toBeInTheDocument()
   })
 
+
+  test('copies provenance summary from the source pull card', async () => {
+    const writeText = vi.fn()
+
+    Object.assign(navigator, {
+      clipboard: {
+        writeText,
+      },
+    })
+
+    mockedGetAuditEvents.mockResolvedValue({
+      status: 'ok',
+      persistence_available: true,
+      count: mockAuditItems.length,
+      items: mockAuditItems,
+    })
+
+    mockedGetAuditEventSourcePull.mockResolvedValue({
+      status: 'ok',
+      persistence_available: true,
+      item: {
+        pull_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+        audit_id: '11111111-1111-4111-8111-111111111111',
+        source_id: 'openfda_drug_enforcement',
+        source_name: 'openFDA Drug Enforcement API',
+        endpoint: 'https://api.fda.gov/drug/enforcement.json',
+        query: 'eye drops',
+        query_params: {
+          q: 'eye drops',
+          limit: 5,
+        },
+        retrieval_timestamp: '2026-05-01T10:30:00Z',
+        upstream_status: 'success',
+        record_count: 1,
+        payload_hash: 'a'.repeat(64),
+        transform_version: 'recall-transform-v0.1',
+        created_at: '2026-05-05T00:08:55.761053Z',
+        snapshot_id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+      },
+      message: null,
+    })
+
+    render(<AuditHistoryPage />)
+
+    fireEvent.click(await screen.findByText('Copy provenance summary'))
+
+    expect(writeText).toHaveBeenCalledWith(
+      expect.stringContaining('Dav AI provenance summary'),
+    )
+    expect(writeText).toHaveBeenCalledWith(
+      expect.stringContaining('Audit ID: 11111111-1111-4111-8111-111111111111'),
+    )
+    expect(writeText).toHaveBeenCalledWith(
+      expect.stringContaining('Payload hash: ' + 'a'.repeat(64)),
+    )
+    expect(writeText).toHaveBeenCalledWith(
+      expect.stringContaining('Raw public-source payloads are not exposed in the UI.'),
+    )
+    expect(await screen.findByText('Copied provenance summary')).toBeInTheDocument()
+  })
+
   test('renders source pull provenance not-found message', async () => {
     mockedGetAuditEvents.mockResolvedValue({
       status: 'ok',

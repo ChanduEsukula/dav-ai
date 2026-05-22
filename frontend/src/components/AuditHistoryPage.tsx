@@ -95,6 +95,27 @@ function buildAuditTraceSummary(item: AuditHistoryItem) {
   ].join('\n')
 }
 
+function buildProvenanceSummary(
+  item: AuditHistoryItem,
+  sourcePull: SourcePullProvenanceItem,
+) {
+  return [
+    'Dav AI provenance summary',
+    '',
+    `Audit ID: ${item.audit_id}`,
+    `Module: ${item.module}`,
+    `Query: ${item.query}`,
+    `Source: ${sourcePull.source_name ?? item.source_name}`,
+    `Endpoint: ${sourcePull.endpoint ?? item.endpoint}`,
+    `Records: ${sourcePull.record_count ?? item.record_count}`,
+    `Retrieved: ${sourcePull.retrieval_timestamp ?? item.retrieval_timestamp}`,
+    `Payload hash: ${sourcePull.payload_hash}`,
+    '',
+    'Raw public-source payloads are not exposed in the UI.',
+    'This is public-data traceability only, not medical advice.',
+  ].join('\n')
+}
+
 function buildAppliedFilterSummary(
   moduleFilter: ModuleFilter,
   statusFilter: StatusFilter,
@@ -316,6 +337,14 @@ export default function AuditHistoryPage() {
 
     await navigator.clipboard.writeText(url.toString())
     showCopyMessage('Copied audit link')
+  }
+
+  async function copyProvenanceSummary(
+    item: AuditHistoryItem,
+    sourcePull: SourcePullProvenanceItem,
+  ) {
+    await navigator.clipboard.writeText(buildProvenanceSummary(item, sourcePull))
+    showCopyMessage('Copied provenance summary')
   }
 
 
@@ -584,7 +613,15 @@ export default function AuditHistoryPage() {
                         the UI.
                       </p>
 
-                      <div className="audit-source-pull-summary-grid">
+                      <button
+                      type="button"
+                      className="audit-provenance-copy-button"
+                      onClick={() => copyProvenanceSummary(selectedItem, sourcePull)}
+                    >
+                      Copy provenance summary
+                    </button>
+
+                    <div className="audit-source-pull-summary-grid">
                         <div>
                           <span>Source</span>
                           <strong>{sourcePull.source_name ?? 'N/A'}</strong>
