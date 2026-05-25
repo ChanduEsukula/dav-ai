@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 test('demo navigation exposes implemented modules without account placeholders', async ({ page }) => {
   await page.goto('/')
 
-  await expect(page.getByText('MedTrek AI').first()).toBeVisible()
+  await expect(page.getByText('Dav AI').first()).toBeVisible()
 
   const navItems = ['RecallRadar', 'DrugSignal', 'Sources', 'Audit', 'System', 'Monitors']
 

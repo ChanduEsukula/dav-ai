@@ -1,8 +1,8 @@
-# MedTrek AI Frontend
+# Dav AI Frontend
 
-This is the React + TypeScript + Vite frontend for MedTrek AI.
+This is the React + TypeScript + Vite frontend for Dav AI.
 
-MedTrek AI is a healthcare safety intelligence product prototype that turns public FDA/openFDA recall and adverse-event data into source-aware, auditable safety signals and role-based safety briefings.
+Dav AI is a healthcare safety intelligence product prototype that turns public FDA/openFDA recall and adverse-event data into source-aware, auditable safety signals and role-based safety briefings.
 
 The current frontend supports:
 
@@ -35,7 +35,7 @@ The current frontend supports:
 
 ### Landing Page
 
-The landing page explains the MedTrek AI product idea, public-data safety intelligence focus, and current MVP modules.
+The landing page explains the Dav AI product idea, public-data safety intelligence focus, and current MVP modules.
 
 ### RecallRadar
 
@@ -205,6 +205,6 @@ GitHub Actions also runs frontend tests, lint, and production build on push and 
 
 ## Safety Boundary
 
-MedTrek AI provides public-data safety intelligence only.
+Dav AI provides public-data safety intelligence only.
 
 It is not medical advice, diagnosis, or treatment. Users should consult a qualified healthcare professional for medical decisions.
