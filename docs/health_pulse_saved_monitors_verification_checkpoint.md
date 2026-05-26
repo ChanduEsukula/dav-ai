@@ -26,18 +26,10 @@ Regional Health Pulse now includes:
 
 ## Verification Results
 
-- Backend tests: 120 passed, 1 warning.
+- Backend tests: 120 passed.
 - Frontend tests: 61 passed.
 - Frontend lint: passed.
 - Frontend production build: passed.
-
-## Known Non-Blocking Warning
-
-Backend test run currently reports one deprecation warning:
-
-HTTP_422_UNPROCESSABLE_ENTITY is deprecated. Use HTTP_422_UNPROCESSABLE_CONTENT instead.
-
-This warning is non-blocking and does not affect the verified Health Pulse functionality. It can be cleaned up in a small future maintenance commit.
 
 ## Engineering Assessment
 
@@ -51,8 +43,8 @@ Regional Health Pulse now follows the same product and engineering pattern as Re
 
 ## Next Recommended Steps
 
-1. Replace deprecated FastAPI status constant.
-2. Add Health Pulse source freshness status.
-3. Research real public CDC/HHS datasets for a future connector spike.
-4. Add manual verification docs for Health Pulse demo workflows.
-5. Add Health Pulse to interview/demo talking points.
+1. Add Health Pulse source freshness status.
+2. Research real public CDC/HHS datasets for a future connector spike.
+3. Add manual verification docs for Health Pulse demo workflows.
+4. Add Health Pulse to interview/demo talking points.
+5. Add Health Pulse to any future production scheduling or alerting plan after Cron and notifications are enabled.
