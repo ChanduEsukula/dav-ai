@@ -330,3 +330,45 @@ async def test_run_due_saved_monitors_releases_lock_after_error(monkeypatch):
         )
         is None
     )
+
+@pytest.mark.anyio
+async def test_run_monitor_supports_regional_health_pulse(monkeypatch):
+    monitor = _create_monitor(
+        query="MN respiratory",
+        module=SavedMonitorModule.REGIONAL_HEALTH_PULSE,
+    )
+
+    def fake_regional_health_search(
+        region: str,
+        category: str,
+        request_id: str | None = None,
+    ):
+        class FakeResponse:
+            def model_dump(self):
+                return {
+                    "region": region,
+                    "category": category,
+                    "record_count": 2,
+                    "latest_value": 46,
+                    "audit": {
+                        "audit_id": "33333333-3333-4333-8333-333333333333",
+                    },
+                    "signal": {
+                        "trend_label": "Increasing",
+                    },
+                }
+
+        return FakeResponse()
+
+    monkeypatch.setattr(
+        scheduled_monitor_refresh,
+        "execute_regional_health_search",
+        fake_regional_health_search,
+    )
+
+    result = await scheduled_monitor_refresh._run_monitor(monitor)
+
+    assert result["record_count"] == 2
+    assert result["score"] == 46
+    assert result["score_label"] == "Increasing"
+    assert result["audit_id"] == "33333333-3333-4333-8333-333333333333"
