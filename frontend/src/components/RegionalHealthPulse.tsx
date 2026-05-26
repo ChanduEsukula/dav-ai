@@ -124,6 +124,13 @@ function RegionalHealthPulse() {
           <article className="result-card">
             <p className="eyebrow">Audit trail</p>
             <h2>Health Pulse provenance</h2>
+            <a
+              className="secondary-button"
+              href={`/?page=audit&audit_id=${encodeURIComponent(data.audit.audit_id)}`}
+            >
+              Open in Audit History
+            </a>
+
             <dl className="detail-list">
               <div>
                 <dt>Audit ID</dt>
