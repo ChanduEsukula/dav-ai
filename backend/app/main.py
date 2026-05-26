@@ -10,6 +10,7 @@ from app.routes import saved_monitors
 from app.routes.audit_events import router as audit_events_router
 from app.routes.drug_events import router as drug_events_router
 from app.routes.recalls import router as recalls_router
+from app.routes.regional_health import router as regional_health_router
 from app.routes.reports import router as reports_router
 from app.routes.sources import router as sources_router
 from app.routes.system import router as system_router
@@ -112,6 +113,7 @@ app.include_router(audit_events_router, tags=["Audit History"])
 app.include_router(system_router, tags=["System"])
 app.include_router(saved_monitors.router)
 app.include_router(reports_router)
+app.include_router(regional_health_router, prefix="/api/v1/regional-health", tags=["Regional Health Pulse"])
 
 
 @app.get("/")
@@ -126,6 +128,7 @@ def root():
             "Audit History",
             "Saved Monitors",
             "Reports",
+            "Regional Health Pulse",
         ],
         "docs": "/docs",
     }
