@@ -11,13 +11,14 @@ def test_list_sources_returns_registered_sources():
     assert response.status_code == 200
 
     body = response.json()
-    assert body["count"] == 2
-    assert len(body["sources"]) == 2
+    assert body["count"] == 3
+    assert len(body["sources"]) == 3
 
     source_ids = {source["source_id"] for source in body["sources"]}
 
     assert "openfda_drug_enforcement" in source_ids
     assert "openfda_drug_event" in source_ids
+    assert "regional_health_pulse_demo" in source_ids
 
 
 def test_list_sources_includes_required_metadata():

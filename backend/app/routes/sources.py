@@ -4,7 +4,11 @@ from fastapi import APIRouter, Request
 
 from app.db.audit_repository import get_latest_audit_event_for_source
 from app.schemas.sources import SourceRegistryResponse
-from app.sources.registry import OPENFDA_DRUG_ENFORCEMENT, OPENFDA_DRUG_EVENT
+from app.sources.registry import (
+    OPENFDA_DRUG_ENFORCEMENT,
+    OPENFDA_DRUG_EVENT,
+    REGIONAL_HEALTH_PULSE_DEMO,
+)
 
 router = APIRouter()
 
@@ -145,6 +149,7 @@ async def list_sources(request: Request):
     registry_sources = [
         OPENFDA_DRUG_ENFORCEMENT,
         OPENFDA_DRUG_EVENT,
+        REGIONAL_HEALTH_PULSE_DEMO,
     ]
 
     sources = []
