@@ -33,7 +33,8 @@ This milestone adds a clearly labeled MVP scaffold for regional public-health si
 ### Frontend
 
 - Added Regional Health Pulse page.
-- Added Health Pulse navigation item.
+- Polished Regional Health Pulse layout, form styling, result card hierarchy, source freshness display, audit card, and long technical-value wrapping.
+- Added Health Pulse navigation item and mobile/tablet navigation polish.
 - Added frontend API client and TypeScript response types.
 - Added public-health safety boundary messaging.
 - Added signal summary display.
@@ -56,7 +57,7 @@ This milestone adds a clearly labeled MVP scaffold for regional public-health si
 ## Current Verification Status
 
 - Backend tests: 117 passed.
-- Frontend tests: 61 passed.
+- Frontend tests: 62 passed.
 - Frontend lint: passed.
 - Frontend production build: passed.
 
