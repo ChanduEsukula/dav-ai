@@ -326,7 +326,7 @@ Current backend test status:
 Current frontend test status:
 
 ```bash
-59 passed
+61 passed
 ```
 
 ---
@@ -614,7 +614,7 @@ POST /api/v1/saved-monitors/{monitor_id}/run
 DELETE /api/v1/saved-monitors/{monitor_id}
 ```
 
-Saved Monitors endpoints support repeatable public-data searches, manual run checks, and run history. The backend also includes a scheduled-refresh foundation, scheduler lock repository, and CLI job for future Cron execution. Production Cron, public scheduling UI, and alerting are not enabled yet.
+Saved Monitors endpoints support repeatable public-data searches across RecallRadar, DrugSignal, and Regional Health Pulse, manual run checks, and run history. The backend also includes a scheduled-refresh foundation, scheduler lock repository, and CLI job for future Cron execution. Production Cron, public scheduling UI, and alerting are not enabled yet.
 
 ---
 
@@ -985,7 +985,7 @@ npm test
 Current frontend test status:
 
 ```bash
-59 passed
+61 passed
 ```
 
 Frontend test coverage includes:
@@ -997,7 +997,7 @@ Frontend test coverage includes:
 - Safety briefing generator behavior.
 - Audit History filters, copy actions, CSV export, and URL state.
 - System Status / Data Quality page behavior.
-- Saved Monitors loading, empty state, creation, duplicate error handling, validation, run checks, run history, latest/previous values, change indicators, delete confirmation, audit linking, and error states.
+- Saved Monitors loading, empty state, creation, duplicate error handling, validation, RecallRadar/DrugSignal/Regional Health Pulse module selection, run checks, run history, latest/previous values, change indicators, delete confirmation, audit linking, and error states.
 
 Run frontend lint and production build:
 
