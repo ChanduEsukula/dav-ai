@@ -122,6 +122,22 @@ function RegionalHealthPulse() {
           </article>
 
           <article className="result-card">
+            <p className="eyebrow">Source freshness</p>
+            <h2>{data.source_freshness.freshness_label}</h2>
+            <p>{data.source_freshness.freshness_message}</p>
+            <dl className="detail-list">
+              <div>
+                <dt>Freshness status</dt>
+                <dd>{data.source_freshness.freshness_status}</dd>
+              </div>
+              <div>
+                <dt>Update cadence</dt>
+                <dd>{data.source_freshness.source_update_cadence}</dd>
+              </div>
+            </dl>
+          </article>
+
+          <article className="result-card">
             <p className="eyebrow">Audit trail</p>
             <h2>Health Pulse provenance</h2>
             <a
