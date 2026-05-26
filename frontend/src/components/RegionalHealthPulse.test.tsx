@@ -22,6 +22,20 @@ describe('RegionalHealthPulse', () => {
     expect(screen.getByRole('button', { name: /Check Health Pulse/i })).toBeInTheDocument()
   })
 
+  test('validates empty Health Pulse fields before searching', async () => {
+    const user = userEvent.setup()
+
+    render(<RegionalHealthPulse />)
+
+    await user.clear(screen.getByLabelText('Region'))
+    await user.click(screen.getByRole('button', { name: /Check Health Pulse/i }))
+
+    expect(
+      screen.getByText(/Enter both a region and a public-health category/i),
+    ).toBeInTheDocument()
+    expect(mockedSearchRegionalHealth).not.toHaveBeenCalled()
+  })
+
   test('searches and renders a public-health signal summary', async () => {
     const user = userEvent.setup()
 
@@ -79,7 +93,7 @@ describe('RegionalHealthPulse', () => {
     await waitFor(() => {
       expect(mockedSearchRegionalHealth).toHaveBeenCalledWith('MN', 'respiratory')
       expect(screen.getByRole('heading', { name: 'Increasing' })).toBeInTheDocument()
-      expect(screen.getByText(/Watch/i)).toBeInTheDocument()
+      expect(screen.getAllByText(/Watch/i).length).toBeGreaterThan(0)
       expect(screen.getByText(/regional_health_pulse_demo/i)).toBeInTheDocument()
       expect(screen.getByText('Source freshness')).toBeInTheDocument()
       expect(screen.getByText('Scaffold data')).toBeInTheDocument()
