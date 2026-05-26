@@ -54,7 +54,7 @@ docs/saved_monitors_v2_1_release_checkpoint.md
 
 Dav AI currently includes:
 
-- **Regional Health Pulse MVP scaffold** for public-health signal review. This backend and frontend foundation uses a clearly labeled scaffold source, deterministic trend labeling, source registry metadata, audit summary metadata, source-pull snapshot handling, Audit History linking, and public-health safety disclaimers. It is not live CDC/HHS surveillance yet, not emergency guidance, not medical advice, and not a personal disease-risk predictor.
+- **Regional Health Pulse MVP scaffold** for public-health signal review. This backend and frontend foundation uses a clearly labeled scaffold source, deterministic trend labeling, source registry metadata, audit summary metadata, source-pull snapshot handling, Audit History linking, Saved Monitors backend support, scheduled-refresh compatibility, and public-health safety disclaimers. It is not live CDC/HHS surveillance yet, not emergency guidance, not medical advice, and not a personal disease-risk predictor.
 
 - **RecallRadar** for live openFDA Drug Enforcement recall search.
 - **DrugSignal** for openFDA Drug Event / FAERS-style adverse-event reporting-pattern review.
@@ -65,7 +65,7 @@ Dav AI currently includes:
 - **Safety Briefing Engine** for deterministic role-aware public-data safety briefings.
 - **Source Registry** for public data source transparency.
 - **Audit History** for persisted source/search traceability.
-- **Saved Monitors v2.6 foundation** for saved repeatable searches, manual run checks, latest/previous comparison, run history, change indicators, duplicate prevention, audit linking, backend scheduled-refresh foundation, CLI guardrails, database-backed scheduler locks, and Render Cron dry-run planning.
+- **Saved Monitors v2.6 foundation** for saved repeatable RecallRadar, DrugSignal, and Regional Health Pulse searches, manual run checks, latest/previous comparison, run history, change indicators, duplicate prevention, audit linking, backend scheduled-refresh foundation, CLI guardrails, database-backed scheduler locks, and Render Cron dry-run planning.
 - **System/Data Quality views** for operational and audit-persistence visibility.
 - **Supabase/PostgreSQL audit and saved-monitor persistence** through fail-soft backend repositories.
 - **GitHub Actions CI** for backend tests, frontend tests, frontend lint, frontend production build, and Playwright smoke testing.
@@ -97,7 +97,7 @@ Dav AI is intentionally focused on public-data traceability, operational readine
 
 | Status | Features |
 |---|---|
-| Implemented | RecallRadar; DrugSignal; Audit History; System Status / Data Quality; Data Sources; deterministic safety briefings; Saved Monitors run history; saved-monitor latest/previous comparison; backend scheduled-refresh foundation; scheduler CLI guardrails; database-backed scheduler locks; Render Cron dry-run documentation. |
+| Implemented | RecallRadar; DrugSignal; Regional Health Pulse MVP scaffold; Audit History; System Status / Data Quality; Data Sources; deterministic safety briefings; Saved Monitors run history for RecallRadar, DrugSignal, and Health Pulse; saved-monitor latest/previous comparison; backend scheduled-refresh foundation; scheduler CLI guardrails; database-backed scheduler locks; Render Cron dry-run documentation. |
 | Partial | Deployment hardening; production observability; scheduled refresh backend foundation; authentication/RBAC planning. |
 | Planned | Production Cron activation; automated alerts; public scheduling UI; authentication/RBAC; notification preferences; briefing persistence/history; raw snapshot/hash-based reproducibility; live CDC/HHS-backed Regional Health Pulse data connectors; EnviroHealth Signal; CNN/OCR label scanner; RAG/LLM upgrades. |
 
@@ -176,7 +176,7 @@ DrugSignal briefing output has been upgraded to use DrugSignal Intelligence Scor
 
 ### Saved Monitors v2.6 Foundation
 
-Saved Monitors v2.6 foundation lets users save repeatable RecallRadar or DrugSignal searches, manually run checks over time, review run history, compare latest and previous values, and rely on a backend scheduled-refresh foundation for future Cron-based execution.
+Saved Monitors v2.6 foundation lets users save repeatable RecallRadar, DrugSignal, or Regional Health Pulse searches, manually run checks over time, review run history, compare latest and previous values, and rely on a backend scheduled-refresh foundation for future Cron-based execution.
 
 Current manual workflow:
 
@@ -250,7 +250,7 @@ docs/render_cron_saved_monitors_plan.md
 - Supabase/PostgreSQL saved monitor schedule metadata support.
 - Audit History list/detail API.
 - Audit History frontend page with filters, detail panel, CSV export, and copy actions.
-- Saved Monitors v2.6 foundation for creating, listing, deleting, duplicate prevention, manually running repeatable RecallRadar or DrugSignal monitors, reviewing run history, and supporting backend scheduled-refresh groundwork.
+- Saved Monitors v2.6 foundation for creating, listing, deleting, duplicate prevention, manually running repeatable RecallRadar, DrugSignal, or Regional Health Pulse monitors, reviewing run history, and supporting backend scheduled-refresh groundwork.
 - Saved monitor latest/previous comparison, run history, and change indicators.
 - Backend scheduled-refresh foundation.
 - Scheduler CLI guardrails.
@@ -320,7 +320,7 @@ Current engineering support includes:
 Current backend test status:
 
 ```bash
-117 passed
+120 passed
 ```
 
 Current frontend test status:
@@ -946,7 +946,7 @@ pytest
 Current backend test status:
 
 ```bash
-117 passed
+120 passed
 ```
 
 Backend test coverage includes:
