@@ -52,6 +52,21 @@ const checkedMonitor: SavedMonitor = {
   last_checked_at: '2026-05-11T13:00:00Z',
 }
 
+const healthPulseMonitor: SavedMonitor = {
+  ...baseMonitor,
+  id: 'monitor-health-pulse',
+  name: 'Minnesota respiratory monitor',
+  query: 'MN respiratory',
+  module: 'regional_health_pulse',
+  latest_audit_id: '33333333-3333-3333-3333-333333333333',
+  latest_score: 46,
+  previous_score: 32,
+  latest_record_count: 2,
+  previous_record_count: 2,
+  status: 'checked',
+  last_checked_at: '2026-05-26T18:00:00Z',
+}
+
 const baseRun: SavedMonitorRun = {
   run_id: 'run-1',
   monitor_id: 'monitor-1',
@@ -153,6 +168,33 @@ describe('SavedMonitorsPage', () => {
       expect(screen.getByText(/not medical advice/i)).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'View Audit' })).toBeInTheDocument()
       expect(screen.getByText('No manual run history yet.')).toBeInTheDocument()
+    })
+  })
+
+  it('renders Regional Health Pulse saved monitors', async () => {
+    vi.mocked(listSavedMonitors).mockResolvedValue([healthPulseMonitor])
+    vi.mocked(getSavedMonitorInsight).mockResolvedValue({
+      ...baseInsight,
+      monitor_id: 'monitor-health-pulse',
+      headline: 'Regional public-data activity increased',
+      latest_record_count: 2,
+      previous_record_count: 2,
+      latest_score: 46,
+      previous_score: 32,
+      score_delta: 14,
+    })
+
+    render(<SavedMonitorsPage />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Minnesota respiratory monitor')).toBeInTheDocument()
+      expectTextContent(/Query:\s*MN respiratory/i)
+      expect(screen.getAllByText('Regional Health Pulse').length).toBeGreaterThan(0)
+      expectTextContent(/Regional Health Pulse\s*·\s*checked/i)
+      expect(screen.getByText('46')).toBeInTheDocument()
+      expectTextContent(/Previous:\s*32/i)
+      expect(screen.getByText('Score +14')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'View Audit' })).toBeInTheDocument()
     })
   })
 
@@ -321,6 +363,66 @@ describe('SavedMonitorsPage', () => {
       expect(screen.getAllByText('DrugSignal').length).toBeGreaterThan(0)
       expect(screen.getByText('Score N/A')).toBeInTheDocument()
       expect(screen.getByText('Records N/A')).toBeInTheDocument()
+      expect(screen.getByText('Insufficient history')).toBeInTheDocument()
+    })
+  })
+
+  it('creates a Regional Health Pulse saved monitor with query guidance', async () => {
+    vi.mocked(listSavedMonitors).mockResolvedValue([])
+    vi.mocked(createSavedMonitor).mockResolvedValue({
+      ...healthPulseMonitor,
+      id: 'monitor-created-health-pulse',
+    })
+    vi.mocked(getSavedMonitorInsight).mockResolvedValue({
+      ...baseInsight,
+      monitor_id: 'monitor-created-health-pulse',
+      label: 'insufficient_history',
+      headline: 'Insufficient history',
+      latest_record_count: null,
+      previous_record_count: null,
+      record_count_delta: null,
+      percent_change: null,
+      latest_score: null,
+      previous_score: null,
+      score_delta: null,
+      confidence: 'low',
+    })
+
+    render(<SavedMonitorsPage />)
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          'No saved monitors yet. Create one above to start the monitoring workflow.',
+        ),
+      ).toBeInTheDocument()
+    })
+
+    fireEvent.change(screen.getByLabelText('Module'), {
+      target: { value: 'regional_health_pulse' },
+    })
+
+    expect(
+      screen.getByText(/Use format: MN respiratory/i),
+    ).toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText('Monitor name'), {
+      target: { value: 'Minnesota respiratory monitor' },
+    })
+    fireEvent.change(screen.getByLabelText('Search query'), {
+      target: { value: 'MN respiratory' },
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save Monitor' }))
+
+    await waitFor(() => {
+      expect(createSavedMonitor).toHaveBeenCalledWith({
+        name: 'Minnesota respiratory monitor',
+        query: 'MN respiratory',
+        module: 'regional_health_pulse',
+      })
+      expect(screen.getByText('Minnesota respiratory monitor')).toBeInTheDocument()
+      expect(screen.getAllByText('Regional Health Pulse').length).toBeGreaterThan(0)
       expect(screen.getByText('Insufficient history')).toBeInTheDocument()
     })
   })
