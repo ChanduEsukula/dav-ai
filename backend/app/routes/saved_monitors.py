@@ -79,7 +79,7 @@ def _parse_regional_health_monitor_query(query: str) -> tuple[str, str]:
     parts = query.strip().split(maxsplit=1)
     if len(parts) != 2:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail='Regional Health Pulse saved monitor query must use "<region> <category>" format.',
         )
 
@@ -211,7 +211,7 @@ async def run_saved_monitor(monitor_id: UUID, request: Request) -> SavedMonitor:
             latest_score, score_label = _extract_regional_health_score(response)
         else:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="Unsupported saved monitor module",
             )
 
