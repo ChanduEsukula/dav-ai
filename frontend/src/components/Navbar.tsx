@@ -74,6 +74,13 @@ function Navbar({
           Monitors
         </button>
 
+        <button
+          className={activePage === 'regional-health' ? 'active' : ''}
+          onClick={() => goToPage('regional-health')}
+        >
+          Health Pulse
+        </button>
+
         <button className={activePage === 'about' ? 'active' : ''} onClick={() => goToPage('about')}>
           About
         </button>
