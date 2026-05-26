@@ -54,7 +54,7 @@ docs/saved_monitors_v2_1_release_checkpoint.md
 
 Dav AI currently includes:
 
-- **Regional Health Pulse MVP scaffold** for public-health signal review. This backend and frontend foundation uses a clearly labeled scaffold source, deterministic trend labeling, source registry metadata, and public-health safety disclaimers. It is not live CDC/HHS surveillance yet, not emergency guidance, not medical advice, and not a personal disease-risk predictor.
+- **Regional Health Pulse MVP scaffold** for public-health signal review. This backend and frontend foundation uses a clearly labeled scaffold source, deterministic trend labeling, source registry metadata, audit summary metadata, source-pull snapshot handling, Audit History linking, and public-health safety disclaimers. It is not live CDC/HHS surveillance yet, not emergency guidance, not medical advice, and not a personal disease-risk predictor.
 
 - **RecallRadar** for live openFDA Drug Enforcement recall search.
 - **DrugSignal** for openFDA Drug Event / FAERS-style adverse-event reporting-pattern review.
@@ -290,7 +290,7 @@ docs/render_cron_saved_monitors_plan.md
 
 ## Current Engineering Status
 
-The active MVP modules are RecallRadar, DrugSignal, Audit History, Safety Briefing Engine, Source Registry, System Status, Data Quality, and Saved Monitors v2.6 foundation.
+The active MVP modules are RecallRadar, DrugSignal, Regional Health Pulse MVP scaffold, Audit History, Safety Briefing Engine, Source Registry, System Status, Data Quality, and Saved Monitors v2.6 foundation.
 
 Current engineering support includes:
 
