@@ -6,6 +6,7 @@ export type ActivePage =
   | 'audit'
   | 'system'
   | 'saved-monitors'
+  | 'regional-health'
   | 'about'
   | 'faq'
   | 'help'

@@ -22,6 +22,7 @@ import DataSourcesPage from './components/DataSourcesPage'
 import AuditHistoryPage from './components/AuditHistoryPage'
 import SystemStatusPage from './components/SystemStatusPage'
 import SavedMonitorsPage from './components/SavedMonitorsPage'
+import RegionalHealthPulse from './components/RegionalHealthPulse'
 import FaqPage from './components/FaqPage'
 import AboutPage from './components/AboutPage'
 import InfoPage from './components/InfoPage'
@@ -37,6 +38,7 @@ function getInitialPage(): ActivePage {
     page === 'audit' ||
     page === 'system' ||
     page === 'saved-monitors' ||
+    page === 'regional-health' ||
     page === 'about' ||
     page === 'faq' ||
     page === 'help'
@@ -182,6 +184,8 @@ function App() {
       {activePage === 'system' && <SystemStatusPage />}
 
       {activePage === 'saved-monitors' && <SavedMonitorsPage />}
+
+      {activePage === 'regional-health' && <RegionalHealthPulse />}
 
       {activePage === 'about' && <AboutPage />}
 
