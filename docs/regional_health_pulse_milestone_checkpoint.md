@@ -38,6 +38,7 @@ This milestone adds a clearly labeled MVP scaffold for regional public-health si
 - Added public-health safety boundary messaging.
 - Added signal summary display.
 - Added source transparency display.
+- Added scaffold source freshness display.
 - Added audit/provenance card.
 - Added Open in Audit History link for audit IDs.
 - Added frontend component test coverage.
@@ -86,7 +87,6 @@ That consistency is important for portfolio, recruiter, and senior-engineering r
 ## Next Recommended Steps
 
 1. Add a real public-data connector research spike for CDC/HHS datasets.
-2. Add Health Pulse source freshness status.
-3. Add Health Pulse manual verification documentation.
+2. Add Health Pulse manual verification documentation.
 4. Add Health Pulse to demo/interview talking points.
 5. Add Health Pulse to any future production scheduling or alerting plan after Cron and notifications are enabled.
