@@ -18,6 +18,7 @@ from app.schemas.saved_monitors import (
 )
 from app.services.search_workflows.drug_signal_search import execute_drug_signal_search
 from app.services.search_workflows.recall_search import execute_recall_search
+from app.services.search_workflows.regional_health_search import execute_regional_health_search
 
 router = APIRouter(prefix="/api/v1/saved-monitors", tags=["saved-monitors"])
 
@@ -66,6 +67,37 @@ def _extract_drug_signal_score(response: dict[str, Any]) -> tuple[int | None, st
         )
 
     return None, None
+
+
+def _parse_regional_health_monitor_query(query: str) -> tuple[str, str]:
+    """Parse saved Health Pulse monitor query into region and category.
+
+    The current no-migration format is: "<region> <category>", for example:
+    "MN respiratory" or "MN hospital pressure".
+    """
+
+    parts = query.strip().split(maxsplit=1)
+    if len(parts) != 2:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail='Regional Health Pulse saved monitor query must use "<region> <category>" format.',
+        )
+
+    region, category = parts
+    return region, category
+
+
+def _extract_regional_health_score(response: dict[str, Any]) -> tuple[int | None, str | None]:
+    """Return Health Pulse latest value and trend label from a search response."""
+
+    latest_value = response.get("latest_value")
+    signal = response.get("signal") or {}
+    trend_label = signal.get("trend_label")
+
+    return (
+        latest_value if isinstance(latest_value, int) else None,
+        trend_label if isinstance(trend_label, str) else None,
+    )
 
 
 @router.get("", response_model=list[SavedMonitor])
@@ -168,6 +200,15 @@ async def run_saved_monitor(monitor_id: UUID, request: Request) -> SavedMonitor:
                 request_id=request_id,
             )
             latest_score, score_label = _extract_drug_signal_score(response)
+        elif monitor.module == SavedMonitorModule.REGIONAL_HEALTH_PULSE:
+            region, category = _parse_regional_health_monitor_query(monitor.query)
+            response_model = execute_regional_health_search(
+                region=region,
+                category=category,
+                request_id=request_id,
+            )
+            response = response_model.model_dump()
+            latest_score, score_label = _extract_regional_health_score(response)
         else:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -175,7 +216,7 @@ async def run_saved_monitor(monitor_id: UUID, request: Request) -> SavedMonitor:
             )
 
         latest_audit_id = response.get("audit", {}).get("audit_id")
-        latest_record_count = response.get("count")
+        latest_record_count = response.get("count", response.get("record_count"))
 
         updated = saved_monitor_repository.update_after_run(
             monitor_id,

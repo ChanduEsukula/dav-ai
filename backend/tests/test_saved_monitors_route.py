@@ -508,3 +508,82 @@ def test_saved_monitor_insight_returns_404_for_unknown_monitor():
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Saved monitor not found"
+
+
+def test_run_regional_health_pulse_saved_monitor(monkeypatch) -> None:
+    def fake_regional_health_search(
+        region: str,
+        category: str,
+        request_id: str | None = None,
+    ):
+        class FakeResponse:
+            def model_dump(self):
+                return {
+                    "region": region,
+                    "category": category,
+                    "record_count": 2,
+                    "latest_value": 46,
+                    "audit": {
+                        "audit_id": "33333333-3333-4333-8333-333333333333",
+                    },
+                    "signal": {
+                        "trend_label": "Increasing",
+                    },
+                }
+
+        return FakeResponse()
+
+    monkeypatch.setattr(
+        "app.routes.saved_monitors.execute_regional_health_search",
+        fake_regional_health_search,
+    )
+
+    create_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Minnesota respiratory monitor",
+            "query": "MN respiratory",
+            "module": "regional_health_pulse",
+        },
+    )
+    monitor_id = create_response.json()["id"]
+
+    run_response = client.post(f"/api/v1/saved-monitors/{monitor_id}/run")
+
+    assert run_response.status_code == 200
+    data = run_response.json()
+
+    assert data["status"] == "checked"
+    assert data["latest_audit_id"] == "33333333-3333-4333-8333-333333333333"
+    assert data["latest_score"] == 46
+    assert data["latest_record_count"] == 2
+
+    runs_response = client.get(f"/api/v1/saved-monitors/{monitor_id}/runs")
+    assert runs_response.status_code == 200
+    runs = runs_response.json()
+
+    assert len(runs) == 1
+    assert runs[0]["module"] == "regional_health_pulse"
+    assert runs[0]["query"] == "MN respiratory"
+    assert runs[0]["status"] == "success"
+    assert runs[0]["record_count"] == 2
+    assert runs[0]["score"] == 46
+    assert runs[0]["score_label"] == "Increasing"
+    assert runs[0]["audit_id"] == "33333333-3333-4333-8333-333333333333"
+
+
+def test_run_regional_health_pulse_saved_monitor_validates_query_format() -> None:
+    create_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Invalid Health Pulse monitor",
+            "query": "MN",
+            "module": "regional_health_pulse",
+        },
+    )
+    monitor_id = create_response.json()["id"]
+
+    run_response = client.post(f"/api/v1/saved-monitors/{monitor_id}/run")
+
+    assert run_response.status_code == 422
+    assert "Regional Health Pulse saved monitor query" in run_response.json()["detail"]

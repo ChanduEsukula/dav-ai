@@ -22,6 +22,7 @@ from app.schemas.saved_monitors import (
 )
 from app.services.search_workflows.drug_signal_search import execute_drug_signal_search
 from app.services.search_workflows.recall_search import execute_recall_search
+from app.services.search_workflows.regional_health_search import execute_regional_health_search
 
 logger = logging.getLogger("medtrek.scheduled_monitor_refresh")
 
@@ -66,6 +67,31 @@ def _extract_drug_signal_score(result: dict[str, Any]) -> tuple[int | None, str 
     return intelligence_score.get("score"), intelligence_score.get("label")
 
 
+def _parse_regional_health_monitor_query(query: str) -> tuple[str, str]:
+    """Parse saved Health Pulse monitor query into region and category."""
+
+    parts = query.strip().split(maxsplit=1)
+    if len(parts) != 2:
+        raise ValueError(
+            'Regional Health Pulse saved monitor query must use "<region> <category>" format.'
+        )
+
+    region, category = parts
+    return region, category
+
+
+def _extract_regional_health_score(result: dict[str, Any]) -> tuple[int | None, str | None]:
+    """Extract Health Pulse latest value and trend label from a result payload."""
+
+    latest_value = result.get("latest_value")
+    signal = result.get("signal") or {}
+
+    return (
+        latest_value if isinstance(latest_value, int) else None,
+        signal.get("trend_label") if isinstance(signal.get("trend_label"), str) else None,
+    )
+
+
 async def _run_monitor(monitor: SavedMonitor) -> dict[str, Any]:
     """Run one saved monitor through the existing search workflow."""
 
@@ -94,6 +120,22 @@ async def _run_monitor(monitor: SavedMonitor) -> dict[str, Any]:
         score, score_label = _extract_drug_signal_score(result)
         return {
             "record_count": result.get("count", 0),
+            "score": score,
+            "score_label": score_label,
+            "audit_id": (result.get("audit") or {}).get("audit_id"),
+        }
+
+    if monitor.module == SavedMonitorModule.REGIONAL_HEALTH_PULSE:
+        region, category = _parse_regional_health_monitor_query(monitor.query)
+        result_model = execute_regional_health_search(
+            region=region,
+            category=category,
+            request_id=request_id,
+        )
+        result = result_model.model_dump()
+        score, score_label = _extract_regional_health_score(result)
+        return {
+            "record_count": result.get("record_count", 0),
             "score": score,
             "score_label": score_label,
             "audit_id": (result.get("audit") or {}).get("audit_id"),
