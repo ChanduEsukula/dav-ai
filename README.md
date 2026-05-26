@@ -54,6 +54,8 @@ docs/saved_monitors_v2_1_release_checkpoint.md
 
 Dav AI currently includes:
 
+- **Regional Health Pulse MVP scaffold** for public-health signal review. This backend and frontend foundation uses a clearly labeled scaffold source, deterministic trend labeling, source registry metadata, and public-health safety disclaimers. It is not live CDC/HHS surveillance yet, not emergency guidance, not medical advice, and not a personal disease-risk predictor.
+
 - **RecallRadar** for live openFDA Drug Enforcement recall search.
 - **DrugSignal** for openFDA Drug Event / FAERS-style adverse-event reporting-pattern review.
 - **Recall Review Score** for transparent recall review-priority scoring.
@@ -97,7 +99,7 @@ Dav AI is intentionally focused on public-data traceability, operational readine
 |---|---|
 | Implemented | RecallRadar; DrugSignal; Audit History; System Status / Data Quality; Data Sources; deterministic safety briefings; Saved Monitors run history; saved-monitor latest/previous comparison; backend scheduled-refresh foundation; scheduler CLI guardrails; database-backed scheduler locks; Render Cron dry-run documentation. |
 | Partial | Deployment hardening; production observability; scheduled refresh backend foundation; authentication/RBAC planning. |
-| Planned | Production Cron activation; automated alerts; public scheduling UI; authentication/RBAC; notification preferences; briefing persistence/history; raw snapshot/hash-based reproducibility; Regional Health Pulse; EnviroHealth Signal; CNN/OCR label scanner; RAG/LLM upgrades. |
+| Planned | Production Cron activation; automated alerts; public scheduling UI; authentication/RBAC; notification preferences; briefing persistence/history; raw snapshot/hash-based reproducibility; live CDC/HHS-backed Regional Health Pulse data connectors; EnviroHealth Signal; CNN/OCR label scanner; RAG/LLM upgrades. |
 
 ---
 
@@ -318,13 +320,13 @@ Current engineering support includes:
 Current backend test status:
 
 ```bash
-111 passed
+117 passed
 ```
 
 Current frontend test status:
 
 ```bash
-57 passed
+59 passed
 ```
 
 ---
@@ -944,7 +946,7 @@ pytest
 Current backend test status:
 
 ```bash
-111 passed
+117 passed
 ```
 
 Backend test coverage includes:
@@ -983,7 +985,7 @@ npm test
 Current frontend test status:
 
 ```bash
-57 passed
+59 passed
 ```
 
 Frontend test coverage includes:
