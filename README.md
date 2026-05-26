@@ -311,18 +311,20 @@ Current engineering support includes:
 - Request ID middleware and frontend request ID propagation.
 - Production verification documentation for deployed behavior.
 - Backend and frontend tests.
+- Frontend lint and production build verification.
+- AuditHistoryPage async interaction test cleanup.
 - GitHub Actions CI.
 
 Current backend test status:
 
 ```bash
-98 passed
+111 passed
 ```
 
 Current frontend test status:
 
 ```bash
-54 passed
+57 passed
 ```
 
 ---
@@ -942,7 +944,7 @@ pytest
 Current backend test status:
 
 ```bash
-98 passed
+111 passed
 ```
 
 Backend test coverage includes:
@@ -981,7 +983,7 @@ npm test
 Current frontend test status:
 
 ```bash
-54 passed
+57 passed
 ```
 
 Frontend test coverage includes:
