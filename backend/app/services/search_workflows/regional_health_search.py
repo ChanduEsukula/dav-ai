@@ -17,6 +17,16 @@ ENDPOINT = "https://healthdata.gov/"
 DISCLAIMER = PUBLIC_HEALTH_LIMITATION
 
 TRANSFORM_VERSION = "regional-health-transform-v0.1"
+SOURCE_UPDATE_CADENCE = "MVP scaffold data; live CDC/HHS update cadence is not configured yet."
+SOURCE_FRESHNESS = {
+    "freshness_status": "scaffold",
+    "freshness_label": "Scaffold data",
+    "source_update_cadence": SOURCE_UPDATE_CADENCE,
+    "freshness_message": (
+        "Regional Health Pulse is using MVP scaffold data. Live CDC/HHS freshness "
+        "checks are not configured yet."
+    ),
+}
 
 
 def _save_audit_event_with_request_id(audit_event: dict[str, Any], request_id: str | None):
@@ -139,6 +149,7 @@ def execute_regional_health_search(
         query=query,
         retrieval_timestamp=retrieval_timestamp,
         record_count=len(records),
+        source_freshness=SOURCE_FRESHNESS,
         latest_period=str(latest_record["period"]) if latest_record else None,
         latest_value=latest_value,
         previous_period=str(previous_record["period"]) if previous_record else None,

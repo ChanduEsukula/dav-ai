@@ -18,6 +18,13 @@ class RegionalHealthSignalSummary(BaseModel):
     limitations: list[str]
 
 
+class RegionalHealthSourceFreshness(BaseModel):
+    freshness_status: str
+    freshness_label: str
+    source_update_cadence: str
+    freshness_message: str
+
+
 class RegionalHealthSearchResponse(BaseModel):
     module: str = "RegionalHealthPulse"
     region: str
@@ -28,6 +35,7 @@ class RegionalHealthSearchResponse(BaseModel):
     query: str
     retrieval_timestamp: str
     record_count: int
+    source_freshness: RegionalHealthSourceFreshness
     latest_period: str | None = None
     latest_value: int | None = None
     previous_period: str | None = None

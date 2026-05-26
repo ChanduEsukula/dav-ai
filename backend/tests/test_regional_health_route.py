@@ -20,6 +20,10 @@ def test_regional_health_search_returns_public_data_signal():
     assert payload["category"] == "respiratory"
     assert payload["source_id"] == "regional_health_pulse_demo"
     assert payload["record_count"] == 2
+    assert payload["source_freshness"]["freshness_status"] == "scaffold"
+    assert payload["source_freshness"]["freshness_label"] == "Scaffold data"
+    assert payload["source_freshness"]["source_update_cadence"] == "MVP scaffold data; live CDC/HHS update cadence is not configured yet."
+    assert "Live CDC/HHS freshness checks are not configured yet" in payload["source_freshness"]["freshness_message"]
     assert payload["latest_value"] == 46
     assert payload["previous_value"] == 32
     assert payload["signal"]["trend_label"] == "Increasing"
@@ -43,6 +47,7 @@ def test_regional_health_search_handles_no_demo_records():
     payload = response.json()
 
     assert payload["record_count"] == 0
+    assert payload["source_freshness"]["freshness_status"] == "scaffold"
     assert payload["latest_value"] is None
     assert payload["signal"]["trend_label"] == "Insufficient data"
     assert payload["audit"]["upstream_status"] == "empty"

@@ -35,6 +35,13 @@ describe('RegionalHealthPulse', () => {
       query: 'region=MN category=respiratory',
       retrieval_timestamp: '2026-05-26T18:00:00Z',
       record_count: 2,
+      source_freshness: {
+        freshness_status: 'scaffold',
+        freshness_label: 'Scaffold data',
+        source_update_cadence: 'MVP scaffold data; live CDC/HHS update cadence is not configured yet.',
+        freshness_message:
+          'Regional Health Pulse is using MVP scaffold data. Live CDC/HHS freshness checks are not configured yet.',
+      },
       latest_period: '2026-W19',
       latest_value: 46,
       previous_period: '2026-W18',
@@ -74,6 +81,9 @@ describe('RegionalHealthPulse', () => {
       expect(screen.getByRole('heading', { name: 'Increasing' })).toBeInTheDocument()
       expect(screen.getByText(/Watch/i)).toBeInTheDocument()
       expect(screen.getByText(/regional_health_pulse_demo/i)).toBeInTheDocument()
+      expect(screen.getByText('Source freshness')).toBeInTheDocument()
+      expect(screen.getByText('Scaffold data')).toBeInTheDocument()
+      expect(screen.getByText(/Live CDC\/HHS freshness checks are not configured yet/i)).toBeInTheDocument()
       expect(screen.getByText('Health Pulse provenance')).toBeInTheDocument()
       expect(screen.getByText('33333333-3333-4333-8333-333333333333')).toBeInTheDocument()
       expect(screen.getByRole('link', { name: 'Open in Audit History' })).toHaveAttribute(

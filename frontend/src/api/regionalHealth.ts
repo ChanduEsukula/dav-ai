@@ -27,6 +27,13 @@ export type RegionalHealthAuditSummary = {
   source_payload_hash: string | null
 }
 
+export type RegionalHealthSourceFreshness = {
+  freshness_status: string
+  freshness_label: string
+  source_update_cadence: string
+  freshness_message: string
+}
+
 export type RegionalHealthSearchResponse = {
   module: string
   region: string
@@ -37,6 +44,7 @@ export type RegionalHealthSearchResponse = {
   query: string
   retrieval_timestamp: string
   record_count: number
+  source_freshness: RegionalHealthSourceFreshness
   latest_period: string | null
   latest_value: number | null
   previous_period: string | null
