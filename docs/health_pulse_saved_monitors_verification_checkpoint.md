@@ -16,7 +16,7 @@ Regional Health Pulse now includes:
 - Audit summary metadata.
 - Source-pull snapshot handling.
 - Audit History linking from Health Pulse results.
-- Frontend Health Pulse page.
+- Frontend Health Pulse page with polished layout, improved form hierarchy, responsive result cards, and long technical-value wrapping.
 - Frontend source transparency, scaffold source freshness, and audit/provenance display.
 - Saved Monitors backend support.
 - Saved Monitors scheduled-refresh compatibility.
@@ -27,7 +27,7 @@ Regional Health Pulse now includes:
 ## Verification Results
 
 - Backend tests: 120 passed.
-- Frontend tests: 61 passed.
+- Frontend tests: 62 passed.
 - Frontend lint: passed.
 - Frontend production build: passed.
 
