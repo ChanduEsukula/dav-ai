@@ -98,9 +98,48 @@
 @media (max-width: 960px) {
   .nav {
     margin: 0 auto;
+    border-radius: 28px;
+    align-items: flex-start;
+    gap: 14px;
+    flex-direction: column;
+  }
+
+  .brand {
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .nav-links {
-    display: none;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 8px;
+    border-radius: 22px;
+    padding: 8px;
+    overflow-x: auto;
+  }
+
+  .nav-links button {
+    flex: 0 0 auto;
+    min-height: 38px;
+  }
+}
+
+@media (max-width: 520px) {
+  .nav {
+    padding: 12px;
+  }
+
+  .nav-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow-x: visible;
+  }
+
+  .nav-links button {
+    width: 100%;
+    padding: 9px 10px;
+    font-size: 12px;
   }
 }
