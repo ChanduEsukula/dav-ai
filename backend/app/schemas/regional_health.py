@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field
 
+from app.schemas.audit import AuditSummary
+
 
 class RegionalHealthPoint(BaseModel):
     period: str
@@ -33,3 +35,4 @@ class RegionalHealthSearchResponse(BaseModel):
     signal: RegionalHealthSignalSummary
     records: list[RegionalHealthPoint] = Field(default_factory=list)
     disclaimer: str
+    audit: AuditSummary
