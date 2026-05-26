@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import AuditHistoryPage from './AuditHistoryPage'
 import { getAuditEventSourcePull, getAuditEvents } from '../api/auditEvents'
@@ -162,6 +163,8 @@ describe('AuditHistoryPage', () => {
   })
 
   test('clicking another row updates the selected detail card', async () => {
+    const user = userEvent.setup()
+
     mockedGetAuditEvents.mockResolvedValue({
       status: 'ok',
       persistence_available: true,
@@ -172,8 +175,8 @@ describe('AuditHistoryPage', () => {
     render(<AuditHistoryPage />)
 
     const metforminRowText = await screen.findByText('metformin')
-    fireEvent.click(metforminRowText.closest('tr') as HTMLTableRowElement)
-    fireEvent.click(screen.getByText('Technical view'))
+    await user.click(metforminRowText.closest('tr') as HTMLTableRowElement)
+    await user.click(screen.getByText('Technical view'))
 
     expect(screen.getByText('22222222-2222-4222-8222-222222222222')).toBeInTheDocument()
     expect(screen.getByText('https://api.fda.gov/drug/event.json')).toBeInTheDocument()
@@ -223,10 +226,11 @@ describe('AuditHistoryPage', () => {
   test('copies provenance summary from the source pull card', async () => {
     const writeText = vi.fn()
 
-    Object.assign(navigator, {
-      clipboard: {
+    Object.defineProperty(navigator, 'clipboard', {
+      value: {
         writeText,
       },
+      configurable: true,
     })
 
     mockedGetAuditEvents.mockResolvedValue({
@@ -438,10 +442,11 @@ describe('AuditHistoryPage', () => {
   test('copies audit ID and trace summary from the detail card', async () => {
     const writeText = vi.fn()
 
-    Object.assign(navigator, {
-      clipboard: {
+    Object.defineProperty(navigator, 'clipboard', {
+      value: {
         writeText,
       },
+      configurable: true,
     })
 
     mockedGetAuditEvents.mockResolvedValue({
@@ -479,10 +484,11 @@ describe('AuditHistoryPage', () => {
   test('copies shareable audit link from the detail card', async () => {
     const writeText = vi.fn()
 
-    Object.assign(navigator, {
-      clipboard: {
+    Object.defineProperty(navigator, 'clipboard', {
+      value: {
         writeText,
       },
+      configurable: true,
     })
 
     window.history.replaceState(null, '', '/?page=audit')
