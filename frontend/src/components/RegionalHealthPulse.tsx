@@ -121,6 +121,41 @@ function RegionalHealthPulse() {
             </dl>
           </article>
 
+          <article className="result-card">
+            <p className="eyebrow">Audit trail</p>
+            <h2>Health Pulse provenance</h2>
+            <dl className="detail-list">
+              <div>
+                <dt>Audit ID</dt>
+                <dd>{data.audit.audit_id}</dd>
+              </div>
+              <div>
+                <dt>Module</dt>
+                <dd>{data.audit.module}</dd>
+              </div>
+              <div>
+                <dt>Upstream status</dt>
+                <dd>{data.audit.upstream_status}</dd>
+              </div>
+              <div>
+                <dt>Transform version</dt>
+                <dd>{data.audit.transform_version}</dd>
+              </div>
+              <div>
+                <dt>Snapshot status</dt>
+                <dd>{data.audit.source_snapshot_status ?? 'Not available'}</dd>
+              </div>
+              <div>
+                <dt>Source pull ID</dt>
+                <dd>{data.audit.source_pull_id ?? 'Not available'}</dd>
+              </div>
+              <div>
+                <dt>Payload hash</dt>
+                <dd>{data.audit.source_payload_hash ?? 'Not available'}</dd>
+              </div>
+            </dl>
+          </article>
+
           <article className="result-card full-width-card">
             <p className="eyebrow">Limitations</p>
             <h2>Public-data review only</h2>

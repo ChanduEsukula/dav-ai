@@ -15,6 +15,18 @@ export type RegionalHealthSignalSummary = {
   limitations: string[]
 }
 
+export type RegionalHealthAuditSummary = {
+  audit_id: string
+  source_id: string
+  module: string
+  upstream_status: string
+  record_count: number
+  transform_version: string
+  source_snapshot_status: string | null
+  source_pull_id: string | null
+  source_payload_hash: string | null
+}
+
 export type RegionalHealthSearchResponse = {
   module: string
   region: string
@@ -32,6 +44,7 @@ export type RegionalHealthSearchResponse = {
   signal: RegionalHealthSignalSummary
   records: RegionalHealthPoint[]
   disclaimer: string
+  audit: RegionalHealthAuditSummary
 }
 
 export async function searchRegionalHealth(

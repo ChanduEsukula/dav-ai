@@ -52,6 +52,17 @@ describe('RegionalHealthPulse', () => {
       records: [],
       disclaimer:
         'Regional Health Pulse uses public-data signals only. It is not medical advice, diagnosis, treatment guidance, emergency guidance, clinical decision support, or a personal disease-risk prediction.',
+      audit: {
+        audit_id: '33333333-3333-4333-8333-333333333333',
+        source_id: 'regional_health_pulse_demo',
+        module: 'RegionalHealthPulse',
+        upstream_status: 'success',
+        record_count: 2,
+        transform_version: 'regional-health-transform-v0.1',
+        source_snapshot_status: 'skipped',
+        source_pull_id: null,
+        source_payload_hash: null,
+      },
     })
 
     render(<RegionalHealthPulse />)
@@ -63,6 +74,9 @@ describe('RegionalHealthPulse', () => {
       expect(screen.getByRole('heading', { name: 'Increasing' })).toBeInTheDocument()
       expect(screen.getByText(/Watch/i)).toBeInTheDocument()
       expect(screen.getByText(/regional_health_pulse_demo/i)).toBeInTheDocument()
+      expect(screen.getByText('Health Pulse provenance')).toBeInTheDocument()
+      expect(screen.getByText('33333333-3333-4333-8333-333333333333')).toBeInTheDocument()
+      expect(screen.getByText('regional-health-transform-v0.1')).toBeInTheDocument()
       expect(screen.getAllByText(/not medical advice/i).length).toBeGreaterThan(0)
     })
   })
