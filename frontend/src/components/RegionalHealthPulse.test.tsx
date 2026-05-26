@@ -76,6 +76,10 @@ describe('RegionalHealthPulse', () => {
       expect(screen.getByText(/regional_health_pulse_demo/i)).toBeInTheDocument()
       expect(screen.getByText('Health Pulse provenance')).toBeInTheDocument()
       expect(screen.getByText('33333333-3333-4333-8333-333333333333')).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Open in Audit History' })).toHaveAttribute(
+        'href',
+        '/?page=audit&audit_id=33333333-3333-4333-8333-333333333333',
+      )
       expect(screen.getByText('regional-health-transform-v0.1')).toBeInTheDocument()
       expect(screen.getAllByText(/not medical advice/i).length).toBeGreaterThan(0)
     })
