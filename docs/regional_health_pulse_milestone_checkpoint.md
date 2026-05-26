@@ -42,6 +42,7 @@ This milestone adds a clearly labeled MVP scaffold for regional public-health si
 - Added Open in Audit History link for audit IDs.
 - Added frontend component test coverage.
 - Added demo smoke test coverage.
+- Added Saved Monitors UI support for Regional Health Pulse monitor creation, display, run history, and module selection.
 
 ### Documentation
 
@@ -54,7 +55,7 @@ This milestone adds a clearly labeled MVP scaffold for regional public-health si
 ## Current Verification Status
 
 - Backend tests: 117 passed.
-- Frontend tests: 59 passed.
+- Frontend tests: 61 passed.
 - Frontend lint: passed.
 - Frontend production build: passed.
 
@@ -84,8 +85,8 @@ That consistency is important for portfolio, recruiter, and senior-engineering r
 
 ## Next Recommended Steps
 
-1. Add Health Pulse to Saved Monitors support.
-2. Add a real public-data connector research spike for CDC/HHS datasets.
-3. Add Health Pulse source freshness status.
-4. Add Health Pulse manual verification documentation.
-5. Add Health Pulse to demo/interview talking points.
+1. Add a real public-data connector research spike for CDC/HHS datasets.
+2. Add Health Pulse source freshness status.
+3. Add Health Pulse manual verification documentation.
+4. Add Health Pulse to demo/interview talking points.
+5. Add Health Pulse to any future production scheduling or alerting plan after Cron and notifications are enabled.
