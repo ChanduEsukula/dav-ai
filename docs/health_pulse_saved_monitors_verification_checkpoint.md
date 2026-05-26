@@ -17,7 +17,7 @@ Regional Health Pulse now includes:
 - Source-pull snapshot handling.
 - Audit History linking from Health Pulse results.
 - Frontend Health Pulse page.
-- Frontend source transparency and audit/provenance display.
+- Frontend source transparency, scaffold source freshness, and audit/provenance display.
 - Saved Monitors backend support.
 - Saved Monitors scheduled-refresh compatibility.
 - Saved Monitors UI module selection and display support.
@@ -43,8 +43,7 @@ Regional Health Pulse now follows the same product and engineering pattern as Re
 
 ## Next Recommended Steps
 
-1. Add Health Pulse source freshness status.
-2. Research real public CDC/HHS datasets for a future connector spike.
-3. Add manual verification docs for Health Pulse demo workflows.
+1. Research real public CDC/HHS datasets for a future connector spike.
+2. Add manual verification docs for Health Pulse demo workflows.
 4. Add Health Pulse to interview/demo talking points.
 5. Add Health Pulse to any future production scheduling or alerting plan after Cron and notifications are enabled.
