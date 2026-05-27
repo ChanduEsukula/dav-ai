@@ -12,6 +12,10 @@ Monitor Insights show record deltas, percent change, confidence level, insight v
 
 This project is an MVP and portfolio-grade engineering prototype. It is not a medical device, not clinical decision support, and not a replacement for official FDA, CDC, clinician, pharmacist, or emergency guidance.
 
+## Current source of truth note
+
+`README.md` and `frontend/README.md` are the current source of truth for the Dav AI MVP state. Some older docs and MedTrek/MedSignal reference reports are historical checkpoints and may contain older branding, older test counts, or features that were planned then but are now implemented.
+
 ## Engineering Highlights
 
 Dav AI is designed as a public-data healthcare safety intelligence platform with an emphasis on traceability, reproducibility, and operational transparency.
@@ -320,13 +324,13 @@ Current engineering support includes:
 Current backend test status:
 
 ```bash
-120 passed
+123 passed
 ```
 
 Current frontend test status:
 
 ```bash
-63 passed
+64 passed
 ```
 
 ---
@@ -946,7 +950,7 @@ pytest
 Current backend test status:
 
 ```bash
-120 passed
+123 passed
 ```
 
 Backend test coverage includes:
@@ -985,7 +989,7 @@ npm test
 Current frontend test status:
 
 ```bash
-63 passed
+64 passed
 ```
 
 Frontend test coverage includes:
