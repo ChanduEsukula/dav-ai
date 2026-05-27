@@ -218,7 +218,7 @@ describe('AuditHistoryPage', () => {
 
     render(<AuditHistoryPage />)
 
-    expect(await screen.findByText('Provenance verified')).toBeInTheDocument()
+    expect(await screen.findByText('Source pull recorded')).toBeInTheDocument()
     fireEvent.click(screen.getByText('Technical view'))
 
     await waitFor(() => {
@@ -317,6 +317,7 @@ describe('AuditHistoryPage', () => {
     expect(
       await screen.findByText('No source pull found for this audit_id.'),
     ).toBeInTheDocument()
+    expect(screen.getByText('No source pull recorded yet')).toBeInTheDocument()
   })
 
   test('requests backend-filtered audit history when filters change', async () => {
