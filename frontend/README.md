@@ -2,19 +2,20 @@
 
 This is the React + TypeScript + Vite frontend for Dav AI.
 
-Dav AI is a healthcare safety intelligence product prototype that turns public FDA/openFDA recall and adverse-event data into source-aware, auditable safety signals and role-based safety briefings.
+Dav AI is a healthcare safety intelligence product prototype that turns public FDA/openFDA recall, adverse-event, and scaffolded public-health signal data into source-aware, auditable safety signals and role-based safety briefings.
 
 The current frontend supports:
 
 - RecallRadar
 - DrugSignal
+- Regional Health Pulse MVP scaffold
 - Safety Briefing Engine v1
 - Data Sources page
 - Audit History page
 - System Status / Data Quality page
-- Saved Monitors v2 foundation
+- Saved Monitors v2.6 foundation
 - Request ID propagation through the shared Axios client
-- About / FAQ / placeholder support pages
+- About / FAQ / support pages
 - Frontend tests with Vitest and React Testing Library
 
 ---
@@ -74,6 +75,23 @@ DrugSignal allows users to search public openFDA Drug Event / FAERS records and 
 
 Important: FAERS adverse-event reports are reporting patterns only. They do not prove that a drug caused a reaction.
 
+### Regional Health Pulse
+
+Regional Health Pulse is implemented as an MVP scaffold for public-health signal review.
+
+Current Regional Health Pulse UI support includes:
+
+- Region and signal-category controls
+- Deterministic signal/trend labeling
+- Metric cards
+- Source metadata
+- Audit summary metadata
+- Source freshness copy
+- Public-health safety boundaries
+- Saved Monitors support
+
+Important: Regional Health Pulse is not live CDC/HHS surveillance yet. It is not emergency guidance, not medical advice, and not a personal disease-risk predictor.
+
 ### Safety Briefing Engine v1
 
 The frontend includes a deterministic Safety Briefing Engine v1.
@@ -101,12 +119,13 @@ The briefing engine must not provide diagnosis, treatment guidance, medication-c
 
 ### Data Sources Page
 
-The Data Sources page displays registered public data sources from the backend source registry endpoint.
+The Data Sources page displays registered public/scaffold data sources from the backend source registry endpoint.
 
 Current source categories include:
 
 - openFDA Drug Enforcement API
 - openFDA Drug Event API
+- Regional Health Pulse MVP scaffold
 
 ### Audit History
 
@@ -116,13 +135,14 @@ Current Audit History UI support includes:
 
 - Recent audit event table
 - Selected audit detail panel
-- Module/status/search filters
+- Module/status/search filters, including Regional Health Pulse
 - Applied filter summary
 - CSV export
 - Copy audit ID
 - Copy trace summary
 - Copy audit link
 - Audit detail URL state
+- Source-pull provenance summary when available
 
 Audit History is for public-data traceability only. It is not clinical record storage.
 
@@ -144,17 +164,20 @@ This is operational transparency, not a full production observability dashboard 
 
 ### Saved Monitors
 
-The Saved Monitors page is a v2 foundation for repeatable public-data searches.
+The Saved Monitors page is a v2.6 foundation for repeatable public-data searches.
 
 Current Saved Monitors UI support includes:
 
-- Create repeatable RecallRadar or DrugSignal monitor definitions
+- Create repeatable RecallRadar, DrugSignal, or Regional Health Pulse monitor definitions
 - List saved monitors
 - Delete saved monitors
 - Manually run a monitor check
-- Show latest score, record count, last checked timestamp, and latest audit link when available
+- Show latest score, previous score, record count, last checked timestamp, and latest audit link when available
+- Show saved monitor run history
+- Show deterministic monitor insights and change indicators
+- Preserve internal query spacing while trimming leading/trailing input spaces
 
-Saved Monitors is not yet scheduled monitoring or alerting. It does not yet include authentication/RBAC, scheduled refresh, automated notifications, or briefing history.
+Saved Monitors includes backend scheduled-refresh groundwork, CLI guardrails, database-backed scheduler locks, and run-history persistence. Production Cron, public scheduling UI, alert delivery, authentication/RBAC, notification preferences, and briefing history are not implemented yet.
 
 ### Request ID Propagation
 
@@ -168,43 +191,3 @@ The frontend expects the FastAPI backend to run locally at:
 
 ```text
 http://127.0.0.1:8000
-```
-
-This can be overridden with:
-
-```env
-VITE_API_BASE_URL=http://127.0.0.1:8000
-```
-
----
-
-## Test Status
-
-Current frontend test coverage includes:
-
-- App smoke test
-- RecallRadar component tests
-- DrugSignal component tests
-- Audit History component tests
-- System Status / Data Quality component tests
-- Safety briefing generator tests
-
-Saved Monitors frontend tests should be added as the v2 foundation matures.
-
-Current local frontend status:
-
-```bash
-27 passed
-npm run lint
-npm run build
-```
-
-GitHub Actions also runs frontend tests, lint, and production build on push and pull request.
-
----
-
-## Safety Boundary
-
-Dav AI provides public-data safety intelligence only.
-
-It is not medical advice, diagnosis, or treatment. Users should consult a qualified healthcare professional for medical decisions.
