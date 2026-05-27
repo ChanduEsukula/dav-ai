@@ -6,7 +6,7 @@ import {
   type SourcePullProvenanceItem,
 } from '../api/auditEvents'
 
-type ModuleFilter = 'all' | 'RecallRadar' | 'DrugSignal'
+type ModuleFilter = 'all' | 'RecallRadar' | 'DrugSignal' | 'RegionalHealthPulse'
 type StatusFilter = 'all' | 'success' | 'empty' | 'error'
 type AuditDetailViewMode = 'basic' | 'technical'
 
@@ -156,8 +156,6 @@ function setAuditIdInUrl(auditId: string | null) {
 
   window.history.replaceState(null, '', url.toString())
 }
-
-
 
 export default function AuditHistoryPage() {
   const [items, setItems] = useState<AuditHistoryItem[]>([])
@@ -349,7 +347,6 @@ export default function AuditHistoryPage() {
     showCopyMessage('Copied provenance summary')
   }
 
-
   return (
     <main
       className="info-page audit-history-page"
@@ -407,6 +404,7 @@ export default function AuditHistoryPage() {
                 <option value="all">All modules</option>
                 <option value="RecallRadar">RecallRadar</option>
                 <option value="DrugSignal">DrugSignal</option>
+                <option value="RegionalHealthPulse">Regional Health Pulse</option>
               </select>
             </label>
 
@@ -547,10 +545,10 @@ export default function AuditHistoryPage() {
 
                 <dl>
                   {detailViewMode === 'technical' && (
-                  <div>
-                    <dt>Audit ID</dt>
-                    <dd>{selectedItem.audit_id}</dd>
-                  </div>
+                    <div>
+                      <dt>Audit ID</dt>
+                      <dd>{selectedItem.audit_id}</dd>
+                    </div>
                   )}
 
                   <div>
@@ -564,10 +562,10 @@ export default function AuditHistoryPage() {
                   </div>
 
                   {detailViewMode === 'technical' && (
-                  <div>
-                    <dt>Endpoint</dt>
-                    <dd>{selectedItem.endpoint}</dd>
-                  </div>
+                    <div>
+                      <dt>Endpoint</dt>
+                      <dd>{selectedItem.endpoint}</dd>
+                    </div>
                   )}
 
                   <div>
@@ -581,24 +579,24 @@ export default function AuditHistoryPage() {
                   </div>
 
                   {detailViewMode === 'technical' && (
-                  <div>
-                    <dt>Transform version</dt>
-                    <dd>{selectedItem.transform_version}</dd>
-                  </div>
+                    <div>
+                      <dt>Transform version</dt>
+                      <dd>{selectedItem.transform_version}</dd>
+                    </div>
                   )}
 
                   {detailViewMode === 'technical' && (
-                  <div>
-                    <dt>Score version</dt>
-                    <dd>{selectedItem.score_version ?? 'N/A'}</dd>
-                  </div>
+                    <div>
+                      <dt>Score version</dt>
+                      <dd>{selectedItem.score_version ?? 'N/A'}</dd>
+                    </div>
                   )}
 
                   {detailViewMode === 'technical' && (
-                  <div>
-                    <dt>Disclaimer version</dt>
-                    <dd>{selectedItem.disclaimer_version ?? 'N/A'}</dd>
-                  </div>
+                    <div>
+                      <dt>Disclaimer version</dt>
+                      <dd>{selectedItem.disclaimer_version ?? 'N/A'}</dd>
+                    </div>
                   )}
 
                   <div>
@@ -645,14 +643,14 @@ export default function AuditHistoryPage() {
                       </p>
 
                       <button
-                      type="button"
-                      className="audit-provenance-copy-button"
-                      onClick={() => copyProvenanceSummary(selectedItem, sourcePull)}
-                    >
-                      Copy provenance summary
-                    </button>
+                        type="button"
+                        className="audit-provenance-copy-button"
+                        onClick={() => copyProvenanceSummary(selectedItem, sourcePull)}
+                      >
+                        Copy provenance summary
+                      </button>
 
-                    <div className="audit-source-pull-summary-grid">
+                      <div className="audit-source-pull-summary-grid">
                         <div>
                           <span>Source</span>
                           <strong>{sourcePull.source_name ?? 'N/A'}</strong>
@@ -684,49 +682,48 @@ export default function AuditHistoryPage() {
                         <details className="audit-source-pull-details" open>
                           <summary>Technical provenance details</summary>
 
-                        <dl className="audit-source-pull-grid">
-                          <div>
-                            <dt>Pull ID</dt>
-                            <dd title={sourcePull.pull_id}>
-                              {shortenIdentifier(sourcePull.pull_id)}
-                            </dd>
-                          </div>
+                          <dl className="audit-source-pull-grid">
+                            <div>
+                              <dt>Pull ID</dt>
+                              <dd title={sourcePull.pull_id}>
+                                {shortenIdentifier(sourcePull.pull_id)}
+                              </dd>
+                            </div>
 
-                          <div>
-                            <dt>Snapshot ID</dt>
-                            <dd title={sourcePull.snapshot_id ?? undefined}>
-                              {shortenIdentifier(sourcePull.snapshot_id)}
-                            </dd>
-                          </div>
+                            <div>
+                              <dt>Snapshot ID</dt>
+                              <dd title={sourcePull.snapshot_id ?? undefined}>
+                                {shortenIdentifier(sourcePull.snapshot_id)}
+                              </dd>
+                            </div>
 
-                          <div>
-                            <dt>Full payload hash</dt>
-                            <dd title={sourcePull.payload_hash}>
-                              {sourcePull.payload_hash}
-                            </dd>
-                          </div>
+                            <div>
+                              <dt>Full payload hash</dt>
+                              <dd title={sourcePull.payload_hash}>
+                                {sourcePull.payload_hash}
+                              </dd>
+                            </div>
 
-                          <div>
-                            <dt>Endpoint</dt>
-                            <dd>{sourcePull.endpoint ?? 'N/A'}</dd>
-                          </div>
+                            <div>
+                              <dt>Endpoint</dt>
+                              <dd>{sourcePull.endpoint ?? 'N/A'}</dd>
+                            </div>
 
-                          <div>
-                            <dt>Transform version</dt>
-                            <dd>{sourcePull.transform_version ?? 'N/A'}</dd>
-                          </div>
-                        </dl>
+                            <div>
+                              <dt>Transform version</dt>
+                              <dd>{sourcePull.transform_version ?? 'N/A'}</dd>
+                            </div>
+                          </dl>
 
-                        <div className="audit-query-params">
-                          <h4>Source pull query parameters</h4>
-                          <pre>{formatQueryParams(sourcePull.query_params)}</pre>
-                        </div>
+                          <div className="audit-query-params">
+                            <h4>Source pull query parameters</h4>
+                            <pre>{formatQueryParams(sourcePull.query_params)}</pre>
+                          </div>
                         </details>
                       )}
                     </>
                   )}
                 </div>
-
               </aside>
             )}
           </div>

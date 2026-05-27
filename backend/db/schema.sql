@@ -73,6 +73,14 @@ values
         'DrugSignal',
         'FAERS adverse-event and medication-error reports from openFDA.',
         'Periodic FDA FAERS updates'
+    ),
+    (
+        'regional_health_pulse_demo',
+        'Regional Health Pulse MVP scaffold',
+        'https://healthdata.gov/',
+        'RegionalHealthPulse',
+        'Demo public-health signal scaffold for Regional Health Pulse backend v1. This is not live CDC/HHS surveillance yet.',
+        'MVP scaffold; live public source cadence not configured yet'
     )
 on conflict (source_id) do update set
     source_name = excluded.source_name,
@@ -106,7 +114,7 @@ create table if not exists saved_monitors (
     last_scheduled_status text,
 
     constraint saved_monitors_module_check
-        check (module in ('recallradar', 'drugsignal')),
+        check (module in ('recallradar', 'drugsignal', 'regional_health_pulse')),
 
     constraint saved_monitors_status_check
         check (status in ('not_checked', 'checked', 'error')),
@@ -166,7 +174,7 @@ create table if not exists saved_monitor_runs (
     error_message text,
 
     constraint saved_monitor_runs_module_check
-        check (module in ('recallradar', 'drugsignal')),
+        check (module in ('recallradar', 'drugsignal', 'regional_health_pulse')),
 
     constraint saved_monitor_runs_status_check
         check (status in ('success', 'error')),
@@ -199,6 +207,7 @@ create table if not exists scheduler_locks (
 
 create index if not exists idx_scheduler_locks_locked_until
     on scheduler_locks(locked_until);
+
 -- Source Pulls and Raw Source Snapshots v2.5
 -- Stores reproducible public-source retrieval records and raw openFDA payloads.
 -- This stores public API payloads only; no PHI or user medical history should be stored.

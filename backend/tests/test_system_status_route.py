@@ -19,10 +19,13 @@ def test_system_status_returns_core_operational_fields(monkeypatch):
     assert data["version"] == "0.1.0"
     assert data["database"]["configured"] is False
     assert data["database"]["audit_readable"] is False
-    assert data["sources"]["registered_count"] == 2
+    assert data["sources"]["registered_count"] == 3
     assert data["sources"]["available"] is True
     assert "RecallRadar" in data["modules"]
     assert "DrugSignal" in data["modules"]
+    assert "Regional Health Pulse" in data["modules"]
+    assert "Saved Monitors" in data["modules"]
+    assert "Sources" in data["modules"]
     assert "Audit History" in data["modules"]
 
 
@@ -66,7 +69,7 @@ def test_data_quality_returns_skipped_when_database_not_configured(monkeypatch):
     assert data["status"] == "skipped"
     assert data["database_configured"] is False
     assert data["audit_readable"] is False
-    assert data["source_registry_count"] == 2
+    assert data["source_registry_count"] == 3
     assert data["recent_audit_count"] == 0
     assert data["latest_audit_event"]["exists"] is False
 
@@ -115,7 +118,7 @@ def test_data_quality_returns_recent_audit_summary(monkeypatch):
     assert data["status"] == "ok"
     assert data["database_configured"] is True
     assert data["audit_readable"] is True
-    assert data["source_registry_count"] == 2
+    assert data["source_registry_count"] == 3
     assert data["recent_audit_count"] == 3
     assert data["upstream_status_counts"]["success"] == 1
     assert data["upstream_status_counts"]["empty"] == 1

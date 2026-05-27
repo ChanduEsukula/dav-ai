@@ -4,11 +4,7 @@ from fastapi import APIRouter, Request
 
 from app.db.audit_repository import get_latest_audit_event_for_source
 from app.schemas.sources import SourceRegistryResponse
-from app.sources.registry import (
-    OPENFDA_DRUG_ENFORCEMENT,
-    OPENFDA_DRUG_EVENT,
-    REGIONAL_HEALTH_PULSE_DEMO,
-)
+from app.sources.registry import REGISTERED_SOURCES
 
 router = APIRouter()
 
@@ -146,15 +142,9 @@ def _build_freshness(source: dict, latest_event: dict | None, repository_status:
 async def list_sources(request: Request):
     request_id = getattr(request.state, "request_id", None)
 
-    registry_sources = [
-        OPENFDA_DRUG_ENFORCEMENT,
-        OPENFDA_DRUG_EVENT,
-        REGIONAL_HEALTH_PULSE_DEMO,
-    ]
-
     sources = []
 
-    for source in registry_sources:
+    for source in REGISTERED_SOURCES:
         repository_status, latest_event = get_latest_audit_event_for_source(
             source_id=source["source_id"],
             request_id=request_id,
