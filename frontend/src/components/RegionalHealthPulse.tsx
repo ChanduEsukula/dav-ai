@@ -4,6 +4,25 @@ import {
   type RegionalHealthSearchResponse,
 } from '../api/regionalHealth'
 
+const healthPulseRegions = [
+  { value: '', label: 'Select a region' },
+  { value: 'MN', label: 'Minnesota' },
+  { value: 'CA', label: 'California' },
+  { value: 'NY', label: 'New York' },
+  { value: 'TX', label: 'Texas' },
+  { value: 'FL', label: 'Florida' },
+  { value: 'IL', label: 'Illinois' },
+  { value: 'WA', label: 'Washington' },
+]
+
+const healthPulseCategories = [
+  { value: '', label: 'Select a category' },
+  { value: 'respiratory', label: 'Respiratory' },
+  { value: 'hospital pressure', label: 'Hospital pressure' },
+  { value: 'flu-like illness', label: 'Flu-like illness' },
+  { value: 'emergency visits', label: 'Emergency visits' },
+]
+
 function RegionalHealthPulse() {
   const [region, setRegion] = useState('MN')
   const [category, setCategory] = useState('respiratory')
@@ -64,24 +83,32 @@ function RegionalHealthPulse() {
         <div className="health-pulse-form-grid">
           <div className="health-pulse-field">
             <label htmlFor="health-region">Region</label>
-            <input
+            <select
               id="health-region"
               value={region}
               onChange={(event) => setRegion(event.target.value)}
-              placeholder="Example: MN"
-              autoComplete="off"
-            />
+            >
+              {healthPulseRegions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label} ({option.value})
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="health-pulse-field">
             <label htmlFor="health-category">Public-health category</label>
-            <input
+            <select
               id="health-category"
               value={category}
               onChange={(event) => setCategory(event.target.value)}
-              placeholder="Example: respiratory or hospital pressure"
-              autoComplete="off"
-            />
+            >
+              {healthPulseCategories.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           <button type="submit" disabled={loading}>
@@ -102,127 +129,133 @@ function RegionalHealthPulse() {
       )}
 
       {data && (
-        <div className="results-grid health-pulse-results-grid">
-          <article className="result-card health-pulse-signal-card">
-            <p className="eyebrow">Signal summary</p>
-            <div className="health-pulse-card-heading">
-              <h2>{data.signal.trend_label}</h2>
-              <span className="health-pulse-badge">{data.signal.review_priority}</span>
+        <div className="health-pulse-results-stack">
+          <article className="result-card health-pulse-meaning-card">
+            <div>
+              <p className="eyebrow">What this means</p>
+              <div className="health-pulse-card-heading">
+                <h2>{data.signal.trend_label} public-health signal</h2>
+                <span className="health-pulse-badge">{data.signal.review_priority}</span>
+              </div>
+              <p className="health-pulse-summary-line">
+                Dav AI found {data.record_count} scaffold public-data record(s) for{' '}
+                <strong>{data.region}</strong> · <strong>{data.category}</strong>. This is a
+                regional awareness signal for review, not emergency guidance or medical advice.
+              </p>
             </div>
-            <p className="health-pulse-summary-line">
-              {data.region} · {data.category} · {data.record_count} public-data record(s)
-            </p>
-            <dl className="detail-list health-pulse-detail-list">
+
+            <div className="health-pulse-snapshot-grid">
               <div>
-                <dt>Review priority</dt>
-                <dd>{data.signal.review_priority}</dd>
+                <small>Review priority</small>
+                <strong>{data.signal.review_priority}</strong>
               </div>
               <div>
-                <dt>Confidence</dt>
-                <dd>{data.signal.confidence}</dd>
+                <small>Confidence</small>
+                <strong>{data.signal.confidence}</strong>
               </div>
               <div>
-                <dt>Change</dt>
-                <dd>{data.signal.change_percent === null ? 'Not available' : `${data.signal.change_percent}%`}</dd>
+                <small>Change</small>
+                <strong>
+                  {data.signal.change_percent === null
+                    ? 'Not available'
+                    : `${data.signal.change_percent}%`}
+                </strong>
               </div>
               <div>
-                <dt>Latest period</dt>
-                <dd>{data.latest_period ?? 'Not available'}</dd>
+                <small>Latest period</small>
+                <strong>{data.latest_period ?? 'Not available'}</strong>
               </div>
               <div>
-                <dt>Latest value</dt>
-                <dd>{data.latest_value ?? 'Not available'}</dd>
+                <small>Latest value</small>
+                <strong>{data.latest_value ?? 'Not available'}</strong>
               </div>
-            </dl>
+            </div>
           </article>
 
-          <article className="result-card health-pulse-source-card">
-            <p className="eyebrow">Source transparency</p>
-            <h2>{data.source_name}</h2>
-            <p className="technical-value">{data.endpoint}</p>
-            <dl className="detail-list health-pulse-detail-list">
-              <div>
-                <dt>Source ID</dt>
-                <dd className="technical-value">{data.source_id}</dd>
-              </div>
-              <div>
-                <dt>Retrieved</dt>
-                <dd>{new Date(data.retrieval_timestamp).toLocaleString()}</dd>
-              </div>
-              <div>
-                <dt>Signal version</dt>
-                <dd className="technical-value">{data.signal.signal_version}</dd>
-              </div>
-            </dl>
-          </article>
-
-          <article className="result-card health-pulse-freshness-card">
-            <p className="eyebrow">Source freshness</p>
-            <div className="health-pulse-card-heading">
+          <div className="health-pulse-results-grid">
+            <article className="result-card health-pulse-trust-card">
+              <p className="eyebrow">Data trust status</p>
               <h2>{data.source_freshness.freshness_label}</h2>
-              <span className="health-pulse-badge health-pulse-badge-muted">
-                {data.source_freshness.freshness_status}
-              </span>
-            </div>
-            <p>{data.source_freshness.freshness_message}</p>
-            <dl className="detail-list health-pulse-detail-list">
-              <div>
-                <dt>Freshness status</dt>
-                <dd>{data.source_freshness.freshness_status}</dd>
-              </div>
-              <div>
-                <dt>Update cadence</dt>
-                <dd>{data.source_freshness.source_update_cadence}</dd>
-              </div>
-            </dl>
-          </article>
+              <p>
+                The signal comes from <strong>{data.source_name}</strong>.{' '}
+                {data.source_freshness.freshness_message}
+              </p>
 
-          <article className="result-card health-pulse-audit-card">
-            <p className="eyebrow">Audit trail</p>
-            <div className="health-pulse-card-heading">
-              <h2>Health Pulse provenance</h2>
-              <a
-                className="secondary-button health-pulse-audit-link"
-                href={`/?page=audit&audit_id=${encodeURIComponent(data.audit.audit_id)}`}
-              >
-                Open in Audit History
-              </a>
-            </div>
+              <dl className="detail-list health-pulse-detail-list">
+                <div>
+                  <dt>Source ID</dt>
+                  <dd className="technical-value">{data.source_id}</dd>
+                </div>
+                <div>
+                  <dt>Endpoint</dt>
+                  <dd className="technical-value">{data.endpoint}</dd>
+                </div>
+                <div>
+                  <dt>Retrieved</dt>
+                  <dd>{new Date(data.retrieval_timestamp).toLocaleString()}</dd>
+                </div>
+                <div>
+                  <dt>Freshness status</dt>
+                  <dd>{data.source_freshness.freshness_status}</dd>
+                </div>
+                <div>
+                  <dt>Update cadence</dt>
+                  <dd>{data.source_freshness.source_update_cadence}</dd>
+                </div>
+                <div>
+                  <dt>Signal version</dt>
+                  <dd className="technical-value">{data.signal.signal_version}</dd>
+                </div>
+              </dl>
+            </article>
 
-            <dl className="detail-list health-pulse-detail-list">
-              <div>
-                <dt>Audit ID</dt>
-                <dd className="technical-value">{data.audit.audit_id}</dd>
+            <article className="result-card health-pulse-audit-card">
+              <p className="eyebrow">Technical provenance</p>
+              <div className="health-pulse-card-heading">
+                <h2>Audit trail</h2>
+                <a
+                  className="secondary-button health-pulse-audit-link"
+                  href={`/?page=audit&audit_id=${encodeURIComponent(data.audit.audit_id)}`}
+                >
+                  Open in Audit History
+                </a>
               </div>
-              <div>
-                <dt>Module</dt>
-                <dd>{data.audit.module}</dd>
-              </div>
-              <div>
-                <dt>Upstream status</dt>
-                <dd>{data.audit.upstream_status}</dd>
-              </div>
-              <div>
-                <dt>Transform version</dt>
-                <dd className="technical-value">{data.audit.transform_version}</dd>
-              </div>
-              <div>
-                <dt>Snapshot status</dt>
-                <dd>{data.audit.source_snapshot_status ?? 'Not available'}</dd>
-              </div>
-              <div>
-                <dt>Source pull ID</dt>
-                <dd className="technical-value">{data.audit.source_pull_id ?? 'Not available'}</dd>
-              </div>
-              <div>
-                <dt>Payload hash</dt>
-                <dd className="technical-value">{data.audit.source_payload_hash ?? 'Not available'}</dd>
-              </div>
-            </dl>
-          </article>
+              <p>
+                Use this when you need to prove which source, transform version, and audit event
+                produced the displayed signal.
+              </p>
+
+              <dl className="detail-list health-pulse-detail-list">
+                <div>
+                  <dt>Audit ID</dt>
+                  <dd className="technical-value">{data.audit.audit_id}</dd>
+                </div>
+                <div>
+                  <dt>Module</dt>
+                  <dd>{data.audit.module}</dd>
+                </div>
+                <div>
+                  <dt>Upstream status</dt>
+                  <dd>{data.audit.upstream_status}</dd>
+                </div>
+                <div>
+                  <dt>Transform version</dt>
+                  <dd className="technical-value">{data.audit.transform_version}</dd>
+                </div>
+                <div>
+                  <dt>Snapshot status</dt>
+                  <dd>{data.audit.source_snapshot_status ?? 'Not available'}</dd>
+                </div>
+                <div>
+                  <dt>Payload hash</dt>
+                  <dd className="technical-value">{data.audit.source_payload_hash ?? 'Not available'}</dd>
+                </div>
+              </dl>
+            </article>
+          </div>
 
           <article className="result-card full-width-card health-pulse-limitations-card">
-            <p className="eyebrow">Limitations</p>
+            <p className="eyebrow">Safety boundaries</p>
             <h2>Public-data review only</h2>
             <p>{data.disclaimer}</p>
             <ul>

@@ -27,7 +27,7 @@ describe('RegionalHealthPulse', () => {
 
     render(<RegionalHealthPulse />)
 
-    await user.clear(screen.getByLabelText('Region'))
+    await user.selectOptions(screen.getByLabelText('Region'), '')
     await user.click(screen.getByRole('button', { name: /Check Health Pulse/i }))
 
     expect(
@@ -92,13 +92,13 @@ describe('RegionalHealthPulse', () => {
 
     await waitFor(() => {
       expect(mockedSearchRegionalHealth).toHaveBeenCalledWith('MN', 'respiratory')
-      expect(screen.getByRole('heading', { name: 'Increasing' })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: /Increasing public-health signal/i })).toBeInTheDocument()
       expect(screen.getAllByText(/Watch/i).length).toBeGreaterThan(0)
       expect(screen.getByText(/regional_health_pulse_demo/i)).toBeInTheDocument()
-      expect(screen.getByText('Source freshness')).toBeInTheDocument()
+      expect(screen.getByText('Data trust status')).toBeInTheDocument()
       expect(screen.getByText('Scaffold data')).toBeInTheDocument()
       expect(screen.getByText(/Live CDC\/HHS freshness checks are not configured yet/i)).toBeInTheDocument()
-      expect(screen.getByText('Health Pulse provenance')).toBeInTheDocument()
+      expect(screen.getByText('Technical provenance')).toBeInTheDocument()
       expect(screen.getByText('33333333-3333-4333-8333-333333333333')).toBeInTheDocument()
       expect(screen.getByRole('link', { name: 'Open in Audit History' })).toHaveAttribute(
         'href',
