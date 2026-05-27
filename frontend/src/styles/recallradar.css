@@ -331,3 +331,106 @@
   color: #5d6874;
   line-height: 1.6;
 }
+/* Result hierarchy polish: RecallRadar */
+.recall-card {
+  display: grid;
+  gap: 1rem;
+  overflow: hidden;
+}
+
+.recall-card-top {
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(11, 79, 113, 0.08);
+}
+
+.recall-score-block {
+  display: grid;
+  justify-items: end;
+  gap: 0.2rem;
+  min-width: 5rem;
+}
+
+.recall-score-block small {
+  color: var(--soft-muted);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.recall-score-block strong {
+  color: var(--deep-ink);
+  font-size: clamp(2rem, 5vw, 2.9rem);
+  line-height: 0.9;
+  letter-spacing: -0.06em;
+}
+
+.recall-card h3 {
+  margin: 0;
+  max-width: 860px;
+  font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+}
+
+.reason {
+  max-width: 900px;
+}
+
+.recall-card .metadata-grid,
+.audit-panel .metadata-grid {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.recall-card .metadata-grid span,
+.audit-panel .metadata-grid span,
+.audit-box p,
+.source-strip span {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.audit-box {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.audit-box p {
+  margin: 0;
+}
+
+.recall-card details {
+  border-top: 1px solid rgba(11, 79, 113, 0.08);
+  padding-top: 0.9rem;
+}
+
+.recall-card summary {
+  width: fit-content;
+}
+
+@media (max-width: 640px) {
+  .recallradar {
+    margin-top: 72px;
+  }
+
+  .search-panel {
+    padding: 1rem;
+    border-radius: 26px;
+  }
+
+  .recall-card {
+    padding: 1rem;
+    border-radius: 22px;
+  }
+
+  .recall-card-top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .recall-score-block {
+    justify-items: start;
+  }
+
+  .source-strip span {
+    width: 100%;
+  }
+}

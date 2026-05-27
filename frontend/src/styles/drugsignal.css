@@ -279,3 +279,132 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Result hierarchy polish: DrugSignal */
+.drug-signal-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.drug-intelligence-card,
+.reaction-category-card,
+.drug-trend-card,
+.drug-audit-panel,
+.reaction-list {
+  margin-top: 0;
+}
+
+.drug-intelligence-card {
+  display: grid;
+  gap: 1rem;
+  overflow: hidden;
+}
+
+.drug-intelligence-card h3 {
+  margin: 0.3rem 0 0.45rem;
+}
+
+.drug-intelligence-grid,
+.drug-trend-grid,
+.drug-audit-panel .metadata-grid {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.drug-intelligence-grid div,
+.drug-trend-grid div,
+.drug-audit-panel .metadata-grid div {
+  min-width: 0;
+}
+
+.drug-intelligence-grid span,
+.drug-trend-grid span,
+.drug-audit-panel .metadata-grid span,
+.reaction-category-row small,
+.reaction-classifier-version,
+.drug-trend-limitation {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.reaction-category-card,
+.drug-trend-card,
+.drug-audit-panel,
+.reaction-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.reaction-category-list,
+.reaction-list {
+  gap: 0.75rem;
+}
+
+.reaction-category-row,
+.reaction-row {
+  align-items: center;
+  min-width: 0;
+}
+
+.reaction-category-row div,
+.reaction-main {
+  min-width: 0;
+}
+
+.reaction-category-row strong,
+.reaction-row strong {
+  border-radius: 999px;
+  padding: 0.35rem 0.65rem;
+  background: rgba(0, 123, 135, 0.1);
+  line-height: 1;
+}
+
+.drug-trend-card h3,
+.reaction-category-card h3,
+.reaction-list h3 {
+  margin-top: 0;
+}
+
+.drug-audit-panel {
+  background:
+    radial-gradient(circle at top right, rgba(0, 123, 135, 0.08), transparent 34%),
+    #f8fbfc;
+}
+
+.drug-audit-panel .disclaimer {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(16, 32, 51, 0.06);
+}
+
+@media (max-width: 640px) {
+  .drugsignal {
+    padding: 36px 0;
+  }
+
+  .drug-signal-panel {
+    padding: 1rem;
+    border-radius: 24px;
+  }
+
+  .drug-intelligence-card,
+  .reaction-category-card,
+  .drug-trend-card,
+  .drug-audit-panel,
+  .empty-state {
+    padding: 1rem;
+    border-radius: 20px;
+  }
+
+  .reaction-category-row,
+  .reaction-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .reaction-category-row strong,
+  .reaction-row strong {
+    width: fit-content;
+  }
+}

@@ -126,7 +126,10 @@ function RecallRadar({
                   <span className={`risk-pill risk-${result.risk_score.label.toLowerCase()}`}>
                     {result.risk_score.label} signal
                   </span>
-                  <strong>{result.risk_score.score}</strong>
+                  <div className="recall-score-block">
+                    <small>Risk score</small>
+                    <strong>{result.risk_score.score}</strong>
+                  </div>
                 </div>
 
                 <h3>{result.product_description}</h3>
