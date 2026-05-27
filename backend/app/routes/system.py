@@ -3,16 +3,13 @@ from fastapi import APIRouter
 from app.db.audit_repository import list_audit_events
 from app.db.database import is_database_configured
 from app.schemas.system import DataQualityResponse, SystemStatusResponse
-from app.sources.registry import OPENFDA_DRUG_ENFORCEMENT, OPENFDA_DRUG_EVENT
+from app.sources.registry import REGISTERED_SOURCES
 
 router = APIRouter(prefix="/api/v1/system")
 
 
 def get_registered_sources() -> list[dict[str, str]]:
-    return [
-        OPENFDA_DRUG_ENFORCEMENT,
-        OPENFDA_DRUG_EVENT,
-    ]
+    return REGISTERED_SOURCES
 
 
 @router.get("/status", response_model=SystemStatusResponse)
@@ -41,6 +38,8 @@ def get_system_status() -> SystemStatusResponse:
         modules=[
             "RecallRadar",
             "DrugSignal",
+            "Regional Health Pulse",
+            "Saved Monitors",
             "Sources",
             "Audit History",
         ],

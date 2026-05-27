@@ -114,6 +114,22 @@ describe('AuditHistoryPage', () => {
     expect(screen.getAllByText('recall-risk-v0.1').length).toBeGreaterThan(0)
   })
 
+  test('renders Regional Health Pulse module filter option', async () => {
+    mockedGetAuditEvents.mockResolvedValue({
+      status: 'ok',
+      persistence_available: true,
+      count: mockAuditItems.length,
+      items: mockAuditItems,
+    })
+
+    render(<AuditHistoryPage />)
+
+    expect(await screen.findByText('Audit History')).toBeInTheDocument()
+    expect(
+      screen.getByRole('option', { name: 'Regional Health Pulse' }),
+    ).toBeInTheDocument()
+  })
+
   test('selects the first audit event by default', async () => {
     mockedGetAuditEvents.mockResolvedValue({
       status: 'ok',
@@ -185,8 +201,6 @@ describe('AuditHistoryPage', () => {
     expect(window.location.search).toContain('audit_id=22222222-2222-4222-8222-222222222222')
   })
 
-
-
   test('renders source pull provenance for the selected audit event', async () => {
     mockedGetAuditEvents.mockResolvedValue({
       status: 'ok',
@@ -221,7 +235,6 @@ describe('AuditHistoryPage', () => {
     ).toBeInTheDocument()
     expect(screen.queryByText(/raw_payload/i)).not.toBeInTheDocument()
   })
-
 
   test('copies provenance summary from the source pull card', async () => {
     const writeText = vi.fn()

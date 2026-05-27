@@ -1,3 +1,10 @@
+"""Shared public source registry for Dav AI.
+
+This module is the single source of truth for public/data sources shown by
+System/Data Quality and Data Sources. Keep Saved Monitors out of this list
+because Saved Monitors is an internal workflow, not an external public source.
+"""
+
 OPENFDA_DRUG_ENFORCEMENT = {
     "source_id": "openfda_drug_enforcement",
     "source_name": "openFDA Drug Enforcement API",
@@ -24,3 +31,9 @@ REGIONAL_HEALTH_PULSE_DEMO = {
     "description": "Demo public-health signal scaffold for Regional Health Pulse backend v1. This is not live CDC/HHS surveillance yet.",
     "update_cadence": "MVP scaffold; live public source cadence not configured yet",
 }
+
+REGISTERED_SOURCES = [
+    OPENFDA_DRUG_ENFORCEMENT,
+    OPENFDA_DRUG_EVENT,
+    REGIONAL_HEALTH_PULSE_DEMO,
+]
