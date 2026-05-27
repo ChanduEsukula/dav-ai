@@ -4,6 +4,25 @@ import {
   type RegionalHealthSearchResponse,
 } from '../api/regionalHealth'
 
+const healthPulseRegions = [
+  { value: '', label: 'Select a region' },
+  { value: 'MN', label: 'Minnesota' },
+  { value: 'CA', label: 'California' },
+  { value: 'NY', label: 'New York' },
+  { value: 'TX', label: 'Texas' },
+  { value: 'FL', label: 'Florida' },
+  { value: 'IL', label: 'Illinois' },
+  { value: 'WA', label: 'Washington' },
+]
+
+const healthPulseCategories = [
+  { value: '', label: 'Select a category' },
+  { value: 'respiratory', label: 'Respiratory' },
+  { value: 'hospital pressure', label: 'Hospital pressure' },
+  { value: 'flu-like illness', label: 'Flu-like illness' },
+  { value: 'emergency visits', label: 'Emergency visits' },
+]
+
 function RegionalHealthPulse() {
   const [region, setRegion] = useState('MN')
   const [category, setCategory] = useState('respiratory')
@@ -64,24 +83,32 @@ function RegionalHealthPulse() {
         <div className="health-pulse-form-grid">
           <div className="health-pulse-field">
             <label htmlFor="health-region">Region</label>
-            <input
+            <select
               id="health-region"
               value={region}
               onChange={(event) => setRegion(event.target.value)}
-              placeholder="Example: MN"
-              autoComplete="off"
-            />
+            >
+              {healthPulseRegions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label} ({option.value})
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="health-pulse-field">
             <label htmlFor="health-category">Public-health category</label>
-            <input
+            <select
               id="health-category"
               value={category}
               onChange={(event) => setCategory(event.target.value)}
-              placeholder="Example: respiratory or hospital pressure"
-              autoComplete="off"
-            />
+            >
+              {healthPulseCategories.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           <button type="submit" disabled={loading}>

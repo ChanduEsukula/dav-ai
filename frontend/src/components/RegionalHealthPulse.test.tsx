@@ -27,7 +27,7 @@ describe('RegionalHealthPulse', () => {
 
     render(<RegionalHealthPulse />)
 
-    await user.clear(screen.getByLabelText('Region'))
+    await user.selectOptions(screen.getByLabelText('Region'), '')
     await user.click(screen.getByRole('button', { name: /Check Health Pulse/i }))
 
     expect(
