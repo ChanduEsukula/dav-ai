@@ -157,6 +157,29 @@ function setAuditIdInUrl(auditId: string | null) {
   window.history.replaceState(null, '', url.toString())
 }
 
+function getSourcePullTitle(
+  status: string,
+  sourcePull: SourcePullProvenanceItem | null,
+) {
+  if (sourcePull) {
+    return 'Source pull recorded'
+  }
+
+  if (status === 'loading') {
+    return 'Checking source pull'
+  }
+
+  if (status === 'not_found') {
+    return 'No source pull recorded yet'
+  }
+
+  if (status === 'error') {
+    return 'Source pull unavailable'
+  }
+
+  return 'Source pull status'
+}
+
 export default function AuditHistoryPage() {
   const [items, setItems] = useState<AuditHistoryItem[]>([])
   const [selectedItem, setSelectedItem] = useState<AuditHistoryItem | null>(null)
@@ -623,7 +646,7 @@ export default function AuditHistoryPage() {
                   <div className="audit-source-pull-header">
                     <div>
                       <p className="eyebrow">Provenance</p>
-                      <h4>Provenance verified</h4>
+                      <h4>{getSourcePullTitle(sourcePullStatus, sourcePull)}</h4>
                     </div>
                     <span className={`audit-status audit-status-${sourcePullStatus}`}>
                       {sourcePullStatus}
