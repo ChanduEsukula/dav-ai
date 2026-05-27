@@ -35,10 +35,10 @@
 
 .saved-monitor-form {
   display: grid;
-  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) minmax(160px, 0.7fr) auto;
+  grid-template-columns: minmax(220px, 1fr) minmax(280px, 1.35fr) minmax(190px, 0.85fr) auto;
   gap: 1rem;
   align-items: end;
-  padding: 1.1rem;
+  padding: 1.15rem;
   border: 1px solid rgba(15, 118, 110, 0.16);
   border-radius: 1.25rem;
   background: rgba(255, 255, 255, 0.72);
@@ -46,15 +46,18 @@
   backdrop-filter: blur(10px);
 }
 
-.saved-monitor-form div {
+.saved-monitor-form > div {
   display: grid;
   gap: 0.45rem;
+  min-width: 0;
 }
 
 .saved-monitor-form label {
-  font-size: 0.82rem;
-  font-weight: 800;
-  color: #0f172a;
+  font-size: 0.76rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #0f766e;
 }
 
 .saved-monitor-form input,
@@ -62,12 +65,13 @@
   width: 100%;
   min-height: 2.85rem;
   border: 1px solid rgba(15, 118, 110, 0.18);
-  border-radius: 0.9rem;
-  padding: 0 0.85rem;
-  background: #ffffff;
+  border-radius: 0.95rem;
+  padding: 0 0.95rem;
+  background: rgba(255, 255, 255, 0.94);
   color: #0f172a;
   font: inherit;
   outline: none;
+  box-sizing: border-box;
 }
 
 .saved-monitor-form input:focus,
@@ -194,13 +198,54 @@
   color: #0f172a;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .saved-monitor-form {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .saved-monitor-form button {
     width: 100%;
+  }
+}
+
+@media (max-width: 720px) {
+  .saved-monitors-page {
+    width: min(100% - 1rem, 1120px);
+    padding-top: 1.25rem;
+  }
+
+  .saved-monitor-form {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+
+  .saved-monitor-panel-header,
+  .saved-monitor-card-header,
+  .saved-monitor-actions,
+  .monitor-insight-card-top,
+  .saved-monitor-section-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .saved-monitor-actions button,
+  .audit-link-button {
+    width: 100%;
+  }
+
+  .saved-monitor-card-grid,
+  .saved-monitor-card-body,
+  .monitor-insight-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .saved-monitor-card-list {
+    padding: 0.75rem;
+  }
+
+  .saved-monitor-card {
+    padding: 0.9rem;
+    border-radius: 20px;
   }
 }
 
@@ -353,8 +398,8 @@
 
 .saved-monitor-card {
   display: grid;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 1.1rem;
+  padding: 1.1rem;
   border: 1px solid rgba(15, 118, 110, 0.12);
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.86);
@@ -387,6 +432,7 @@
   margin: 0.35rem 0 0;
   color: #475569;
   font-size: 0.92rem;
+  overflow-wrap: anywhere;
 }
 
 .saved-monitor-card-grid {

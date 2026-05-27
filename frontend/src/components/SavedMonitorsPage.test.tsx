@@ -427,6 +427,61 @@ describe('SavedMonitorsPage', () => {
     })
   })
 
+  it('trims leading and trailing spaces but preserves internal query spaces', async () => {
+    vi.mocked(listSavedMonitors).mockResolvedValue([])
+    vi.mocked(createSavedMonitor).mockResolvedValue({
+      ...healthPulseMonitor,
+      id: 'monitor-spaces',
+      name: 'Minnesota respiratory monitor',
+      query: 'MN hospital pressure',
+      module: 'regional_health_pulse',
+    })
+    vi.mocked(getSavedMonitorInsight).mockResolvedValue({
+      ...baseInsight,
+      monitor_id: 'monitor-spaces',
+      label: 'insufficient_history',
+      headline: 'Insufficient history',
+      latest_record_count: null,
+      previous_record_count: null,
+      record_count_delta: null,
+      percent_change: null,
+      latest_score: null,
+      previous_score: null,
+      score_delta: null,
+      confidence: 'low',
+    })
+
+    render(<SavedMonitorsPage />)
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          'No saved monitors yet. Create one above to start the monitoring workflow.',
+        ),
+      ).toBeInTheDocument()
+    })
+
+    fireEvent.change(screen.getByLabelText('Module'), {
+      target: { value: 'regional_health_pulse' },
+    })
+    fireEvent.change(screen.getByLabelText('Monitor name'), {
+      target: { value: '  Minnesota respiratory monitor  ' },
+    })
+    fireEvent.change(screen.getByLabelText('Search query'), {
+      target: { value: '  MN hospital pressure  ' },
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save Monitor' }))
+
+    await waitFor(() => {
+      expect(createSavedMonitor).toHaveBeenCalledWith({
+        name: 'Minnesota respiratory monitor',
+        query: 'MN hospital pressure',
+        module: 'regional_health_pulse',
+      })
+    })
+  })
+
   it('shows duplicate saved monitor error from the API', async () => {
     vi.mocked(listSavedMonitors).mockResolvedValue([])
     vi.mocked(createSavedMonitor).mockRejectedValue(
