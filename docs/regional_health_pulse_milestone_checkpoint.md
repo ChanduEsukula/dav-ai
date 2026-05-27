@@ -57,7 +57,7 @@ This milestone adds a clearly labeled MVP scaffold for regional public-health si
 ## Current Verification Status
 
 - Backend tests: 117 passed.
-- Frontend tests: 62 passed.
+- Frontend tests: 63 passed.
 - Frontend lint: passed.
 - Frontend production build: passed.
 
