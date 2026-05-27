@@ -20,14 +20,14 @@ Regional Health Pulse now includes:
 - Frontend source transparency, scaffold source freshness, and audit/provenance display.
 - Saved Monitors backend support.
 - Saved Monitors scheduled-refresh compatibility.
-- Saved Monitors UI module selection and display support.
+- Saved Monitors UI module selection, display support, responsive layout polish, and internal-space preservation coverage.
 - Demo smoke coverage.
 - README and milestone documentation updates.
 
 ## Verification Results
 
 - Backend tests: 120 passed.
-- Frontend tests: 62 passed.
+- Frontend tests: 63 passed.
 - Frontend lint: passed.
 - Frontend production build: passed.
 

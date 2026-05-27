@@ -65,7 +65,7 @@ Dav AI currently includes:
 - **Safety Briefing Engine** for deterministic role-aware public-data safety briefings.
 - **Source Registry** for public data source transparency.
 - **Audit History** for persisted source/search traceability.
-- **Saved Monitors v2.6 foundation** for saved repeatable RecallRadar, DrugSignal, and Regional Health Pulse searches, manual run checks, latest/previous comparison, run history, change indicators, duplicate prevention, audit linking, backend scheduled-refresh foundation, CLI guardrails, database-backed scheduler locks, and Render Cron dry-run planning.
+- **Saved Monitors v2.6 foundation** for saved repeatable RecallRadar, DrugSignal, and Regional Health Pulse searches, manual run checks, latest/previous comparison, run history, change indicators, duplicate prevention, audit linking, polished responsive layout, safer form spacing, internal-space preservation for monitor queries, backend scheduled-refresh foundation, CLI guardrails, database-backed scheduler locks, and Render Cron dry-run planning.
 - **System/Data Quality views** for operational and audit-persistence visibility.
 - **Supabase/PostgreSQL audit and saved-monitor persistence** through fail-soft backend repositories.
 - **GitHub Actions CI** for backend tests, frontend tests, frontend lint, frontend production build, and Playwright smoke testing.
@@ -176,7 +176,7 @@ DrugSignal briefing output has been upgraded to use DrugSignal Intelligence Scor
 
 ### Saved Monitors v2.6 Foundation
 
-Saved Monitors v2.6 foundation lets users save repeatable RecallRadar, DrugSignal, or Regional Health Pulse searches, manually run checks over time, review run history, compare latest and previous values, and rely on a backend scheduled-refresh foundation for future Cron-based execution.
+Saved Monitors v2.6 foundation lets users save repeatable RecallRadar, DrugSignal, or Regional Health Pulse searches, manually run checks over time, review run history, compare latest and previous values, and rely on a backend scheduled-refresh foundation for future Cron-based execution. The frontend now includes a more polished responsive card layout, improved form spacing, and test coverage confirming leading/trailing spaces are trimmed while internal query spaces are preserved.
 
 Current manual workflow:
 
@@ -326,7 +326,7 @@ Current backend test status:
 Current frontend test status:
 
 ```bash
-62 passed
+63 passed
 ```
 
 ---
@@ -985,7 +985,7 @@ npm test
 Current frontend test status:
 
 ```bash
-62 passed
+63 passed
 ```
 
 Frontend test coverage includes:
@@ -997,7 +997,7 @@ Frontend test coverage includes:
 - Safety briefing generator behavior.
 - Audit History filters, copy actions, CSV export, and URL state.
 - System Status / Data Quality page behavior.
-- Saved Monitors loading, empty state, creation, duplicate error handling, validation, RecallRadar/DrugSignal/Regional Health Pulse module selection, run checks, run history, latest/previous values, change indicators, delete confirmation, audit linking, and error states.
+- Saved Monitors loading, empty state, creation, duplicate error handling, validation, RecallRadar/DrugSignal/Regional Health Pulse module selection, layout polish, responsive form/card spacing, internal-space preservation, run checks, run history, latest/previous values, change indicators, delete confirmation, audit linking, and error states.
 
 Run frontend lint and production build:
 
