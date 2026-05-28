@@ -27,6 +27,7 @@ function RecallRadar({
 }: RecallRadarProps) {
   const [briefingRole, setBriefingRole] = useState<BriefingRole>('consumer')
   const hasNoResults = data && data.results.length === 0
+  const hasResults = data && data.results.length > 0
 
   const briefing = useMemo(() => {
     if (!data) return null
@@ -95,36 +96,6 @@ function RecallRadar({
           </div>
         )}
 
-        {data && <AuditPanel query={query} response={data} />}
-
-        {briefing && (
-          <div className="briefing-control-panel">
-            <div className="briefing-role-selector">
-              <span id="recall-briefing-role-label">Briefing role</span>
-
-              <div
-                className="briefing-role-buttons"
-                role="group"
-                aria-labelledby="recall-briefing-role-label"
-              >
-                {briefingRoles.map((role) => (
-                  <button
-                    key={role}
-                    type="button"
-                    className={`briefing-role-button ${briefingRole === role ? 'active' : ''}`}
-                    aria-pressed={briefingRole === role}
-                    onClick={() => setBriefingRole(role)}
-                  >
-                    {briefingRoleLabels[role]}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <SafetyBriefingPanel briefing={briefing} />
-          </div>
-        )}
-
         {hasNoResults && (
           <div className="empty-state">
             <h3>No FDA recall records matched this search.</h3>
@@ -136,8 +107,8 @@ function RecallRadar({
           </div>
         )}
 
-        {data && data.results.length > 0 && (
-          <div className="results-grid">
+        {hasResults && (
+          <div className="results-grid" aria-label="Recall search results">
             {data.results.map((result) => (
               <article className="recall-card" key={result.recall_number}>
                 <div className="recall-card-top">
@@ -176,7 +147,7 @@ function RecallRadar({
                 <p className="plain-explanation">{riskExplanation(result)}</p>
 
                 <details>
-                  <summary>Technical audit details</summary>
+                  <summary>Technical scoring details</summary>
                   <div className="audit-box">
                     <p>Source: {result.source.name}</p>
                     <p>Retrieved: {formatTimestamp(result.source.retrieval_timestamp)}</p>
@@ -192,6 +163,41 @@ function RecallRadar({
               </article>
             ))}
           </div>
+        )}
+
+        {briefing && (
+          <div className="briefing-control-panel">
+            <div className="briefing-role-selector">
+              <span id="recall-briefing-role-label">Briefing role</span>
+
+              <div
+                className="briefing-role-buttons"
+                role="group"
+                aria-labelledby="recall-briefing-role-label"
+              >
+                {briefingRoles.map((role) => (
+                  <button
+                    key={role}
+                    type="button"
+                    className={`briefing-role-button ${briefingRole === role ? 'active' : ''}`}
+                    aria-pressed={briefingRole === role}
+                    onClick={() => setBriefingRole(role)}
+                  >
+                    {briefingRoleLabels[role]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <SafetyBriefingPanel briefing={briefing} />
+          </div>
+        )}
+
+        {data && (
+          <details className="recall-provenance-details">
+            <summary>Technical provenance and audit trail</summary>
+            <AuditPanel query={query} response={data} />
+          </details>
         )}
       </div>
     </section>
