@@ -64,31 +64,48 @@ function DrugSignal() {
 
       <div className="drug-signal-panel">
         <div className="search-box">
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                handleSearch()
-              }
-            }}
-            placeholder="Search FAERS reports: metformin, ibuprofen, aspirin"
-          />
-          <button onClick={handleSearch} disabled={loading}>
+          <div className="search-field">
+            <label className="field-label" htmlFor="drug-signal-search">
+              Drug or medicinal product
+            </label>
+
+            <input
+              id="drug-signal-search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  handleSearch()
+                }
+              }}
+              placeholder="Search FAERS reports: metformin, ibuprofen, aspirin"
+              aria-describedby="drug-signal-search-helper"
+            />
+
+            <p className="field-helper" id="drug-signal-search-helper">
+              Public FAERS reports only. Not causation, medical advice, or clinical decision support.
+            </p>
+          </div>
+
+          <button type="button" onClick={handleSearch} disabled={loading}>
             {loading ? 'Checking public data...' : 'Analyze'}
           </button>
         </div>
 
         {loading && (
-          <p className="loading-helper">
+          <p className="loading-helper" role="status" aria-live="polite">
             This may take a few seconds while the secure backend wakes up and checks public FAERS reporting data.
           </p>
         )}
 
-        {error && <p className="error-message">{error}</p>}
+        {error && (
+          <p className="error-message" role="alert">
+            {error}
+          </p>
+        )}
 
         {data && (
-          <div className="source-strip">
+          <div className="source-strip" role="status" aria-live="polite">
             <span>{data.count} FAERS records reviewed</span>
             <span>{data.source_name}</span>
             <span>Retrieved {formatTimestamp(data.retrieval_timestamp)}</span>
@@ -101,8 +118,11 @@ function DrugSignal() {
               <p className="eyebrow">DrugSignal Intelligence</p>
               <h3>{data.intelligence_score.score} / 100</h3>
               <p>
-                Transparent signal score based on returned public FAERS records,
-                reaction concentration, reaction diversity, and data confidence.
+                Transparent signal score based on deterministic review of returned public FAERS
+                records, reaction concentration, reaction diversity, and data confidence.
+              </p>
+              <p className="drug-score-boundary">
+                Public reports only; this does not prove causation or provide medical advice.
               </p>
             </div>
 
@@ -273,18 +293,19 @@ function DrugSignal() {
         {briefing && (
           <div className="briefing-control-panel">
             <div className="briefing-role-selector">
-              <span>Briefing role</span>
+              <span id="drug-briefing-role-label">Briefing role</span>
 
               <div
                 className="briefing-role-buttons"
                 role="group"
-                aria-label="Drug briefing role"
+                aria-labelledby="drug-briefing-role-label"
               >
                 {briefingRoles.map((role) => (
                   <button
                     key={role}
                     type="button"
                     className={`briefing-role-button ${briefingRole === role ? 'active' : ''}`}
+                    aria-pressed={briefingRole === role}
                     onClick={() => setBriefingRole(role)}
                   >
                     {briefingRoleLabels[role]}

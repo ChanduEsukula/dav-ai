@@ -19,3 +19,23 @@ body {
 #root {
   isolation: isolate;
 }
+
+:where(
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  summary,
+  [role="button"],
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
+  outline: 3px solid rgba(14, 116, 144, 0.75);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgba(14, 116, 144, 0.16);
+}
+
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible) {
+  outline: none;
+}

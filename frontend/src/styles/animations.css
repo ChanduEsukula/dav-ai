@@ -22,6 +22,7 @@
   }
 }
 
+
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -96,5 +97,22 @@
   50% {
     transform: scaleY(1);
     opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .scroll-reveal,
+  .scroll-reveal.revealed {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

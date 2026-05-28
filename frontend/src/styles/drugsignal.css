@@ -5,88 +5,60 @@
 }
 
 .drug-signal-panel {
+  display: grid;
+  gap: 1rem;
   margin-top: 24px;
   padding: 28px;
   border-radius: 28px;
   background: #ffffff;
-  box-shadow: 0 24px 70px rgba(16, 32, 51, 0.1);
+  border: 1px solid rgba(0, 123, 135, 0.1);
+  box-shadow: 0 20px 55px rgba(16, 32, 51, 0.08);
 }
 
-.drug-audit-panel {
-  margin-top: 20px;
-  padding: 20px;
-  border-radius: 22px;
-  background: #f8fbfc;
-  border: 1px solid rgba(0, 123, 135, 0.14);
+.search-field {
+  min-width: 0;
 }
 
-.reaction-list {
-  margin-top: 24px;
-  display: grid;
-  gap: 12px;
+.field-label {
+  display: inline-flex;
+  margin-bottom: 0.45rem;
+  color: var(--deep-ink, #0f172a);
+  font-size: 0.85rem;
+  font-weight: 800;
 }
 
-.reaction-list h3 {
-  margin: 0 0 8px;
-  color: #102033;
+.field-helper {
+  margin: 0.45rem 0 0;
+  color: var(--muted, #475569);
+  font-size: 0.82rem;
+  line-height: 1.45;
 }
 
-.reaction-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 16px 18px;
-  border-radius: 18px;
-  background: #f8fbfc;
-  border: 1px solid rgba(16, 32, 51, 0.08);
+.loading-helper {
+  margin: 0;
+  color: var(--muted, #475569);
+  font-size: 0.9rem;
+  line-height: 1.55;
 }
 
-.reaction-row span {
-  color: #102033;
-  font-weight: 600;
-}
-
-.reaction-row strong {
-  color: #007b87;
-  font-size: 1.05rem;
-}
-
-.reaction-main {
-  flex: 1;
-  display: grid;
-  gap: 8px;
-}
-
-.reaction-bar-track {
-  width: 100%;
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(0, 123, 135, 0.12);
-  overflow: hidden;
-}
-
-.reaction-bar-fill {
-  height: 100%;
-  border-radius: inherit;
-  background: #007b87;
-}
 .drug-intelligence-card {
-  margin-top: 20px;
+  display: grid;
+  gap: 1rem;
+  overflow: hidden;
+  margin-top: 0;
   padding: 22px;
   border-radius: 24px;
-  background:
-    radial-gradient(circle at top left, rgba(45, 212, 191, 0.16), transparent 38%),
-    linear-gradient(135deg, #f8fbfc 0%, #ffffff 100%);
-  border: 1px solid rgba(0, 123, 135, 0.16);
-  box-shadow: 0 18px 48px rgba(16, 32, 51, 0.08);
+  background: #f8fbfc;
+  border: 1px solid rgba(0, 123, 135, 0.14);
+  box-shadow: 0 12px 32px rgba(16, 32, 51, 0.06);
 }
 
 .drug-intelligence-card h3 {
-  margin: 6px 0 8px;
+  margin: 0.3rem 0 0.45rem;
   color: #102033;
   font-size: clamp(2rem, 5vw, 3.4rem);
   line-height: 1;
-  letter-spacing: -0.06em;
+  letter-spacing: -0.055em;
 }
 
 .drug-intelligence-card p {
@@ -96,14 +68,23 @@
   line-height: 1.6;
 }
 
+.drug-score-boundary {
+  margin-top: 0.6rem !important;
+  color: var(--muted, #475569);
+  font-size: 0.88rem;
+  font-weight: 750;
+  line-height: 1.45;
+}
+
 .drug-intelligence-grid {
-  margin-top: 18px;
+  margin-top: 0;
   display: grid;
-  grid-template-columns: repeat(5, minmax(130px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 12px;
 }
 
 .drug-intelligence-grid div {
+  min-width: 0;
   padding: 14px;
   border-radius: 16px;
   background: #ffffff;
@@ -124,29 +105,20 @@
   color: #102033;
   font-weight: 850;
   overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .drug-intelligence-limitations {
-  margin: 16px 0 0;
+  margin: 0;
   padding-left: 20px;
   color: #5d6874;
   line-height: 1.55;
 }
 
-@media (max-width: 960px) {
-  .drug-intelligence-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (max-width: 560px) {
-  .drug-intelligence-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 .reaction-category-card {
-  margin-top: 20px;
+  display: grid;
+  gap: 1rem;
+  margin-top: 0;
   padding: 22px;
   border-radius: 24px;
   background: #f8fbfc;
@@ -154,7 +126,7 @@
 }
 
 .reaction-category-card h3 {
-  margin: 6px 0 8px;
+  margin: 0.3rem 0 0.45rem;
   color: #102033;
   font-size: 1.4rem;
   letter-spacing: -0.03em;
@@ -167,14 +139,16 @@
 }
 
 .reaction-category-list {
-  margin-top: 16px;
   display: grid;
-  gap: 10px;
+  gap: 0.75rem;
+  margin-top: 0;
 }
 
 .reaction-category-row {
   display: flex;
+  align-items: center;
   justify-content: space-between;
+  min-width: 0;
   gap: 16px;
   padding: 14px 16px;
   border-radius: 16px;
@@ -184,6 +158,7 @@
 
 .reaction-category-row div {
   display: grid;
+  min-width: 0;
   gap: 5px;
 }
 
@@ -195,32 +170,41 @@
 .reaction-category-row small {
   color: #5d6874;
   line-height: 1.4;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .reaction-category-row strong {
+  border-radius: 999px;
+  padding: 0.35rem 0.65rem;
   color: #007b87;
+  background: rgba(0, 123, 135, 0.1);
   font-size: 1.05rem;
+  line-height: 1;
 }
 
 .reaction-classifier-version {
-  margin-top: 14px !important;
+  margin-top: 0 !important;
+  color: #5d6874;
   font-size: 0.86rem;
   font-weight: 750;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .drug-trend-card {
-  margin-top: 20px;
+  display: grid;
+  gap: 1rem;
+  margin-top: 0;
   padding: 22px;
   border-radius: 24px;
-  background:
-    radial-gradient(circle at top right, rgba(0, 123, 135, 0.12), transparent 34%),
-    #ffffff;
-  border: 1px solid rgba(0, 123, 135, 0.16);
-  box-shadow: 0 18px 48px rgba(16, 32, 51, 0.08);
+  background: #ffffff;
+  border: 1px solid rgba(0, 123, 135, 0.14);
+  box-shadow: 0 12px 32px rgba(16, 32, 51, 0.06);
 }
 
 .drug-trend-card h3 {
-  margin: 6px 0 8px;
+  margin: 0.3rem 0 0.45rem;
   color: #102033;
   font-size: 1.7rem;
   letter-spacing: -0.04em;
@@ -233,13 +217,14 @@
 }
 
 .drug-trend-grid {
-  margin-top: 18px;
+  margin-top: 0;
   display: grid;
-  grid-template-columns: repeat(5, minmax(130px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 12px;
 }
 
 .drug-trend-grid div {
+  min-width: 0;
   padding: 14px;
   border-radius: 16px;
   background: #f8fbfc;
@@ -260,114 +245,39 @@
   color: #102033;
   font-weight: 850;
   overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .drug-trend-limitation {
-  margin-top: 14px !important;
+  margin-top: 0 !important;
+  color: #5d6874;
   font-size: 0.86rem;
   font-weight: 750;
-}
-
-@media (max-width: 960px) {
-  .drug-trend-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (max-width: 560px) {
-  .drug-trend-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Result hierarchy polish: DrugSignal */
-.drug-signal-panel {
-  display: grid;
-  gap: 1rem;
-}
-
-.drug-intelligence-card,
-.reaction-category-card,
-.drug-trend-card,
-.drug-audit-panel,
-.reaction-list {
-  margin-top: 0;
-}
-
-.drug-intelligence-card {
-  display: grid;
-  gap: 1rem;
-  overflow: hidden;
-}
-
-.drug-intelligence-card h3 {
-  margin: 0.3rem 0 0.45rem;
-}
-
-.drug-intelligence-grid,
-.drug-trend-grid,
-.drug-audit-panel .metadata-grid {
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-}
-
-.drug-intelligence-grid div,
-.drug-trend-grid div,
-.drug-audit-panel .metadata-grid div {
-  min-width: 0;
-}
-
-.drug-intelligence-grid span,
-.drug-trend-grid span,
-.drug-audit-panel .metadata-grid span,
-.reaction-category-row small,
-.reaction-classifier-version,
-.drug-trend-limitation {
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 
-.reaction-category-card,
-.drug-trend-card,
-.drug-audit-panel,
-.reaction-list {
+.drug-audit-panel {
   display: grid;
   gap: 1rem;
-}
-
-.reaction-category-list,
-.reaction-list {
-  gap: 0.75rem;
-}
-
-.reaction-category-row,
-.reaction-row {
-  align-items: center;
-  min-width: 0;
-}
-
-.reaction-category-row div,
-.reaction-main {
-  min-width: 0;
-}
-
-.reaction-category-row strong,
-.reaction-row strong {
-  border-radius: 999px;
-  padding: 0.35rem 0.65rem;
-  background: rgba(0, 123, 135, 0.1);
-  line-height: 1;
-}
-
-.drug-trend-card h3,
-.reaction-category-card h3,
-.reaction-list h3 {
   margin-top: 0;
+  padding: 20px;
+  border-radius: 22px;
+  background: #f8fbfc;
+  border: 1px solid rgba(0, 123, 135, 0.14);
 }
 
-.drug-audit-panel {
-  background:
-    radial-gradient(circle at top right, rgba(0, 123, 135, 0.08), transparent 34%),
-    #f8fbfc;
+.drug-audit-panel .metadata-grid {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.drug-audit-panel .metadata-grid div {
+  min-width: 0;
+}
+
+.drug-audit-panel .metadata-grid span {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .drug-audit-panel .disclaimer {
@@ -376,6 +286,64 @@
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(16, 32, 51, 0.06);
+}
+
+.reaction-list {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0;
+}
+
+.reaction-list h3 {
+  margin: 0 0 0.25rem;
+  color: #102033;
+}
+
+.reaction-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  gap: 16px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: #f8fbfc;
+  border: 1px solid rgba(16, 32, 51, 0.08);
+}
+
+.reaction-row span {
+  color: #102033;
+  font-weight: 600;
+}
+
+.reaction-row strong {
+  border-radius: 999px;
+  padding: 0.35rem 0.65rem;
+  color: #007b87;
+  background: rgba(0, 123, 135, 0.1);
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.reaction-main {
+  flex: 1;
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+
+.reaction-bar-track {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(0, 123, 135, 0.12);
+  overflow: hidden;
+}
+
+.reaction-bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: #007b87;
 }
 
 @media (max-width: 640px) {

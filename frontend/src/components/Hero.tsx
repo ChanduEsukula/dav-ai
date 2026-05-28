@@ -27,18 +27,26 @@ function Hero({ data, goToRecallRadar, goToAbout }: HeroProps) {
           intelligence.
         </p>
 
+        <p className="hero-trust-line">
+          Public sources only • No PHI • Not medical advice
+        </p>
+
         <div className="actions">
-          <button onClick={goToRecallRadar}>Search RecallRadar</button>
-          <button onClick={goToAbout}>How it works</button>
+          <button type="button" onClick={goToRecallRadar}>
+            Search RecallRadar
+          </button>
+          <button type="button" onClick={goToAbout}>
+            How it works
+          </button>
         </div>
       </div>
 
-      <div className="hero-visual" aria-label="Animated product preview">
-        <div className="gradient-orb orb-a"></div>
-        <div className="gradient-orb orb-b"></div>
+      <div className="hero-visual" aria-label="Product preview">
+        <div className="gradient-orb orb-a" aria-hidden="true"></div>
+        <div className="gradient-orb orb-b" aria-hidden="true"></div>
 
         <div className="dashboard-card main-card">
-          <div className="card-header">
+          <div className="card-header" aria-hidden="true">
             <span></span>
             <span></span>
             <span></span>
@@ -46,13 +54,13 @@ function Hero({ data, goToRecallRadar, goToAbout }: HeroProps) {
 
           <div className="signal-score">
             <div>
-              <p>{topResult ? 'Live signal score' : 'Signal score'}</p>
+              <p>{topResult ? 'Signal score from latest search' : 'Sample signal score'}</p>
               <h2>{topResult ? topResult.risk_score.score : 82}</h2>
             </div>
-            <div className="score-ring"></div>
+            <div className="score-ring" aria-hidden="true"></div>
           </div>
 
-          <div className="mini-chart">
+          <div className="mini-chart" aria-hidden="true">
             <i></i>
             <i></i>
             <i></i>
