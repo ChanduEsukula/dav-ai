@@ -159,6 +159,8 @@ function App() {
           <Hero
             data={data}
             goToRecallRadar={goToRecallRadar}
+            goToDrugSignal={goToDrugSignal}
+            goToHealthPulse={() => goToPage('regional-health')}
             goToAbout={() => goToPage('about')}
           />
 
