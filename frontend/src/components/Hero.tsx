@@ -8,26 +8,85 @@ type HeroProps = {
   goToAbout: () => void
 }
 
-const heroModules = [
+type HeroModule = {
+  title: string
+  subtitle: string
+  key: 'recallradar' | 'drugsignal' | 'health-pulse'
+  className: string
+  icon: 'recall' | 'drug' | 'health'
+}
+
+const heroModules: HeroModule[] = [
   {
     title: 'RecallRadar',
-    description: 'Search public FDA recall records with source-aware review scoring.',
-    actionLabel: 'Search recalls',
+    subtitle: 'Find recall records',
     key: 'recallradar',
+    className: 'hero-module-recall',
+    icon: 'recall',
   },
   {
     title: 'DrugSignal',
-    description: 'Explore public FAERS adverse-event reporting patterns.',
-    actionLabel: 'Explore FAERS',
+    subtitle: 'Side-effect patterns',
     key: 'drugsignal',
+    className: 'hero-module-drug',
+    icon: 'drug',
   },
   {
     title: 'Health Pulse',
-    description: 'Preview sample regional public-data signal reviews.',
-    actionLabel: 'Review samples',
+    subtitle: 'Regional signal preview',
     key: 'health-pulse',
+    className: 'hero-module-health',
+    icon: 'health',
   },
-] as const
+]
+
+function HeroModuleIcon({ icon }: { icon: HeroModule['icon'] }) {
+  if (icon === 'recall') {
+    return (
+      <span className="hero-module-icon hero-module-icon-recall" aria-hidden="true">
+        <svg viewBox="0 0 48 48" focusable="false">
+          <circle className="radar-outer-ring" cx="24" cy="24" r="17" />
+          <circle className="radar-inner-ring" cx="24" cy="24" r="9" />
+          <path className="radar-sweep" d="M24 24 L24 7" />
+          <circle className="radar-dot" cx="24" cy="24" r="3.5" />
+          <circle className="radar-target" cx="32" cy="16" r="2.4" />
+        </svg>
+      </span>
+    )
+  }
+
+  if (icon === 'drug') {
+    return (
+      <span className="hero-module-icon hero-module-icon-drug" aria-hidden="true">
+        <svg viewBox="0 0 48 48" focusable="false">
+          <g className="capsule-motion">
+            <rect
+              className="capsule-body"
+              x="12"
+              y="17"
+              width="24"
+              height="14"
+              rx="7"
+              transform="rotate(-38 24 24)"
+            />
+            <path className="capsule-divider" d="M20 16 L28 32" />
+          </g>
+          <circle className="capsule-dot capsule-dot-one" cx="34" cy="14" r="2" />
+          <circle className="capsule-dot capsule-dot-two" cx="14" cy="34" r="1.7" />
+        </svg>
+      </span>
+    )
+  }
+
+  return (
+    <span className="hero-module-icon hero-module-icon-health" aria-hidden="true">
+      <svg viewBox="0 0 48 48" focusable="false">
+        <path className="pulse-guide" d="M6 25 H15 L19 17 L25 34 L30 22 L34 25 H42" />
+        <path className="pulse-line" d="M6 25 H15 L19 17 L25 34 L30 22 L34 25 H42" />
+      </svg>
+    </span>
+  )
+}
 
 function Hero({
   data,
@@ -58,32 +117,33 @@ function Hero({
         </h1>
 
         <p className="subtitle">
-          Dav AI turns public recall, drug-safety, and regional signal data into
-          clear, source-aware intelligence.
+          Dav AI turns public recall, drug-safety, and regional signal data into clear,
+          source-aware intelligence.
         </p>
 
-        <p className="hero-trust-line">
-          Public sources only • No PHI • Not medical advice
-        </p>
+        <p className="hero-trust-line">Public sources only • No PHI • Not medical advice</p>
 
         <div className="hero-module-grid" aria-label="Dav AI intelligence modules">
           {heroModules.map((module) => (
             <button
               key={module.key}
               type="button"
-              className="hero-module-card"
+              className={`hero-module-card ${module.className}`}
               onClick={moduleActions[module.key]}
             >
-              <span>{module.title}</span>
-              <strong>{module.description}</strong>
-              <small>{module.actionLabel}</small>
+              <HeroModuleIcon icon={module.icon} />
+
+              <span className="hero-module-copy">
+                <strong>{module.title}</strong>
+                <small>{module.subtitle}</small>
+              </span>
             </button>
           ))}
         </div>
 
         <div className="actions hero-secondary-actions">
           <button type="button" onClick={goToAbout}>
-            How it works
+            How it works <span aria-hidden="true">→</span>
           </button>
         </div>
       </div>

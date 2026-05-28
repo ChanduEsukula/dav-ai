@@ -14,19 +14,19 @@ test('renders Dav AI landing page', () => {
 
   expect(
     screen.getByRole('button', {
-      name: /RecallRadar.*Search public FDA recall records/i,
+      name: /RecallRadar.*Find recall records/i,
     }),
   ).toBeInTheDocument()
 
   expect(
     screen.getByRole('button', {
-      name: /DrugSignal.*FAERS adverse-event reporting patterns/i,
+      name: /DrugSignal.*Side-effect patterns/i,
     }),
   ).toBeInTheDocument()
 
   expect(
     screen.getByRole('button', {
-      name: /Health Pulse.*sample regional public-data signal reviews/i,
+      name: /Health Pulse.*Regional signal preview/i,
     }),
   ).toBeInTheDocument()
 
