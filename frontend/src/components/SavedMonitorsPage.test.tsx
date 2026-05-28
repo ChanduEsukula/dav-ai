@@ -79,6 +79,14 @@ const baseRun: SavedMonitorRun = {
   audit_id: '11111111-1111-1111-1111-111111111111',
   created_at: '2026-05-11T13:05:00Z',
   error_message: null,
+  payload_change: {
+    label: 'changed',
+    previous_hash: 'a'.repeat(64),
+    latest_hash: 'b'.repeat(64),
+    reason: 'Latest payload hash differs from the previous payload hash.',
+    safety_note:
+      'Payload-change status is an operational public-data review signal based on stored payload hashes. It does not prove medical risk, clinical urgency, product danger, causation, or source correctness.',
+  },
 }
 
 const baseInsight: MonitorInsight = {
@@ -101,8 +109,6 @@ const baseInsight: MonitorInsight = {
   limitation:
     'This insight is based only on stored Dav AI public-data monitor history. It is not medical advice, diagnosis, treatment guidance, clinical decision support, or proof of causality.',
 }
-
-
 
 function expectTextContent(pattern: RegExp) {
   expect(
@@ -216,6 +222,10 @@ describe('SavedMonitorsPage', () => {
       expect(screen.getByText(/RecallRadar · success/i)).toBeInTheDocument()
       expect(screen.getByText('Records 5')).toBeInTheDocument()
       expect(screen.getByText('74 Medium')).toBeInTheDocument()
+      expect(screen.getByText('Payload: Changed')).toBeInTheDocument()
+      expect(
+        screen.getByText('Latest payload hash differs from the previous payload hash.'),
+      ).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'View run audit' })).toBeInTheDocument()
     })
   })
