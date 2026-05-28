@@ -42,6 +42,6 @@ test('demo navigation exposes implemented modules without account placeholders',
 
   await page.getByRole('button', { name: 'Health Pulse', exact: true }).click()
   await expect(
-    page.getByRole('heading', { name: 'Review public-health signal scaffolds.' }),
+    page.getByRole('heading', { name: 'Review sample regional public-data signals.' }),
   ).toBeVisible()
 })
