@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 
-import { getSources, type SourceRecord, type SourceRegistryResponse } from '../api/sources'
+import {
+  getSources,
+  type SourceFreshnessStatus,
+  type SourceRecord,
+  type SourceRegistryResponse,
+} from '../api/sources'
 import {
   getDataQuality,
   getSystemStatus,
@@ -26,16 +31,24 @@ function formatTimestamp(value: string | null) {
   return parsed.toLocaleString()
 }
 
+function formatFreshnessAge(daysSinceLastSuccess: number | null) {
+  if (daysSinceLastSuccess === null) {
+    return 'Unknown'
+  }
+
+  return `${daysSinceLastSuccess} day(s)`
+}
+
 function getFreshnessClass(status: SourceRecord['freshness_status']) {
   if (status === 'fresh') {
     return 'freshness-badge freshness-badge--fresh'
   }
 
-  if (status === 'delayed') {
+  if (status === 'aging' || status === 'stale') {
     return 'freshness-badge freshness-badge--delayed'
   }
 
-  if (status === 'error') {
+  if (status === 'source_error') {
     return 'freshness-badge freshness-badge--error'
   }
 
@@ -51,11 +64,12 @@ function SystemStatusPage() {
   const [error, setError] = useState('')
 
   const freshnessCounts = useMemo(() => {
-    const counts = {
+    const counts: Record<SourceFreshnessStatus, number> = {
       fresh: 0,
-      delayed: 0,
-      error: 0,
+      aging: 0,
+      stale: 0,
       unknown: 0,
+      source_error: 0,
     }
 
     for (const source of sources?.sources ?? []) {
@@ -120,8 +134,9 @@ function SystemStatusPage() {
             {sources && (
               <div className="source-summary">
                 <span>Fresh sources: {freshnessCounts.fresh}</span>
-                <span>Delayed: {freshnessCounts.delayed}</span>
-                <span>Error: {freshnessCounts.error}</span>
+                <span>Aging: {freshnessCounts.aging}</span>
+                <span>Stale: {freshnessCounts.stale}</span>
+                <span>Source errors: {freshnessCounts.source_error}</span>
                 <span>Unknown: {freshnessCounts.unknown}</span>
               </div>
             )}
@@ -266,10 +281,19 @@ function SystemStatusPage() {
                       </span>
                     </div>
 
+                    <p className="source-freshness-safety-note">
+                      {source.freshness_safety_note}
+                    </p>
+
                     <div className="source-freshness-grid">
                       <div>
                         <small>Last successful retrieval</small>
                         <span>{formatTimestamp(source.last_successful_retrieval_at)}</span>
+                      </div>
+
+                      <div>
+                        <small>Freshness age</small>
+                        <span>{formatFreshnessAge(source.freshness_days_since_last_success)}</span>
                       </div>
 
                       <div>

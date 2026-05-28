@@ -56,6 +56,13 @@ function formatInsightLabel(label: string): string {
     .join(" ");
 }
 
+function formatPayloadChangeLabel(label: string): string {
+  return label
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 function getInsightTone(label: string): "neutral" | "up" | "down" {
   if (label.includes("increase")) {
     return "up";
@@ -591,6 +598,7 @@ export default function SavedMonitorsPage() {
                                   {moduleLabels[run.module]} · {run.status}
                                 </span>
                               </div>
+
                               <div>
                                 <span>
                                   Records{" "}
@@ -598,6 +606,16 @@ export default function SavedMonitorsPage() {
                                 </span>
                                 <span>{formatScore(run)}</span>
                               </div>
+
+                              {run.payload_change ? (
+                                <div className="saved-monitor-payload-change">
+                                  <span>
+                                    Payload: {formatPayloadChangeLabel(run.payload_change.label)}
+                                  </span>
+                                  <small>{run.payload_change.reason}</small>
+                                </div>
+                              ) : null}
+
                               {run.audit_id ? (
                                 <button
                                   type="button"

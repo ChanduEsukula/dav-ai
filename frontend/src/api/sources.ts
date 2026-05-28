@@ -1,6 +1,11 @@
 import { apiClient } from './client'
 
-export type SourceFreshnessStatus = 'fresh' | 'delayed' | 'unknown' | 'error'
+export type SourceFreshnessStatus =
+  | 'fresh'
+  | 'aging'
+  | 'stale'
+  | 'unknown'
+  | 'source_error'
 
 export type SourceRecord = {
   source_id: string
@@ -11,11 +16,13 @@ export type SourceRecord = {
   update_cadence: string
   freshness_status: SourceFreshnessStatus
   freshness_label: string
+  freshness_days_since_last_success: number | null
   last_successful_retrieval_at: string | null
   last_attempted_retrieval_at: string | null
   last_record_count: number | null
   last_error_message: string | null
   freshness_reason: string
+  freshness_safety_note: string
 }
 
 export type SourceRegistryResponse = {
@@ -24,6 +31,6 @@ export type SourceRegistryResponse = {
 }
 
 export async function getSources() {
-  const response = await apiClient.get<SourceRegistryResponse>(`/api/v1/sources`)
+  const response = await apiClient.get<SourceRegistryResponse>('/api/v1/sources')
   return response.data
 }

@@ -14,6 +14,9 @@ vi.mock('../api/sources', () => ({
   getSources: vi.fn(),
 }))
 
+const freshnessSafetyNote =
+  'Source freshness is an operational review signal based on Dav AI audit history. It does not prove source correctness, medical risk, clinical urgency, product danger, causation, or outbreak activity.'
+
 describe('SystemStatusPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -69,12 +72,14 @@ describe('SystemStatusPage', () => {
           update_cadence: 'Source-dependent FDA updates',
           freshness_status: 'fresh',
           freshness_label: 'Fresh',
+          freshness_days_since_last_success: 2,
           last_successful_retrieval_at: '2026-05-19T18:44:03.346774+00:00',
           last_attempted_retrieval_at: '2026-05-19T18:44:03.346774+00:00',
           last_record_count: 5,
           last_error_message: null,
           freshness_reason:
             'Last successful retrieval was 2 day(s) ago, within the 14-day MVP freshness window.',
+          freshness_safety_note: freshnessSafetyNote,
         },
         {
           source_id: 'openfda_drug_event',
@@ -85,12 +90,14 @@ describe('SystemStatusPage', () => {
           update_cadence: 'Periodic FDA FAERS updates',
           freshness_status: 'fresh',
           freshness_label: 'Fresh',
+          freshness_days_since_last_success: 1,
           last_successful_retrieval_at: '2026-05-19T20:50:59.164248+00:00',
           last_attempted_retrieval_at: '2026-05-19T20:50:59.164248+00:00',
           last_record_count: 5,
           last_error_message: null,
           freshness_reason:
             'Last successful retrieval was 1 day(s) ago, within the 14-day MVP freshness window.',
+          freshness_safety_note: freshnessSafetyNote,
         },
       ],
     })
@@ -109,13 +116,15 @@ describe('SystemStatusPage', () => {
     expect(screen.getByText('Sources: 2')).toBeInTheDocument()
 
     expect(screen.getByText('Fresh sources: 2')).toBeInTheDocument()
-    expect(screen.getByText('Delayed: 0')).toBeInTheDocument()
-    expect(screen.getAllByText('Error: 0')).toHaveLength(2)
+    expect(screen.getByText('Aging: 0')).toBeInTheDocument()
+    expect(screen.getByText('Stale: 0')).toBeInTheDocument()
+    expect(screen.getByText('Source errors: 0')).toBeInTheDocument()
     expect(screen.getByText('Unknown: 0')).toBeInTheDocument()
 
     expect(screen.getByText('Recent audits: 3')).toBeInTheDocument()
     expect(screen.getByText('Success: 2')).toBeInTheDocument()
     expect(screen.getByText('Empty: 1')).toBeInTheDocument()
+    expect(screen.getByText('Error: 0')).toBeInTheDocument()
     expect(screen.getByText('Latest query')).toBeInTheDocument()
     expect(screen.getByText('aspirin')).toBeInTheDocument()
     expect(screen.getByText('audit-123')).toBeInTheDocument()
@@ -123,6 +132,9 @@ describe('SystemStatusPage', () => {
     expect(screen.getByText('openFDA Drug Enforcement API')).toBeInTheDocument()
     expect(screen.getByText('openFDA Drug Event API')).toBeInTheDocument()
     expect(screen.getAllByText('Fresh')).toHaveLength(2)
+    expect(screen.getByText('2 day(s)')).toBeInTheDocument()
+    expect(screen.getByText('1 day(s)')).toBeInTheDocument()
+    expect(screen.getAllByText(freshnessSafetyNote)).toHaveLength(2)
   })
 
   it('renders an error message when status cannot be loaded', async () => {
