@@ -4,11 +4,14 @@ from fastapi import APIRouter, Request
 
 from app.db.audit_repository import get_latest_audit_event_for_source
 from app.schemas.sources import SourceRegistryResponse
+from app.scoring.source_freshness import (
+    FreshnessLabel,
+    SOURCE_FRESHNESS_SAFETY_NOTE,
+    classify_source_freshness,
+)
 from app.sources.registry import REGISTERED_SOURCES
 
 router = APIRouter()
-
-FRESHNESS_WINDOW_DAYS = 14
 
 
 def _as_utc_datetime(value) -> datetime | None:
@@ -41,41 +44,70 @@ def _iso_or_none(value) -> str | None:
     return parsed.isoformat()
 
 
+def _source_freshness_label(label: FreshnessLabel) -> str:
+    labels = {
+        FreshnessLabel.FRESH: "Fresh",
+        FreshnessLabel.AGING: "Aging",
+        FreshnessLabel.STALE: "Stale",
+        FreshnessLabel.UNKNOWN: "Unknown",
+        FreshnessLabel.SOURCE_ERROR: "Source Error",
+    }
+    return labels[label]
+
+
 def _build_freshness(source: dict, latest_event: dict | None, repository_status: str) -> dict:
     if repository_status == "skipped":
+        freshness = classify_source_freshness(
+            latest_success_at=None,
+            latest_upstream_status=None,
+        )
         return {
             **source,
-            "freshness_status": "unknown",
-            "freshness_label": "Unknown",
+            "freshness_status": freshness.label.value,
+            "freshness_label": _source_freshness_label(freshness.label),
+            "freshness_days_since_last_success": freshness.days_since_last_success,
             "last_successful_retrieval_at": None,
             "last_attempted_retrieval_at": None,
             "last_record_count": None,
             "last_error_message": None,
             "freshness_reason": "Database is not configured, so audit history is not available for freshness checks.",
+            "freshness_safety_note": freshness.safety_note,
         }
 
     if repository_status == "error":
+        freshness = classify_source_freshness(
+            latest_success_at=None,
+            latest_upstream_status="error",
+        )
         return {
             **source,
-            "freshness_status": "error",
-            "freshness_label": "Error",
+            "freshness_status": freshness.label.value,
+            "freshness_label": _source_freshness_label(freshness.label),
+            "freshness_days_since_last_success": freshness.days_since_last_success,
             "last_successful_retrieval_at": None,
             "last_attempted_retrieval_at": None,
             "last_record_count": None,
             "last_error_message": "Could not read latest audit event for this source.",
             "freshness_reason": "Audit history lookup failed, so source freshness could not be calculated.",
+            "freshness_safety_note": freshness.safety_note,
         }
 
     if latest_event is None:
+        freshness = classify_source_freshness(
+            latest_success_at=None,
+            latest_upstream_status=None,
+        )
         return {
             **source,
-            "freshness_status": "unknown",
-            "freshness_label": "Unknown",
+            "freshness_status": freshness.label.value,
+            "freshness_label": _source_freshness_label(freshness.label),
+            "freshness_days_since_last_success": freshness.days_since_last_success,
             "last_successful_retrieval_at": None,
             "last_attempted_retrieval_at": None,
             "last_record_count": None,
             "last_error_message": None,
             "freshness_reason": "No audit history found for this source yet.",
+            "freshness_safety_note": freshness.safety_note,
         }
 
     upstream_status = latest_event.get("upstream_status")
@@ -83,58 +115,32 @@ def _build_freshness(source: dict, latest_event: dict | None, repository_status:
     created_at = latest_event.get("created_at")
     attempted_at = _iso_or_none(retrieval_timestamp or created_at)
 
-    if upstream_status == "error":
-        return {
-            **source,
-            "freshness_status": "error",
-            "freshness_label": "Error",
-            "last_successful_retrieval_at": None,
-            "last_attempted_retrieval_at": attempted_at,
-            "last_record_count": latest_event.get("record_count"),
-            "last_error_message": latest_event.get("error_message") or "Latest upstream retrieval failed.",
-            "freshness_reason": "The latest audit event for this source recorded an upstream error.",
-        }
+    latest_success_at = None if upstream_status == "error" else retrieval_timestamp or created_at
 
-    successful_at = _as_utc_datetime(retrieval_timestamp or created_at)
+    freshness = classify_source_freshness(
+        latest_success_at=latest_success_at,
+        latest_upstream_status=upstream_status,
+    )
 
-    if successful_at is None:
-        return {
-            **source,
-            "freshness_status": "unknown",
-            "freshness_label": "Unknown",
-            "last_successful_retrieval_at": None,
-            "last_attempted_retrieval_at": attempted_at,
-            "last_record_count": latest_event.get("record_count"),
-            "last_error_message": latest_event.get("error_message"),
-            "freshness_reason": "The latest audit event did not include a usable retrieval timestamp.",
-        }
+    last_successful_retrieval_at = None
+    if freshness.label not in {FreshnessLabel.UNKNOWN, FreshnessLabel.SOURCE_ERROR}:
+        last_successful_retrieval_at = _iso_or_none(latest_success_at)
 
-    age_days = (datetime.now(timezone.utc) - successful_at).days
-
-    if age_days <= FRESHNESS_WINDOW_DAYS:
-        freshness_status = "fresh"
-        freshness_label = "Fresh"
-        freshness_reason = (
-            f"Last successful retrieval was {age_days} day(s) ago, within the "
-            f"{FRESHNESS_WINDOW_DAYS}-day MVP freshness window."
-        )
-    else:
-        freshness_status = "delayed"
-        freshness_label = "Delayed"
-        freshness_reason = (
-            f"Last successful retrieval was {age_days} day(s) ago, outside the "
-            f"{FRESHNESS_WINDOW_DAYS}-day MVP freshness window."
-        )
+    last_error_message = latest_event.get("error_message")
+    if freshness.label == FreshnessLabel.SOURCE_ERROR and not last_error_message:
+        last_error_message = "Latest upstream retrieval failed."
 
     return {
         **source,
-        "freshness_status": freshness_status,
-        "freshness_label": freshness_label,
-        "last_successful_retrieval_at": successful_at.isoformat(),
+        "freshness_status": freshness.label.value,
+        "freshness_label": _source_freshness_label(freshness.label),
+        "freshness_days_since_last_success": freshness.days_since_last_success,
+        "last_successful_retrieval_at": last_successful_retrieval_at,
         "last_attempted_retrieval_at": attempted_at,
         "last_record_count": latest_event.get("record_count"),
-        "last_error_message": latest_event.get("error_message"),
-        "freshness_reason": freshness_reason,
+        "last_error_message": last_error_message,
+        "freshness_reason": freshness.reason,
+        "freshness_safety_note": freshness.safety_note or SOURCE_FRESHNESS_SAFETY_NOTE,
     }
 
 
