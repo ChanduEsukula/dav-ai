@@ -35,7 +35,7 @@ function RecallRadar({
   }, [data, briefingRole])
 
   return (
-    <section className="recallradar reveal" id="recallradar">
+    <section className="recallradar" id="recallradar">
       <div className="section-heading">
         <p className="eyebrow">RecallRadar live module</p>
         <h2>Search public FDA recall signals.</h2>

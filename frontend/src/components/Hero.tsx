@@ -3,11 +3,46 @@ import type { RecallSearchResponse } from '../api/recalls'
 type HeroProps = {
   data: RecallSearchResponse | null
   goToRecallRadar: () => void
+  goToDrugSignal: () => void
+  goToHealthPulse: () => void
   goToAbout: () => void
 }
 
-function Hero({ data, goToRecallRadar, goToAbout }: HeroProps) {
+const heroModules = [
+  {
+    title: 'RecallRadar',
+    description: 'Search public FDA recall records with source-aware review scoring.',
+    actionLabel: 'Search recalls',
+    key: 'recallradar',
+  },
+  {
+    title: 'DrugSignal',
+    description: 'Explore public FAERS adverse-event reporting patterns.',
+    actionLabel: 'Explore FAERS',
+    key: 'drugsignal',
+  },
+  {
+    title: 'Health Pulse',
+    description: 'Preview sample regional public-data signal reviews.',
+    actionLabel: 'Review samples',
+    key: 'health-pulse',
+  },
+] as const
+
+function Hero({
+  data,
+  goToRecallRadar,
+  goToDrugSignal,
+  goToHealthPulse,
+  goToAbout,
+}: HeroProps) {
   const topResult = data?.results?.[0]
+
+  const moduleActions = {
+    recallradar: goToRecallRadar,
+    drugsignal: goToDrugSignal,
+    'health-pulse': goToHealthPulse,
+  }
 
   return (
     <section className="hero">
@@ -23,18 +58,30 @@ function Hero({ data, goToRecallRadar, goToAbout }: HeroProps) {
         </h1>
 
         <p className="subtitle">
-          Dav AI turns public recall and drug-safety data into clear, source-aware
-          intelligence.
+          Dav AI turns public recall, drug-safety, and regional signal data into
+          clear, source-aware intelligence.
         </p>
 
         <p className="hero-trust-line">
           Public sources only • No PHI • Not medical advice
         </p>
 
-        <div className="actions">
-          <button type="button" onClick={goToRecallRadar}>
-            Search RecallRadar
-          </button>
+        <div className="hero-module-grid" aria-label="Dav AI intelligence modules">
+          {heroModules.map((module) => (
+            <button
+              key={module.key}
+              type="button"
+              className="hero-module-card"
+              onClick={moduleActions[module.key]}
+            >
+              <span>{module.title}</span>
+              <strong>{module.description}</strong>
+              <small>{module.actionLabel}</small>
+            </button>
+          ))}
+        </div>
+
+        <div className="actions hero-secondary-actions">
           <button type="button" onClick={goToAbout}>
             How it works
           </button>

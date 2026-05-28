@@ -51,7 +51,7 @@ function DrugSignal() {
   }, [data, briefingRole])
 
   return (
-    <section className="drugsignal reveal" id="drugsignal">
+    <section className="drugsignal" id="drugsignal">
       <div className="section-heading">
         <p className="eyebrow">DrugSignal module</p>
         <h2>Explore public FAERS adverse-event reporting patterns.</h2>
