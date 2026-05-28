@@ -4,6 +4,27 @@
 
 Dav AI is a full-stack healthcare public-data safety intelligence prototype. It turns public FDA/openFDA recall and adverse-event data into source-aware, explainable review workflows with audit trails, versioned scoring, reaction classification, trend snapshots, deterministic role-based safety briefings, and repeatable saved-monitor workflows.
 
+## Responsible ML Milestone
+
+Dav AI includes an offline responsible ML experiment layer under `backend/ml_experiments`.
+
+This layer is intentionally not connected to FastAPI routes, frontend pages, alerts, saved-monitor automation, or production behavior yet. It exists to prove ML problem framing, weak-label dataset design, feature engineering, explainable baselines, metrics, and healthcare-safety boundaries before any production ML integration.
+
+Current offline experiments include:
+
+- Public Safety Signal Review Priority Classifier v0.1
+- Saved Monitor Anomaly & Trend Classifier v0.2
+- Recall Reason NLP Classifier v0.3
+- DrugSignal Reaction Theme Classifier v0.4
+
+These experiments support public-data review workflows only. They do not provide medical advice, diagnosis, treatment guidance, patient-risk prediction, clinical decision support, or proof of causation.
+
+See:
+
+- `backend/ml_experiments/README.md`
+- `docs/production_ml_integration_roadmap.md`
+
+
 ## Recent Highlight: Monitor Insights
 
 Saved Monitors now include deterministic Monitor Insights for repeatable public-data searches. Each insight compares recent saved monitor runs and summarizes whether public-data activity appears stable, increased, decreased, notably changed, or insufficient for comparison.
@@ -1070,6 +1091,20 @@ docs/render_cron_saved_monitors_plan.md
 ```
 
 ---
+
+
+## Current Verification Snapshot
+
+Latest local verification from the responsible ML progress review:
+
+- Backend tests: 182 passed
+- Frontend tests: 64 passed
+- Frontend lint: passed
+- Repository state: clean before and after inspection
+- Frontend build: covered by CI; local build may update `frontend/dist`
+
+The offline ML experiments are tested as engineering baselines only. They are not production ML models.
+
 
 ## Production Verification Documentation
 
