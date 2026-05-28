@@ -615,3 +615,28 @@ A strong closing line for interviews:
 Another shorter version:
 
 > The most important engineering decision in Dav AI was not adding ML everywhere. It was building the trust layer first: source traceability, audit history, deterministic baselines, safety boundaries, and offline ML governance.
+## Source Freshness and Payload-Change Intelligence Milestone
+
+Dav AI now includes deterministic source freshness and payload-change intelligence across backend APIs, saved monitor run history, Data Sources, System Status, and Saved Monitors.
+
+This milestone strengthens the platform’s trust layer before production ML or RAG by answering two operational questions:
+
+1. When was this public source last successfully retrieved?
+2. Did the latest saved-monitor source payload materially change from the previous stored payload?
+
+The system uses audit history, source-pull metadata, and payload hashes to expose review signals without making unsafe medical claims. These signals are operational public-data review aids only. They do not prove medical risk, clinical urgency, product danger, causation, outbreak activity, or source correctness.
+
+Verified status:
+
+- Backend tests: 203 passed
+- Frontend tests: 64 passed
+- Frontend lint: passed
+- Frontend production build: passed
+
+Engineering value:
+
+- Improves source provenance
+- Makes saved monitors more meaningful
+- Creates a safer foundation for future alerting
+- Produces real historical review data for later ML evaluation
+- Strengthens responsible AI boundaries before adding predictive models
