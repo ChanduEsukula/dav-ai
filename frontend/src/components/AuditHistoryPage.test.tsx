@@ -12,6 +12,9 @@ vi.mock('../api/auditEvents', () => ({
 const mockedGetAuditEvents = vi.mocked(getAuditEvents)
 const mockedGetAuditEventSourcePull = vi.mocked(getAuditEventSourcePull)
 
+const rawPayloadVisibilityMessage =
+  'Raw public-source payloads are stored for reproducibility and audit provenance, but are intentionally not displayed in the UI.'
+
 const mockAuditItems = [
   {
     audit_id: '11111111-1111-4111-8111-111111111111',
@@ -230,9 +233,12 @@ describe('AuditHistoryPage', () => {
       expect(screen.getByText('Technical provenance details')).toBeInTheDocument()
     })
 
-    expect(
-      screen.getByText(/Raw public-source payloads are not exposed in the UI/i),
-    ).toBeInTheDocument()
+    expect(screen.getByText(new RegExp(rawPayloadVisibilityMessage, 'i'))).toBeInTheDocument()
+    expect(screen.getByText('Source Pull ID')).toBeInTheDocument()
+    expect(screen.getByText('Snapshot ID')).toBeInTheDocument()
+    expect(screen.getByText('Full payload hash')).toBeInTheDocument()
+    expect(screen.getByText('Upstream status')).toBeInTheDocument()
+    expect(screen.getByText('Raw payload visibility')).toBeInTheDocument()
     expect(screen.queryByText(/raw_payload/i)).not.toBeInTheDocument()
   })
 
@@ -292,7 +298,12 @@ describe('AuditHistoryPage', () => {
       expect.stringContaining('Payload hash: ' + 'a'.repeat(64)),
     )
     expect(writeText).toHaveBeenCalledWith(
-      expect.stringContaining('Raw public-source payloads are not exposed in the UI.'),
+      expect.stringContaining(rawPayloadVisibilityMessage),
+    )
+    expect(writeText).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'This is public-data traceability only. It is not medical advice, diagnosis, treatment guidance, clinical decision support, or proof of causality.',
+      ),
     )
     expect(await screen.findByText('Copied provenance summary')).toBeInTheDocument()
   })

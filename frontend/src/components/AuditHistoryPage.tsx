@@ -112,8 +112,8 @@ function buildProvenanceSummary(
     `Retrieved: ${sourcePull.retrieval_timestamp ?? item.retrieval_timestamp}`,
     `Payload hash: ${sourcePull.payload_hash}`,
     '',
-    'Raw public-source payloads are not exposed in the UI.',
-    'This is public-data traceability only, not medical advice.',
+    'Raw public-source payloads are stored for reproducibility and audit provenance, but are intentionally not displayed in the UI.',
+    'This is public-data traceability only. It is not medical advice, diagnosis, treatment guidance, clinical decision support, or proof of causality.',
   ].join('\n')
 }
 
@@ -661,8 +661,9 @@ export default function AuditHistoryPage() {
                     <>
                       <p className="audit-source-pull-summary">
                         Dav AI stored a reproducible public-source pull for this
-                        audit event. Raw public-source payloads are not exposed in
-                        the UI.
+                        audit event. Raw public-source payloads are stored for
+                        reproducibility and audit provenance, but are intentionally
+                        not displayed in the UI.
                       </p>
 
                       <button
@@ -707,7 +708,7 @@ export default function AuditHistoryPage() {
 
                           <dl className="audit-source-pull-grid">
                             <div>
-                              <dt>Pull ID</dt>
+                              <dt>Source Pull ID</dt>
                               <dd title={sourcePull.pull_id}>
                                 {shortenIdentifier(sourcePull.pull_id)}
                               </dd>
@@ -728,6 +729,25 @@ export default function AuditHistoryPage() {
                             </div>
 
                             <div>
+                              <dt>Retrieval timestamp</dt>
+                              <dd>
+                                {sourcePull.retrieval_timestamp
+                                  ? formatTimestamp(sourcePull.retrieval_timestamp)
+                                  : 'N/A'}
+                              </dd>
+                            </div>
+
+                            <div>
+                              <dt>Upstream status</dt>
+                              <dd>{sourcePull.upstream_status ?? 'N/A'}</dd>
+                            </div>
+
+                            <div>
+                              <dt>Record count</dt>
+                              <dd>{sourcePull.record_count ?? 'N/A'}</dd>
+                            </div>
+
+                            <div>
                               <dt>Endpoint</dt>
                               <dd>{sourcePull.endpoint ?? 'N/A'}</dd>
                             </div>
@@ -735,6 +755,14 @@ export default function AuditHistoryPage() {
                             <div>
                               <dt>Transform version</dt>
                               <dd>{sourcePull.transform_version ?? 'N/A'}</dd>
+                            </div>
+
+                            <div>
+                              <dt>Raw payload visibility</dt>
+                              <dd>
+                                Stored for reproducibility and audit provenance,
+                                but intentionally not displayed in the UI.
+                              </dd>
                             </div>
                           </dl>
 
