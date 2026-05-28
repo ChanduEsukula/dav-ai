@@ -17,9 +17,15 @@ describe('RegionalHealthPulse', () => {
   test('renders safe Regional Health Pulse scaffold copy', () => {
     render(<RegionalHealthPulse />)
 
-    expect(screen.getByRole('heading', { name: /Review public-health signal scaffolds/i })).toBeInTheDocument()
-    expect(screen.getByText(/not live CDC\/HHS surveillance yet/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Check Health Pulse/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: /Review sample regional public-data signals/i }),
+    ).toBeInTheDocument()
+    expect(screen.getByText(/Not live CDC\/HHS surveillance/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Review signal/i })).toBeInTheDocument()
+    expect(screen.getByText(/Supported sample reviews/i)).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: /Choose a supported sample to preview Health Pulse/i }),
+    ).toBeInTheDocument()
   })
 
   test('validates empty Health Pulse fields before searching', async () => {
@@ -28,10 +34,10 @@ describe('RegionalHealthPulse', () => {
     render(<RegionalHealthPulse />)
 
     await user.selectOptions(screen.getByLabelText('Region'), '')
-    await user.click(screen.getByRole('button', { name: /Check Health Pulse/i }))
+    await user.click(screen.getByRole('button', { name: /Review signal/i }))
 
     expect(
-      screen.getByText(/Enter both a region and a public-health category/i),
+      screen.getByText(/Choose both a region and a public-health category/i),
     ).toBeInTheDocument()
     expect(mockedSearchRegionalHealth).not.toHaveBeenCalled()
   })
@@ -88,17 +94,19 @@ describe('RegionalHealthPulse', () => {
 
     render(<RegionalHealthPulse />)
 
-    await user.click(screen.getByRole('button', { name: /Check Health Pulse/i }))
+    await user.click(screen.getByRole('button', { name: /Review signal/i }))
 
     await waitFor(() => {
       expect(mockedSearchRegionalHealth).toHaveBeenCalledWith('MN', 'respiratory')
-      expect(screen.getByRole('heading', { name: /Increasing public-health signal/i })).toBeInTheDocument()
+      expect(
+        screen.getByRole('heading', { name: /Increasing regional signal/i }),
+      ).toBeInTheDocument()
       expect(screen.getAllByText(/Watch/i).length).toBeGreaterThan(0)
       expect(screen.getByText(/regional_health_pulse_demo/i)).toBeInTheDocument()
-      expect(screen.getByText('Data trust status')).toBeInTheDocument()
+      expect(screen.getByText('Source freshness')).toBeInTheDocument()
       expect(screen.getByText('Scaffold data')).toBeInTheDocument()
       expect(screen.getByText(/Live CDC\/HHS freshness checks are not configured yet/i)).toBeInTheDocument()
-      expect(screen.getByText('Technical provenance')).toBeInTheDocument()
+      expect(screen.getByText('Audit trail')).toBeInTheDocument()
       expect(screen.getByText('33333333-3333-4333-8333-333333333333')).toBeInTheDocument()
       expect(screen.getByRole('link', { name: 'Open in Audit History' })).toHaveAttribute(
         'href',
