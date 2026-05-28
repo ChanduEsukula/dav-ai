@@ -20,6 +20,14 @@ export interface SavedMonitor {
 
 export type SavedMonitorRunStatus = 'success' | 'error'
 
+export type PayloadChangeStatus = {
+  label: 'first_seen' | 'unchanged' | 'changed' | 'unavailable' | 'unknown'
+  previous_hash: string | null
+  latest_hash: string | null
+  reason: string
+  safety_note: string
+}
+
 export interface SavedMonitorRun {
   run_id: string
   monitor_id: string
@@ -32,6 +40,7 @@ export interface SavedMonitorRun {
   audit_id: string | null
   created_at: string
   error_message: string | null
+  payload_change: PayloadChangeStatus | null
 }
 
 export type MonitorInsightLabel =
