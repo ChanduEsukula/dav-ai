@@ -370,6 +370,25 @@ export default function AuditHistoryPage() {
     showCopyMessage('Copied provenance summary')
   }
 
+  async function copyPayloadHash(sourcePull: SourcePullProvenanceItem) {
+    await navigator.clipboard.writeText(sourcePull.payload_hash)
+    showCopyMessage('Copied payload hash')
+  }
+
+  async function copySourcePullId(sourcePull: SourcePullProvenanceItem) {
+    await navigator.clipboard.writeText(sourcePull.pull_id)
+    showCopyMessage('Copied source pull ID')
+  }
+
+  async function copySnapshotId(sourcePull: SourcePullProvenanceItem) {
+    if (!sourcePull.snapshot_id) {
+      return
+    }
+
+    await navigator.clipboard.writeText(sourcePull.snapshot_id)
+    showCopyMessage('Copied snapshot ID')
+  }
+
   return (
     <main
       className="info-page audit-history-page"
@@ -666,13 +685,41 @@ export default function AuditHistoryPage() {
                         not displayed in the UI.
                       </p>
 
-                      <button
-                        type="button"
-                        className="audit-provenance-copy-button"
-                        onClick={() => copyProvenanceSummary(selectedItem, sourcePull)}
-                      >
-                        Copy provenance summary
-                      </button>
+                      <div className="audit-detail-actions">
+                        <button
+                          type="button"
+                          className="audit-provenance-copy-button"
+                          onClick={() => copyProvenanceSummary(selectedItem, sourcePull)}
+                        >
+                          Copy provenance summary
+                        </button>
+
+                        <button
+                          type="button"
+                          className="audit-provenance-copy-button"
+                          onClick={() => copyPayloadHash(sourcePull)}
+                        >
+                          Copy payload hash
+                        </button>
+
+                        <button
+                          type="button"
+                          className="audit-provenance-copy-button"
+                          onClick={() => copySourcePullId(sourcePull)}
+                        >
+                          Copy source pull ID
+                        </button>
+
+                        {sourcePull.snapshot_id && (
+                          <button
+                            type="button"
+                            className="audit-provenance-copy-button"
+                            onClick={() => copySnapshotId(sourcePull)}
+                          >
+                            Copy snapshot ID
+                          </button>
+                        )}
+                      </div>
 
                       <div className="audit-source-pull-summary-grid">
                         <div>
