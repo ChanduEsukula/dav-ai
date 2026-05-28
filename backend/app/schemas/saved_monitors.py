@@ -90,6 +90,21 @@ class SavedMonitor(BaseModel):
     last_scheduled_status: Optional[SavedMonitorScheduledStatus] = None
 
 
+class PayloadChangeStatus(BaseModel):
+    """Payload-change review signal for a saved monitor run.
+
+    This is an operational public-data review signal only. It does not prove
+    medical risk, clinical urgency, product danger, causation, outbreak
+    activity, or source correctness.
+    """
+
+    label: str
+    previous_hash: Optional[str] = None
+    latest_hash: Optional[str] = None
+    reason: str
+    safety_note: str
+
+
 class SavedMonitorRun(BaseModel):
     """Saved monitor manual or scheduled run-history response model."""
 
@@ -104,3 +119,4 @@ class SavedMonitorRun(BaseModel):
     audit_id: Optional[str] = None
     created_at: datetime
     error_message: Optional[str] = None
+    payload_change: Optional[PayloadChangeStatus] = None

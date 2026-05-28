@@ -274,6 +274,7 @@ def test_run_recallradar_saved_monitor(monkeypatch) -> None:
     assert runs[0]["audit_id"] == RECALL_AUDIT_ID
     assert runs[0]["created_at"]
     assert runs[0]["error_message"] is None
+    assert runs[0]["payload_change"]["label"] == "unknown"
 
 
 def test_run_drugsignal_saved_monitor(monkeypatch) -> None:
@@ -334,6 +335,7 @@ def test_run_drugsignal_saved_monitor(monkeypatch) -> None:
     assert runs[0]["score"] == 80
     assert runs[0]["score_label"] == "High"
     assert runs[0]["audit_id"] == DRUG_AUDIT_ID
+    assert runs[0]["payload_change"]["label"] == "unknown"
 
 
 def test_run_saved_monitor_preserves_previous_values(monkeypatch) -> None:
@@ -396,6 +398,170 @@ def test_run_saved_monitor_preserves_previous_values(monkeypatch) -> None:
     runs = runs_response.json()
 
     assert [run["audit_id"] for run in runs] == [SECOND_AUDIT_ID, FIRST_AUDIT_ID]
+
+
+def test_list_saved_monitor_runs_includes_payload_change_status(monkeypatch) -> None:
+    calls = 0
+
+    async def fake_search_recalls(
+        query: str,
+        limit: int,
+        request_id: str | None = None,
+    ):
+        nonlocal calls
+        calls += 1
+
+        if calls == 1:
+            return {
+                "query": query,
+                "count": 5,
+                "audit": {"audit_id": FIRST_AUDIT_ID},
+                "results": [{"risk_score": {"score": 52}}],
+            }
+
+        return {
+            "query": query,
+            "count": 7,
+            "audit": {"audit_id": SECOND_AUDIT_ID},
+            "results": [{"risk_score": {"score": 61}}],
+        }
+
+    def fake_get_source_pull_by_audit_id(audit_id: str, request_id: str | None = None):
+        payload_hashes = {
+            FIRST_AUDIT_ID: "a" * 64,
+            SECOND_AUDIT_ID: "b" * 64,
+        }
+        return (
+            "saved",
+            {
+                "audit_id": audit_id,
+                "payload_hash": payload_hashes[audit_id],
+            },
+        )
+
+    monkeypatch.setattr(
+        "app.routes.saved_monitors.execute_recall_search",
+        fake_search_recalls,
+    )
+    monkeypatch.setattr(
+        "app.routes.saved_monitors.get_source_pull_by_audit_id",
+        fake_get_source_pull_by_audit_id,
+    )
+
+    create_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Eye drops monitor",
+            "query": "eye drops",
+            "module": "recallradar",
+        },
+    )
+    monitor_id = create_response.json()["id"]
+
+    assert client.post(f"/api/v1/saved-monitors/{monitor_id}/run").status_code == 200
+    assert client.post(f"/api/v1/saved-monitors/{monitor_id}/run").status_code == 200
+
+    runs_response = client.get(f"/api/v1/saved-monitors/{monitor_id}/runs")
+
+    assert runs_response.status_code == 200
+    runs = runs_response.json()
+
+    assert [run["audit_id"] for run in runs] == [SECOND_AUDIT_ID, FIRST_AUDIT_ID]
+
+    latest_change = runs[0]["payload_change"]
+    assert latest_change["label"] == "changed"
+    assert latest_change["latest_hash"] == "b" * 64
+    assert latest_change["previous_hash"] == "a" * 64
+    assert "differs" in latest_change["reason"]
+    assert "operational public-data review signal" in latest_change["safety_note"]
+
+    older_change = runs[1]["payload_change"]
+    assert older_change["label"] == "first_seen"
+    assert older_change["latest_hash"] == "a" * 64
+    assert older_change["previous_hash"] is None
+
+
+def test_list_saved_monitor_runs_payload_change_unknown_when_source_pull_missing(monkeypatch) -> None:
+    async def fake_search_recalls(
+        query: str,
+        limit: int,
+        request_id: str | None = None,
+    ):
+        return {
+            "query": query,
+            "count": 5,
+            "audit": {"audit_id": FIRST_AUDIT_ID},
+            "results": [{"risk_score": {"score": 52}}],
+        }
+
+    monkeypatch.setattr(
+        "app.routes.saved_monitors.execute_recall_search",
+        fake_search_recalls,
+    )
+    monkeypatch.setattr(
+        "app.routes.saved_monitors.get_source_pull_by_audit_id",
+        lambda audit_id, request_id=None: ("skipped", None),
+    )
+
+    create_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Eye drops monitor",
+            "query": "eye drops",
+            "module": "recallradar",
+        },
+    )
+    monitor_id = create_response.json()["id"]
+
+    assert client.post(f"/api/v1/saved-monitors/{monitor_id}/run").status_code == 200
+
+    runs_response = client.get(f"/api/v1/saved-monitors/{monitor_id}/runs")
+
+    assert runs_response.status_code == 200
+    runs = runs_response.json()
+
+    assert len(runs) == 1
+    assert runs[0]["payload_change"]["label"] == "unknown"
+    assert runs[0]["payload_change"]["latest_hash"] is None
+    assert runs[0]["payload_change"]["previous_hash"] is None
+    assert "Latest payload hash is missing" in runs[0]["payload_change"]["reason"]
+
+
+def test_list_saved_monitor_runs_payload_change_unavailable_for_error_run(monkeypatch) -> None:
+    async def fake_search_recalls(
+        query: str,
+        limit: int,
+        request_id: str | None = None,
+    ):
+        raise RuntimeError("openFDA unavailable")
+
+    monkeypatch.setattr(
+        "app.routes.saved_monitors.execute_recall_search",
+        fake_search_recalls,
+    )
+
+    create_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Eye drops monitor",
+            "query": "eye drops",
+            "module": "recallradar",
+        },
+    )
+    monitor_id = create_response.json()["id"]
+
+    assert client.post(f"/api/v1/saved-monitors/{monitor_id}/run").status_code == 502
+
+    runs_response = client.get(f"/api/v1/saved-monitors/{monitor_id}/runs")
+
+    assert runs_response.status_code == 200
+    runs = runs_response.json()
+
+    assert len(runs) == 1
+    assert runs[0]["status"] == "error"
+    assert runs[0]["audit_id"] is None
+    assert runs[0]["payload_change"]["label"] == "unavailable"
+    assert "unavailable" in runs[0]["payload_change"]["reason"].lower()
 
 
 def test_list_saved_monitor_runs_empty_state() -> None:
@@ -466,6 +632,7 @@ def test_failed_saved_monitor_run_records_history(monkeypatch) -> None:
     assert runs[0]["score_label"] is None
     assert runs[0]["audit_id"] is None
     assert "openFDA unavailable" in runs[0]["error_message"]
+    assert runs[0]["payload_change"]["label"] == "unavailable"
 
 
 def test_run_saved_monitor_not_found() -> None:
@@ -570,6 +737,7 @@ def test_run_regional_health_pulse_saved_monitor(monkeypatch) -> None:
     assert runs[0]["score"] == 46
     assert runs[0]["score_label"] == "Increasing"
     assert runs[0]["audit_id"] == "33333333-3333-4333-8333-333333333333"
+    assert runs[0]["payload_change"]["label"] == "unknown"
 
 
 def test_run_regional_health_pulse_saved_monitor_validates_query_format() -> None:
