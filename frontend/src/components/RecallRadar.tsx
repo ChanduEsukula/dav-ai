@@ -47,31 +47,48 @@ function RecallRadar({
 
       <div className="search-panel">
         <div className="search-box">
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                handleSearch()
-              }
-            }}
-            placeholder="Search recalls: eye drops, insulin, metformin"
-          />
-          <button onClick={handleSearch} disabled={loading}>
+          <div className="search-field">
+            <label className="field-label" htmlFor="recall-search">
+              Recall search
+            </label>
+
+            <input
+              id="recall-search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  handleSearch()
+                }
+              }}
+              placeholder="Search recalls: eye drops, insulin, metformin"
+              aria-describedby="recall-search-helper"
+            />
+
+            <p className="field-helper" id="recall-search-helper">
+              Public FDA recall records only. Not medical advice or clinical decision support.
+            </p>
+          </div>
+
+          <button type="button" onClick={handleSearch} disabled={loading}>
             {loading ? 'Checking public data...' : 'Analyze'}
           </button>
         </div>
 
         {loading && (
-          <p className="loading-helper">
+          <p className="loading-helper" role="status" aria-live="polite">
             This may take a few seconds while the secure backend wakes up and checks public FDA recall sources.
           </p>
         )}
 
-        {error && <p className="error-message">{error}</p>}
+        {error && (
+          <p className="error-message" role="alert">
+            {error}
+          </p>
+        )}
 
         {data && (
-          <div className="source-strip">
+          <div className="source-strip" role="status" aria-live="polite">
             <span>{data.count} records matched</span>
             <span>{data.source_name}</span>
             <span>Retrieved {formatTimestamp(data.retrieval_timestamp)}</span>
@@ -83,18 +100,19 @@ function RecallRadar({
         {briefing && (
           <div className="briefing-control-panel">
             <div className="briefing-role-selector">
-              <span>Briefing role</span>
+              <span id="recall-briefing-role-label">Briefing role</span>
 
               <div
                 className="briefing-role-buttons"
                 role="group"
-                aria-label="Recall briefing role"
+                aria-labelledby="recall-briefing-role-label"
               >
                 {briefingRoles.map((role) => (
                   <button
                     key={role}
                     type="button"
                     className={`briefing-role-button ${briefingRole === role ? 'active' : ''}`}
+                    aria-pressed={briefingRole === role}
                     onClick={() => setBriefingRole(role)}
                   >
                     {briefingRoleLabels[role]}
