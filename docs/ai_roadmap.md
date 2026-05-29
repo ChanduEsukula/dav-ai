@@ -1,8 +1,8 @@
-# MedTrek AI Roadmap
+# DAV AI Roadmap
 
 ## Current AI Position
 
-MedTrek AI is becoming a source-grounded healthcare safety intelligence platform.
+DAV AI is becoming a source-grounded healthcare safety intelligence platform.
 
 The project is intentionally not a generic medical chatbot. Its AI direction is focused on explainable, auditable, public-data intelligence.
 
@@ -45,7 +45,7 @@ Current score version:
 
 ## Why This Matters
 
-This milestone moves MedTrek AI beyond a public-data dashboard.
+This milestone moves DAV AI beyond a public-data dashboard.
 
 It now produces an explainable intelligence signal that is:
 
@@ -148,15 +148,15 @@ Current v1 output:
 - Previous record count when available
 - Previous audit ID and timestamp when available
 - Plain-language explanation
-- Safety limitation that trend is based only on stored public-data searches in MedTrek AI
+- Safety limitation that trend is based only on stored public-data searches in DAV AI
 
 Why this matters:
 
-It adds an early temporal intelligence layer and supports the MIT-inspired monitoring and situational-awareness direction of MedTrek AI. It is still limited because it depends on MedTrek AI's stored audit history, not all FDA activity.
+It adds an early temporal intelligence layer and supports the MIT-inspired monitoring and situational-awareness direction of DAV AI. It is still limited because it depends on DAV AI's stored audit history, not all FDA activity.
 
 ## Future AI Layer: NLP-Assisted Reaction Clustering
 
-After rule-based classification, MedTrek AI can add lightweight NLP clustering.
+After rule-based classification, DAV AI can add lightweight NLP clustering.
 
 Possible approaches:
 
@@ -219,7 +219,7 @@ This should come after scoring and classification are stable.
 
 ## Future AI Layer: Anomaly and Trend Detection
 
-MedTrek AI can later detect changes over time.
+DAV AI can later detect changes over time.
 
 Possible features:
 
@@ -256,13 +256,13 @@ This would strengthen the MIT-style situational awareness direction.
 
 ## Interview Positioning
 
-MedTrek AI can be described as:
+DAV AI can be described as:
 
 A source-grounded healthcare safety intelligence platform that uses public FDA data, explainable scoring, audit trails, and safety guardrails to help users understand recall and adverse-event signals without making medical claims.
 
 Strong resume framing:
 
-Built MedTrek AI, a deployed healthcare safety intelligence platform using React, TypeScript, FastAPI, Supabase/PostgreSQL, openFDA, explainable signal scoring, audit trails, request tracing, and healthcare safety guardrails. Added DrugSignal Intelligence Score v1 to transform public FAERS adverse-event records into transparent, versioned, source-grounded safety signals.
+Built DAV AI, a deployed healthcare safety intelligence platform using React, TypeScript, FastAPI, Supabase/PostgreSQL, openFDA, explainable signal scoring, audit trails, request tracing, and healthcare safety guardrails. Added DrugSignal Intelligence Score v1 to transform public FAERS adverse-event records into transparent, versioned, source-grounded safety signals.
 
 ## Current Best Next Move
 

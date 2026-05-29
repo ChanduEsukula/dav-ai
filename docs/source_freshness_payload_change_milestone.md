@@ -2,7 +2,7 @@
 
 ## Summary
 
-Dav AI now includes deterministic source freshness and payload-change intelligence for public-data review workflows.
+DAV AI now includes deterministic source freshness and payload-change intelligence for public-data review workflows.
 
 This milestone improves trust, auditability, and saved-monitor review quality before production ML, RAG, deep learning, or alerting.
 

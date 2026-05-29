@@ -2,7 +2,7 @@
 
 ## Goal
 
-Design the next Dav AI engineering milestone: source freshness risk scoring and payload-change intelligence.
+Design the next DAV AI engineering milestone: source freshness risk scoring and payload-change intelligence.
 
 This milestone should improve trust, auditability, and saved-monitor change detection before any production ML, RAG, or deep learning work.
 
@@ -12,7 +12,7 @@ This is a design-first milestone. It should not change production behavior until
 
 ## Why This Comes Next
 
-Dav AI already has:
+DAV AI already has:
 
 - source registry
 - audit events
@@ -28,7 +28,7 @@ The next responsible step is to turn source freshness and payload hashes into cl
 
 ### 1. Source Freshness Risk Score
 
-Create a deterministic score that summarizes whether a public-data source appears current, stale, unknown, or unavailable based on Dav AI audit history.
+Create a deterministic score that summarizes whether a public-data source appears current, stale, unknown, or unavailable based on DAV AI audit history.
 
 Possible labels:
 
@@ -149,4 +149,4 @@ This milestone shows mature product engineering because it improves trust and re
 
 It strengthens the story:
 
-> Dav AI uses audit history and payload hashes to make public-data changes visible and explainable before production ML.
+> DAV AI uses audit history and payload hashes to make public-data changes visible and explainable before production ML.

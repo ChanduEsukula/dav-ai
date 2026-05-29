@@ -2,7 +2,7 @@
 
 Date verified: 2026-05-08  
 Commit verified: fb6a12e Add system status endpoint  
-Backend: https://medtrek-ai.onrender.com
+Backend: $DAV_AI_BACKEND_URL
 
 ## Summary
 
@@ -14,7 +14,7 @@ GET /api/v1/system/status
 
 ## Verification command
 
-curl -i --max-time 30 https://medtrek-ai.onrender.com/api/v1/system/status
+curl -i --max-time 30 $DAV_AI_BACKEND_URL/api/v1/system/status
 
 ## Production result
 
@@ -29,7 +29,7 @@ Request ID:
 Response summary:
 
 - status: ok
-- app: MedTrek AI API
+- app: DAV AI API
 - version: 0.1.0
 - database.configured: true
 - database.audit_readable: true

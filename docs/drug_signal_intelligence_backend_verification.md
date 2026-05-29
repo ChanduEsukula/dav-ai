@@ -2,7 +2,7 @@
 
 Date verified: 2026-05-08
 Feature: DrugSignal Intelligence Score v1
-Backend: https://medtrek-ai.onrender.com
+Backend: $DAV_AI_BACKEND_URL
 
 ## Summary
 
@@ -12,7 +12,7 @@ The `/api/v1/drug-events/search` endpoint now returns an `intelligence_score` ob
 
 ## Production verification command
 
-curl -s --max-time 30 "https://medtrek-ai.onrender.com/api/v1/drug-events/search?q=metformin&limit=10" | python3 -m json.tool
+curl -s --max-time 30 "$DAV_AI_BACKEND_URL/api/v1/drug-events/search?q=metformin&limit=10" | python3 -m json.tool
 
 ## Observed response
 

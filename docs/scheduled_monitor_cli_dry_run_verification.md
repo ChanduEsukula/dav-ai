@@ -15,7 +15,7 @@ Production Cron remains disabled. This verification confirms that the backend CL
 From the backend directory:
 
 ```bash
-cd /Users/chanduesukula/medtrek-ai/backend
+cd /Users/chanduesukula/dav-ai/backend
 source ../.venv/bin/activate
 python -m app.jobs.run_due_saved_monitors --limit 10
 python -m app.jobs.run_due_saved_monitors --limit 0
@@ -25,7 +25,7 @@ python -m app.jobs.run_due_saved_monitors --limit 999
 Current manual verification command:
 
 ```bash
-cd /Users/chanduesukula/medtrek-ai/backend
+cd /Users/chanduesukula/dav-ai/backend
 python -m app.jobs.run_due_saved_monitors --limit 10
 ```
 

@@ -2,9 +2,9 @@
 
 ## Summary
 
-Regional Health Pulse expands Dav AI from FDA/openFDA recall and adverse-event safety intelligence into a broader public-health signal review platform.
+Regional Health Pulse expands DAV AI from FDA/openFDA recall and adverse-event safety intelligence into a broader public-health signal review platform.
 
-This milestone adds a clearly labeled MVP scaffold for regional public-health signal review while preserving Dav AI's core engineering principles:
+This milestone adds a clearly labeled MVP scaffold for regional public-health signal review while preserving DAV AI's core engineering principles:
 
 - public-data only
 - source transparency
@@ -56,7 +56,7 @@ This milestone adds a clearly labeled MVP scaffold for regional public-health si
 
 ## Current Verification Status
 
-- Backend tests: 117 passed.
+- Backend tests: 203 passed.
 - Frontend tests: 63 passed.
 - Frontend lint: passed.
 - Frontend production build: passed.
@@ -77,9 +77,9 @@ It is not yet:
 
 ## Why This Matters
 
-This milestone makes Dav AI feel more like a platform instead of a single-purpose FDA search app.
+This milestone makes DAV AI feel more like a platform instead of a single-purpose FDA search app.
 
-The feature follows the same engineering identity as the rest of Dav AI:
+The feature follows the same engineering identity as the rest of DAV AI:
 
 Search -> signal -> source metadata -> audit event -> source snapshot -> Audit History link.
 

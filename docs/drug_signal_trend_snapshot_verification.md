@@ -2,13 +2,13 @@
 
 Date verified: 2026-05-08  
 Feature: DrugSignal Trend Snapshot v1  
-Frontend: https://medtrek-ai.vercel.app
+Frontend: $DAV_AI_FRONTEND_URL
 
 ## Summary
 
 DrugSignal Trend Snapshot v1 is live in production.
 
-The Trend Snapshot card compares the current DrugSignal result with stored MedTrek AI audit history when previous matching audit events are available.
+The Trend Snapshot card compares the current DrugSignal result with stored DAV AI audit history when previous matching audit events are available.
 
 ## Production verification
 
@@ -38,7 +38,7 @@ Observed production behavior:
 
 ## Limitation language verified
 
-Trend is based only on stored public-data searches in MedTrek AI, not all FDA activity.
+Trend is based only on stored public-data searches in DAV AI, not all FDA activity.
 
 ## Implemented components
 

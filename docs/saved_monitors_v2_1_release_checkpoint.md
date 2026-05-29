@@ -1,13 +1,13 @@
 # Saved Monitors v2.1 Release Checkpoint
 
-Date: 2026-05-12  
-Status: Completed and verified  
-Module: Saved Monitors  
-Project: MedTrek AI  
+Date: 2026-05-12
+Status: Completed and verified
+Module: Saved Monitors
+Project: DAV AI
 
 ## Summary
 
-Saved Monitors v2.1 adds a stronger monitoring workflow foundation to MedTrek AI. Users can now save repeatable RecallRadar or DrugSignal searches, manually run checks, persist monitor state with Supabase/PostgreSQL, compare latest and previous results, prevent duplicate monitors, and open the related audit event for traceability.
+Saved Monitors v2.1 adds a stronger monitoring workflow foundation to DAV AI. Users can now save repeatable RecallRadar or DrugSignal searches, manually run checks, persist monitor state with Supabase/PostgreSQL, compare latest and previous results, prevent duplicate monitors, and open the related audit event for traceability.
 
 This release moves Saved Monitors from a basic saved-search concept toward a real monitoring workflow.
 

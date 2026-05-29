@@ -2,7 +2,7 @@
 
 Date verified: 2026-05-08  
 Commit verified: d1701ed Add backend audit history filters  
-Backend: https://medtrek-ai.onrender.com
+Backend: $DAV_AI_BACKEND_URL
 
 ## Summary
 
@@ -12,7 +12,7 @@ The `/api/v1/audit-events` endpoint now supports server-side filtering by module
 
 ## Verification command
 
-curl -s --max-time 30 "https://medtrek-ai.onrender.com/api/v1/audit-events?module=RecallRadar&upstream_status=success&q=eye&limit=10"
+curl -s --max-time 30 "$DAV_AI_BACKEND_URL/api/v1/audit-events?module=RecallRadar&upstream_status=success&q=eye&limit=10"
 
 ## Production result
 

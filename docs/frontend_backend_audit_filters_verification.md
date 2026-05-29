@@ -1,9 +1,9 @@
 # Frontend Backend Audit Filters Verification
 
-Date verified: 2026-05-08  
-Commit verified: 26a9deb Use backend audit filters in frontend  
-Frontend: https://medtrek-ai.vercel.app  
-Backend: https://medtrek-ai.onrender.com
+Date verified: 2026-05-08
+Commit verified: 26a9deb Use backend audit filters in frontend
+Frontend: $DAV_AI_FRONTEND_URL
+Backend: $DAV_AI_BACKEND_URL
 
 ## Summary
 

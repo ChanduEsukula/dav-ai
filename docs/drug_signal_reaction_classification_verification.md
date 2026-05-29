@@ -2,7 +2,7 @@
 
 Date verified: 2026-05-08  
 Feature: Reaction Classification v1  
-Frontend: https://medtrek-ai.vercel.app
+Frontend: $DAV_AI_FRONTEND_URL
 
 ## Summary
 

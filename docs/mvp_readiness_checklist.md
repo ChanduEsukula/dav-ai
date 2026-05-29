@@ -1,10 +1,10 @@
-# Dav AI MVP Readiness Checklist
+# DAV AI MVP Readiness Checklist
 
 ## Purpose
 
-This checklist defines what must be true before Dav AI is considered MVP-ready for portfolio review, demo use, and interview discussion.
+This checklist defines what must be true before DAV AI is considered MVP-ready for portfolio review, demo use, and interview discussion.
 
-Dav AI is a public-data healthcare safety intelligence platform. It is not medical advice, diagnosis, treatment guidance, clinical decision support, or proof of causality.
+DAV AI is a public-data healthcare safety intelligence platform. It is not medical advice, diagnosis, treatment guidance, clinical decision support, or proof of causality.
 
 ## Current MVP Scope
 

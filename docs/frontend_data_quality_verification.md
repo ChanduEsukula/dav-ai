@@ -1,9 +1,9 @@
 # Frontend Data Quality Panel Verification
 
-Date verified: 2026-05-08  
-Commit verified: f7c8e50 Add frontend data quality panel  
-Frontend: https://medtrek-ai.vercel.app  
-Backend: https://medtrek-ai.onrender.com
+Date verified: 2026-05-08
+Commit verified: f7c8e50 Add frontend data quality panel
+Frontend: $DAV_AI_FRONTEND_URL
+Backend: $DAV_AI_BACKEND_URL
 
 ## Summary
 
@@ -47,7 +47,7 @@ Vercel frontend -> shared Axios API client -> backend Data Quality endpoint -> R
 
 The app now exposes both operational health and audit data-quality visibility directly in the UI.
 
-This makes MedTrek AI easier to review, debug, and demonstrate as a production-style public healthcare safety intelligence platform.
+This makes DAV AI easier to review, debug, and demonstrate as a production-style public healthcare safety intelligence platform.
 
 ## Current status
 

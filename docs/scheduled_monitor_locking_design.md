@@ -27,7 +27,7 @@ Manual verification confirmed that the CLI can run with zero due monitors, a rea
 The scheduled monitor refresh foundation can be triggered through the backend CLI job:
 
 ```bash
-cd /Users/chanduesukula/medtrek-ai/backend
+cd /Users/chanduesukula/dav-ai/backend
 python -m app.jobs.run_due_saved_monitors --limit 10
 ```
 
@@ -201,7 +201,7 @@ Backend tests cover:
 
 Scheduler locking does not make the system production-ready by itself.
 
-Before enabling production Cron, MedTrek AI still needs:
+Before enabling production Cron, DAV AI still needs:
 
 - Deployment-environment verification of lock behavior.
 - Scheduler observability.

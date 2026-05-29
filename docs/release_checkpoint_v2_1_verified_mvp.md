@@ -1,14 +1,14 @@
-# MedTrek AI v2.1 Verified MVP Checkpoint
+# DAV AI v2.1 Verified MVP Checkpoint
 
 ## Summary
 
-This checkpoint verifies MedTrek AI v2.1 as a serious MVP and portfolio-grade engineering prototype. It demonstrates coherent full-stack product behavior, public-data traceability, audit persistence, explainable scoring, manual monitoring workflows, live deployment smoke verification, browser-level E2E coverage, saved monitor run history, and backend scheduled-refresh foundation work.
+This checkpoint verifies DAV AI v2.1 as a serious MVP and portfolio-grade engineering prototype. It demonstrates coherent full-stack product behavior, public-data traceability, audit persistence, explainable scoring, manual monitoring workflows, live deployment smoke verification, browser-level E2E coverage, saved monitor run history, and backend scheduled-refresh foundation work.
 
 This is not production-ready healthcare software. It should not be used for clinical decision-making, diagnosis, treatment guidance, medication changes, regulatory action, or patient-specific care.
 
 ## Verified Checks
 
-- Backend tests: 98 passed
+- Backend tests: 203 passed
 - Frontend tests: 54 passed
 - Frontend lint: passed
 - Frontend production build: passed

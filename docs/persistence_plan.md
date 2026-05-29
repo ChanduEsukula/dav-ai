@@ -1,8 +1,8 @@
-# MedTrek AI Persistence Plan
+# DAV AI Persistence Plan
 
 ## Purpose
 
-This document defines how MedTrek AI persists source metadata and audit events, and how persistence should expand later for saved monitors, briefings, and deployment readiness.
+This document defines how DAV AI persists source metadata and audit events, and how persistence should expand later for saved monitors, briefings, and deployment readiness.
 
 The goal is to support source transparency and auditability without turning the MVP into a heavy user-data or clinical system too early.
 
@@ -10,7 +10,7 @@ The goal is to support source transparency and auditability without turning the 
 
 ## Current State
 
-MedTrek AI currently has:
+DAV AI currently has:
 
 - RecallRadar end-to-end workflow
 - DrugSignal end-to-end workflow
@@ -31,7 +31,7 @@ MedTrek AI currently has:
 Current backend test status:
 
 ```bash
-98 passed
+203 passed
 ```
 
 Current frontend test status:

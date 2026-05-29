@@ -1,4 +1,4 @@
-# MedTrek AI Audit Trail Design
+# DAV AI Audit Trail Design
 
 ## Purpose
 
@@ -10,7 +10,7 @@ The goal is source transparency, reproducibility, and reviewer trust.
 
 ## Why This Matters
 
-MedTrek AI is a healthcare safety intelligence platform. It does not diagnose, prescribe, or claim causation.
+DAV AI is a healthcare safety intelligence platform. It does not diagnose, prescribe, or claim causation.
 
 Because the app summarizes public FDA/openFDA safety data, every result should be traceable back to:
 
@@ -55,7 +55,7 @@ Because the app summarizes public FDA/openFDA safety data, every result should b
 | endpoint | Public API endpoint |
 | query | User/search query |
 | query_params | Full query parameters sent upstream |
-| retrieval_timestamp | When MedTrek retrieved the source data |
+| retrieval_timestamp | When DAV AI retrieved the source data |
 | upstream_status | success, empty, or error |
 | record_count | Number of records returned or reviewed |
 | transform_version | Version of normalization/transformation logic |
@@ -68,7 +68,7 @@ Because the app summarizes public FDA/openFDA safety data, every result should b
 
 ## Current Database Tables
 
-MedTrek AI has Alembic migration tooling for the current persistence tables:
+DAV AI has Alembic migration tooling for the current persistence tables:
 
 - `20260505_0001` creates `source_registry` and `audit_events`.
 - `20260511_0002` creates `saved_monitors`.
@@ -124,7 +124,7 @@ The failed-upstream audit source ID consistency issue was fixed in commit `2e3bb
 
 ## Current App Status
 
-MedTrek AI currently returns compact audit metadata directly in RecallRadar and DrugSignal API responses.
+DAV AI currently returns compact audit metadata directly in RecallRadar and DrugSignal API responses.
 
 It also builds full audit events internally and persists them to Supabase/PostgreSQL through a fail-soft repository layer when `DATABASE_URL` is configured.
 
@@ -217,7 +217,7 @@ Current audit architecture does not yet include:
 
 ## Audit History API and UI
 
-MedTrek AI now includes an Audit History workflow for reviewing recent public-data search events.
+DAV AI now includes an Audit History workflow for reviewing recent public-data search events.
 
 ### Backend endpoints
 
