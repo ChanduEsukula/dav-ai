@@ -12,9 +12,11 @@ import './styles/about.css'
 import './styles/faq.css'
 import './styles/briefing.css'
 import './styles/audit-history.css'
+import './styles/operational-overview.css'
 import { searchRecalls, type RecallSearchResponse } from './api/recalls'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
+import OperationalOverview from './components/OperationalOverview'
 import Signals from './components/Signals'
 import RecallRadar from './components/RecallRadar'
 import DrugSignal from './components/DrugSignal'
@@ -163,6 +165,8 @@ function App() {
             goToHealthPulse={() => goToPage('regional-health')}
             goToAbout={() => goToPage('about')}
           />
+
+          <OperationalOverview />
 
           <RecallRadar
             query={query}
