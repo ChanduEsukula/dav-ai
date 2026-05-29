@@ -1,8 +1,8 @@
-# Dav AI Platform Modules and OutbreakSignal Plan
+# DAV AI Platform Modules and OutbreakSignal Plan
 
 ## Purpose
 
-Dav AI is evolving from a narrow FDA recall/adverse-event prototype into a broader public health and safety intelligence platform.
+DAV AI is evolving from a narrow FDA recall/adverse-event prototype into a broader public health and safety intelligence platform.
 
 The product should stay focused on trusted public data, source transparency, auditability, repeatable monitoring, and responsible AI guardrails.
 
@@ -10,9 +10,9 @@ This document organizes the current implemented modules and defines how a future
 
 ## Platform Positioning
 
-Dav AI is a public health and safety intelligence platform that turns trusted public datasets into source-aware, explainable, auditable review workflows.
+DAV AI is a public health and safety intelligence platform that turns trusted public datasets into source-aware, explainable, auditable review workflows.
 
-Dav AI does not diagnose, prescribe, claim causation, predict personal medical risk, or replace FDA, CDC, HHS, clinicians, pharmacists, public-health authorities, or emergency services.
+DAV AI does not diagnose, prescribe, claim causation, predict personal medical risk, or replace FDA, CDC, HHS, clinicians, pharmacists, public-health authorities, or emergency services.
 
 ## Current Implemented Modules
 
@@ -42,7 +42,7 @@ Provides lightweight operational transparency into backend health, database conf
 
 ## Planned Module: Regional Health Pulse / OutbreakSignal
 
-Regional Health Pulse, also called OutbreakSignal, would extend Dav AI from FDA/openFDA safety signals into public-health and outbreak-awareness signals from trusted public datasets.
+Regional Health Pulse, also called OutbreakSignal, would extend DAV AI from FDA/openFDA safety signals into public-health and outbreak-awareness signals from trusted public datasets.
 
 Use **Regional Health Pulse** in the app navigation because it sounds broader, safer, and less alarmist. Use **OutbreakSignal** internally if needed.
 

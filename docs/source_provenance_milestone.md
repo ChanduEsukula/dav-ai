@@ -2,7 +2,7 @@
 
 ## Summary
 
-MedTrek AI now has an audit-backed public-data provenance layer for its FDA/openFDA safety intelligence workflows.
+DAV AI now has an audit-backed public-data provenance layer for its FDA/openFDA safety intelligence workflows.
 
 This milestone moves the project beyond a search-and-display prototype. RecallRadar and DrugSignal now preserve operational source freshness, audit-linked source pull metadata, and raw public-source snapshots with stable payload hashes.
 
@@ -65,7 +65,7 @@ The API does not expose raw payloads by default. It only returns trace metadata 
 
 ## Why this matters
 
-This milestone makes MedTrek AI more credible as a healthcare safety intelligence platform.
+This milestone makes DAV AI more credible as a healthcare safety intelligence platform.
 
 The system can now answer:
 
@@ -93,13 +93,13 @@ It should not store:
 - private user records
 - addresses or identifying patient details
 
-MedTrek AI remains a public-data safety intelligence tool, not a medical advice or clinical decision-support system.
+DAV AI remains a public-data safety intelligence tool, not a medical advice or clinical decision-support system.
 
 ## Verification
 
 Local verification completed:
 
-- Backend tests: 100 passed
+- Backend tests: 203 passed
 - Frontend tests: 54 passed
 - Frontend lint: passed
 - RecallRadar smoke test: source_snapshot_status = saved
@@ -115,7 +115,7 @@ GitHub verification completed:
 
 A concise way to explain this milestone:
 
-“I strengthened MedTrek AI’s provenance layer by adding audit-backed source freshness, source pull persistence, raw public-source snapshots, and stable payload hashing. This means each safety result can be traced back to the exact openFDA payload, retrieval timestamp, query parameters, audit event, and payload hash, without exposing raw payloads directly in the API response.”
+“I strengthened DAV AI’s provenance layer by adding audit-backed source freshness, source pull persistence, raw public-source snapshots, and stable payload hashing. This means each safety result can be traced back to the exact openFDA payload, retrieval timestamp, query parameters, audit event, and payload hash, without exposing raw payloads directly in the API response.”
 
 ## Next recommended step
 

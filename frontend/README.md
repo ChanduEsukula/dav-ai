@@ -1,8 +1,14 @@
-# Dav AI Frontend
+# DAV AI Frontend
 
-This is the React + TypeScript + Vite frontend for Dav AI.
+This is the React + TypeScript + Vite frontend for DAV AI.
 
-Dav AI is a healthcare safety intelligence product prototype that turns public FDA/openFDA recall, adverse-event, and scaffolded public-health signal data into source-aware, auditable safety signals and role-based safety briefings.
+DAV AI is a healthcare safety intelligence product prototype that turns public FDA/openFDA recall, adverse-event, and scaffolded public-health signal data into source-aware, auditable safety signals and role-based safety briefings.
+
+## Current MVP Status and Limitations
+
+DAV AI is a public-data healthcare safety intelligence MVP/prototype. It does not provide medical advice, does not use PHI, and does not make diagnosis, treatment, clinical decision-support, patient-risk, or causation claims.
+
+The current frontend presents deterministic/rule-based intelligence from backend APIs and frontend utilities. Offline ML experiments exist in the repository, but production ML is not deployed in the user-facing frontend yet. Auth/RBAC, automated alerts, production scheduler activation, notification preferences, and full live Health Pulse data integration remain future work.
 
 The current frontend supports:
 
@@ -36,7 +42,7 @@ The current frontend supports:
 
 ### Landing Page
 
-The landing page explains the Dav AI product idea, public-data safety intelligence focus, and current MVP modules.
+The landing page explains the DAV AI product idea, public-data safety intelligence focus, and current MVP modules.
 
 ### RecallRadar
 

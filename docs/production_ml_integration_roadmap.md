@@ -1,6 +1,6 @@
 # Production ML Integration Roadmap
 
-Dav AI now includes an offline ML experiment layer under `backend/ml_experiments/`.
+DAV AI now includes an offline ML experiment layer under `backend/ml_experiments/`.
 
 The current ML experiments are intentionally offline. They are not production FastAPI routes, not user-facing features, not clinical decision systems, and not connected to frontend behavior.
 
@@ -8,7 +8,7 @@ This roadmap explains what must happen before any ML output is added to producti
 
 ## Current Offline ML Experiments
 
-Dav AI currently includes four offline, dependency-free ML baseline experiments:
+DAV AI currently includes four offline, dependency-free ML baseline experiments:
 
 1. **Public Safety Signal Review Priority Classifier v0.1**
    - Predicts `routine`, `watch`, or `elevated` public-data review priority.
@@ -26,7 +26,7 @@ These experiments prove ML readiness, not production readiness.
 
 ## Why ML Is Offline First
 
-Dav AI is healthcare-adjacent and source-grounded. Even when using public data only, ML outputs can be misread as medical advice if they are not carefully framed.
+DAV AI is healthcare-adjacent and source-grounded. Even when using public data only, ML outputs can be misread as medical advice if they are not carefully framed.
 
 The offline-first approach is intentional because production ML needs:
 
@@ -46,7 +46,7 @@ Passing unit tests is not enough to make an ML prediction safe for production us
 
 ## What Production ML Must Not Do
 
-Dav AI production ML must not predict or imply:
+DAV AI production ML must not predict or imply:
 
 - patient-specific harm
 - disease risk for an individual
@@ -91,7 +91,7 @@ Recommended UI language:
 
 ## Phase 1: Data Readiness
 
-Before production integration, Dav AI should collect and review more real public-data examples from:
+Before production integration, DAV AI should collect and review more real public-data examples from:
 
 - Audit History
 - Saved Monitor runs

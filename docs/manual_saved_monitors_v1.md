@@ -6,7 +6,7 @@ Historical/manual workflow note: this document describes the manual monitor work
 
 ## Purpose
 
-Manual Saved Monitors v1 demonstrates how MedTrek AI can support recurring public-data safety monitoring. It was written before the current Saved Monitors v2 foundation added saved monitor definitions and manual run checks.
+Manual Saved Monitors v1 demonstrates how DAV AI can support recurring public-data safety monitoring. It was written before the current Saved Monitors v2 foundation added saved monitor definitions and manual run checks.
 
 The goal is to prove the workflow manually using the current RecallRadar, DrugSignal, Audit History, source metadata, and Safety Briefing features.
 
@@ -30,7 +30,7 @@ The goal is to prove the workflow manually using the current RecallRadar, DrugSi
 
 ## What This Proves
 
-This manual workflow proves that MedTrek AI is not only a one-time search tool. It can already support repeatable safety-monitoring behavior using existing product features.
+This manual workflow proves that DAV AI is not only a one-time search tool. It can already support repeatable safety-monitoring behavior using existing product features.
 
 The current workflow is:
 
@@ -61,7 +61,7 @@ Production-ready monitoring still needs:
 
 ## Demo Script
 
-MedTrek AI currently supports a manual saved-monitor workflow. For example, a reviewer can search “eye drops” in RecallRadar, see five matching FDA recall records, review the Moderate score, inspect the audit ID, and read a consumer safety briefing.
+DAV AI currently supports a manual saved-monitor workflow. For example, a reviewer can search “eye drops” in RecallRadar, see five matching FDA recall records, review the Moderate score, inspect the audit ID, and read a consumer safety briefing.
 
 The reviewer can also search “baby formula” and see that no matching records were returned, while the app still warns that no-result output does not prove safety.
 

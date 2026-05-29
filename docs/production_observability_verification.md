@@ -2,7 +2,7 @@
 
 Date verified: 2026-05-07  
 Commit verified: 67a9c4a Add structured operational logging  
-Backend: https://medtrek-ai.onrender.com
+Backend: $DAV_AI_BACKEND_URL
 
 ## Summary
 
@@ -18,7 +18,7 @@ This document does not verify a full production observability stack. Dashboards,
 
 Command:
 
-curl -i https://medtrek-ai.onrender.com/health
+curl -i $DAV_AI_BACKEND_URL/health
 
 Result:
 
@@ -34,7 +34,7 @@ Generated request ID:
 
 Command:
 
-curl -i -H "X-Request-ID: manual-check-001" https://medtrek-ai.onrender.com/health
+curl -i -H "X-Request-ID: manual-check-001" $DAV_AI_BACKEND_URL/health
 
 Result:
 
@@ -50,7 +50,7 @@ manual-check-001
 
 Command:
 
-curl -i --max-time 30 "https://medtrek-ai.onrender.com/api/v1/recalls/search?q=eye%20drops&limit=5"
+curl -i --max-time 30 "$DAV_AI_BACKEND_URL/api/v1/recalls/search?q=eye%20drops&limit=5"
 
 Result:
 
@@ -74,7 +74,7 @@ New audit ID created:
 
 Command:
 
-curl -i --max-time 30 "https://medtrek-ai.onrender.com/api/v1/audit-events?limit=5"
+curl -i --max-time 30 "$DAV_AI_BACKEND_URL/api/v1/audit-events?limit=5"
 
 Result:
 

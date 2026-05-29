@@ -1,14 +1,16 @@
-# MedSignal AI Repository Reference Report
+# DAV AI Repository Reference Report
 
-This report documents the current MedSignal AI repository as inspected from the local project files. It is intended to be copied into Word or shared as a reference document.
+> Historical note: the filename is a legacy artifact from an earlier project name. The current public project name is DAV AI. This file is retained as a historical repository reference report and does not supersede `README.md` or `frontend/README.md` for current MVP status.
 
-No existing app code, config, package file, README file, or folder structure was changed to prepare this report.
+This report documents an earlier DAV AI repository inspection from local project files. It is intended to be copied into Word or shared as a reference document.
+
+No application source code, package file, test file, or folder structure was changed during this documentation cleanup.
 
 ## 1. Project Overview
 
-### What MedSignal AI Is
+### What DAV AI Is
 
-MedSignal AI is a healthcare safety intelligence platform prototype. Its purpose is to make public healthcare safety data easier to search, understand, and audit.
+DAV AI is a healthcare safety intelligence platform prototype. Its purpose is to make public healthcare safety data easier to search, understand, and audit.
 
 The current repository is a full-stack MVP with:
 
@@ -37,7 +39,7 @@ RecallRadar is the main working module in the MVP. It is a recall search and rev
 
 ### What Is Already Working
 
-- React frontend renders the MedSignal AI interface.
+- React frontend renders the DAV AI interface.
 - RecallRadar search input calls the backend API.
 - FastAPI backend exposes health/root endpoints and a recall search endpoint.
 - Backend calls the openFDA Drug Enforcement API.
@@ -64,10 +66,10 @@ RecallRadar is the main working module in the MVP. It is a recall search and rev
 ## 2. Current Folder Structure
 
 ```text
-medsignal-ai/
+dav-ai/
 ├── .gitignore
 ├── README.md
-├── MedSignal_AI_Repo_Reference_Report.md
+├── legacy repository reference report file
 ├── backend/
 │   ├── pytest.ini
 │   ├── requirements.txt
@@ -142,7 +144,7 @@ medsignal-ai/
 
 ### Purpose of `frontend/`
 
-The `frontend/` folder contains the React + TypeScript user interface. It renders the MedSignal AI landing experience, RecallRadar search UI, result cards, audit panel, informational pages, and styling.
+The `frontend/` folder contains the React + TypeScript user interface. It renders the DAV AI landing experience, RecallRadar search UI, result cards, audit panel, informational pages, and styling.
 
 ### Purpose of `backend/`
 
@@ -413,7 +415,7 @@ The `backend/` folder contains the FastAPI API server. It connects to openFDA, e
   - `goToRecallRadar`
   - `goToAbout`
 - Contribution:
-  - Presents MedSignal AI positioning.
+  - Presents DAV AI positioning.
   - Shows a styled dashboard preview.
   - If recall data exists, reflects the top result score and record count in the hero visual.
 - Status: Functional visual component. Future improvement could use a real product screenshot or actual asset if desired.
@@ -608,7 +610,7 @@ The `backend/` folder contains the FastAPI API server. It connects to openFDA, e
 - `frontend/public/icons.svg`: Public SVG icons asset. Status: asset file, needs review if icon usage grows.
 - `frontend/src/assets/hero.png`: Image asset present in the repository. It was not seen imported in the inspected frontend code. Status: available asset, currently appears unused.
 - `frontend/src/assets/react.svg` and `frontend/src/assets/vite.svg`: Default Vite/React assets. They were not seen imported in the inspected frontend code. Status: likely leftover template assets.
-- `frontend/README.md`: Default React + TypeScript + Vite template README. Status: should eventually be replaced or expanded with MedSignal-specific frontend instructions.
+- `frontend/README.md`: Default React + TypeScript + Vite template README. Status: should eventually be replaced or expanded with DAV AI-specific frontend instructions.
 
 ## 5. Data Flow Explanation
 
@@ -1014,7 +1016,7 @@ git push
 
 ## 12. Final Summary for Chandu
 
-MedSignal AI currently has a real full-stack MVP centered on RecallRadar. The frontend is a React + TypeScript app with a polished healthcare safety interface. The backend is a FastAPI app that calls openFDA, normalizes recall records, calculates a transparent Recall Review Score, and returns source-aware data to the frontend.
+DAV AI currently has a real full-stack MVP centered on RecallRadar. The frontend is a React + TypeScript app with a polished healthcare safety interface. The backend is a FastAPI app that calls openFDA, normalizes recall records, calculates a transparent Recall Review Score, and returns source-aware data to the frontend.
 
 The repo is cleaner because the main app structure is now focused: backend logic lives under `backend/app`, tests live under `backend/tests`, and the frontend is organized into components, data files, styles, API helpers, types, and utilities.
 

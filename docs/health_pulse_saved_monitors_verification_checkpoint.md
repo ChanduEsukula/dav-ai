@@ -2,7 +2,7 @@
 
 ## Summary
 
-This checkpoint verifies that Regional Health Pulse is now integrated across the Dav AI platform as a scaffolded public-health signal workflow with source transparency, audit provenance, Saved Monitors support, and frontend visibility.
+This checkpoint verifies that Regional Health Pulse is now integrated across the DAV AI platform as a scaffolded public-health signal workflow with source transparency, audit provenance, Saved Monitors support, and frontend visibility.
 
 This is still an MVP scaffold. It is not live CDC/HHS surveillance, emergency guidance, medical advice, clinical decision support, or a personal disease-risk predictor.
 
@@ -26,14 +26,14 @@ Regional Health Pulse now includes:
 
 ## Verification Results
 
-- Backend tests: 120 passed.
+- Backend tests: 203 passed.
 - Frontend tests: 63 passed.
 - Frontend lint: passed.
 - Frontend production build: passed.
 
 ## Engineering Assessment
 
-This milestone strengthens Dav AI from a two-module FDA/openFDA prototype into a broader public-data safety intelligence platform.
+This milestone strengthens DAV AI from a two-module FDA/openFDA prototype into a broader public-data safety intelligence platform.
 
 The important architectural win is consistency:
 

@@ -3,7 +3,7 @@
 Date verified: 2026-05-08  
 Commit verified: a029ea9 Add audit history CSV export  
 Follow-up behavior verified: 0ef00df Improve audit filter form behavior  
-Frontend: https://medtrek-ai.vercel.app
+Frontend: $DAV_AI_FRONTEND_URL
 
 ## Summary
 

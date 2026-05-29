@@ -1,12 +1,12 @@
-# MedTrek AI Deployment Checklist
+# DAV AI Deployment Checklist
 
 ## Goal
 
-Prepare MedTrek AI for a clean frontend/backend/database deployment without changing product behavior.
+Prepare DAV AI for a clean frontend/backend/database deployment without changing product behavior.
 
 ## Current Local Baseline
 
-- Backend tests: 98 passed
+- Backend tests: 203 passed
 - Frontend tests: 54 passed
 - Frontend lint: passed
 - Frontend production build: passed

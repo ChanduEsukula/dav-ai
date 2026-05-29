@@ -1,7 +1,7 @@
 # System Data Quality Endpoint Verification
 
 Date verified: 2026-05-08  
-Backend: https://medtrek-ai.onrender.com
+Backend: $DAV_AI_BACKEND_URL
 
 ## Summary
 
@@ -13,7 +13,7 @@ GET /api/v1/system/data-quality
 
 ## Verification command
 
-curl -i --max-time 30 https://medtrek-ai.onrender.com/api/v1/system/data-quality
+curl -i --max-time 30 $DAV_AI_BACKEND_URL/api/v1/system/data-quality
 
 ## Production result
 

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document describes how MedTrek AI can run Saved Monitor scheduled refreshes using Render Cron in the future.
+This document describes how DAV AI can run Saved Monitor scheduled refreshes using Render Cron in the future.
 
 This is a dry-run plan only. Production Cron is not enabled yet.
 
@@ -37,7 +37,7 @@ Not implemented:
 From the backend service context:
 
 ```bash
-cd /Users/chanduesukula/medtrek-ai/backend
+cd /Users/chanduesukula/dav-ai/backend
 python -m app.jobs.run_due_saved_monitors --limit 10
 ```
 

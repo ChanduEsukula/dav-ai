@@ -1,9 +1,9 @@
 # Frontend Request ID Verification
 
-Date verified: 2026-05-07  
-Commit verified: 8e364b7 Add frontend request ID propagation  
-Frontend: https://medtrek-ai.vercel.app  
-Backend: https://medtrek-ai.onrender.com
+Date verified: 2026-05-07
+Commit verified: 8e364b7 Add frontend request ID propagation
+Frontend: $DAV_AI_FRONTEND_URL
+Backend: $DAV_AI_BACKEND_URL
 
 ## Summary
 

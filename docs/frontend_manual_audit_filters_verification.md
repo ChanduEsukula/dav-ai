@@ -2,7 +2,7 @@
 
 Date verified: 2026-05-08  
 Commit verified: d3250c0 Apply audit filters manually  
-Frontend: https://medtrek-ai.vercel.app
+Frontend: $DAV_AI_FRONTEND_URL
 
 ## Summary
 

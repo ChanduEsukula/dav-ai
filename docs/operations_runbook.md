@@ -1,6 +1,6 @@
-# MedTrek AI Operations Runbook
+# DAV AI Operations Runbook
 
-This runbook explains how to verify the deployed MedTrek AI backend, trace requests with X-Request-ID, and troubleshoot public-data, audit-persistence, saved-monitor, and scheduled-refresh foundation issues.
+This runbook explains how to verify the deployed DAV AI backend, trace requests with X-Request-ID, and troubleshoot public-data, audit-persistence, saved-monitor, and scheduled-refresh foundation issues.
 
 ## 1. Health check
 
@@ -10,7 +10,7 @@ Local command:
 curl -i http://localhost:8000/health
 
 Production command:
-curl -i https://medtrek-ai.onrender.com/health
+curl -i $DAV_AI_BACKEND_URL/health
 
 Expected JSON:
 {"status":"healthy"}
@@ -22,7 +22,7 @@ The response should include an X-Request-ID header.
 Every backend response should include an X-Request-ID header.
 
 Send your own request ID:
-curl -i -H "X-Request-ID: manual-check-001" https://medtrek-ai.onrender.com/health
+curl -i -H "X-Request-ID: manual-check-001" $DAV_AI_BACKEND_URL/health
 
 Expected behavior:
 - The response reuses manual-check-001.
@@ -41,7 +41,7 @@ Useful log fields:
 ## 3. Verify RecallRadar
 
 Command:
-curl -i "https://medtrek-ai.onrender.com/api/v1/recalls/search?q=eye%20drops&limit=5"
+curl -i "$DAV_AI_BACKEND_URL/api/v1/recalls/search?q=eye%20drops&limit=5"
 
 Check:
 - HTTP status is 200.
@@ -61,7 +61,7 @@ Operational logs should include:
 ## 4. Verify DrugSignal
 
 Command:
-curl -i "https://medtrek-ai.onrender.com/api/v1/drug-events/search?q=metformin&limit=5"
+curl -i "$DAV_AI_BACKEND_URL/api/v1/drug-events/search?q=metformin&limit=5"
 
 Check:
 - HTTP status is 200.
@@ -80,7 +80,7 @@ Operational logs should include:
 ## 5. Verify Audit History
 
 Command:
-curl -i "https://medtrek-ai.onrender.com/api/v1/audit-events?limit=10"
+curl -i "$DAV_AI_BACKEND_URL/api/v1/audit-events?limit=10"
 
 Expected healthy persistence response:
 {"status":"ok","persistence_available":true}
@@ -112,8 +112,8 @@ Expected app behavior:
 - Preserve source metadata and timestamp.
 
 Recommended checks:
-curl -i "https://medtrek-ai.onrender.com/api/v1/recalls/search?q=aurovela&limit=5"
-curl -i "https://medtrek-ai.onrender.com/api/v1/drug-events/search?q=aurovela&limit=5"
+curl -i "$DAV_AI_BACKEND_URL/api/v1/recalls/search?q=aurovela&limit=5"
+curl -i "$DAV_AI_BACKEND_URL/api/v1/drug-events/search?q=aurovela&limit=5"
 
 ## 7. Troubleshoot openFDA errors
 
@@ -165,7 +165,7 @@ Recommended checks:
 The backend includes a CLI entrypoint for future scheduled refresh jobs:
 
 ```bash
-cd /Users/chanduesukula/medtrek-ai/backend
+cd /Users/chanduesukula/dav-ai/backend
 python -m app.jobs.run_due_saved_monitors --limit 10
 ```
 
@@ -239,7 +239,7 @@ Expected:
 
 ## 10. Safety boundary
 
-MedTrek AI provides public-data safety intelligence only.
+DAV AI provides public-data safety intelligence only.
 
 It does not:
 - provide medical advice

@@ -1,11 +1,11 @@
-# MedTrek AI Deployment Verification
+# DAV AI Deployment Verification
 
 ## Verified Deployment URLs
 
-- Frontend: https://medtrek-ai.vercel.app
-- Backend: https://medtrek-ai.onrender.com
-- Backend health check: https://medtrek-ai.onrender.com/health
-- Backend API docs: https://medtrek-ai.onrender.com/docs
+- Frontend: $DAV_AI_FRONTEND_URL
+- Backend: $DAV_AI_BACKEND_URL
+- Backend health check: $DAV_AI_BACKEND_URL/health
+- Backend API docs: $DAV_AI_BACKEND_URL/docs
 
 ## Verified Stack
 
@@ -61,7 +61,7 @@ Latest frontend deployment observed:
 
 Verified frontend URL:
 
-- `https://medtrek-ai.vercel.app/?page=saved-monitors`
+- `$DAV_AI_FRONTEND_URL/?page=saved-monitors`
 
 Observed results:
 
@@ -115,7 +115,7 @@ The deployment does not yet enable:
 
 ## Live Smoke Tests Passed
 
-This confirms deployment smoke verification only. It does not mean MedTrek AI is production-ready healthcare software.
+This confirms deployment smoke verification only. It does not mean DAV AI is production-ready healthcare software.
 
 ### Backend
 
@@ -187,7 +187,7 @@ Commit `e4f313c` added scheduler guardrails for the backend CLI job.
 
 Verified behavior:
 
-- Backend tests passed with `98 passed`.
+- Backend tests passed with `203 passed`.
 - The scheduled monitor CLI clamps requested limits to a safe range of `1` to `50`.
 - The default CLI limit is `10`.
 - A high requested limit such as `--limit 500` returns `safe_limit: 50`.
@@ -205,7 +205,7 @@ Verified behavior:
 
 - Migration `20260519_0005_create_scheduler_locks.py` created the `scheduler_locks` table.
 - Backend tests isolate the real `DATABASE_URL` by default through `backend/tests/conftest.py`.
-- Backend tests passed with `98 passed`.
+- Backend tests passed with `203 passed`.
 - `python -m app.jobs.run_due_saved_monitors --limit 10` worked with zero due monitors.
 - A real temporary due DrugSignal saved monitor for `aspirin` ran successfully.
 - A `saved_monitor_runs` row was created.
@@ -221,7 +221,7 @@ Commit `f413cac` updated the Saved Monitors frontend copy so the deployed UI mat
 Verified behavior:
 
 - Vercel production deployment was live on commit `f413cac`.
-- Saved Monitors page loaded successfully at `https://medtrek-ai.vercel.app/?page=saved-monitors`.
+- Saved Monitors page loaded successfully at `$DAV_AI_FRONTEND_URL/?page=saved-monitors`.
 - Page label showed `Saved Monitors v2.6`.
 - Page description referenced manual checks, latest/previous comparison, run history, and audit events.
 - Current scope note stated that backend scheduler-lock protection exists.
@@ -258,8 +258,8 @@ Temporary production smoke behavior:
 
 ## Deployment Fixes Applied
 
-- Set Vercel `VITE_API_BASE_URL` to `https://medtrek-ai.onrender.com`.
-- Set Render `ALLOWED_ORIGINS` to include `https://medtrek-ai.vercel.app` and `http://localhost:5173`.
+- Set Vercel `VITE_API_BASE_URL` to `$DAV_AI_BACKEND_URL`.
+- Set Render `ALLOWED_ORIGINS` to include `$DAV_AI_FRONTEND_URL` and `http://localhost:5173`.
 - Corrected Render `DATABASE_URL` value so it contains only the PostgreSQL connection string, not the `DATABASE_URL=` prefix.
 - Applied Alembic migration `20260514_0003_create_saved_monitor_runs.py`.
 - Applied Alembic migration `20260514_0004_add_saved_monitor_schedule_fields.py`.
@@ -282,7 +282,7 @@ Do not include old or new database URLs, passwords, or connection strings in doc
 
 ## Current Status
 
-MedTrek AI is deployed end-to-end with live public FDA data, role-based safety briefings, source metadata, audit history, PostgreSQL persistence, Saved Monitors manual monitoring, saved monitor run history, Saved Monitors v2.3 scheduled-refresh foundation, Saved Monitors v2.4 scheduler guardrails, Saved Monitors v2.6 DB-backed scheduler locks, Saved Monitors v2.6 frontend copy alignment, and API documentation.
+DAV AI is deployed end-to-end with live public FDA data, role-based safety briefings, source metadata, audit history, PostgreSQL persistence, Saved Monitors manual monitoring, saved monitor run history, Saved Monitors v2.3 scheduled-refresh foundation, Saved Monitors v2.4 scheduler guardrails, Saved Monitors v2.6 DB-backed scheduler locks, Saved Monitors v2.6 frontend copy alignment, and API documentation.
 
 Remaining production-readiness gaps include:
 
@@ -301,7 +301,7 @@ Remaining production-readiness gaps include:
 
 This deployment verification confirms the current MVP deployment state only.
 
-MedTrek AI remains:
+DAV AI remains:
 
 - A public-data safety intelligence prototype.
 - Not a medical device.

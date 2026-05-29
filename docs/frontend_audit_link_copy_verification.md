@@ -2,7 +2,7 @@
 
 Date verified: 2026-05-08  
 Feature: Copy audit link  
-Frontend: https://medtrek-ai.vercel.app
+Frontend: $DAV_AI_FRONTEND_URL
 
 ## Summary
 
@@ -23,7 +23,7 @@ Selected audit event:
 
 Verified link format:
 
-https://medtrek-ai.vercel.app/?page=audit&audit_id=09bb9400-1bce-498d-b9d9-fbdb1b8cafa8
+$DAV_AI_FRONTEND_URL/?page=audit&audit_id=09bb9400-1bce-498d-b9d9-fbdb1b8cafa8
 
 ## Verified behavior
 

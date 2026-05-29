@@ -2,7 +2,7 @@
 
 Date verified: 2026-05-08  
 Feature: DrugSignal Intelligence Score v1  
-Frontend: https://medtrek-ai.vercel.app
+Frontend: $DAV_AI_FRONTEND_URL
 
 ## Summary
 
@@ -33,7 +33,7 @@ The UI clearly states:
 
 - FAERS adverse-event reports are safety signals only and do not prove causation.
 - Scores are based on returned public openFDA records and reaction counts, not clinical incidence rates.
-- MedTrek AI is public-data safety intelligence only and is not medical advice, diagnosis, or treatment.
+- DAV AI is public-data safety intelligence only and is not medical advice, diagnosis, or treatment.
 
 ## Why this matters
 

@@ -2,7 +2,7 @@
 
 Date verified: 2026-05-08  
 Commit verified: 6bcb8db Show audit copy confirmation  
-Frontend: https://medtrek-ai.vercel.app
+Frontend: $DAV_AI_FRONTEND_URL
 
 ## Summary
 

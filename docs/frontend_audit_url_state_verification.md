@@ -5,7 +5,7 @@ Commits verified:
 - c0b834c Add audit detail URL state
 - a9107cc Preserve active page in URL
 
-Frontend: https://medtrek-ai.vercel.app
+Frontend: $DAV_AI_FRONTEND_URL
 
 ## Summary
 
@@ -17,7 +17,7 @@ The app now preserves the Audit page and selected audit event across browser ref
 
 Verified URL format:
 
-https://medtrek-ai.vercel.app/?page=audit&audit_id=34a15d30-a44a-42c2-b0c3-37e05d54bc23
+$DAV_AI_FRONTEND_URL/?page=audit&audit_id=34a15d30-a44a-42c2-b0c3-37e05d54bc23
 
 Selected audit event after refresh:
 

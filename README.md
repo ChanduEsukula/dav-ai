@@ -1,12 +1,12 @@
-# Dav AI
+# DAV AI
 
 **Healthcare safety intelligence from public FDA signals.**
 
-Dav AI is a full-stack healthcare public-data safety intelligence prototype. It turns public FDA/openFDA recall and adverse-event data into source-aware, explainable review workflows with audit trails, versioned scoring, reaction classification, trend snapshots, deterministic role-based safety briefings, and repeatable saved-monitor workflows.
+DAV AI is a full-stack healthcare public-data safety intelligence prototype. It turns public FDA/openFDA recall and adverse-event data into source-aware, explainable review workflows with audit trails, versioned scoring, reaction classification, trend snapshots, deterministic role-based safety briefings, and repeatable saved-monitor workflows.
 
 ## Responsible ML Milestone
 
-Dav AI includes an offline responsible ML experiment layer under `backend/ml_experiments`.
+DAV AI includes an offline responsible ML experiment layer under `backend/ml_experiments`.
 
 This layer is intentionally not connected to FastAPI routes, frontend pages, alerts, saved-monitor automation, or production behavior yet. It exists to prove ML problem framing, weak-label dataset design, feature engineering, explainable baselines, metrics, and healthcare-safety boundaries before any production ML integration.
 
@@ -29,26 +29,47 @@ See:
 
 Saved Monitors now include deterministic Monitor Insights for repeatable public-data searches. Each insight compares recent saved monitor runs and summarizes whether public-data activity appears stable, increased, decreased, notably changed, or insufficient for comparison.
 
-Monitor Insights show record deltas, percent change, confidence level, insight versioning, related audit context, and a clear safety limitation. They are based only on stored Dav AI public-data monitor history and do not provide medical advice, diagnosis, treatment guidance, clinical decision support, or proof of causality.
+Monitor Insights show record deltas, percent change, confidence level, insight versioning, related audit context, and a clear safety limitation. They are based only on stored DAV AI public-data monitor history and do not provide medical advice, diagnosis, treatment guidance, clinical decision support, or proof of causality.
 
 This project is an MVP and portfolio-grade engineering prototype. It is not a medical device, not clinical decision support, and not a replacement for official FDA, CDC, clinician, pharmacist, or emergency guidance.
 
 ## Current source of truth note
 
-`README.md` and `frontend/README.md` are the current source of truth for the Dav AI MVP state. Some older docs and MedTrek/MedSignal reference reports are historical checkpoints and may contain older branding, older test counts, or features that were planned then but are now implemented.
+`README.md` and `frontend/README.md` are the current source of truth for the DAV AI MVP state. Some older docs and reference reports are historical checkpoints and may contain milestone-specific context or features that were planned then but are now implemented. Verification docs use deployment URL placeholders such as `$DAV_AI_BACKEND_URL` and `$DAV_AI_FRONTEND_URL` when the current deployed host should be supplied by the reader.
+
+## Current MVP Status and Limitations
+
+DAV AI is a public-data healthcare safety intelligence MVP/prototype. It helps reviewers search, score, audit, monitor, and explain public FDA/openFDA-style safety signals, but it is not production healthcare software yet.
+
+- DAV AI does not provide medical advice, diagnosis, treatment guidance, clinical decision support, or proof of causation.
+- DAV AI does not use PHI, private patient records, diagnosis history, prescription history, insurance data, or personal medical information.
+- Current intelligence is deterministic and rule-based, including Recall Review Score, DrugSignal Intelligence Score, reaction classification, trend snapshots, monitor insights, source freshness, and safety briefings.
+- Offline ML experiments exist under `backend/ml_experiments`, but production ML is not deployed in the API, frontend, scheduler, alerts, or saved-monitor workflows yet.
+- Auth/RBAC, automated alerts, production scheduler activation, production scheduler observability, notification preferences, and full live Health Pulse data integration are future work.
+
+## Demo Path
+
+For a concise walkthrough, use this path:
+
+1. **Home**: Introduce DAV AI as public-data healthcare safety intelligence with traceability and responsible boundaries.
+2. **RecallRadar**: Search a recall term, review scoring, source metadata, audit details, and safety briefing output.
+3. **DrugSignal**: Search a drug term, review FAERS-style reporting patterns, deterministic scoring, reaction classification, and trend context.
+4. **Audit History**: Show persisted search traceability, filters, detail view, copy actions, CSV export, and source-pull provenance when available.
+5. **Sources/System Status**: Show registered public sources, freshness, backend health, audit persistence visibility, and data-quality transparency.
+6. **Saved Monitors**: Create or review repeatable public-data monitors, run a manual check, inspect run history, compare latest/previous results, and open the related audit event.
 
 ## Engineering Highlights
 
-Dav AI is designed as a public-data healthcare safety intelligence platform with an emphasis on traceability, reproducibility, and operational transparency.
+DAV AI is designed as a public-data healthcare safety intelligence platform with an emphasis on traceability, reproducibility, and operational transparency.
 
 - Audit-backed source freshness for registered public FDA/openFDA data sources.
 - Operational visibility through Data Sources freshness indicators and System Status source-freshness summaries.
 - Reproducible source pulls with persisted `source_pulls` records, raw public-source snapshots, and stable SHA-256 payload hashing.
 - Audit-linked traceability from API response to audit event to source pull to raw public openFDA payload.
-- Safety/privacy boundary limited to public FDA/openFDA data only; Dav AI does not use PHI, private medical history, diagnoses, insurance information, prescription history, addresses, or private user records.
+- Safety/privacy boundary limited to public FDA/openFDA data only; DAV AI does not use PHI, private medical history, diagnoses, insurance information, prescription history, addresses, or private user records.
 - Tested full-stack workflow covering backend behavior, frontend surfaces, production build checks, CI, and manual deployment smoke verification.
 
-Dav AI is not medical advice or clinical decision support.
+DAV AI is not medical advice or clinical decision support.
 
 ---
 
@@ -77,7 +98,7 @@ docs/saved_monitors_v2_1_release_checkpoint.md
 
 ## Current Project Status
 
-Dav AI currently includes:
+DAV AI currently includes:
 
 - **Regional Health Pulse MVP scaffold** for public-health signal review. This backend and frontend foundation uses a clearly labeled scaffold source, deterministic trend labeling, source registry metadata, audit summary metadata, source-pull snapshot handling, scaffold source freshness status, polished Health Pulse UI, mobile/tablet navigation improvements, Audit History linking, Saved Monitors backend support, scheduled-refresh compatibility, and public-health safety disclaimers. It is not live CDC/HHS surveillance yet, not emergency guidance, not medical advice, and not a personal disease-risk predictor.
 
@@ -108,13 +129,13 @@ Search → Score → Audit → Briefing → Monitor → Compare → Alert
 
 The current product foundation is built around five ideas:
 
-1. **Public-data safety intelligence**: Dav AI uses public FDA/openFDA data, not private medical records.
+1. **Public-data safety intelligence**: DAV AI uses public FDA/openFDA data, not private medical records.
 2. **Source transparency**: Results expose source names, endpoints, retrieval timestamps, source IDs, and update context.
 3. **Auditability**: Searches generate audit IDs and persisted audit events for later review.
 4. **Explainability**: Recall and DrugSignal scores are rule-based, versioned, and visible.
 5. **Healthcare safety guardrails**: The app avoids medical advice, diagnosis, treatment guidance, medication-change recommendations, and FAERS causation claims.
 
-Dav AI is intentionally focused on public-data traceability, operational readiness, and healthcare safety boundaries rather than generic chatbot behavior.
+DAV AI is intentionally focused on public-data traceability, operational readiness, and healthcare safety boundaries rather than generic chatbot behavior.
 
 ---
 
@@ -345,7 +366,7 @@ Current engineering support includes:
 Current backend test status:
 
 ```bash
-123 passed
+203 passed
 ```
 
 Current frontend test status:
@@ -358,7 +379,7 @@ Current frontend test status:
 
 ## Recall Review Score
 
-Dav AI uses a transparent, rule-based **Recall Review Score** for RecallRadar.
+DAV AI uses a transparent, rule-based **Recall Review Score** for RecallRadar.
 
 The score is not a medical diagnosis, treatment recommendation, or official FDA replacement. It is a review-priority signal that helps users understand which public recall records may deserve closer attention.
 
@@ -510,7 +531,7 @@ drug-signal-trend-v0.1
 
 Current limitation:
 
-Trend Snapshot v1 is based only on stored public-data searches in Dav AI. It does not represent all FDA activity and should not be interpreted as a complete surveillance signal.
+Trend Snapshot v1 is based only on stored public-data searches in DAV AI. It does not represent all FDA activity and should not be interpreted as a complete surveillance signal.
 
 Documentation:
 
@@ -557,7 +578,7 @@ docs/drug_signal_briefing_v2_verification.md
 
 ## Sources Registry
 
-Dav AI includes a backend source registry to make public-data usage transparent and auditable.
+DAV AI includes a backend source registry to make public-data usage transparent and auditable.
 
 Current registered sources:
 
@@ -585,7 +606,7 @@ The frontend Data Sources page consumes this endpoint and displays registered pu
 
 ## Audit Architecture
 
-Dav AI separates public response metadata from internal audit event construction.
+DAV AI separates public response metadata from internal audit event construction.
 
 The backend currently supports:
 
@@ -645,7 +666,7 @@ Saved Monitors endpoints support repeatable public-data searches across RecallRa
 
 ## Persistence
 
-Dav AI includes Supabase/PostgreSQL audit persistence and saved monitor persistence.
+DAV AI includes Supabase/PostgreSQL audit persistence and saved monitor persistence.
 
 Current persistence support includes:
 
@@ -698,7 +719,7 @@ Database credentials must be stored only in local or deployment environment vari
 
 ## Safety Boundary
 
-Dav AI provides public-data safety intelligence only.
+DAV AI provides public-data safety intelligence only.
 
 It is not:
 
@@ -834,7 +855,7 @@ The scheduled monitor refresh foundation includes a backend CLI job for future C
 From the backend service context:
 
 ```bash
-cd /Users/chanduesukula/medtrek-ai/backend
+cd /Users/chanduesukula/dav-ai/backend
 python -m app.jobs.run_due_saved_monitors --limit 10
 ```
 
@@ -875,7 +896,7 @@ Use local `.env` files for development and deployment environment variables for 
 
 ## Docker Local Development
 
-Dav AI can run locally with Docker Compose.
+DAV AI can run locally with Docker Compose.
 
 From the repository root:
 
@@ -915,7 +936,7 @@ Do not commit real `.env` files or secrets to GitHub.
 
 ## Deployment Environment Notes
 
-Dav AI is designed to deploy as separate frontend, backend, and database services.
+DAV AI is designed to deploy as separate frontend, backend, and database services.
 
 Recommended MVP deployment path:
 
@@ -971,7 +992,7 @@ pytest
 Current backend test status:
 
 ```bash
-123 passed
+203 passed
 ```
 
 Backend test coverage includes:
@@ -1097,7 +1118,7 @@ docs/render_cron_saved_monitors_plan.md
 
 Latest local verification from the responsible ML progress review:
 
-- Backend tests: 182 passed
+- Backend tests: 203 passed
 - Frontend tests: 64 passed
 - Frontend lint: passed
 - Repository state: clean before and after inspection
@@ -1157,7 +1178,7 @@ Recommended next steps:
 
 ## Project Direction
 
-Dav AI should remain focused on healthcare public-data safety intelligence, source transparency, auditability, monitoring, and responsible AI guardrails.
+DAV AI should remain focused on healthcare public-data safety intelligence, source transparency, auditability, monitoring, and responsible AI guardrails.
 
 It should not become a generic chatbot, generic dashboard, or medical advice tool.
 

@@ -1,14 +1,14 @@
-# Dav AI Senior Engineering Demo Script
+# DAV AI Senior Engineering Demo Script
 
 ## 1. One-Sentence Product Description
 
-Dav AI is a public-data healthcare safety intelligence workspace that helps users search, review, audit, monitor, and explain FDA/openFDA-style safety signals with source transparency, deterministic review workflows, and responsible AI boundaries.
+DAV AI is a public-data healthcare safety intelligence workspace that helps users search, review, audit, monitor, and explain FDA/openFDA-style safety signals with source transparency, deterministic review workflows, and responsible AI boundaries.
 
-Dav AI is not a medical chatbot, not a clinical decision-support system, not a diagnosis tool, and not a patient-risk prediction product.
+DAV AI is not a medical chatbot, not a clinical decision-support system, not a diagnosis tool, and not a patient-risk prediction product.
 
 ## 2. Product Positioning
 
-Dav AI should be presented as a public-data safety intelligence platform.
+DAV AI should be presented as a public-data safety intelligence platform.
 
 The strongest identity of the project is:
 
@@ -25,7 +25,7 @@ The project should not be presented as:
 
 The correct framing is:
 
-> Dav AI helps reviewers make sense of public safety data. It does not make clinical decisions.
+> DAV AI helps reviewers make sense of public safety data. It does not make clinical decisions.
 
 ## 3. Problem
 
@@ -41,7 +41,7 @@ Raw public data often has several challenges:
 - users may overinterpret adverse-event data
 - AI/ML outputs can be unsafe if not clearly bounded
 
-The core problem Dav AI addresses is not diagnosis.
+The core problem DAV AI addresses is not diagnosis.
 
 The core problem is review workflow:
 
@@ -55,7 +55,7 @@ Before showing screens, explain the safety boundary clearly.
 
 Say:
 
-> Dav AI works with public FDA/openFDA-style data. It does not use PHI, private patient records, diagnosis history, prescription history, insurance data, or personal medical information. The goal is public-data review support, not medical advice.
+> DAV AI works with public FDA/openFDA-style data. It does not use PHI, private patient records, diagnosis history, prescription history, insurance data, or personal medical information. The goal is public-data review support, not medical advice.
 
 This establishes maturity immediately and prevents the project from sounding like an unsafe healthcare chatbot.
 
@@ -106,7 +106,7 @@ Explain:
 
 Key phrase:
 
-> FAERS reports do not prove causation or incidence. Dav AI treats them as public reporting patterns only.
+> FAERS reports do not prove causation or incidence. DAV AI treats them as public reporting patterns only.
 
 Senior-engineer explanation:
 
@@ -282,7 +282,7 @@ What to emphasize:
 
 ## 5. Architecture Story
 
-Dav AI follows a clean full-stack architecture.
+DAV AI follows a clean full-stack architecture.
 
 Frontend:
 
@@ -322,7 +322,7 @@ AI/ML layer:
 
 System design principle:
 
-> Dav AI is designed around traceability, public-data boundaries, deterministic review support, and responsible AI governance.
+> DAV AI is designed around traceability, public-data boundaries, deterministic review support, and responsible AI governance.
 
 ## 6. End-to-End Data Flow
 
@@ -347,7 +347,7 @@ Key phrase:
 
 ## 7. Responsible AI Boundary
 
-Dav AI does not use:
+DAV AI does not use:
 
 - PHI
 - private patient records
@@ -358,7 +358,7 @@ Dav AI does not use:
 - personal medical narratives
 - user-specific medical history
 
-Dav AI avoids:
+DAV AI avoids:
 
 - medical advice
 - diagnosis
@@ -372,7 +372,7 @@ Dav AI avoids:
 
 Correct framing:
 
-> Dav AI supports public-data review. It does not make clinical decisions.
+> DAV AI supports public-data review. It does not make clinical decisions.
 
 ## 8. Current Honest Status
 
@@ -549,7 +549,7 @@ Instead say:
 
 Current verification from the responsible ML progress review:
 
-- Backend tests: 182 passed
+- Backend tests: 203 passed
 - Frontend tests: 64 passed
 - Frontend lint: passed
 - Repository was clean before and after inspection
@@ -610,14 +610,14 @@ Recommended next technical sequence:
 
 A strong closing line for interviews:
 
-> Dav AI is my attempt to build an AI-ready healthcare safety intelligence platform the responsible way. I focused first on public-data workflows, source provenance, auditability, deterministic scoring, saved monitoring, and offline ML experiments before exposing any AI predictions to users. The goal is not to replace clinical judgment. The goal is to make public safety data easier to review, explain, and govern.
+> DAV AI is my attempt to build an AI-ready healthcare safety intelligence platform the responsible way. I focused first on public-data workflows, source provenance, auditability, deterministic scoring, saved monitoring, and offline ML experiments before exposing any AI predictions to users. The goal is not to replace clinical judgment. The goal is to make public safety data easier to review, explain, and govern.
 
 Another shorter version:
 
-> The most important engineering decision in Dav AI was not adding ML everywhere. It was building the trust layer first: source traceability, audit history, deterministic baselines, safety boundaries, and offline ML governance.
+> The most important engineering decision in DAV AI was not adding ML everywhere. It was building the trust layer first: source traceability, audit history, deterministic baselines, safety boundaries, and offline ML governance.
 ## Source Freshness and Payload-Change Intelligence Milestone
 
-Dav AI now includes deterministic source freshness and payload-change intelligence across backend APIs, saved monitor run history, Data Sources, System Status, and Saved Monitors.
+DAV AI now includes deterministic source freshness and payload-change intelligence across backend APIs, saved monitor run history, Data Sources, System Status, and Saved Monitors.
 
 This milestone strengthens the platform’s trust layer before production ML or RAG by answering two operational questions:
 

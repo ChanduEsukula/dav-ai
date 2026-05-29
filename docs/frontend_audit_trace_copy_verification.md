@@ -2,7 +2,7 @@
 
 Date verified: 2026-05-08  
 Feature: Audit detail trace copy actions  
-Frontend: https://medtrek-ai.vercel.app
+Frontend: $DAV_AI_FRONTEND_URL
 
 ## Summary
 

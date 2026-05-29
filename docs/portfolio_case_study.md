@@ -1,14 +1,14 @@
-# Dav AI Portfolio Case Study
+# DAV AI Portfolio Case Study
 
 ## 1. Project Overview
 
-Dav AI is a public-data healthcare safety intelligence platform that helps users search, review, audit, monitor, and explain FDA/openFDA-style safety signals.
+DAV AI is a public-data healthcare safety intelligence platform that helps users search, review, audit, monitor, and explain FDA/openFDA-style safety signals.
 
 The project is designed as a source-aware review workspace, not a medical chatbot or clinical decision-support tool. Its core value is turning public safety data into a traceable workflow with normalized results, deterministic scoring, audit history, saved monitors, and responsible ML readiness.
 
 ## 2. My Role
 
-I worked on Dav AI as a full-stack engineer, AI/ML engineer, responsible AI designer, and product builder.
+I worked on DAV AI as a full-stack engineer, AI/ML engineer, responsible AI designer, and product builder.
 
 My responsibilities included:
 
@@ -35,7 +35,7 @@ Users need a way to:
 - separate public-data review from medical advice
 - prepare for AI/ML safely
 
-Dav AI addresses this problem by creating a structured public-data safety review workflow.
+DAV AI addresses this problem by creating a structured public-data safety review workflow.
 
 The workflow is:
 
@@ -43,7 +43,7 @@ Search public data → normalize results → score review priority → preserve 
 
 ## 4. Product Boundary
 
-Dav AI is not a medical advice tool.
+DAV AI is not a medical advice tool.
 
 It does not provide:
 
@@ -55,7 +55,7 @@ It does not provide:
 - causation claims
 - outbreak prediction
 
-Dav AI uses public data only.
+DAV AI uses public data only.
 
 It does not use:
 
@@ -69,7 +69,7 @@ It does not use:
 
 The correct framing is:
 
-> Dav AI supports public-data review. It does not make clinical decisions.
+> DAV AI supports public-data review. It does not make clinical decisions.
 
 ## 5. What I Built
 
@@ -165,7 +165,7 @@ Current boundary:
 
 ### Offline Responsible ML Experiments
 
-Dav AI includes offline responsible ML experiments under `backend/ml_experiments`.
+DAV AI includes offline responsible ML experiments under `backend/ml_experiments`.
 
 Current experiments:
 
@@ -245,7 +245,7 @@ It includes:
 
 ## 7. End-to-End Data Flow
 
-A typical Dav AI workflow looks like this:
+A typical DAV AI workflow looks like this:
 
 1. User enters a public-data search query.
 2. Frontend sends a typed API request.
@@ -264,7 +264,7 @@ This makes the project more than a simple frontend calling an API. It has a revi
 
 ## 8. Responsible AI Decisions
 
-The strongest responsible AI decision in Dav AI was keeping ML offline until the system has stronger data and governance.
+The strongest responsible AI decision in DAV AI was keeping ML offline until the system has stronger data and governance.
 
 Before production ML, the project needs:
 
@@ -280,11 +280,11 @@ Before production ML, the project needs:
 - feature flags
 - deployment monitoring
 
-This is especially important because Dav AI is healthcare-adjacent, even though it uses public data only.
+This is especially important because DAV AI is healthcare-adjacent, even though it uses public data only.
 
 ## 9. Engineering Strengths
 
-Dav AI demonstrates several strong engineering practices:
+DAV AI demonstrates several strong engineering practices:
 
 - source-aware architecture
 - audit trail design
@@ -309,7 +309,7 @@ The strongest engineering theme is:
 
 Current verification from the responsible ML progress review:
 
-- Backend tests: 182 passed
+- Backend tests: 203 passed
 - Frontend tests: 64 passed
 - Frontend lint: passed
 - Repository state: clean before and after inspection
@@ -396,7 +396,7 @@ Decision:
 
 ### For AI Engineer Roles
 
-Dav AI shows that I can design AI-ready workflows without rushing unsafe AI into production.
+DAV AI shows that I can design AI-ready workflows without rushing unsafe AI into production.
 
 Key points:
 
@@ -408,7 +408,7 @@ Key points:
 
 ### For ML Engineer Roles
 
-Dav AI shows that I understand ML system readiness beyond model training.
+DAV AI shows that I understand ML system readiness beyond model training.
 
 Key points:
 
@@ -422,7 +422,7 @@ Key points:
 
 ### For Backend Engineer Roles
 
-Dav AI shows backend architecture maturity.
+DAV AI shows backend architecture maturity.
 
 Key points:
 
@@ -438,7 +438,7 @@ Key points:
 
 ### For Full-Stack Engineer Roles
 
-Dav AI shows end-to-end product engineering.
+DAV AI shows end-to-end product engineering.
 
 Key points:
 
@@ -452,7 +452,7 @@ Key points:
 
 ### For Responsible AI / Health-Tech Roles
 
-Dav AI shows that I can build healthcare-adjacent software with safety boundaries.
+DAV AI shows that I can build healthcare-adjacent software with safety boundaries.
 
 Key points:
 
@@ -485,7 +485,7 @@ Recommended sequence:
 
 ## 16. Final Summary
 
-Dav AI is a portfolio-grade public-data safety intelligence platform with strong responsible AI foundations.
+DAV AI is a portfolio-grade public-data safety intelligence platform with strong responsible AI foundations.
 
 The project demonstrates:
 
@@ -506,4 +506,4 @@ The strongest decision was building the trust layer first:
 
 > source traceability, audit history, deterministic baselines, safety boundaries, and offline ML governance.
 
-Dav AI is AI-ready, but it is not pretending to be production clinical AI. That honesty makes the project stronger for professors, senior engineers, and hiring managers.
+DAV AI is AI-ready, but it is not pretending to be production clinical AI. That honesty makes the project stronger for professors, senior engineers, and hiring managers.
