@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import type { RecallSearchResponse } from '../api/recalls'
 import AuditPanel from './AuditPanel'
 import SafetyBriefingPanel from './SafetyBriefingPanel'
+import SafeInsightCards, { type SafeInsightCard } from './SafeInsightCards'
 import { formatDate, formatTimestamp, riskExplanation } from '../utils/recallFormatters'
 import { generateRecallBriefing } from '../utils/briefingGenerator'
 import { briefingRoleLabels, type BriefingRole } from '../types/briefing'
@@ -26,9 +27,56 @@ function RecallRadar({
   handleSearch,
 }: RecallRadarProps) {
   const [briefingRole, setBriefingRole] = useState<BriefingRole>('consumer')
+  const [sortMode, setSortMode] = useState<'score' | 'latest'>('score')
+
   const hasNoResults = data && data.results.length === 0
   const hasResults = data && data.results.length > 0
   const topResult = hasResults ? data.results[0] : null
+
+  const safeInsightCards: SafeInsightCard[] = data
+    ? [
+        {
+          label: 'Source-backed',
+          title: 'Public FDA source and retrieval time are visible.',
+          detail: `${data.source_name} returned ${data.count} record${
+            data.count === 1 ? '' : 's'
+          } for this search, retrieved ${formatTimestamp(data.retrieval_timestamp)}.`,
+          tone: 'source',
+        },
+        {
+          label: 'Review signal',
+          title: hasResults
+            ? `Highest matched signal: ${topResult?.risk_score.label ?? 'Unknown'}`
+            : 'No matched recall records returned.',
+          detail: hasResults
+            ? 'DavAI can highlight records to review, but you should verify product name, firm, lot details, and recall date.'
+            : 'No match does not prove a product is safe or unsafe. Try another brand, ingredient, or product name.',
+          tone: 'review',
+        },
+        {
+          label: 'Safety boundary',
+          title: 'This is not medical advice or a safety guarantee.',
+          detail:
+            'DavAI summarizes public recall data only. It does not diagnose, treat, or replace FDA, clinician, or pharmacist guidance.',
+          tone: 'safety',
+        },
+      ]
+    : []
+
+  const sortedResults = useMemo(() => {
+    if (!data) return []
+
+    return [...data.results].sort((left, right) => {
+      if (sortMode === 'latest') {
+        return (
+          Number(right.recall_initiation_date || 0) -
+          Number(left.recall_initiation_date || 0)
+        )
+      }
+
+      return right.risk_score.score - left.risk_score.score
+    })
+  }, [data, sortMode])
 
   const briefing = useMemo(() => {
     if (!data) return null
@@ -109,6 +157,8 @@ function RecallRadar({
           </div>
         )}
 
+        {data && <SafeInsightCards cards={safeInsightCards} />}
+
         {topResult && (
           <section className="consumer-summary" aria-label="Recall safety summary">
             <div className="consumer-summary__icon" aria-hidden="true">
@@ -134,89 +184,161 @@ function RecallRadar({
                 advice. Use the details to check whether a record may apply to your product.
               </p>
             </div>
-
-            <div className="consumer-summary__score" aria-hidden="true">
-              <span>
-                <strong>✓</strong>
-                <small>Review below</small>
-              </span>
-            </div>
           </section>
         )}
 
         {hasResults && (
-          <div className="results-grid" aria-label="Recall search results">
-            {data.results.map((result) => (
-              <article className="recall-card" key={result.recall_number}>
-                <div className="recall-card-top">
-                  <span className={`risk-pill risk-${result.risk_score.label.toLowerCase()}`}>
-                    {result.risk_score.label} signal
-                  </span>
+          <>
+            <div className="recall-results-toolbar">
+              <div>
+                <span>Sort results</span>
+                <p>Choose how recall records are ordered.</p>
+              </div>
 
-                  <h3>{result.product_description}</h3>
+              <div className="recall-sort-control" role="group" aria-label="Sort recall results">
+                <button
+                  type="button"
+                  className={sortMode === 'score' ? 'active' : ''}
+                  onClick={() => setSortMode('score')}
+                >
+                  Highest score
+                </button>
 
-                  <div className="recall-score-block">
-                    <small>Risk score</small>
-                    <strong>{result.risk_score.score}</strong>
-                  </div>
-                </div>
+                <button
+                  type="button"
+                  className={sortMode === 'latest' ? 'active' : ''}
+                  onClick={() => setSortMode('latest')}
+                >
+                  Latest recall
+                </button>
+              </div>
+            </div>
 
-                <p className="reason">
-                  <strong>Reason:</strong> {result.reason_for_recall}
-                </p>
+            <div className="results-grid" aria-label="Recall search results">
+              {sortedResults.map((result) => (
+                <details className="recall-card recall-card--compact" key={result.recall_number}>
+                  <summary className="recall-card-summary">
+                    <span className="recall-card-icon" aria-hidden="true">
+                      <svg viewBox="0 0 48 48" focusable="false">
+                        <path d="M24 6l14 5v11c0 9-5.6 16.6-14 20-8.4-3.4-14-11-14-20V11l14-5z" />
+                        <path d="M17 24l5 5 10-12" />
+                      </svg>
+                    </span>
 
-                <div className="metadata-grid">
-                  <div>
-                    <small>FDA class</small>
-                    <span>{result.classification || 'Unknown'}</span>
-                  </div>
-                  <div>
-                    <small>Status</small>
-                    <span>{result.status || 'Unknown'}</span>
-                  </div>
-                  <div>
-                    <small>Recall date</small>
-                    <span>{formatDate(result.recall_initiation_date)}</span>
-                  </div>
-                  <div>
-                    <small>Firm</small>
-                    <span>{result.recalling_firm || 'Unknown'}</span>
-                  </div>
-                </div>
+                    <span className={`risk-pill risk-${result.risk_score.label.toLowerCase()}`}>
+                      {result.risk_score.label} signal
+                    </span>
 
-                <div className="consumer-guidance-grid">
-                  <p className="plain-explanation">
-                    <strong>What this means</strong>
-                    {riskExplanation(result)}
-                  </p>
+                    <h3 className="recall-card-title">{result.product_description}</h3>
 
-                  <div className="check-next-card">
-                    <strong>What to check next</strong>
-                    <ul>
-                      <li>Verify the product name and lot details.</li>
-                      <li>Compare the firm and recall date.</li>
-                      <li>Review FDA instructions if available.</li>
-                    </ul>
-                  </div>
-                </div>
+                    <span className="recall-card-expand" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" focusable="false">
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
+                    </span>
 
-                <details>
-                  <summary>Technical scoring details</summary>
-                  <div className="audit-box">
-                    <p>Source: {result.source.name}</p>
-                    <p>Retrieved: {formatTimestamp(result.source.retrieval_timestamp)}</p>
-                    <p>Score version: {result.risk_score.score_version}</p>
-                    <p>
-                      Components: class {result.risk_score.components.classification_score},
-                      status {result.risk_score.components.status_score}, recency{' '}
-                      {result.risk_score.components.recency_score}, scope{' '}
-                      {result.risk_score.components.scope_score}
+                    <span className="recall-score-inline">
+                      <strong>{result.risk_score.score}</strong>
+                      <small>Risk score</small>
+                    </span>
+                  </summary>
+
+                  <div className="recall-card-expanded">
+                    <div className="recall-full-name-panel">
+                      <small>Full product description</small>
+                      <strong>{result.product_description}</strong>
+                    </div>
+
+                    <div className="recall-firm-panel">
+                      <small>Recalling firm / manufacturer</small>
+                      <strong>{result.recalling_firm || 'Unknown'}</strong>
+                    </div>
+
+                    <details className="recall-score-help">
+                      <summary>How this score works</summary>
+                      <div>
+                        <p>
+                          DavAI uses a transparent rule-based score. It reviews FDA class, recall
+                          status, recency, and distribution scope. Higher scores mean the record
+                          may deserve closer review, not that the product is personally unsafe.
+                        </p>
+
+                        <ul>
+                          <li>
+                            FDA class contribution:{' '}
+                            {result.risk_score.components.classification_score}
+                          </li>
+                          <li>
+                            Status contribution: {result.risk_score.components.status_score}
+                          </li>
+                          <li>
+                            Recency contribution: {result.risk_score.components.recency_score}
+                          </li>
+                          <li>Scope contribution: {result.risk_score.components.scope_score}</li>
+                        </ul>
+
+                        <p>Score version: {result.risk_score.score_version}</p>
+                      </div>
+                    </details>
+
+                    <div className="metadata-grid">
+                      <div>
+                        <small>FDA class</small>
+                        <span>{result.classification || 'Unknown'}</span>
+                      </div>
+                      <div>
+                        <small>Status</small>
+                        <span>{result.status || 'Unknown'}</span>
+                      </div>
+                      <div>
+                        <small>Recall date</small>
+                        <span>{formatDate(result.recall_initiation_date)}</span>
+                      </div>
+                      <div>
+                        <small>Firm</small>
+                        <span>{result.recalling_firm || 'Unknown'}</span>
+                      </div>
+                    </div>
+
+                    <p className="reason">
+                      <strong>Reason:</strong> {result.reason_for_recall}
                     </p>
+
+                    <div className="consumer-guidance-grid">
+                      <p className="plain-explanation">
+                        <strong>What this means</strong>
+                        {riskExplanation(result)}
+                      </p>
+
+                      <div className="check-next-card">
+                        <strong>What to check next</strong>
+                        <ul>
+                          <li>Verify the product name and lot details.</li>
+                          <li>Compare the firm and recall date.</li>
+                          <li>Review FDA instructions if available.</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <details className="recall-technical-details">
+                      <summary>Technical scoring details</summary>
+                      <div className="audit-box">
+                        <p>Source: {result.source.name}</p>
+                        <p>Retrieved: {formatTimestamp(result.source.retrieval_timestamp)}</p>
+                        <p>Score version: {result.risk_score.score_version}</p>
+                        <p>
+                          Components: class {result.risk_score.components.classification_score},
+                          status {result.risk_score.components.status_score}, recency{' '}
+                          {result.risk_score.components.recency_score}, scope{' '}
+                          {result.risk_score.components.scope_score}
+                        </p>
+                      </div>
+                    </details>
                   </div>
                 </details>
-              </article>
-            ))}
-          </div>
+              ))}
+            </div>
+          </>
         )}
 
         {briefing && (

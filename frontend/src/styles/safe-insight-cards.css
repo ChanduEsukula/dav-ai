@@ -1,0 +1,105 @@
+.safe-insight-cards {
+  margin-top: 22px;
+  padding: 20px;
+  border: 1px solid rgba(11, 79, 113, 0.08);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 90% 20%, rgba(103, 232, 249, 0.12), transparent 32%),
+    rgba(255, 255, 255, 0.78);
+  box-shadow:
+    0 16px 42px rgba(15, 23, 42, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
+.safe-insight-cards__header {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.safe-insight-cards__header h3 {
+  margin: 0;
+  color: var(--deep-ink);
+  font-size: clamp(1.25rem, 2vw, 1.55rem);
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+}
+
+.safe-insight-cards__header p:last-child {
+  max-width: 720px;
+  margin: 0;
+  color: #475569;
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
+.safe-insight-cards__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.safe-insight-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 142px;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.045);
+}
+
+.safe-insight-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: var(--safe-insight-accent, var(--deep-teal));
+}
+
+.safe-insight-card span {
+  width: fit-content;
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: var(--safe-insight-accent, var(--deep-teal));
+  background: color-mix(in srgb, var(--safe-insight-accent, #0f8794), transparent 88%);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.safe-insight-card strong {
+  color: var(--deep-ink);
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.safe-insight-card p {
+  margin: 0;
+  color: #475569;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.safe-insight-card--source {
+  --safe-insight-accent: #0f8794;
+}
+
+.safe-insight-card--review {
+  --safe-insight-accent: #6d3bd1;
+}
+
+.safe-insight-card--safety {
+  --safe-insight-accent: #0f8f6b;
+}
+
+@media (max-width: 900px) {
+  .safe-insight-cards__grid {
+    grid-template-columns: 1fr;
+  }
+}
