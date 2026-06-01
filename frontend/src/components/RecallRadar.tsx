@@ -28,6 +28,7 @@ function RecallRadar({
   const [briefingRole, setBriefingRole] = useState<BriefingRole>('consumer')
   const hasNoResults = data && data.results.length === 0
   const hasResults = data && data.results.length > 0
+  const topResult = hasResults ? data.results[0] : null
 
   const briefing = useMemo(() => {
     if (!data) return null
@@ -41,8 +42,8 @@ function RecallRadar({
         <p className="eyebrow">RecallRadar live module</p>
         <h2>Search public FDA recall signals.</h2>
         <p>
-          Enter a product, drug, brand, or category. Dav AI fetches live public
-          recall records, scores the signal, and keeps source details visible.
+          Enter a product, drug, brand, or category. Dav AI checks public recall records,
+          highlights matched results, and explains what to review next.
         </p>
       </div>
 
@@ -78,7 +79,8 @@ function RecallRadar({
 
         {loading && (
           <p className="loading-helper" role="status" aria-live="polite">
-            This may take a few seconds while the secure backend wakes up and checks public FDA recall sources.
+            This may take a few seconds while the secure backend wakes up and checks public FDA
+            recall sources.
           </p>
         )}
 
@@ -91,7 +93,7 @@ function RecallRadar({
         {data && (
           <div className="source-strip" role="status" aria-live="polite">
             <span>{data.count} records matched</span>
-            <span>{data.source_name}</span>
+            <span>Public FDA source: {data.source_name}</span>
             <span>Retrieved {formatTimestamp(data.retrieval_timestamp)}</span>
           </div>
         )}
@@ -100,11 +102,46 @@ function RecallRadar({
           <div className="empty-state">
             <h3>No FDA recall records matched this search.</h3>
             <p>
-              This does not prove the product is safe or unsafe. It only means no
-              matching records were returned from the current openFDA Drug Enforcement
-              search. Try searching by brand name, product name, ingredient, or category.
+              This does not prove the product is safe or unsafe. It only means no matching
+              records were returned from the current openFDA Drug Enforcement search. Try
+              searching by brand name, product name, ingredient, or category.
             </p>
           </div>
+        )}
+
+        {topResult && (
+          <section className="consumer-summary" aria-label="Recall safety summary">
+            <div className="consumer-summary__icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" focusable="false">
+                <path d="M24 6l14 5v11c0 9-5.6 16.6-14 20-8.4-3.4-14-11-14-20V11l14-5z" />
+                <path d="M17 24l5 5 10-12" />
+              </svg>
+            </div>
+
+            <div className="consumer-summary__content">
+              <h3>
+                DavAI found {data?.count ?? 0} public FDA recall record
+                {data?.count === 1 ? '' : 's'} that may match your search.
+              </h3>
+
+              <div className="consumer-summary__signal">
+                <span>Highest signal:</span>
+                <strong>{topResult.risk_score.label}</strong>
+              </div>
+
+              <p>
+                Review the matched recalls below. This is public FDA recall data and not medical
+                advice. Use the details to check whether a record may apply to your product.
+              </p>
+            </div>
+
+            <div className="consumer-summary__score" aria-hidden="true">
+              <span>
+                <strong>✓</strong>
+                <small>Review below</small>
+              </span>
+            </div>
+          </section>
         )}
 
         {hasResults && (
@@ -115,15 +152,18 @@ function RecallRadar({
                   <span className={`risk-pill risk-${result.risk_score.label.toLowerCase()}`}>
                     {result.risk_score.label} signal
                   </span>
+
+                  <h3>{result.product_description}</h3>
+
                   <div className="recall-score-block">
                     <small>Risk score</small>
                     <strong>{result.risk_score.score}</strong>
                   </div>
                 </div>
 
-                <h3>{result.product_description}</h3>
-
-                <p className="reason">{result.reason_for_recall}</p>
+                <p className="reason">
+                  <strong>Reason:</strong> {result.reason_for_recall}
+                </p>
 
                 <div className="metadata-grid">
                   <div>
@@ -144,7 +184,21 @@ function RecallRadar({
                   </div>
                 </div>
 
-                <p className="plain-explanation">{riskExplanation(result)}</p>
+                <div className="consumer-guidance-grid">
+                  <p className="plain-explanation">
+                    <strong>What this means</strong>
+                    {riskExplanation(result)}
+                  </p>
+
+                  <div className="check-next-card">
+                    <strong>What to check next</strong>
+                    <ul>
+                      <li>Verify the product name and lot details.</li>
+                      <li>Compare the firm and recall date.</li>
+                      <li>Review FDA instructions if available.</li>
+                    </ul>
+                  </div>
+                </div>
 
                 <details>
                   <summary>Technical scoring details</summary>
