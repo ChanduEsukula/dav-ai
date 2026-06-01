@@ -43,6 +43,8 @@ function DrugSignal() {
   const hasNoResults = data && data.top_reactions.length === 0
   const maxReactionCount =
     data?.top_reactions.reduce((max, item) => Math.max(max, item.count), 0) ?? 0
+  const topReaction = data?.top_reactions[0] ?? null
+  const topCategory = data?.reaction_categories[0] ?? null
 
   const briefing = useMemo(() => {
     if (!data) return null
@@ -56,9 +58,8 @@ function DrugSignal() {
         <p className="eyebrow">DrugSignal module</p>
         <h2>Explore public FAERS adverse-event reporting patterns.</h2>
         <p>
-          Search a drug or medicinal product to view top reported reactions from
-          openFDA Drug Event records. These reports are safety signals only and do
-          not prove causation.
+          Search a drug or medicinal product to view top reported reactions from openFDA Drug Event
+          records. These reports are safety signals only and do not prove causation.
         </p>
       </div>
 
@@ -83,7 +84,8 @@ function DrugSignal() {
             />
 
             <p className="field-helper" id="drug-signal-search-helper">
-              Public FAERS reports only. Not causation, medical advice, or clinical decision support.
+              Public FAERS reports only. Not causation, medical advice, or clinical decision
+              support.
             </p>
           </div>
 
@@ -94,7 +96,8 @@ function DrugSignal() {
 
         {loading && (
           <p className="loading-helper" role="status" aria-live="polite">
-            This may take a few seconds while the secure backend wakes up and checks public FAERS reporting data.
+            This may take a few seconds while the secure backend wakes up and checks public FAERS
+            reporting data.
           </p>
         )}
 
@@ -107,31 +110,31 @@ function DrugSignal() {
         {data && (
           <div className="source-strip" role="status" aria-live="polite">
             <span>{data.count} FAERS records reviewed</span>
-            <span>{data.source_name}</span>
+            <span>Public FDA source: {data.source_name}</span>
             <span>Retrieved {formatTimestamp(data.retrieval_timestamp)}</span>
           </div>
         )}
 
         {data && (
-          <div className="drug-intelligence-card">
-            <div>
+          <section className="drug-intelligence-card" aria-label="DrugSignal intelligence summary">
+            <div className="drug-intelligence-score">
               <p className="eyebrow">DrugSignal Intelligence</p>
               <h3>{data.intelligence_score.score} / 100</h3>
+              <span>{data.intelligence_score.label}</span>
+            </div>
+
+            <div className="drug-intelligence-copy">
+              <h4>{data.intelligence_score.label} public reporting signal</h4>
               <p>
                 Transparent signal score based on deterministic review of returned public FAERS
                 records, reaction concentration, reaction diversity, and data confidence.
               </p>
               <p className="drug-score-boundary">
-                Public reports only; this does not prove causation or provide medical advice.
+                Public reports only. This does not prove causation or provide medical advice.
               </p>
             </div>
 
             <div className="drug-intelligence-grid">
-              <div>
-                <small>Signal strength</small>
-                <span>{data.intelligence_score.label}</span>
-              </div>
-
               <div>
                 <small>Review priority</small>
                 <span>{data.intelligence_score.review_priority}</span>
@@ -153,24 +156,35 @@ function DrugSignal() {
               </div>
             </div>
 
-            <ul className="drug-intelligence-limitations">
-              {data.intelligence_score.limitations.map((limitation) => (
-                <li key={limitation}>{limitation}</li>
-              ))}
-            </ul>
-          </div>
+            <details className="drug-score-details">
+              <summary>How this signal score works</summary>
+              <ul>
+                {data.intelligence_score.limitations.map((limitation) => (
+                  <li key={limitation}>{limitation}</li>
+                ))}
+              </ul>
+            </details>
+          </section>
         )}
 
         {data && data.reaction_categories.length > 0 && (
-          <div className="reaction-category-card">
-            <div>
-              <p className="eyebrow">Reaction Classification</p>
-              <h3>Reaction categories</h3>
-              <p>
-                Rule-based NLP-style grouping of returned top reactions into
-                explainable safety-signal categories.
-              </p>
-            </div>
+          <details className="drug-compact-section">
+            <summary>
+              <span>
+                <small className="drug-compact-eyebrow">Reaction Classification</small>
+                <h3>Reaction categories</h3>
+                <small>
+                  Rule-based NLP-style grouping · {data.reaction_categories.length} categories
+                  {topCategory ? ` · top: ${topCategory.category}` : ''}
+                </small>
+              </span>
+
+              <i aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </i>
+            </summary>
 
             <div className="reaction-category-list">
               {data.reaction_categories.map((category) => (
@@ -188,16 +202,26 @@ function DrugSignal() {
             <p className="reaction-classifier-version">
               Classifier version: {data.reaction_classifier_version}
             </p>
-          </div>
+          </details>
         )}
 
         {data && (
-          <div className="drug-trend-card">
-            <div>
-              <p className="eyebrow">DrugSignal Trend Snapshot</p>
-              <h3>{data.trend_snapshot.label}</h3>
-              <p>{data.trend_snapshot.explanation}</p>
-            </div>
+          <details className="drug-compact-section">
+            <summary>
+              <span>
+                <small className="drug-compact-eyebrow">DrugSignal Trend Snapshot</small>
+                <h3>Trend snapshot</h3>
+                <small>{data.trend_snapshot.label}</small>
+              </span>
+
+              <i aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </i>
+            </summary>
+
+            <p className="drug-trend-summary">{data.trend_snapshot.explanation}</p>
 
             <div className="drug-trend-grid">
               <div>
@@ -230,14 +254,93 @@ function DrugSignal() {
               </div>
             </div>
 
-            <p className="drug-trend-limitation">
-              {data.trend_snapshot.limitation}
-            </p>
+            <p className="drug-trend-limitation">{data.trend_snapshot.limitation}</p>
+          </details>
+        )}
+
+        {data && data.top_reactions.length > 0 && (
+          <details className="drug-compact-section" open>
+            <summary>
+              <span>
+                <h3>Top reported reactions</h3>
+                <small>
+                  {data.top_reactions.length} reactions
+                  {topReaction ? ` · top: ${topReaction.reaction}` : ''}
+                </small>
+              </span>
+
+              <i aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </i>
+            </summary>
+
+            <div className="reaction-list">
+              {data.top_reactions.map((item) => {
+                const barWidth =
+                  maxReactionCount > 0 ? `${(item.count / maxReactionCount) * 100}%` : '0%'
+
+                return (
+                  <div className="reaction-row" key={item.reaction}>
+                    <div className="reaction-main">
+                      <span>{item.reaction}</span>
+                      <div className="reaction-bar-track">
+                        <div className="reaction-bar-fill" style={{ width: barWidth }} />
+                      </div>
+                    </div>
+
+                    <strong>{item.count}</strong>
+                  </div>
+                )
+              })}
+            </div>
+          </details>
+        )}
+
+        {briefing && (
+          <div className="briefing-control-panel">
+            <div className="briefing-role-selector">
+              <span id="drug-briefing-role-label">Briefing role</span>
+
+              <div
+                className="briefing-role-buttons"
+                role="group"
+                aria-labelledby="drug-briefing-role-label"
+              >
+                {briefingRoles.map((role) => (
+                  <button
+                    key={role}
+                    type="button"
+                    className={`briefing-role-button ${briefingRole === role ? 'active' : ''}`}
+                    aria-pressed={briefingRole === role}
+                    onClick={() => setBriefingRole(role)}
+                  >
+                    {briefingRoleLabels[role]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <SafetyBriefingPanel briefing={briefing} />
           </div>
         )}
 
         {data && (
-          <div className="drug-audit-panel">
+          <details className="drug-compact-section drug-audit-panel">
+            <summary>
+              <span>
+                <strong>Technical provenance and audit trail</strong>
+                <small>Source, endpoint, audit ID, and disclaimer details</small>
+              </span>
+
+              <i aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </i>
+            </summary>
+
             <div className="metadata-grid">
               <div>
                 <small>Data Source</small>
@@ -287,69 +390,17 @@ function DrugSignal() {
 
             <p className="disclaimer">{data.faers_disclaimer}</p>
             <p className="disclaimer">{data.medical_disclaimer}</p>
-          </div>
-        )}
-
-        {briefing && (
-          <div className="briefing-control-panel">
-            <div className="briefing-role-selector">
-              <span id="drug-briefing-role-label">Briefing role</span>
-
-              <div
-                className="briefing-role-buttons"
-                role="group"
-                aria-labelledby="drug-briefing-role-label"
-              >
-                {briefingRoles.map((role) => (
-                  <button
-                    key={role}
-                    type="button"
-                    className={`briefing-role-button ${briefingRole === role ? 'active' : ''}`}
-                    aria-pressed={briefingRole === role}
-                    onClick={() => setBriefingRole(role)}
-                  >
-                    {briefingRoleLabels[role]}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <SafetyBriefingPanel briefing={briefing} />
-          </div>
+          </details>
         )}
 
         {hasNoResults && (
           <div className="empty-state">
             <h3>No FAERS drug-event records matched this search.</h3>
             <p>
-              This does not prove the drug is safe or unsafe. It only means no
-              matching records were returned from the current openFDA Drug Event
-              search. Try searching by generic name, brand name, or active ingredient.
+              This does not prove the drug is safe or unsafe. It only means no matching records
+              were returned from the current openFDA Drug Event search. Try searching by generic
+              name, brand name, or active ingredient.
             </p>
-          </div>
-        )}
-
-        {data && data.top_reactions.length > 0 && (
-          <div className="reaction-list">
-            <h3>Top reported reactions</h3>
-
-            {data.top_reactions.map((item) => {
-              const barWidth =
-                maxReactionCount > 0 ? `${(item.count / maxReactionCount) * 100}%` : '0%'
-
-              return (
-                <div className="reaction-row" key={item.reaction}>
-                  <div className="reaction-main">
-                    <span>{item.reaction}</span>
-                    <div className="reaction-bar-track">
-                      <div className="reaction-bar-fill" style={{ width: barWidth }} />
-                    </div>
-                  </div>
-
-                  <strong>{item.count}</strong>
-                </div>
-              )
-            })}
           </div>
         )}
       </div>

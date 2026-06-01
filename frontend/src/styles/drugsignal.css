@@ -10,9 +10,15 @@
   margin-top: 24px;
   padding: 28px;
   border-radius: 28px;
-  background: #ffffff;
+  background:
+    radial-gradient(circle at 12% 12%, rgba(103, 232, 249, 0.1), transparent 28%),
+    radial-gradient(circle at 88% 82%, rgba(34, 197, 94, 0.07), transparent 34%),
+    rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(0, 123, 135, 0.1);
-  box-shadow: 0 20px 55px rgba(16, 32, 51, 0.08);
+  box-shadow:
+    0 20px 55px rgba(16, 32, 51, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(18px);
 }
 
 .search-field {
@@ -24,7 +30,7 @@
   margin-bottom: 0.45rem;
   color: var(--deep-ink, #0f172a);
   font-size: 0.85rem;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .field-helper {
@@ -43,27 +49,73 @@
 
 .drug-intelligence-card {
   display: grid;
-  gap: 1rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 18px 24px;
   overflow: hidden;
   margin-top: 0;
   padding: 22px;
   border-radius: 24px;
-  background: #f8fbfc;
+  background:
+    radial-gradient(circle at 88% 12%, rgba(103, 232, 249, 0.16), transparent 34%),
+    linear-gradient(145deg, rgba(248, 251, 252, 0.96), rgba(255, 255, 255, 0.9));
   border: 1px solid rgba(0, 123, 135, 0.14);
-  box-shadow: 0 12px 32px rgba(16, 32, 51, 0.06);
+  box-shadow:
+    0 12px 32px rgba(16, 32, 51, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86);
 }
 
-.drug-intelligence-card h3 {
-  margin: 0.3rem 0 0.45rem;
+.drug-intelligence-score {
+  width: 150px;
+  min-height: 150px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  padding: 18px;
+  border-radius: 24px;
+  color: #ffffff;
+  background:
+    radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.3), transparent 34%),
+    linear-gradient(145deg, #0f8794, #075985);
+  box-shadow: 0 18px 42px rgba(15, 118, 110, 0.18);
+}
+
+.drug-intelligence-score .eyebrow {
+  margin: 0 0 10px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.66rem;
+  text-align: center;
+}
+
+.drug-intelligence-score h3 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(2.6rem, 6vw, 4rem);
+  line-height: 0.9;
+  letter-spacing: -0.07em;
+}
+
+.drug-intelligence-score span {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.drug-intelligence-copy {
+  min-width: 0;
+  align-self: center;
+}
+
+.drug-intelligence-copy h4 {
+  margin: 0;
   color: #102033;
-  font-size: clamp(2rem, 5vw, 3.4rem);
-  line-height: 1;
-  letter-spacing: -0.055em;
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+  line-height: 1.12;
+  letter-spacing: -0.045em;
 }
 
 .drug-intelligence-card p {
-  margin: 0;
-  max-width: 720px;
+  margin: 10px 0 0;
+  max-width: 760px;
   color: #5d6874;
   line-height: 1.6;
 }
@@ -72,11 +124,12 @@
   margin-top: 0.6rem !important;
   color: var(--muted, #475569);
   font-size: 0.88rem;
-  font-weight: 750;
+  font-weight: 800;
   line-height: 1.45;
 }
 
 .drug-intelligence-grid {
+  grid-column: 1 / -1;
   margin-top: 0;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -87,11 +140,12 @@
   min-width: 0;
   padding: 14px;
   border-radius: 16px;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.82);
   border: 1px solid rgba(16, 32, 51, 0.08);
 }
 
-.drug-intelligence-grid small {
+.drug-intelligence-grid small,
+.drug-trend-grid small {
   display: block;
   margin-bottom: 6px;
   color: #5d6874;
@@ -101,50 +155,137 @@
   text-transform: uppercase;
 }
 
-.drug-intelligence-grid span {
+.drug-intelligence-grid span,
+.drug-trend-grid span {
   color: #102033;
   font-weight: 850;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 
-.drug-intelligence-limitations {
-  margin: 0;
+.drug-score-details {
+  grid-column: 1 / -1;
+  padding: 12px 14px;
+  border-radius: 16px;
+  color: #713f12;
+  background: rgba(254, 252, 232, 0.72);
+  border: 1px solid rgba(234, 179, 8, 0.14);
+}
+
+.drug-score-details summary {
+  cursor: pointer;
+  color: #713f12;
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.drug-score-details ul {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0 0;
   padding-left: 20px;
   color: #5d6874;
   line-height: 1.55;
 }
 
-.reaction-category-card {
+.drug-compact-section {
   display: grid;
   gap: 1rem;
   margin-top: 0;
-  padding: 22px;
-  border-radius: 24px;
-  background: #f8fbfc;
-  border: 1px solid rgba(0, 123, 135, 0.14);
+  padding: 0;
+  overflow: hidden;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 123, 135, 0.12);
+  box-shadow: 0 12px 30px rgba(16, 32, 51, 0.045);
 }
 
-.reaction-category-card h3 {
-  margin: 0.3rem 0 0.45rem;
-  color: #102033;
-  font-size: 1.4rem;
-  letter-spacing: -0.03em;
+.drug-compact-section > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  cursor: pointer;
+  list-style: none;
 }
 
-.reaction-category-card p {
+.drug-compact-section > summary::-webkit-details-marker {
+  display: none;
+}
+
+.drug-compact-section > summary span {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.drug-compact-section > summary strong,
+.drug-compact-section > summary h3 {
   margin: 0;
-  color: #5d6874;
-  line-height: 1.6;
+  color: #102033;
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.25;
 }
 
-.reaction-category-list {
+.drug-compact-section > summary small {
+  color: #5d6874;
+  font-size: 0.82rem;
+  font-weight: 750;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drug-compact-section > summary i {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--deep-teal, #0f8794);
+  background: rgba(103, 232, 249, 0.11);
+  border: 1px solid rgba(11, 79, 113, 0.08);
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.drug-compact-section > summary i svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.drug-compact-section[open] > summary {
+  border-bottom: 1px solid rgba(11, 79, 113, 0.08);
+}
+
+.drug-compact-section[open] > summary i {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0f8794, #08717f);
+  transform: rotate(180deg);
+}
+
+.reaction-category-list,
+.reaction-list,
+.drug-trend-grid,
+.drug-audit-panel .metadata-grid {
   display: grid;
   gap: 0.75rem;
-  margin-top: 0;
+  margin: 0;
+  padding: 0 20px 20px;
 }
 
-.reaction-category-row {
+.reaction-category-row,
+.reaction-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -152,7 +293,7 @@
   gap: 16px;
   padding: 14px 16px;
   border-radius: 16px;
-  background: #ffffff;
+  background: rgba(248, 251, 252, 0.86);
   border: 1px solid rgba(16, 32, 51, 0.08);
 }
 
@@ -162,7 +303,8 @@
   gap: 5px;
 }
 
-.reaction-category-row span {
+.reaction-category-row span,
+.reaction-row span {
   color: #102033;
   font-weight: 850;
 }
@@ -174,7 +316,9 @@
   word-break: break-word;
 }
 
-.reaction-category-row strong {
+.reaction-category-row strong,
+.reaction-row strong {
+  flex: 0 0 auto;
   border-radius: 999px;
   padding: 0.35rem 0.65rem;
   color: #007b87;
@@ -183,55 +327,46 @@
   line-height: 1;
 }
 
-.reaction-classifier-version {
-  margin-top: 0 !important;
+.reaction-classifier-version,
+.drug-trend-limitation,
+.drug-trend-summary {
+  margin: 0;
+  padding: 0 20px 20px;
   color: #5d6874;
-  font-size: 0.86rem;
+  font-size: 0.9rem;
   font-weight: 750;
+  line-height: 1.55;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 
-.drug-trend-card {
-  display: grid;
-  gap: 1rem;
-  margin-top: 0;
-  padding: 22px;
-  border-radius: 24px;
-  background: #ffffff;
-  border: 1px solid rgba(0, 123, 135, 0.14);
-  box-shadow: 0 12px 32px rgba(16, 32, 51, 0.06);
-}
-
-.drug-trend-card h3 {
-  margin: 0.3rem 0 0.45rem;
-  color: #102033;
-  font-size: 1.7rem;
-  letter-spacing: -0.04em;
-}
-
-.drug-trend-card p {
-  margin: 0;
-  color: #5d6874;
-  line-height: 1.6;
+.drug-trend-summary {
+  padding-bottom: 0;
+  font-weight: 500;
 }
 
 .drug-trend-grid {
-  margin-top: 0;
-  display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 12px;
 }
 
-.drug-trend-grid div {
+.drug-trend-grid div,
+.drug-audit-panel .metadata-grid div {
   min-width: 0;
   padding: 14px;
   border-radius: 16px;
-  background: #f8fbfc;
+  background: rgba(248, 251, 252, 0.86);
   border: 1px solid rgba(16, 32, 51, 0.08);
 }
 
-.drug-trend-grid small {
+.drug-audit-panel {
+  background: rgba(248, 251, 252, 0.86);
+}
+
+.drug-audit-panel .metadata-grid {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.drug-audit-panel .metadata-grid small {
   display: block;
   margin-bottom: 6px;
   color: #5d6874;
@@ -241,88 +376,22 @@
   text-transform: uppercase;
 }
 
-.drug-trend-grid span {
+.drug-audit-panel .metadata-grid span {
   color: #102033;
   font-weight: 850;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 
-.drug-trend-limitation {
-  margin-top: 0 !important;
-  color: #5d6874;
-  font-size: 0.86rem;
-  font-weight: 750;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-.drug-audit-panel {
-  display: grid;
-  gap: 1rem;
-  margin-top: 0;
-  padding: 20px;
-  border-radius: 22px;
-  background: #f8fbfc;
-  border: 1px solid rgba(0, 123, 135, 0.14);
-}
-
-.drug-audit-panel .metadata-grid {
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-}
-
-.drug-audit-panel .metadata-grid div {
-  min-width: 0;
-}
-
-.drug-audit-panel .metadata-grid span {
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
 .drug-audit-panel .disclaimer {
-  margin: 0;
+  margin: 0 20px 12px;
   padding: 0.9rem 1rem;
   border-radius: 16px;
+  color: #5d6874;
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(16, 32, 51, 0.06);
-}
-
-.reaction-list {
-  display: grid;
-  gap: 0.75rem;
-  margin-top: 0;
-}
-
-.reaction-list h3 {
-  margin: 0 0 0.25rem;
-  color: #102033;
-}
-
-.reaction-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-width: 0;
-  gap: 16px;
-  padding: 16px 18px;
-  border-radius: 18px;
-  background: #f8fbfc;
-  border: 1px solid rgba(16, 32, 51, 0.08);
-}
-
-.reaction-row span {
-  color: #102033;
-  font-weight: 600;
-}
-
-.reaction-row strong {
-  border-radius: 999px;
-  padding: 0.35rem 0.65rem;
-  color: #007b87;
-  background: rgba(0, 123, 135, 0.1);
-  font-size: 1.05rem;
-  line-height: 1;
+  font-size: 0.86rem;
+  line-height: 1.5;
 }
 
 .reaction-main {
@@ -343,7 +412,18 @@
 .reaction-bar-fill {
   height: 100%;
   border-radius: inherit;
-  background: #007b87;
+  background: linear-gradient(90deg, #0f8794, #22d3ee);
+}
+
+@media (max-width: 760px) {
+  .drug-intelligence-card {
+    grid-template-columns: 1fr;
+  }
+
+  .drug-intelligence-score {
+    width: 100%;
+    min-height: 120px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -357,11 +437,8 @@
   }
 
   .drug-intelligence-card,
-  .reaction-category-card,
-  .drug-trend-card,
-  .drug-audit-panel,
+  .drug-compact-section,
   .empty-state {
-    padding: 1rem;
     border-radius: 20px;
   }
 
@@ -375,4 +452,26 @@
   .reaction-row strong {
     width: fit-content;
   }
+
+  .drug-compact-section > summary {
+    align-items: flex-start;
+  }
+
+  .drug-compact-section > summary small {
+    white-space: normal;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drug-compact-section > summary i {
+    transition: none !important;
+  }
+}
+
+.drug-compact-eyebrow {
+  color: var(--deep-teal, #0f8794) !important;
+  font-size: 0.68rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }

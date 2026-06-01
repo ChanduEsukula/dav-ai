@@ -14,9 +14,11 @@ import './styles/faq.css'
 import './styles/briefing.css'
 import './styles/audit-history.css'
 import './styles/operational-overview.css'
+import './styles/safety-workspace.css'
 import { searchRecalls, type RecallSearchResponse } from './api/recalls'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
+import SafetyWorkspace from './components/SafetyWorkspace'
 import OperationalOverview from './components/OperationalOverview'
 import Signals from './components/Signals'
 import RecallRadar from './components/RecallRadar'
@@ -165,6 +167,12 @@ function App() {
             goToDrugSignal={goToDrugSignal}
             goToHealthPulse={() => goToPage('regional-health')}
             goToAbout={() => goToPage('about')}
+          />
+
+          <SafetyWorkspace
+            goToRecallRadar={goToRecallRadar}
+            goToDrugSignal={goToDrugSignal}
+            goToHealthPulse={() => goToPage('regional-health')}
           />
 
           <OperationalOverview />
