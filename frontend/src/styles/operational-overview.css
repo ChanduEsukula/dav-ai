@@ -139,6 +139,76 @@
   gap: 28px;
 }
 
+.operational-flow__step {
+  position: relative;
+  min-width: 0;
+}
+
+.operational-flow__step:nth-child(1) {
+  grid-area: source;
+}
+
+.operational-flow__step:nth-child(2) {
+  grid-area: audit;
+}
+
+.operational-flow__step:nth-child(3) {
+  grid-area: risk;
+}
+
+.operational-flow__step:nth-child(4) {
+  grid-area: signal;
+}
+
+.operational-flow__step:nth-child(5) {
+  grid-area: monitors;
+}
+
+.operational-flow__step:nth-child(6) {
+  grid-area: status;
+}
+
+.operational-flow__arrow {
+  position: absolute;
+  top: 50%;
+  right: -35px;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  color: var(--deep-teal, #0f8794);
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.72)),
+    rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(11, 79, 113, 0.12);
+  box-shadow:
+    0 14px 30px rgba(15, 23, 42, 0.1),
+    0 0 0 0 rgba(20, 184, 166, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  font-size: 1.18rem;
+  font-weight: 900;
+  transform: translateY(-50%);
+  animation: operationalFlowPulse 2.6s ease-in-out infinite;
+}
+
+.operational-flow__arrow span {
+  display: inline-block;
+  animation: operationalFlowNudge 1.7s ease-in-out infinite;
+}
+
+.operational-flow__arrow::after {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  border-radius: inherit;
+  border: 1px solid rgba(20, 184, 166, 0.12);
+  opacity: 0;
+  animation: operationalFlowRing 2.6s ease-in-out infinite;
+}
+
+
 .operational-flow__card {
   position: relative;
   min-height: 160px;
@@ -177,47 +247,23 @@
   animation: livePulse 2.8s ease-in-out infinite;
 }
 
-.operational-flow__card:nth-child(1) {
-  grid-area: source;
-}
-
-.operational-flow__card:nth-child(2) {
-  grid-area: audit;
-}
-
-.operational-flow__card:nth-child(2)::after {
+.operational-flow__step:nth-child(2) .operational-flow__card::after {
   animation-delay: 0.18s;
 }
 
-.operational-flow__card:nth-child(3) {
-  grid-area: risk;
-}
-
-.operational-flow__card:nth-child(3)::after {
+.operational-flow__step:nth-child(3) .operational-flow__card::after {
   animation-delay: 0.36s;
 }
 
-.operational-flow__card:nth-child(4) {
-  grid-area: signal;
-}
-
-.operational-flow__card:nth-child(4)::after {
+.operational-flow__step:nth-child(4) .operational-flow__card::after {
   animation-delay: 0.54s;
 }
 
-.operational-flow__card:nth-child(5) {
-  grid-area: monitors;
-}
-
-.operational-flow__card:nth-child(5)::after {
+.operational-flow__step:nth-child(5) .operational-flow__card::after {
   animation-delay: 0.72s;
 }
 
-.operational-flow__card:nth-child(6) {
-  grid-area: status;
-}
-
-.operational-flow__card:nth-child(6)::after {
+.operational-flow__step:nth-child(6) .operational-flow__card::after {
   animation-delay: 0.9s;
 }
 
@@ -310,27 +356,27 @@
 }
 
 /* Meaningful micro-motions layered into the particle style */
-.operational-flow__card:nth-child(1) .operational-flow__icon svg {
+.operational-flow__step:nth-child(1) .operational-flow__icon svg {
   animation: databaseLift 3.8s ease-in-out infinite;
 }
 
-.operational-flow__card:nth-child(2) .operational-flow__icon {
+.operational-flow__step:nth-child(2) .operational-flow__icon {
   animation: shieldGlow 4.2s ease-in-out infinite;
 }
 
-.operational-flow__card:nth-child(3) .operational-flow__icon svg {
+.operational-flow__step:nth-child(3) .operational-flow__icon svg {
   animation: radarFocus 4.4s ease-in-out infinite;
 }
 
-.operational-flow__card:nth-child(4) .operational-flow__icon svg {
+.operational-flow__step:nth-child(4) .operational-flow__icon svg {
   animation: capsuleFloat 3.4s ease-in-out infinite;
 }
 
-.operational-flow__card:nth-child(5) .operational-flow__icon svg {
+.operational-flow__step:nth-child(5) .operational-flow__icon svg {
   animation: bookmarkPingSoft 3.6s ease-in-out infinite;
 }
 
-.operational-flow__card:nth-child(6) .operational-flow__icon svg {
+.operational-flow__step:nth-child(6) .operational-flow__icon svg {
   animation: pulseTraceSoft 2.8s ease-in-out infinite;
 }
 
@@ -441,6 +487,50 @@
   background: #22d3ee;
   box-shadow: 0 0 0 8px rgba(34, 211, 238, 0.14);
   animation: livePulse 2.2s ease-in-out infinite;
+}
+
+@keyframes operationalFlowPulse {
+  0%,
+  100% {
+    box-shadow:
+      0 14px 30px rgba(15, 23, 42, 0.1),
+      0 0 0 0 rgba(20, 184, 166, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+
+  50% {
+    box-shadow:
+      0 16px 34px rgba(15, 23, 42, 0.12),
+      0 0 0 8px rgba(20, 184, 166, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+}
+
+@keyframes operationalFlowNudge {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes operationalFlowRing {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  45% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.14);
+  }
 }
 
 @keyframes operationalScanSweep {
@@ -587,6 +677,13 @@
   }
 }
 
+@media (max-width: 980px) {
+  .operational-flow__arrow,
+  .operational-flow__arrow--wrap {
+    display: none;
+  }
+}
+
 @media (max-width: 720px) {
   .operational-flow {
     margin-top: 46px;
@@ -636,6 +733,9 @@
   .operational-flow__icon::after,
   .operational-flow__icon svg,
   .operational-flow__card::after,
+  .operational-flow__arrow,
+  .operational-flow__arrow span,
+  .operational-flow__arrow::after,
   .operational-flow__live i {
     animation: none !important;
   }
