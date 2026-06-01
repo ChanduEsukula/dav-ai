@@ -60,6 +60,7 @@
 .error-message,
 .source-strip,
 .consumer-summary,
+.recall-results-toolbar,
 .results-grid,
 .briefing-control-panel,
 .recall-provenance-details,
@@ -198,11 +199,11 @@
   word-break: break-word;
 }
 
-/* Template 1: Consumer Safety Summary */
+/* Consumer Safety Summary */
 .consumer-summary {
   margin-top: 22px;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   gap: 20px;
   align-items: center;
   padding: 22px;
@@ -283,108 +284,271 @@
   letter-spacing: 0.04em;
 }
 
-.consumer-summary__score {
-  width: 112px;
-  height: 112px;
-  display: grid;
-  place-items: center;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle, rgba(255, 255, 255, 0.96) 0 54%, transparent 55%),
-    conic-gradient(var(--deep-teal) 0 100%, rgba(203, 213, 225, 0.7) 0 100%);
-  box-shadow:
-    0 18px 40px rgba(15, 118, 110, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  animation: summaryScorePulse 6s ease-in-out infinite;
+/* Results toolbar */
+.recall-results-toolbar {
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(11, 79, 113, 0.07);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.045);
 }
 
-.consumer-summary__score span {
-  display: grid;
-  justify-items: center;
-  gap: 2px;
-}
-
-.consumer-summary__score strong {
+.recall-results-toolbar span {
   color: var(--deep-ink);
-  font-size: 2.35rem;
-  line-height: 0.9;
-  letter-spacing: -0.06em;
+  font-size: 0.88rem;
+  font-weight: 900;
 }
 
-.consumer-summary__score small {
-  color: var(--deep-teal);
-  font-size: 0.68rem;
+.recall-results-toolbar p {
+  margin: 3px 0 0;
+  color: #64748b;
+  font-size: 0.78rem;
+}
+
+.recall-sort-control {
+  display: inline-flex;
+  gap: 8px;
+  padding: 5px;
+  border-radius: 999px;
+  background: rgba(238, 248, 250, 0.82);
+  border: 1px solid rgba(11, 79, 113, 0.07);
+}
+
+.recall-sort-control button {
+  min-height: 34px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 12px;
+  color: #475569;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.78rem;
   font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+}
+
+.recall-sort-control button.active {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0f8794, #08717f);
+  box-shadow: 0 8px 18px rgba(15, 118, 110, 0.16);
 }
 
 .results-grid {
-  margin-top: 24px;
+  margin-top: 16px;
   display: grid;
-  gap: 18px;
+  gap: 14px;
 }
 
+/* Template 5: compact expandable recall rows */
 .recall-card {
   position: relative;
-  display: grid;
-  gap: 1rem;
   overflow: hidden;
-  padding: 22px;
-  border-radius: 24px;
   text-align: left;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(248, 253, 253, 0.9));
-  border: 1px solid rgba(11, 79, 113, 0.09);
-  box-shadow:
-    0 16px 38px rgba(15, 23, 42, 0.07),
-    inset 0 1px 0 rgba(255, 255, 255, 0.88);
 }
 
 .recall-card::before {
   content: "";
   position: absolute;
   inset: 0 auto 0 0;
-  width: 7px;
+  width: 5px;
   background: linear-gradient(180deg, var(--deep-teal), rgba(103, 232, 249, 0.55));
   opacity: 0.82;
 }
 
-.recall-card-top {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 16px;
-  padding-bottom: 0.95rem;
-  border-bottom: 1px solid rgba(11, 79, 113, 0.08);
+.recall-card--compact {
+  padding: 0;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(11, 79, 113, 0.09);
+  box-shadow:
+    0 14px 34px rgba(15, 23, 42, 0.065),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88);
 }
 
-.recall-score-block {
-  min-width: 92px;
+.recall-card-summary {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto auto;
+  gap: 14px;
+  align-items: center;
+  padding: 18px 20px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.recall-card-summary::-webkit-details-marker {
+  display: none;
+}
+
+.recall-card-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0f8794, #0f766e);
+  box-shadow:
+    0 12px 24px rgba(15, 118, 110, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.recall-card-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.recall-card-title {
+  overflow: hidden;
+  margin: 0;
+  color: var(--deep-ink);
+  font-size: clamp(1rem, 1.4vw, 1.18rem);
+  font-weight: 900;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recall-card-expand {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  color: var(--deep-teal);
+  background: rgba(103, 232, 249, 0.11);
+  border: 1px solid rgba(11, 79, 113, 0.08);
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.recall-card-expand svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 180ms ease;
+}
+
+.recall-card--compact[open] .recall-card-expand {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0f8794, #08717f);
+}
+
+.recall-card--compact[open] .recall-card-expand svg {
+  transform: rotate(180deg);
+}
+
+.recall-score-inline {
+  min-width: 76px;
   display: grid;
   justify-items: center;
-  gap: 0.28rem;
-  padding: 15px 14px;
-  border-radius: 20px;
-  background:
-    radial-gradient(circle at 35% 20%, rgba(255, 255, 255, 0.8), transparent 34%),
-    rgba(236, 253, 245, 0.88);
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(236, 253, 245, 0.88);
   border: 1px solid rgba(15, 118, 110, 0.1);
 }
 
-.recall-score-block small {
+.recall-score-inline strong {
+  color: var(--deep-ink);
+  font-size: 1.55rem;
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+
+.recall-score-inline small {
   color: var(--deep-teal);
-  font-size: 0.68rem;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.recall-card-expanded {
+  display: grid;
+  gap: 16px;
+  padding: 18px 20px 20px;
+  background:
+    linear-gradient(180deg, rgba(248, 253, 253, 0.42), rgba(255, 255, 255, 0.78));
+  border-top: 1px solid rgba(11, 79, 113, 0.055);
+}
+
+.recall-full-name-panel,
+.recall-firm-panel {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(248, 250, 252, 0.86);
+  border: 1px solid rgba(11, 79, 113, 0.07);
+}
+
+.recall-full-name-panel small,
+.recall-firm-panel small {
+  color: var(--soft-muted);
+  font-size: 0.72rem;
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.recall-score-block strong {
+.recall-full-name-panel strong,
+.recall-firm-panel strong {
   color: var(--deep-ink);
-  font-size: clamp(2rem, 5vw, 2.9rem);
-  line-height: 0.9;
-  letter-spacing: -0.06em;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.recall-score-help {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(255, 251, 235, 0.58);
+  border: 1px solid rgba(217, 119, 6, 0.1);
+}
+
+.recall-score-help summary {
+  width: fit-content;
+  cursor: pointer;
+  color: #854d0e;
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
+.recall-score-help div {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.recall-score-help p,
+.recall-score-help li {
+  color: #475569;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.recall-score-help p {
+  margin: 0;
+}
+
+.recall-score-help ul {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding-left: 18px;
 }
 
 .risk-pill {
@@ -396,6 +560,7 @@
   font-weight: 900;
   letter-spacing: 0.07em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .risk-low {
@@ -416,15 +581,6 @@
 .risk-critical {
   color: #ffffff;
   background: #991b1b;
-}
-
-.recall-card h3 {
-  margin: 0;
-  max-width: 860px;
-  color: var(--ink);
-  font-size: clamp(1.25rem, 2.4vw, 1.75rem);
-  line-height: 1.25;
-  letter-spacing: -0.035em;
 }
 
 .reason {
@@ -532,13 +688,12 @@
   font-weight: 900;
 }
 
-.recall-card details {
-  margin-top: 0;
-  padding-top: 0.9rem;
+.recall-technical-details {
+  padding-top: 10px;
   border-top: 1px solid rgba(11, 79, 113, 0.08);
 }
 
-.recall-card summary,
+.recall-technical-details summary,
 .recall-provenance-details summary {
   width: fit-content;
   cursor: pointer;
@@ -706,34 +861,9 @@
   }
 }
 
-@keyframes summaryScorePulse {
-  0%,
-  100% {
-    transform: scale(0.98);
-  }
-
-  50% {
-    transform: scale(1.02);
-  }
-}
-
 @media (max-width: 900px) {
   .consumer-summary {
     grid-template-columns: auto minmax(0, 1fr);
-  }
-
-  .consumer-summary__score {
-    grid-column: 1 / -1;
-    width: 100%;
-    height: auto;
-    min-height: 76px;
-    border-radius: 22px;
-  }
-
-  .consumer-summary__score span {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
   }
 
   .briefing-role-buttons {
@@ -755,14 +885,35 @@
     grid-template-columns: 1fr;
   }
 
-  .recall-card-top {
-    grid-template-columns: 1fr;
-    align-items: start;
+  .recall-results-toolbar {
+    align-items: stretch;
+    flex-direction: column;
   }
 
-  .recall-score-block {
+  .recall-sort-control {
     width: 100%;
-    justify-items: start;
+  }
+
+  .recall-sort-control button {
+    flex: 1;
+  }
+
+  .recall-card-summary {
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+  }
+
+  .recall-card-summary .risk-pill {
+    grid-column: 1 / -1;
+    width: fit-content;
+  }
+
+  .recall-score-inline {
+    min-width: 64px;
+    padding: 8px 10px;
+  }
+
+  .recall-score-inline strong {
+    font-size: 1.3rem;
   }
 }
 
@@ -801,11 +952,6 @@
     height: 34px;
   }
 
-  .recall-card {
-    padding: 1rem;
-    border-radius: 22px;
-  }
-
   .source-strip span {
     width: 100%;
   }
@@ -815,18 +961,32 @@
   }
 }
 
+@media (max-width: 560px) {
+  .recall-card-icon {
+    display: none;
+  }
+
+  .recall-card-summary {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .recall-card-summary .risk-pill {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .consumer-summary__icon,
-  .consumer-summary__score,
   .search-box button,
   .recall-card,
+  .recall-card-expand,
+  .recall-card-expand svg,
   .briefing-role-button {
     animation: none !important;
     transition: none !important;
   }
 
   .search-box button:hover,
-  .recall-card:hover,
   .briefing-role-button:hover {
     transform: none !important;
   }
