@@ -4,6 +4,7 @@ import {
   type DrugEventSearchResponse,
 } from '../api/drugEvents'
 import SafetyBriefingPanel from './SafetyBriefingPanel'
+import SafeInsightCards, { type SafeInsightCard } from './SafeInsightCards'
 import { formatTimestamp } from '../utils/recallFormatters'
 import { generateDrugEventBriefing } from '../utils/briefingGenerator'
 import { briefingRoleLabels, type BriefingRole } from '../types/briefing'
@@ -51,6 +52,32 @@ function DrugSignal() {
 
     return generateDrugEventBriefing(data, briefingRole)
   }, [data, briefingRole])
+
+  const drugSafeInsightCards: SafeInsightCard[] = data
+    ? [
+        {
+          label: 'Source-backed',
+          title: 'Public FAERS source and retrieval time are visible.',
+          detail: `${data.source_name} returned ${data.count} public report record${
+            data.count === 1 ? '' : 's'
+          } for this search, retrieved ${formatTimestamp(data.retrieval_timestamp)}.`,
+          tone: 'source',
+        },
+        {
+          label: 'Reporting signal',
+          title: `${data.intelligence_score.label} public reporting signal.`,
+          detail: `DrugSignal score: ${data.intelligence_score.score}/100. Treat this as a review signal from public reports, not proof of risk or causation.`,
+          tone: 'review',
+        },
+        {
+          label: 'Safety boundary',
+          title: 'Public reports do not prove causation.',
+          detail:
+            'FAERS reports can show reporting patterns, but they do not diagnose, treat, prove side effects, or replace clinician, pharmacist, or FDA guidance.',
+          tone: 'safety',
+        },
+      ]
+    : []
 
   return (
     <section className="drugsignal" id="drugsignal">
@@ -114,6 +141,8 @@ function DrugSignal() {
             <span>Retrieved {formatTimestamp(data.retrieval_timestamp)}</span>
           </div>
         )}
+
+        {data && <SafeInsightCards cards={drugSafeInsightCards} />}
 
         {data && (
           <section className="drug-intelligence-card" aria-label="DrugSignal intelligence summary">
