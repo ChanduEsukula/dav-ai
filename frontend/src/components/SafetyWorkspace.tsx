@@ -96,15 +96,32 @@ function SafetyWorkspace({
                     />
                     <path className="safety-capsule-divider" d="M20 16 L28 32" />
                   </g>
-                  <circle className="safety-capsule-dot safety-capsule-dot-one" cx="34" cy="14" r="2" />
-                  <circle className="safety-capsule-dot safety-capsule-dot-two" cx="14" cy="34" r="1.7" />
+
+                  <circle
+                    className="safety-capsule-dot safety-capsule-dot-one"
+                    cx="34"
+                    cy="14"
+                    r="2"
+                  />
+                  <circle
+                    className="safety-capsule-dot safety-capsule-dot-two"
+                    cx="14"
+                    cy="34"
+                    r="1.7"
+                  />
                 </svg>
               )}
 
               {module.variant === 'health' && (
                 <svg className="safety-health-icon" viewBox="0 0 48 48" focusable="false">
-                  <path className="safety-pulse-guide" d="M6 25 H15 L19 17 L25 34 L30 22 L34 25 H42" />
-                  <path className="safety-pulse-line" d="M6 25 H15 L19 17 L25 34 L30 22 L34 25 H42" />
+                  <path
+                    className="safety-pulse-guide"
+                    d="M6 25 H15 L19 17 L25 34 L30 22 L34 25 H42"
+                  />
+                  <path
+                    className="safety-pulse-line"
+                    d="M6 25 H15 L19 17 L25 34 L30 22 L34 25 H42"
+                  />
                 </svg>
               )}
             </span>
