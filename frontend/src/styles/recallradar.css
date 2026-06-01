@@ -72,7 +72,7 @@
 .search-box {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
+  align-items: start;
   gap: 14px;
   padding: 22px;
   border-radius: 24px;
@@ -125,6 +125,8 @@
 }
 
 .search-box button {
+  align-self: start;
+  margin-top: 30px;
   min-height: 50px;
   border: 0;
   cursor: pointer;
@@ -878,6 +880,8 @@
   }
 
   .search-box button {
+    width: 100%;
+    margin-top: 0;
     padding: 14px 20px;
   }
 

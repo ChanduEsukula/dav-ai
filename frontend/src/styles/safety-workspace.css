@@ -41,12 +41,16 @@
   max-width: 720px;
 }
 
+.safety-workspace__header .eyebrow {
+  margin-bottom: 8px;
+}
+
 .safety-workspace__header h2 {
   margin: 0;
   color: var(--deep-ink);
   font-size: clamp(1.55rem, 2.6vw, 2.05rem);
   line-height: 1.08;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.03em;
   font-weight: 800;
 }
 
@@ -67,12 +71,12 @@
 
 .safety-workspace-card {
   width: 100%;
-  min-height: 146px;
+  min-height: 152px;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: start;
-  gap: 12px;
-  padding: 16px;
+  gap: 13px;
+  padding: 17px;
   border-radius: 22px;
   text-align: left;
   background: rgba(255, 255, 255, 0.82);
@@ -93,7 +97,7 @@
   border-color: rgba(0, 123, 135, 0.14);
   background: rgba(255, 255, 255, 0.92);
   box-shadow:
-    0 15px 30px rgba(15, 23, 42, 0.058),
+    0 12px 26px rgba(15, 23, 42, 0.052),
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
@@ -117,19 +121,19 @@
 .safety-workspace-card--recall .safety-workspace-card__icon {
   background:
     radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.28), transparent 34%),
-    linear-gradient(135deg, #007b87, #075985);
+    linear-gradient(135deg, var(--deep-teal), var(--clinical-blue));
 }
 
 .safety-workspace-card--drug .safety-workspace-card__icon {
   background:
-    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.28), transparent 34%),
-    linear-gradient(135deg, #0b5ed7, #0047ab);
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.26), transparent 34%),
+    linear-gradient(135deg, #1d68d8, var(--clinical-blue));
 }
 
 .safety-workspace-card--health .safety-workspace-card__icon {
   background:
     radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.28), transparent 34%),
-    linear-gradient(135deg, #168a4a, #0f7a3d);
+    linear-gradient(135deg, var(--medical-green), #0f8f6b);
 }
 
 .safety-workspace-card__icon svg {
@@ -145,30 +149,30 @@
 .safety-workspace-card__content {
   min-width: 0;
   display: grid;
-  gap: 5px;
+  gap: 4px;
 }
 
 .safety-workspace-card__content small {
   color: var(--deep-teal);
-  font-size: 0.68rem;
-  font-weight: 950;
-  letter-spacing: 0.11em;
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
   line-height: 1.1;
   text-transform: uppercase;
 }
 
 .safety-workspace-card__content strong {
   color: var(--deep-ink);
-  font-size: 1.2rem;
-  font-weight: 900;
-  line-height: 1.05;
-  letter-spacing: -0.04em;
+  font-size: 1.12rem;
+  font-weight: 850;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
 }
 
-.safety-workspace-card__content > span {
+.safety-workspace-card__content > span:not(.safety-workspace-card__meta) {
   color: var(--muted);
-  font-size: 0.84rem;
-  line-height: 1.45;
+  font-size: 0.82rem;
+  line-height: 1.42;
 }
 
 .safety-workspace-card__meta {
@@ -177,28 +181,27 @@
   gap: 6px;
   margin: 4px 0 0;
   padding: 0;
-  list-style: none;
 }
 
-.safety-workspace-card__meta li {
+.safety-workspace-card__meta [role="listitem"] {
   border-radius: 999px;
-  padding: 5px 8px;
+  padding: 4px 7px;
   color: #0f4f5a;
   background: rgba(236, 253, 245, 0.72);
   border: 1px solid rgba(15, 118, 110, 0.08);
-  font-size: 0.68rem;
-  font-weight: 850;
+  font-size: 0.66rem;
+  font-weight: 800;
   line-height: 1;
   white-space: nowrap;
 }
 
-.safety-workspace-card--drug .safety-workspace-card__meta li {
+.safety-workspace-card--drug .safety-workspace-card__meta [role="listitem"] {
   color: #16459b;
   background: rgba(239, 246, 255, 0.82);
   border-color: rgba(37, 99, 235, 0.09);
 }
 
-.safety-workspace-card--health .safety-workspace-card__meta li {
+.safety-workspace-card--health .safety-workspace-card__meta [role="listitem"] {
   color: #166534;
   background: rgba(240, 253, 244, 0.82);
   border-color: rgba(22, 163, 74, 0.09);
@@ -320,7 +323,7 @@
 @keyframes safetyRadarTargetPulse {
   0%,
   100% {
-    opacity: 0.42;
+    opacity: 0.55;
     transform: scale(0.92);
   }
 
@@ -337,19 +340,19 @@
   }
 
   50% {
-    transform: translateY(-1.5px) rotate(4deg);
+    transform: translateY(-2px) rotate(4deg);
   }
 }
 
 @keyframes safetyCapsuleDotOne {
   0%,
   100% {
-    opacity: 0.34;
+    opacity: 0.42;
     transform: translate(0, 0);
   }
 
   50% {
-    opacity: 0.86;
+    opacity: 0.88;
     transform: translate(1px, -1px);
   }
 }
@@ -357,12 +360,12 @@
 @keyframes safetyCapsuleDotTwo {
   0%,
   100% {
-    opacity: 0.34;
+    opacity: 0.42;
     transform: translate(0, 0);
   }
 
   50% {
-    opacity: 0.8;
+    opacity: 0.82;
     transform: translate(-1px, 1px);
   }
 }
@@ -370,7 +373,7 @@
 @keyframes safetyPulseTrace {
   0% {
     stroke-dashoffset: 74;
-    opacity: 0.42;
+    opacity: 0.55;
   }
 
   45% {
@@ -380,7 +383,7 @@
 
   100% {
     stroke-dashoffset: -74;
-    opacity: 0.42;
+    opacity: 0.55;
   }
 }
 
@@ -423,7 +426,7 @@
     justify-self: start;
   }
 
-  .safety-workspace-card__meta li {
+  .safety-workspace-card__meta [role="listitem"] {
     white-space: normal;
   }
 }

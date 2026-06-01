@@ -131,11 +131,17 @@ function SafetyWorkspace({
               <strong>{module.title}</strong>
               <span>{module.description}</span>
 
-              <ul className="safety-workspace-card__meta" aria-label={`${module.title} highlights`}>
+              <span
+                className="safety-workspace-card__meta"
+                role="list"
+                aria-label={`${module.title} highlights`}
+              >
                 {module.chips.map((chip) => (
-                  <li key={chip}>{chip}</li>
+                  <span key={chip} role="listitem">
+                    {chip}
+                  </span>
                 ))}
-              </ul>
+              </span>
             </span>
 
             <span className="safety-workspace-card__arrow" aria-hidden="true">
