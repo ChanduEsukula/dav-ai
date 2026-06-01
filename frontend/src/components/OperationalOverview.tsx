@@ -135,23 +135,28 @@ function OperationalOverview() {
         </div>
 
         <div className="operational-flow__grid" aria-label="DAV AI operational capabilities">
-          {flowItems.map((item) => (
-            <article
-              className={`operational-flow__card operational-flow__card--${item.tone}`}
-              key={item.number}
-            >
-              <span className="operational-flow__number">{item.number}</span>
+          {flowItems.map((item, index) => (
+            <div className="operational-flow__step" key={item.number}>
+              <article className={`operational-flow__card operational-flow__card--${item.tone}`}>
+                <span className="operational-flow__number">{item.number}</span>
 
-              <span className="operational-flow__icon" aria-hidden="true">
-                <FlowIcon icon={item.icon} />
-              </span>
+                <span className="operational-flow__icon" aria-hidden="true">
+                  <FlowIcon icon={item.icon} />
+                </span>
 
-              <div className="operational-flow__copy">
-                <span>{item.subtitle}</span>
-                <strong>{item.title}</strong>
-                <p>{item.detail}</p>
-              </div>
-            </article>
+                <div className="operational-flow__copy">
+                  <span>{item.subtitle}</span>
+                  <strong>{item.title}</strong>
+                  <p>{item.detail}</p>
+                </div>
+              </article>
+
+              {index !== 2 && index < flowItems.length - 1 && (
+                <span className="operational-flow__arrow" aria-hidden="true">
+                  <span>→</span>
+                </span>
+              )}
+            </div>
           ))}
         </div>
 
