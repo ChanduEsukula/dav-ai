@@ -1,4 +1,3 @@
-import { formatTimestamp } from '../utils/recallFormatters'
 import {
   briefingRoleLabels,
   type SafetyBriefing,
@@ -11,6 +10,7 @@ type SafetyBriefingPanelProps = {
 type BriefingListProps = {
   title: string
   items: string[]
+  defaultOpen?: boolean
 }
 
 function SafetyBriefingPanel({ briefing }: SafetyBriefingPanelProps) {
@@ -33,45 +33,21 @@ function SafetyBriefingPanel({ briefing }: SafetyBriefingPanelProps) {
 
       <p className="briefing-summary">{briefing.summary}</p>
 
-      <div className="briefing-grid">
-        <BriefingList title="What was found" items={briefing.whatWasFound} />
+      <div className="briefing-accordion" aria-label="Briefing sections">
+        <BriefingList
+          title="What was found"
+          items={briefing.whatWasFound}
+          defaultOpen
+        />
+
         <BriefingList title="What to verify" items={briefing.whatToVerify} />
+
         <BriefingList
           title="Suggested review checklist"
           items={briefing.suggestedReviewChecklist}
         />
+
         <BriefingList title="Limitations" items={briefing.limitations} />
-      </div>
-
-      <div className="briefing-audit-box">
-        <h4>Source and audit details</h4>
-
-        <div className="metadata-grid">
-          <div>
-            <small>Source</small>
-            <span>{briefing.sourceDetails.sourceName}</span>
-          </div>
-
-          <div>
-            <small>Endpoint</small>
-            <span>{briefing.sourceDetails.endpoint}</span>
-          </div>
-
-          <div>
-            <small>Retrieved</small>
-            <span>{formatTimestamp(briefing.sourceDetails.retrievalTimestamp)}</span>
-          </div>
-
-          <div>
-            <small>Audit ID</small>
-            <span>{briefing.sourceDetails.auditId}</span>
-          </div>
-
-          <div>
-            <small>Record Count</small>
-            <span>{briefing.sourceDetails.recordCount}</span>
-          </div>
-        </div>
       </div>
 
       <p className="disclaimer">{briefing.disclaimer}</p>
@@ -79,17 +55,29 @@ function SafetyBriefingPanel({ briefing }: SafetyBriefingPanelProps) {
   )
 }
 
-function BriefingList({ title, items }: BriefingListProps) {
+function BriefingList({ title, items, defaultOpen = false }: BriefingListProps) {
   return (
-    <div className="briefing-card">
-      <h4>{title}</h4>
+    <details className="briefing-card briefing-card--accordion" open={defaultOpen}>
+      <summary>
+        <h4>{title}</h4>
+
+        <span className="briefing-card__count">
+          {items.length} item{items.length === 1 ? '' : 's'}
+        </span>
+
+        <span className="briefing-card__chevron" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </span>
+      </summary>
 
       <ul>
         {items.map((item, index) => (
           <li key={`${title}-${index}-${item}`}>{item}</li>
         ))}
       </ul>
-    </div>
+    </details>
   )
 }
 
