@@ -10,7 +10,9 @@ from app.scoring.reaction_classifier import (
     REACTION_CLASSIFIER_VERSION,
     classify_reactions,
 )
+from app.services.drug_signal_semantic_candidates import build_drug_signal_semantic_candidates
 from app.services.openfda_drug_event_client import OpenFDADrugEventClient
+from app.services.semantic_similarity_service import run_semantic_similarity_preview
 from app.sources.registry import OPENFDA_DRUG_EVENT
 from app.trends.drug_signal_trend import build_drug_signal_trend_snapshot
 
@@ -191,6 +193,18 @@ async def execute_drug_signal_search(
             previous_event=previous_audit_event,
         )
 
+        semantic_candidates = build_drug_signal_semantic_candidates(
+            query=query,
+            top_reactions=top_reactions,
+            reaction_categories=reaction_categories,
+            source_name=payload["source_name"],
+        )
+        semantic_result = run_semantic_similarity_preview(
+            query_text=query,
+            records=semantic_candidates,
+            max_matches=5,
+        )
+
         return {
             "query": query,
             "count": len(raw_results),
@@ -215,6 +229,22 @@ async def execute_drug_signal_search(
             "reaction_categories": reaction_categories,
             "reaction_classifier_version": REACTION_CLASSIFIER_VERSION,
             "trend_snapshot": trend_snapshot,
+            "semantic_preview": {
+                "query_text": semantic_result.query_text,
+                "matches": [
+                    {
+                        "record_id": match.record_id,
+                        "text": match.text,
+                        "similarity_score": match.similarity_score,
+                        "explanation": match.explanation,
+                        "source_name": match.source_name,
+                    }
+                    for match in semantic_result.matches
+                ],
+                "limitations": semantic_result.limitations,
+                "preview_version": semantic_result.preview_version,
+                "is_production_ml": semantic_result.is_production_ml,
+            },
             "top_reactions": top_reactions,
         }
 
