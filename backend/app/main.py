@@ -14,6 +14,7 @@ from app.routes.regional_health import router as regional_health_router
 from app.routes.reports import router as reports_router
 from app.routes.sources import router as sources_router
 from app.routes.system import router as system_router
+from app.routes.semantic_similarity import router as semantic_similarity_router
 
 
 logger = logging.getLogger("medtrek.request")
@@ -114,6 +115,7 @@ app.include_router(system_router, tags=["System"])
 app.include_router(saved_monitors.router)
 app.include_router(reports_router)
 app.include_router(regional_health_router, prefix="/api/v1/regional-health", tags=["Regional Health Pulse"])
+app.include_router(semantic_similarity_router, prefix="/api/v1/semantic-similarity", tags=["Semantic Similarity"])
 
 
 @app.get("/")
