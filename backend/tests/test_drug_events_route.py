@@ -168,7 +168,8 @@ def test_search_drug_events_returns_502_and_persists_error_audit(monkeypatch):
 
     body = response.json()
     assert body["detail"]["message"] == "Unable to retrieve drug event data from openFDA."
-    assert "openFDA drug event unavailable" in body["detail"]["error"]
+    assert body["detail"]["code"] == "OPENFDA_DRUG_EVENT_UPSTREAM_UNAVAILABLE"
+    assert "openFDA drug event unavailable" not in response.text
 
     assert len(saved_audits) == 1
     audit_event = saved_audits[0]["audit_event"]

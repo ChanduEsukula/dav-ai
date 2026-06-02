@@ -284,6 +284,7 @@ def test_get_audit_event_source_pull_returns_metadata_without_raw_payload(monkey
     assert data["item"]["snapshot_id"] == "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
     assert data["item"]["payload_hash"] == "a" * 64
     assert "raw_payload" not in data["item"]
+    assert "should-not-leak" not in response.text
 
 
 def test_get_audit_event_source_pull_returns_not_found(monkeypatch):

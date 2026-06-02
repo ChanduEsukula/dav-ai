@@ -26,6 +26,6 @@ async def search_recalls(
             status_code=502,
             detail={
                 "message": "Unable to retrieve recall data from openFDA.",
-                "error": str(exc),
+                "code": "OPENFDA_RECALL_UPSTREAM_UNAVAILABLE",
             },
         ) from exc

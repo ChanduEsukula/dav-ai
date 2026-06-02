@@ -270,7 +270,7 @@ async def run_saved_monitor(monitor_id: UUID, request: Request) -> SavedMonitor:
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail={
                 "message": "Unable to run saved monitor.",
-                "error": str(exc),
+                "code": "SAVED_MONITOR_RUN_UNAVAILABLE",
             },
         ) from exc
 @router.delete("/{monitor_id}", status_code=status.HTTP_204_NO_CONTENT)
