@@ -36,22 +36,6 @@ export type RecallResult = {
   }
 }
 
-export type SemanticPreviewMatch = {
-  record_id: string
-  text: string
-  similarity_score: number
-  explanation: string
-  source_name: string | null
-}
-
-export type SemanticPreview = {
-  query_text: string
-  matches: SemanticPreviewMatch[]
-  limitations: string[]
-  preview_version: string
-  is_production_ml: boolean
-}
-
 export type RecallSearchResponse = {
   query: string
   count: number
@@ -62,7 +46,6 @@ export type RecallSearchResponse = {
   score_version: string
   medical_disclaimer: string
   audit: AuditSummary
-  semantic_preview?: SemanticPreview | null
   results: RecallResult[]
 }
 
