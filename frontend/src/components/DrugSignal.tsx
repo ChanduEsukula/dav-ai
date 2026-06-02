@@ -5,7 +5,6 @@ import {
 } from '../api/drugEvents'
 import SafetyBriefingPanel from './SafetyBriefingPanel'
 import SafeInsightCards, { type SafeInsightCard } from './SafeInsightCards'
-import SemanticPreviewPanel from './SemanticPreviewPanel'
 import { formatTimestamp } from '../utils/recallFormatters'
 import { generateDrugEventBriefing } from '../utils/briefingGenerator'
 import { briefingRoleLabels, type BriefingRole } from '../types/briefing'
@@ -144,13 +143,6 @@ function DrugSignal() {
         )}
 
         {data && <SafeInsightCards cards={drugSafeInsightCards} />}
-
-        {data?.semantic_preview && (
-          <SemanticPreviewPanel
-            title="Similar Public Reaction Preview"
-            preview={data.semantic_preview}
-          />
-        )}
 
         {data && (
           <section className="drug-intelligence-card" aria-label="DrugSignal intelligence summary">

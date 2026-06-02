@@ -41,22 +41,6 @@ export type DrugSignalTrendSnapshot = {
   trend_version: string
 }
 
-export type SemanticPreviewMatch = {
-  record_id: string
-  text: string
-  similarity_score: number
-  explanation: string
-  source_name: string | null
-}
-
-export type SemanticPreview = {
-  query_text: string
-  matches: SemanticPreviewMatch[]
-  limitations: string[]
-  preview_version: string
-  is_production_ml: boolean
-}
-
 export type DrugEventSearchResponse = {
   query: string
   count: number
@@ -71,7 +55,6 @@ export type DrugEventSearchResponse = {
   reaction_categories: DrugReactionCategory[]
   reaction_classifier_version: string
   trend_snapshot: DrugSignalTrendSnapshot
-  semantic_preview?: SemanticPreview | null
   top_reactions: DrugEventReaction[]
 }
 
