@@ -36,6 +36,22 @@ class RecallResult(BaseModel):
     source: RecallSource
 
 
+class RecallSemanticMatch(BaseModel):
+    record_id: str
+    text: str
+    similarity_score: float
+    explanation: str
+    source_name: str | None = None
+
+
+class RecallSemanticPreview(BaseModel):
+    query_text: str
+    matches: list[RecallSemanticMatch]
+    limitations: list[str]
+    preview_version: str
+    is_production_ml: bool
+
+
 class RecallSearchResponse(BaseModel):
     query: str
     count: int

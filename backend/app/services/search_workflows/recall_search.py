@@ -6,6 +6,8 @@ from app.db.audit_repository import save_audit_event
 from app.db.source_pull_repository import save_source_pull_with_snapshot
 from app.scoring.recall_score import calculate_recall_risk_score
 from app.services.openfda_client import OpenFDAClient
+from app.services.recall_semantic_candidates import build_recall_semantic_candidates
+from app.services.semantic_similarity_service import run_semantic_similarity_preview
 from app.sources.registry import OPENFDA_DRUG_ENFORCEMENT
 
 client = OpenFDAClient()
@@ -157,6 +159,12 @@ async def execute_recall_search(
             request_id=request_id,
         )
 
+        semantic_result = run_semantic_similarity_preview(
+            query_text=query,
+            records=build_recall_semantic_candidates(normalized_results),
+            max_matches=min(limit, 5),
+        )
+
         return {
             "query": query,
             "count": len(normalized_results),
@@ -165,7 +173,7 @@ async def execute_recall_search(
             "endpoint": payload["endpoint"],
             "retrieval_timestamp": payload["retrieval_timestamp"],
             "score_version": "recall-risk-v0.1",
-            "medical_disclaimer": "Dav AI provides public-data safety intelligence only. It is not medical advice, diagnosis, or treatment.",
+            "medical_disclaimer": "Dav AI provides public-data safety intelligence only. It is not medical advice, diagnostic output, or care guidance.",
             "audit": {
                 "audit_id": audit_event["audit_id"],
                 "source_id": audit_event["source_id"],
@@ -176,6 +184,22 @@ async def execute_recall_search(
                 "source_snapshot_status": source_pull_result["status"],
                 "source_pull_id": source_pull_result["pull_id"],
                 "source_payload_hash": source_pull_result["payload_hash"],
+            },
+            "semantic_preview": {
+                "query_text": semantic_result.query_text,
+                "matches": [
+                    {
+                        "record_id": match.record_id,
+                        "text": match.text,
+                        "similarity_score": match.similarity_score,
+                        "explanation": match.explanation,
+                        "source_name": match.source_name,
+                    }
+                    for match in semantic_result.matches
+                ],
+                "limitations": semantic_result.limitations,
+                "preview_version": semantic_result.preview_version,
+                "is_production_ml": semantic_result.is_production_ml,
             },
             "results": normalized_results,
         }
