@@ -3,6 +3,7 @@ import type { RecallSearchResponse } from '../api/recalls'
 import AuditPanel from './AuditPanel'
 import SafetyBriefingPanel from './SafetyBriefingPanel'
 import SafeInsightCards, { type SafeInsightCard } from './SafeInsightCards'
+import SemanticPreviewPanel from './SemanticPreviewPanel'
 import { formatDate, formatTimestamp, riskExplanation } from '../utils/recallFormatters'
 import { generateRecallBriefing } from '../utils/briefingGenerator'
 import { briefingRoleLabels, type BriefingRole } from '../types/briefing'
@@ -158,6 +159,13 @@ function RecallRadar({
         )}
 
         {data && <SafeInsightCards cards={safeInsightCards} />}
+
+        {data?.semantic_preview && (
+          <SemanticPreviewPanel
+            title="Similar Public Recall Preview"
+            preview={data.semantic_preview}
+          />
+        )}
 
         {topResult && (
           <section className="consumer-summary" aria-label="Recall safety summary">
