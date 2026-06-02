@@ -62,4 +62,5 @@ class RecallSearchResponse(BaseModel):
     score_version: str
     medical_disclaimer: str
     audit: AuditSummary
+    semantic_preview: RecallSemanticPreview | None = None
     results: list[RecallResult]
