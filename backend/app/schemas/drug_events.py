@@ -34,6 +34,21 @@ class DrugSignalTrendSnapshot(BaseModel):
     limitation: str
     trend_version: str
 
+class DrugSignalSemanticMatch(BaseModel):
+    record_id: str
+    text: str
+    similarity_score: float
+    explanation: str
+    source_name: str | None = None
+
+
+class DrugSignalSemanticPreview(BaseModel):
+    query_text: str
+    matches: list[DrugSignalSemanticMatch]
+    limitations: list[str]
+    preview_version: str
+    is_production_ml: bool
+
 
 class DrugEventSearchResponse(BaseModel):
     query: str
