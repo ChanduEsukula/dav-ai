@@ -179,3 +179,18 @@ Safety boundaries:
 - It does not predict patient risk, product danger, cause-and-effect relationships, outbreak activity, or clinical urgency.
 - It is not connected to alert delivery.
 - It is intended as a responsible AI/ML readiness baseline for public-data review workflows.
+
+## Backend-Only Semantic Similarity Preview
+
+DAV AI includes a backend-only semantic similarity preview for public-data safety text.
+
+This preview compares query text against candidate public-data records using deterministic text similarity. It is intended to support future similar-record review, recall/reaction grouping, and safer NLP experimentation.
+
+Safety boundaries:
+
+- It is backend-only.
+- It is not production ML.
+- It is not RAG, LLM, clinical decision support, or a medical device.
+- It does not provide medical advice, diagnostic output, care guidance, patient-specific risk prediction, product danger claims, or cause-and-effect claims.
+- It is not connected to alerts or notification delivery.
+- It is a responsible AI/NLP readiness baseline for public-data review workflows.
