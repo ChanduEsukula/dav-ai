@@ -164,3 +164,18 @@ Recommended next steps before additional UI polish:
 DAV AI is a verified, portfolio-ready MVP that demonstrates credible full-stack engineering, public-data traceability, deterministic intelligence workflows, responsible AI boundaries, and disciplined scope control.
 
 It is ready to present as a serious portfolio and interview project. It should not be presented as production healthcare software, clinical decision support, production ML, automated alerting, live outbreak surveillance, or proof of medical causation.
+
+## Backend-Only ML-Assisted Review-Priority Preview
+
+DAV AI includes a backend-only saved-monitor review-priority preview as an explainable public-data review aid.
+
+This preview uses operational metadata such as record-count changes, payload-hash changes, upstream source status, source freshness, and insufficient-history signals to label saved-monitor runs as `routine`, `watch`, or `review`.
+
+Safety boundaries:
+
+- It is backend-only.
+- It is not production ML.
+- It is not medical advice, diagnosis, treatment guidance, clinical decision support, or a medical device.
+- It does not predict patient risk, product danger, cause-and-effect relationships, outbreak activity, or clinical urgency.
+- It is not connected to alert delivery.
+- It is intended as a responsible AI/ML readiness baseline for public-data review workflows.
