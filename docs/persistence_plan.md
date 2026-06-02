@@ -1,5 +1,7 @@
 # DAV AI Persistence Plan
 
+> Historical checkpoint note: This document describes DAV AI at an earlier project stage. It is retained for project history and may not reflect the current implementation. For current scope, architecture, and implemented/partial/future boundaries, see [README.md](../README.md) and [docs/current_architecture_overview.md](current_architecture_overview.md).
+
 ## Purpose
 
 This document defines how DAV AI persists source metadata and audit events, and how persistence should expand later for saved monitors, briefings, and deployment readiness.

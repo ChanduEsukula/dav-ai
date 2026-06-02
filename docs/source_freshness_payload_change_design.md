@@ -1,5 +1,7 @@
 # Source Freshness Risk Scoring and Payload-Change Intelligence Design
 
+> Historical planning note: This document describes DAV AI planning from an earlier project stage. It is retained for project history and may not reflect the current implementation. For current scope, architecture, and implemented/partial/future boundaries, see [README.md](../README.md) and [docs/current_architecture_overview.md](current_architecture_overview.md).
+
 ## Goal
 
 Design the next DAV AI engineering milestone: source freshness risk scoring and payload-change intelligence.

@@ -2,6 +2,8 @@
 
 Date: May 8, 2026
 
+> Historical checkpoint note: This document describes DAV AI at an earlier project stage. It is retained for project history and may not reflect the current implementation. For current scope, architecture, and implemented/partial/future boundaries, see [README.md](../README.md) and [docs/current_architecture_overview.md](current_architecture_overview.md).
+
 Historical/manual workflow note: this document describes the manual monitor workflow before the Saved Monitors v2 foundation. Current code now includes saved monitor definitions, manual run checks, run history, scheduled-refresh backend foundation, and DB-backed scheduler locks. Production Cron, public scheduling UI, and alerts remain disabled/not implemented.
 
 ## Purpose

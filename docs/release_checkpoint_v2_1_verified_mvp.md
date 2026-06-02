@@ -1,5 +1,7 @@
 # DAV AI v2.1 Verified MVP Checkpoint
 
+> Historical checkpoint note: This document describes DAV AI at an earlier project stage. It is retained for project history and may not reflect the current implementation. For current scope, architecture, and implemented/partial/future boundaries, see [README.md](../README.md) and [docs/current_architecture_overview.md](current_architecture_overview.md).
+
 ## Summary
 
 This checkpoint verifies DAV AI v2.1 as a serious MVP and portfolio-grade engineering prototype. It demonstrates coherent full-stack product behavior, public-data traceability, audit persistence, explainable scoring, manual monitoring workflows, live deployment smoke verification, browser-level E2E coverage, saved monitor run history, and backend scheduled-refresh foundation work.
