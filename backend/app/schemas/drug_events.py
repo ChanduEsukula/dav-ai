@@ -64,4 +64,5 @@ class DrugEventSearchResponse(BaseModel):
     reaction_categories: list[DrugReactionCategory]
     reaction_classifier_version: str
     trend_snapshot: DrugSignalTrendSnapshot
+    semantic_preview: DrugSignalSemanticPreview | None = None
     top_reactions: list[DrugEventReaction]
