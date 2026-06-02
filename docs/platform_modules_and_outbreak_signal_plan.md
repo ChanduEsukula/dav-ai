@@ -1,5 +1,7 @@
 # DAV AI Platform Modules and OutbreakSignal Plan
 
+> Historical planning note: This document describes DAV AI planning from an earlier project stage. It is retained for project history and may not reflect the current implementation. For current scope, architecture, and implemented/partial/future boundaries, see [README.md](../README.md) and [docs/current_architecture_overview.md](current_architecture_overview.md).
+
 ## Purpose
 
 DAV AI is evolving from a narrow FDA recall/adverse-event prototype into a broader public health and safety intelligence platform.

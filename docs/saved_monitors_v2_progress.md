@@ -1,5 +1,7 @@
 # Saved Monitors v2 Progress Checkpoint
 
+> Historical checkpoint note: This document describes DAV AI at an earlier project stage. It is retained for project history and may not reflect the current implementation. For current scope, architecture, and implemented/partial/future boundaries, see [README.md](../README.md) and [docs/current_architecture_overview.md](current_architecture_overview.md).
+
 ## Status
 
 Saved Monitors v2 foundation is implemented, tested, manually verified, and CI-validated.

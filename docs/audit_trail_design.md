@@ -1,5 +1,7 @@
 # DAV AI Audit Trail Design
 
+> Historical checkpoint note: This document describes DAV AI at an earlier project stage. It is retained for project history and may not reflect the current implementation. For current scope, architecture, and implemented/partial/future boundaries, see [README.md](../README.md) and [docs/current_architecture_overview.md](current_architecture_overview.md).
+
 ## Purpose
 
 The audit trail records how each public safety signal was produced, which public source was used, when data was retrieved, what query was sent, and what transformation or scoring version was applied.

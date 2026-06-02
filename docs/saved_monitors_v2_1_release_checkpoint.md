@@ -1,5 +1,7 @@
 # Saved Monitors v2.1 Release Checkpoint
 
+> Historical checkpoint note: This document describes DAV AI at an earlier project stage. It is retained for project history and may not reflect the current implementation. For current scope, architecture, and implemented/partial/future boundaries, see [README.md](../README.md) and [docs/current_architecture_overview.md](current_architecture_overview.md).
+
 Date: 2026-05-12
 Status: Completed and verified
 Module: Saved Monitors
