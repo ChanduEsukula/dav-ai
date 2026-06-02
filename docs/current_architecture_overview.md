@@ -112,3 +112,17 @@ flowchart LR
     API --> Scores[Deterministic Scores]
 
     ML[Offline ML Experiments] -. not production .-> Docs[AI/ML Roadmap + Portfolio Story]
+```
+
+## Latest Verification Evidence
+
+Latest confirmed verification evidence:
+
+- Backend tests: 205 passed.
+- Frontend tests: 8 test files passed, 64 tests passed.
+- Frontend lint: passed.
+- Frontend production build: passed.
+- Vercel deployment: Ready after recent merged PRs.
+- Recent credibility/documentation improvements: README current MVP scope cleanup, current architecture overview added, historical checkpoint docs labeled, backend upstream error responses sanitized, PDF report route coverage added, and source-pull provenance testing strengthened so raw payload contents are not exposed in API responses.
+
+This verification supports DAV AI's current portfolio MVP quality posture. It does not make DAV AI production healthcare software, clinical decision support, or medical advice.

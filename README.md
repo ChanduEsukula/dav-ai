@@ -369,13 +369,14 @@ Current engineering support includes:
 Current backend test status:
 
 ```bash
-203 passed
+205 passed
 ```
 
 Current frontend test status:
 
 ```bash
-64 passed
+8 test files passed
+64 tests passed
 ```
 
 ---
@@ -1016,7 +1017,7 @@ pytest
 Current backend test status:
 
 ```bash
-203 passed
+205 passed
 ```
 
 Backend test coverage includes:
@@ -1033,6 +1034,9 @@ Backend test coverage includes:
 - Database configuration.
 - Fail-soft audit repository behavior.
 - Audit History API behavior.
+- Source-pull provenance responses excluding raw payload contents.
+- PDF report route behavior.
+- Sanitized upstream error responses for user-facing API failures.
 - System Status and Data Quality API behavior.
 - Request ID middleware behavior.
 - Saved Monitors backend behavior.
@@ -1055,7 +1059,8 @@ npm test
 Current frontend test status:
 
 ```bash
-64 passed
+8 test files passed
+64 tests passed
 ```
 
 Frontend test coverage includes:
@@ -1140,13 +1145,14 @@ docs/render_cron_saved_monitors_plan.md
 
 ## Current Verification Snapshot
 
-Latest local verification from the responsible ML progress review:
+Latest confirmed verification evidence:
 
-- Backend tests: 203 passed
-- Frontend tests: 64 passed
+- Backend tests: 205 passed
+- Frontend tests: 8 test files passed, 64 tests passed
 - Frontend lint: passed
-- Repository state: clean before and after inspection
-- Frontend build: covered by CI; local build may update `frontend/dist`
+- Frontend production build: passed
+- Vercel deployment: Ready after recent merged PRs
+- Recent credibility/documentation improvements: README current MVP scope cleanup, current architecture overview added, historical checkpoint docs labeled, backend upstream error responses sanitized, PDF report route coverage added, and source-pull provenance testing strengthened so raw payload contents are not exposed in API responses.
 
 The offline ML experiments are tested as engineering baselines only. They are not production ML models.
 
