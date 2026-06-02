@@ -150,7 +150,8 @@ def test_search_recalls_returns_502_and_persists_error_audit(monkeypatch):
 
     body = response.json()
     assert body["detail"]["message"] == "Unable to retrieve recall data from openFDA."
-    assert "openFDA unavailable" in body["detail"]["error"]
+    assert body["detail"]["code"] == "OPENFDA_RECALL_UPSTREAM_UNAVAILABLE"
+    assert "openFDA unavailable" not in response.text
 
     assert len(saved_audits) == 1
     audit_event = saved_audits[0]["audit_event"]

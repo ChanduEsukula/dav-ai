@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.responses import Response
 
 from app.schemas.reports import SafetyIntelligenceReportRequest
@@ -29,19 +29,28 @@ async def create_safety_intelligence_report(
     recall_result = None
     drug_signal_result = None
 
-    if payload.module in {"recallradar", "both"}:
-        recall_result = await execute_recall_search(
-            query=payload.query,
-            limit=5,
-            request_id=request_id,
-        )
+    try:
+        if payload.module in {"recallradar", "both"}:
+            recall_result = await execute_recall_search(
+                query=payload.query,
+                limit=5,
+                request_id=request_id,
+            )
 
-    if payload.module in {"drugsignal", "both"}:
-        drug_signal_result = await execute_drug_signal_search(
-            query=payload.query,
-            limit=5,
-            request_id=request_id,
-        )
+        if payload.module in {"drugsignal", "both"}:
+            drug_signal_result = await execute_drug_signal_search(
+                query=payload.query,
+                limit=5,
+                request_id=request_id,
+            )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail={
+                "message": "Unable to retrieve source data for the report.",
+                "code": "REPORT_SOURCE_DATA_UNAVAILABLE",
+            },
+        ) from exc
 
     pdf_bytes = build_safety_intelligence_pdf(
         request=payload,

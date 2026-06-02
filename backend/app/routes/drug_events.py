@@ -26,6 +26,6 @@ async def search_drug_events(
             status_code=502,
             detail={
                 "message": "Unable to retrieve drug event data from openFDA.",
-                "error": str(exc),
+                "code": "OPENFDA_DRUG_EVENT_UPSTREAM_UNAVAILABLE",
             },
         ) from exc

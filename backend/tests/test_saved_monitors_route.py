@@ -614,6 +614,11 @@ def test_failed_saved_monitor_run_records_history(monkeypatch) -> None:
     run_response = client.post(f"/api/v1/saved-monitors/{monitor_id}/run")
 
     assert run_response.status_code == 502
+    assert run_response.json()["detail"] == {
+        "message": "Unable to run saved monitor.",
+        "code": "SAVED_MONITOR_RUN_UNAVAILABLE",
+    }
+    assert "openFDA unavailable" not in run_response.text
 
     list_response = client.get("/api/v1/saved-monitors")
     assert list_response.status_code == 200
