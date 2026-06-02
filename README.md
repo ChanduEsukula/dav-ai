@@ -45,7 +45,7 @@ DAV AI is a public-data healthcare safety intelligence MVP/prototype. It helps r
 - DAV AI does not use PHI, private patient records, diagnosis history, prescription history, insurance data, or personal medical information.
 - Current intelligence is deterministic and rule-based, including Recall Review Score, DrugSignal Intelligence Score, reaction classification, trend snapshots, monitor insights, source freshness, and safety briefings.
 - Offline ML experiments exist under `backend/ml_experiments`, but production ML is not deployed in the API, frontend, scheduler, alerts, or saved-monitor workflows yet.
-- Auth/RBAC, automated alerts, production scheduler activation, production scheduler observability, notification preferences, and full live Health Pulse data integration are future work.
+- Auth/RBAC, automated alerts and alert delivery, production scheduler activation, production scheduler observability, public scheduling UI, notification preferences, production ML, RAG/LLM features, CNN/OCR features, and full live Regional Health Pulse data integration are future work.
 
 ## Demo Path
 
@@ -100,7 +100,7 @@ docs/saved_monitors_v2_1_release_checkpoint.md
 
 DAV AI currently includes:
 
-- **Regional Health Pulse MVP scaffold** for public-health signal review. This backend and frontend foundation uses a clearly labeled scaffold source, deterministic trend labeling, source registry metadata, audit summary metadata, source-pull snapshot handling, scaffold source freshness status, polished Health Pulse UI, mobile/tablet navigation improvements, Audit History linking, Saved Monitors backend support, scheduled-refresh compatibility, and public-health safety disclaimers. It is not live CDC/HHS surveillance yet, not emergency guidance, not medical advice, and not a personal disease-risk predictor.
+- **Regional Health Pulse MVP scaffold** for public-health signal review. This backend and frontend foundation uses a clearly labeled scaffold source, deterministic trend labeling, source registry metadata, audit summary metadata, source-pull snapshot handling, scaffold source freshness status, polished Health Pulse UI, mobile/tablet navigation improvements, Audit History linking, Saved Monitors backend support, scheduled-refresh compatibility, and public-health safety disclaimers. It is not live CDC/HHS surveillance, not outbreak detection, not emergency guidance, not medical advice, and not a personal disease-risk predictor.
 
 - **RecallRadar** for live openFDA Drug Enforcement recall search.
 - **DrugSignal** for openFDA Drug Event / FAERS-style adverse-event reporting-pattern review.
@@ -120,7 +120,7 @@ DAV AI currently includes:
 The current product direction is to move from one-time public-data search toward repeatable safety monitoring workflows:
 
 ```text
-Search → Score → Audit → Briefing → Monitor → Compare → Alert
+Search → Score → Audit → Briefing → Monitor → Compare
 ```
 
 ---
@@ -143,9 +143,9 @@ DAV AI is intentionally focused on public-data traceability, operational readine
 
 | Status | Features |
 |---|---|
-| Implemented | RecallRadar; DrugSignal; Regional Health Pulse MVP scaffold; Audit History; System Status / Data Quality; Data Sources; deterministic safety briefings; Saved Monitors run history for RecallRadar, DrugSignal, and Health Pulse; saved-monitor latest/previous comparison; backend scheduled-refresh foundation; scheduler CLI guardrails; database-backed scheduler locks; Render Cron dry-run documentation. |
+| Implemented | RecallRadar; DrugSignal; Regional Health Pulse MVP scaffold; Audit History; System Status / Data Quality; Data Sources; deterministic safety briefings; Saved Monitors run history for RecallRadar, DrugSignal, and Health Pulse; saved-monitor latest/previous comparison; source-pull provenance; raw public-source snapshots; SHA-256 payload hashing; backend scheduled-refresh foundation; scheduler CLI guardrails; database-backed scheduler locks; Render Cron dry-run documentation. |
 | Partial | Deployment hardening; production observability; scheduled refresh backend foundation; authentication/RBAC planning. |
-| Planned | Production Cron activation; automated alerts; public scheduling UI; authentication/RBAC; notification preferences; briefing persistence/history; raw snapshot/hash-based reproducibility; live CDC/HHS-backed Regional Health Pulse data connectors; EnviroHealth Signal; CNN/OCR label scanner; RAG/LLM upgrades. |
+| Planned | Production Cron activation; automated alerts and alert delivery; public scheduling UI; authentication/RBAC; notification preferences; briefing persistence/history; production ML integration; live CDC/HHS-backed Regional Health Pulse data connectors; EnviroHealth Signal; CNN/OCR label scanner; RAG/LLM upgrades. |
 
 ---
 
@@ -232,7 +232,7 @@ Save monitor → Run check → Review latest score/count/audit ID → Review rec
 
 The current implementation supports:
 
-- Saved monitor definitions for RecallRadar or DrugSignal.
+- Saved monitor definitions for RecallRadar, DrugSignal, or Regional Health Pulse.
 - Supabase/PostgreSQL persistence when configured.
 - Local fail-soft fallback when persistence is unavailable.
 - Manual run checks from the backend and frontend.
@@ -320,11 +320,14 @@ docs/render_cron_saved_monitors_plan.md
 - User accounts.
 - Authentication and role-based access control.
 - Production Cron activation.
-- Automated alerts.
+- Automated alerts and alert delivery.
 - Public scheduling UI.
 - Briefing persistence.
 - Alerting beyond saved-monitor run history.
-- Alert delivery preferences.
+- Notification preferences.
+- Production ML integration.
+- RAG/LLM features.
+- CNN/OCR features.
 - Formal ML model training.
 - Embedding search or clustering model.
 - Formal classifier evaluation dataset.
@@ -584,6 +587,7 @@ Current registered sources:
 
 - openFDA Drug Enforcement API for RecallRadar.
 - openFDA Drug Event API for DrugSignal.
+- Regional Health Pulse MVP scaffold for sample public-health signal review.
 
 Sources endpoint:
 
@@ -599,8 +603,9 @@ The endpoint returns each source with:
 - Module.
 - Description.
 - Update cadence.
+- Audit-backed source freshness fields when audit history is available.
 
-The frontend Data Sources page consumes this endpoint and displays registered public sources, modules, endpoints, descriptions, and update cadence.
+The frontend Data Sources page consumes this endpoint and displays registered public sources, modules, endpoints, descriptions, update cadence, freshness status, and safety limitations. Regional Health Pulse is clearly labeled as an MVP scaffold, not live CDC/HHS surveillance, not outbreak detection, not emergency guidance, not medical advice, and not a personal disease-risk predictor.
 
 ---
 
@@ -615,7 +620,11 @@ The backend currently supports:
 - Internal full audit event construction.
 - Fail-soft audit repository boundary.
 - PostgreSQL persistence into the `audit_events` table.
+- Source-pull provenance persistence into the `source_pulls` table.
+- Raw public-source snapshot persistence into the `raw_source_snapshots` table.
+- Stable SHA-256 payload hashing for public source payload reproducibility.
 - Audit History list/detail endpoints.
+- Metadata-only source-pull provenance endpoint.
 - Audit History filters.
 - Audit detail URL state.
 - Audit copy/export actions in the frontend.
@@ -629,6 +638,9 @@ The compact public audit summary includes:
 - Upstream status.
 - Record count.
 - Transform version.
+- Source snapshot status.
+- Source pull ID when available.
+- Source payload hash when available.
 
 The full audit event additionally supports:
 
@@ -646,9 +658,10 @@ Current Audit History endpoints:
 ```text
 GET /api/v1/audit-events
 GET /api/v1/audit-events/{audit_id}
+GET /api/v1/audit-events/{audit_id}/source-pull
 ```
 
-Audit History is for public-data traceability only. It is not clinical record storage.
+Audit History is for public-data traceability only. It is not clinical record storage. Raw public-source payloads are persisted for reproducibility and audit provenance, but they are intentionally not displayed by default in the UI.
 
 Current Saved Monitors endpoints:
 
@@ -671,15 +684,21 @@ DAV AI includes Supabase/PostgreSQL audit persistence and saved monitor persiste
 Current persistence support includes:
 
 - `backend/db/schema.sql`.
-- Alembic migrations for `source_registry`, `audit_events`, `saved_monitors`, saved monitor run history, saved monitor schedule metadata, and scheduler locks.
+- Alembic migrations for `source_registry`, `audit_events`, `saved_monitors`, saved monitor run history, saved monitor schedule metadata, scheduler locks, source pulls, raw public-source snapshots, and Regional Health Pulse scaffold alignment.
 - `backend/app/db/database.py`.
 - `backend/app/db/audit_repository.py`.
+- `backend/app/db/source_pull_repository.py`.
 - `backend/app/db/saved_monitor_repository.py`.
 - Fail-soft audit event inserts.
+- Fail-soft source-pull and raw public-source snapshot inserts.
 - Audit event reads for Audit History.
+- Source-pull metadata reads for audit provenance.
 - Latest audit event lookup for DrugSignal Trend Snapshot v1.
 - Source metadata stored in `source_registry`.
 - Search/source audit events stored in `audit_events`.
+- Source pull metadata stored in `source_pulls`.
+- Raw public-source payload snapshots stored in `raw_source_snapshots`.
+- Stable SHA-256 payload hashes stored with source pulls.
 - Saved monitor definitions, latest manual run state, schedule metadata, and run-history rows stored for saved-monitor workflows.
 - Scheduler lock state stored in `scheduler_locks` while a scheduled-refresh job is active.
 
@@ -699,6 +718,9 @@ The current persistence layer stores:
 - Disclaimer version.
 - Error message when applicable.
 - Created timestamp.
+- Source pull ID.
+- Source payload hash.
+- Raw public openFDA/source payload snapshots.
 - Saved monitor name, query, module, status, latest/previous score, latest/previous record count, latest audit ID, last-checked timestamp, schedule metadata, and run-history state.
 - Scheduler lock name, lock owner, lock expiration, and timestamps while a job lock is active.
 
@@ -769,13 +791,15 @@ Users should verify official source records and consult qualified healthcare pro
 
 - openFDA Drug Enforcement API.
 - openFDA Drug Event API.
+- Regional Health Pulse MVP scaffold source.
 
 ### Persistence
 
 - Supabase PostgreSQL.
-- SQL schema for source registry, audit events, saved monitors, saved monitor runs, saved monitor schedule metadata, and scheduler locks.
-- Alembic migrations for source registry, audit events, saved monitors, saved monitor runs, saved monitor schedule metadata, and `scheduler_locks`.
+- SQL schema for source registry, audit events, source pulls, raw public-source snapshots, saved monitors, saved monitor runs, saved monitor schedule metadata, and scheduler locks.
+- Alembic migrations for source registry, audit events, source pulls, raw public-source snapshots, saved monitors, saved monitor runs, saved monitor schedule metadata, Regional Health Pulse scaffold alignment, and `scheduler_locks`.
 - Fail-soft audit persistence repository.
+- Fail-soft source-pull provenance repository.
 - Fail-soft saved monitor repository.
 - Database-backed scheduler lock repository with in-memory fallback for local/test-created repository instances.
 
@@ -1185,5 +1209,7 @@ It should not become a generic chatbot, generic dashboard, or medical advice too
 The strongest next product direction is:
 
 ```text
-Search → Score → Audit → Briefing → Monitor → Compare → Alert
+Search → Score → Audit → Briefing → Monitor → Compare
 ```
+
+Alerting remains future work. Automated alerts, alert delivery, notification preferences, production Cron activation, public scheduling UI, and auth/RBAC are not enabled in the current DAV AI portfolio MVP.
