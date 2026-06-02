@@ -3,8 +3,10 @@ import type { RecallSearchResponse } from '../api/recalls'
 import AuditPanel from './AuditPanel'
 import SafetyBriefingPanel from './SafetyBriefingPanel'
 import SafeInsightCards, { type SafeInsightCard } from './SafeInsightCards'
+import AskDavAIInline from './AskDavAIInline'
 import { formatDate, formatTimestamp, riskExplanation } from '../utils/recallFormatters'
 import { generateRecallBriefing } from '../utils/briefingGenerator'
+import { generateRecallAssistantAnswer } from '../utils/reviewAssistant'
 import { briefingRoleLabels, type BriefingRole } from '../types/briefing'
 
 type RecallRadarProps = {
@@ -158,6 +160,20 @@ function RecallRadar({
         )}
 
         {data && <SafeInsightCards cards={safeInsightCards} />}
+
+        {data && (
+          <AskDavAIInline
+            title="Ask about these recall results"
+            description="Get a short explanation only when you need it. Public-data review help only."
+            prompts={[
+              { label: 'Explain in plain English', prompt: 'plain_english' },
+              { label: 'What should I verify?', prompt: 'verify' },
+              { label: 'What does this score mean?', prompt: 'score' },
+              { label: 'What does the source say?', prompt: 'source' },
+            ]}
+            onAsk={(prompt, question) => generateRecallAssistantAnswer(data, prompt, question)}
+          />
+        )}
 
         {topResult && (
           <section className="consumer-summary" aria-label="Recall safety summary">
