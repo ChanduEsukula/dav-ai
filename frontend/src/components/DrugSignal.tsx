@@ -5,8 +5,10 @@ import {
 } from '../api/drugEvents'
 import SafetyBriefingPanel from './SafetyBriefingPanel'
 import SafeInsightCards, { type SafeInsightCard } from './SafeInsightCards'
+import AskDavAIInline from './AskDavAIInline'
 import { formatTimestamp } from '../utils/recallFormatters'
 import { generateDrugEventBriefing } from '../utils/briefingGenerator'
+import { generateDrugEventAssistantAnswer } from '../utils/reviewAssistant'
 import { briefingRoleLabels, type BriefingRole } from '../types/briefing'
 
 const briefingRoles: BriefingRole[] = ['consumer', 'pharmacy', 'clinic', 'public_health']
@@ -143,6 +145,21 @@ function DrugSignal() {
         )}
 
         {data && <SafeInsightCards cards={drugSafeInsightCards} />}
+
+        {data && (
+          <AskDavAIInline
+            title="Ask about these DrugSignal reports"
+            description="Get a short explanation only when you need it. Public FAERS reports do not prove causation."
+            prompts={[
+              { label: 'Explain in plain English', prompt: 'plain_english' },
+              { label: 'Top reported reactions', prompt: 'top_reactions' },
+              { label: 'What does FAERS not prove?', prompt: 'faers_limits' },
+              { label: 'What does this score mean?', prompt: 'score' },
+              { label: 'What does the source say?', prompt: 'source' },
+            ]}
+            onAsk={(prompt, question) => generateDrugEventAssistantAnswer(data, prompt, question)}
+          />
+        )}
 
         {data && (
           <section className="drug-intelligence-card" aria-label="DrugSignal intelligence summary">
