@@ -43,7 +43,7 @@ DAV AI is a public-data healthcare safety intelligence MVP/prototype. It helps r
 
 - DAV AI does not provide medical advice, diagnosis, treatment guidance, clinical decision support, or proof of causation.
 - DAV AI does not use PHI, private patient records, diagnosis history, prescription history, insurance data, or personal medical information.
-- Current intelligence is deterministic and rule-based, including Recall Review Score, DrugSignal Intelligence Score, reaction classification, trend snapshots, monitor insights, source freshness, and safety briefings.
+- Current intelligence is deterministic and rule-based, including Recall Review Score, DrugSignal Intelligence Score, reaction classification, trend snapshots, monitor insights, source freshness, semantic similarity previews, and safety briefings.
 - Offline ML experiments exist under `backend/ml_experiments`, but production ML is not deployed in the API, frontend, scheduler, alerts, or saved-monitor workflows yet.
 - Auth/RBAC, automated alerts and alert delivery, production scheduler activation, production scheduler observability, public scheduling UI, notification preferences, production ML, RAG/LLM features, CNN/OCR features, and full live Regional Health Pulse data integration are future work.
 
@@ -143,7 +143,7 @@ DAV AI is intentionally focused on public-data traceability, operational readine
 
 | Status | Features |
 |---|---|
-| Implemented | RecallRadar; DrugSignal; Regional Health Pulse MVP scaffold; Audit History; System Status / Data Quality; Data Sources; deterministic safety briefings; Saved Monitors run history for RecallRadar, DrugSignal, and Health Pulse; saved-monitor latest/previous comparison; source-pull provenance; raw public-source snapshots; SHA-256 payload hashing; backend scheduled-refresh foundation; scheduler CLI guardrails; database-backed scheduler locks; Render Cron dry-run documentation. |
+| Implemented | RecallRadar; DrugSignal; Regional Health Pulse MVP scaffold; Audit History; System Status / Data Quality; Data Sources; deterministic safety briefings; deterministic semantic similarity previews for RecallRadar and DrugSignal; Saved Monitors run history for RecallRadar, DrugSignal, and Health Pulse; saved-monitor latest/previous comparison; source-pull provenance; raw public-source snapshots; SHA-256 payload hashing; backend scheduled-refresh foundation; scheduler CLI guardrails; database-backed scheduler locks; Render Cron dry-run documentation. |
 | Partial | Deployment hardening; production observability; scheduled refresh backend foundation; authentication/RBAC planning. |
 | Planned | Production Cron activation; automated alerts and alert delivery; public scheduling UI; authentication/RBAC; notification preferences; briefing persistence/history; production ML integration; live CDC/HHS-backed Regional Health Pulse data connectors; EnviroHealth Signal; CNN/OCR label scanner; RAG/LLM upgrades. |
 
@@ -166,6 +166,7 @@ RecallRadar allows a user to search a product, drug, brand, or category and rece
 - Medical safety disclaimer.
 - Compact audit summary for source traceability.
 - Persisted audit event when database persistence is configured.
+- `semantic_preview` for deterministic public-data text similarity.
 - Role-based safety briefing.
 
 ### DrugSignal
@@ -189,7 +190,27 @@ DrugSignal allows a user to search a drug or medicinal product and receive:
 - Empty-result handling for searches with no FAERS matches.
 - Compact audit summary for source traceability.
 - Persisted audit event when database persistence is configured.
+- `semantic_preview` for deterministic public-data text similarity.
 - Role-based safety briefing.
+
+### Semantic Similarity Preview
+
+RecallRadar and DrugSignal now expose a `semantic_preview` object in:
+
+- `GET /api/v1/recalls/search`
+- `GET /api/v1/drug-events/search`
+
+This preview compares public-data text using deterministic text similarity only. It is a responsible AI/NLP readiness milestone for similar-record review and safer future NLP experimentation.
+
+Safety boundaries:
+
+- It is not production ML.
+- It is not RAG or LLM output.
+- It is not alerting.
+- It is not medical advice, diagnostic output, care guidance, clinical decision support, or a medical device.
+- It does not claim FAERS causation, product danger, patient-specific risk, outbreak activity, or clinical urgency.
+
+Live smoke tests confirmed both endpoints return a `semantic_preview` JSON object.
 
 ### Audit History
 
@@ -369,7 +390,7 @@ Current engineering support includes:
 Current backend test status:
 
 ```bash
-205 passed
+235 passed
 ```
 
 Current frontend test status:
@@ -1017,7 +1038,7 @@ pytest
 Current backend test status:
 
 ```bash
-205 passed
+235 passed
 ```
 
 Backend test coverage includes:
@@ -1025,6 +1046,7 @@ Backend test coverage includes:
 - Recall Review Score behavior.
 - RecallRadar route behavior.
 - DrugSignal route behavior.
+- Deterministic semantic similarity previews in RecallRadar and DrugSignal API responses.
 - DrugSignal Intelligence Score v1.
 - Reaction Classification v1.
 - DrugSignal Trend Snapshot v1.
@@ -1147,12 +1169,13 @@ docs/render_cron_saved_monitors_plan.md
 
 Latest confirmed verification evidence:
 
-- Backend tests: 205 passed
+- Backend tests: 235 passed
 - Frontend tests: 8 test files passed, 64 tests passed
 - Frontend lint: passed
 - Frontend production build: passed
 - Vercel deployment: Ready after recent merged PRs
-- Recent credibility/documentation improvements: README current MVP scope cleanup, current architecture overview added, historical checkpoint docs labeled, backend upstream error responses sanitized, PDF report route coverage added, and source-pull provenance testing strengthened so raw payload contents are not exposed in API responses.
+- Live smoke tests confirmed `semantic_preview` appears in both `/api/v1/recalls/search` and `/api/v1/drug-events/search`.
+- Recent credibility/documentation improvements: README current MVP scope cleanup, current architecture overview added, historical checkpoint docs labeled, backend upstream error responses sanitized, PDF report route coverage added, source-pull provenance testing strengthened so raw payload contents are not exposed in API responses, and deterministic semantic similarity previews verified for RecallRadar and DrugSignal.
 
 The offline ML experiments are tested as engineering baselines only. They are not production ML models.
 

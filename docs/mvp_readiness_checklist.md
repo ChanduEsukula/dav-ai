@@ -98,11 +98,12 @@ npm run build
 
 Latest confirmed verification evidence:
 
-- Backend tests: 205 passed
+- Backend tests: 235 passed
 - Frontend tests: 8 test files passed, 64 tests passed
 - Frontend lint: passed
 - Frontend production build: passed
 - Vercel deployment: Ready after recent merged PRs
-- Recent credibility/documentation improvements: README current MVP scope cleanup, current architecture overview added, historical checkpoint docs labeled, backend upstream error responses sanitized, PDF report route coverage added, and source-pull provenance testing strengthened so raw payload contents are not exposed in API responses.
+- Live smoke tests confirmed `semantic_preview` appears in both `/api/v1/recalls/search` and `/api/v1/drug-events/search`.
+- Recent credibility/documentation improvements: README current MVP scope cleanup, current architecture overview added, historical checkpoint docs labeled, backend upstream error responses sanitized, PDF report route coverage added, source-pull provenance testing strengthened so raw payload contents are not exposed in API responses, and deterministic semantic similarity previews verified for RecallRadar and DrugSignal.
 
 This evidence supports portfolio MVP readiness for review and demo discussion. It does not indicate production healthcare readiness or clinical validity.

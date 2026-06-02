@@ -23,6 +23,7 @@ DAV AI currently supports public-data review workflows for FDA/openFDA-style saf
 - Raw public-source snapshots and stable SHA-256 payload hashing where supported.
 - Saved Monitors manual workflow with run history, latest/previous comparison, and payload-change status.
 - Scheduler foundation, CLI guardrails, and database-backed scheduler lock protection.
+- Deterministic semantic similarity previews in RecallRadar and DrugSignal API responses.
 - Offline ML experiments for responsible AI problem framing, not production inference.
 
 The current workflow is:
@@ -39,9 +40,27 @@ Automated alerts, production Cron activation, production ML, RAG/LLM assistants,
 
 RecallRadar searches public openFDA Drug Enforcement recall data and returns normalized recall records with source context, deterministic recall review scoring, audit metadata, and safety boundary language.
 
+RecallRadar now exposes `semantic_preview` in `GET /api/v1/recalls/search` as a deterministic public-data text similarity preview.
+
 ### DrugSignal
 
 DrugSignal searches public openFDA Drug Event / FAERS-style reporting data and summarizes reporting patterns with deterministic scoring, reaction grouping, trend context, audit metadata, and FAERS limitations. FAERS reports do not prove causation.
+
+DrugSignal now exposes `semantic_preview` in `GET /api/v1/drug-events/search` as a deterministic public-data text similarity preview.
+
+### Semantic Similarity Preview
+
+RecallRadar and DrugSignal include a verified `semantic_preview` JSON object in their search responses.
+
+This preview compares public-data text using deterministic text similarity only. It is a responsible AI/NLP readiness milestone for similar-record review and future NLP experimentation.
+
+Safety boundaries:
+
+- It is not production ML.
+- It is not RAG or LLM output.
+- It is not alerting.
+- It is not medical advice, diagnostic output, care guidance, clinical decision support, or a medical device.
+- It does not claim FAERS causation, product danger, patient-specific risk, outbreak activity, or clinical urgency.
 
 ### Regional Health Pulse MVP Scaffold
 
@@ -96,11 +115,12 @@ These items remain future work and should not be presented as current implementa
 
 Latest confirmed verification evidence:
 
-- Backend tests: 205 passed.
+- Backend tests: 235 passed.
 - Frontend tests: 8 test files passed, 64 tests passed.
 - Frontend lint: passed.
 - Frontend production build: passed.
 - Vercel deployment: Ready after recent merged PRs.
+- Live smoke tests confirmed `semantic_preview` appears in both `/api/v1/recalls/search` and `/api/v1/drug-events/search`.
 
 This evidence supports DAV AI's current portfolio MVP quality posture. It does not establish clinical validity, production healthcare readiness, or production AI readiness.
 
@@ -114,6 +134,7 @@ Recent documentation and backend credibility improvements:
 - Backend upstream error responses sanitized.
 - PDF report route coverage added.
 - Source-pull provenance raw-payload non-exposure test strengthened.
+- Deterministic semantic similarity previews verified for RecallRadar and DrugSignal.
 
 These changes improve reviewer trust by making the current scope clearer, reducing stale historical-doc conflicts, and tightening API response behavior around upstream failures and provenance payload exposure.
 
@@ -125,6 +146,7 @@ DAV AI is designed around public-data review and responsible AI boundaries:
 - It does not provide diagnosis, treatment recommendations, medication-change guidance, clinical decision support, patient-specific risk prediction, or causation claims.
 - It does not present FAERS-style adverse-event reports as proof that a drug caused a reaction.
 - It keeps production ML, RAG/LLM assistance, and CNN/OCR scanning out of the current MVP until evaluation, grounding, safety, and governance work are stronger.
+- It keeps semantic similarity previews framed as deterministic public-data text similarity, not clinical AI.
 - It keeps Regional Health Pulse clearly framed as a scaffold, not live surveillance or emergency guidance.
 
 The responsible framing is:
@@ -179,18 +201,3 @@ Safety boundaries:
 - It does not predict patient risk, product danger, cause-and-effect relationships, outbreak activity, or clinical urgency.
 - It is not connected to alert delivery.
 - It is intended as a responsible AI/ML readiness baseline for public-data review workflows.
-
-## Backend-Only Semantic Similarity Preview
-
-DAV AI includes a backend-only semantic similarity preview for public-data safety text.
-
-This preview compares query text against candidate public-data records using deterministic text similarity. It is intended to support future similar-record review, recall/reaction grouping, and safer NLP experimentation.
-
-Safety boundaries:
-
-- It is backend-only.
-- It is not production ML.
-- It is not RAG, LLM, clinical decision support, or a medical device.
-- It does not provide medical advice, diagnostic output, care guidance, patient-specific risk prediction, product danger claims, or cause-and-effect claims.
-- It is not connected to alerts or notification delivery.
-- It is a responsible AI/NLP readiness baseline for public-data review workflows.

@@ -197,9 +197,31 @@ The briefing output should remain:
 - Guardrailed
 - Non-diagnostic
 
+## Verified AI/NLP Readiness Milestone: Semantic Similarity Preview
+
+RecallRadar and DrugSignal now include a verified semantic similarity preview in their search responses:
+
+- `GET /api/v1/recalls/search` returns `semantic_preview`.
+- `GET /api/v1/drug-events/search` returns `semantic_preview`.
+
+The preview uses deterministic public-data text similarity only. It is intended to support future similar-record review, recall/reaction grouping, and safer NLP experimentation.
+
+Verification:
+
+- Backend tests passed with 235 passed.
+- Live smoke tests confirmed `semantic_preview` appears for both RecallRadar and DrugSignal.
+
+Safety boundaries:
+
+- It is not production ML.
+- It is not RAG or LLM output.
+- It is not alerting.
+- It is not medical advice, diagnostic output, care guidance, clinical decision support, or a medical device.
+- It does not claim FAERS causation, product danger, patient-specific risk, outbreak activity, or clinical urgency.
+
 ## Future AI Layer: Semantic Search
 
-Semantic search can make RecallRadar and DrugSignal easier to use.
+Semantic search can make RecallRadar and DrugSignal easier to use after the deterministic preview is evaluated further.
 
 Examples:
 
