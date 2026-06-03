@@ -6,6 +6,7 @@ import './styles/hero.css'
 import './styles/recallradar.css'
 import './styles/safe-insight-cards.css'
 import './styles/drugsignal.css'
+import './styles/foodradar.css'
 import './styles/datasources.css'
 import './styles/signals.css'
 import './styles/pages.css'
@@ -28,6 +29,7 @@ import OperationalOverview from './components/OperationalOverview'
 import Signals from './components/Signals'
 import RecallRadar from './components/RecallRadar'
 import DrugSignal from './components/DrugSignal'
+import FoodRadar from './components/FoodRadar'
 import DataSourcesPage from './components/DataSourcesPage'
 import AuditHistoryPage from './components/AuditHistoryPage'
 import SystemStatusPage from './components/SystemStatusPage'
@@ -196,6 +198,8 @@ function App() {
           />
 
           <DrugSignal onAssistantContextChange={setAssistantContext} />
+
+          <FoodRadar />
 
           <Signals />
         </>
