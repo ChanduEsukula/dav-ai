@@ -1,0 +1,201 @@
+.ask-dav-ai-chat {
+  bottom: 1.25rem;
+  position: fixed;
+  right: 1.25rem;
+  z-index: 50;
+}
+
+.ask-dav-ai-chat__toggle,
+.ask-dav-ai-chat__header button,
+.ask-dav-ai-chat__prompts button,
+.ask-dav-ai-chat__form button {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.ask-dav-ai-chat__toggle {
+  background: #12312c;
+  border-radius: 999px;
+  box-shadow: 0 16px 38px rgb(15 23 42 / 22%);
+  color: #ffffff;
+  font-weight: 800;
+  padding: 0.85rem 1.1rem;
+}
+
+.ask-dav-ai-chat__drawer {
+  background: #ffffff;
+  border: 1px solid rgb(15 23 42 / 12%);
+  border-radius: 16px;
+  bottom: 3.75rem;
+  box-shadow: 0 24px 60px rgb(15 23 42 / 22%);
+  color: #12211f;
+  max-height: min(620px, calc(100vh - 7rem));
+  overflow: auto;
+  padding: 1rem;
+  position: absolute;
+  right: 0;
+  width: min(390px, calc(100vw - 2.5rem));
+}
+
+.ask-dav-ai-chat__header {
+  align-items: flex-start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.ask-dav-ai-chat__header h2 {
+  font-size: 1.15rem;
+  letter-spacing: 0;
+  line-height: 1.2;
+  margin: 0.15rem 0 0.3rem;
+}
+
+.ask-dav-ai-chat__header p,
+.ask-dav-ai-chat__context,
+.ask-dav-ai-chat__empty,
+.ask-dav-ai-chat__form label,
+.ask-dav-ai-chat__answer p,
+.ask-dav-ai-chat__limitations p {
+  color: #52615f;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.ask-dav-ai-chat__header button {
+  background: #eef5f3;
+  border-radius: 999px;
+  color: #12312c;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.45rem 0.65rem;
+}
+
+.ask-dav-ai-chat__context,
+.ask-dav-ai-chat__empty {
+  background: #f6faf8;
+  border: 1px solid rgb(18 49 44 / 10%);
+  border-radius: 10px;
+  margin-top: 0.9rem;
+  padding: 0.7rem;
+}
+
+.ask-dav-ai-chat__prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.9rem;
+}
+
+.ask-dav-ai-chat__prompts button {
+  background: #edf7f3;
+  border: 1px solid rgb(18 49 44 / 12%);
+  border-radius: 999px;
+  color: #12312c;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 0.52rem 0.7rem;
+}
+
+.ask-dav-ai-chat__prompts button:disabled,
+.ask-dav-ai-chat__form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.ask-dav-ai-chat__form {
+  margin-top: 0.9rem;
+}
+
+.ask-dav-ai-chat__form > div {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.ask-dav-ai-chat__form input {
+  border: 1px solid rgb(15 23 42 / 16%);
+  border-radius: 10px;
+  flex: 1;
+  font: inherit;
+  min-width: 0;
+  padding: 0.65rem 0.7rem;
+}
+
+.ask-dav-ai-chat__form button {
+  background: #12312c;
+  border-radius: 10px;
+  color: #ffffff;
+  font-weight: 800;
+  padding: 0 0.85rem;
+}
+
+.ask-dav-ai-chat__error {
+  color: #9f1d1d;
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin: 0.8rem 0 0;
+}
+
+.ask-dav-ai-chat__answer {
+  background: #fbfdfc;
+  border: 1px solid rgb(15 23 42 / 12%);
+  border-radius: 12px;
+  margin-top: 0.9rem;
+  padding: 0.85rem;
+}
+
+.ask-dav-ai-chat__answer--refused {
+  background: #fff8f1;
+  border-color: rgb(166 83 34 / 20%);
+}
+
+.ask-dav-ai-chat__answer strong {
+  color: #8a3f11;
+  display: block;
+  font-size: 0.82rem;
+  margin-bottom: 0.35rem;
+}
+
+.ask-dav-ai-chat__answer ul {
+  color: #263b38;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  margin: 0.75rem 0;
+  padding-left: 1.1rem;
+}
+
+.ask-dav-ai-chat__citations {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ask-dav-ai-chat__citations span {
+  background: #eef5f3;
+  border-radius: 8px;
+  color: #27443f;
+  font-size: 0.78rem;
+  font-weight: 750;
+  padding: 0.35rem 0.45rem;
+}
+
+.ask-dav-ai-chat__limitations {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.7rem;
+}
+
+@media (max-width: 640px) {
+  .ask-dav-ai-chat {
+    bottom: 0.9rem;
+    right: 0.9rem;
+  }
+
+  .ask-dav-ai-chat__drawer {
+    bottom: 3.4rem;
+    width: calc(100vw - 1.8rem);
+  }
+}

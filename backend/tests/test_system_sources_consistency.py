@@ -39,5 +39,6 @@ def test_sources_route_count_and_ids_match_shared_registry():
     assert actual_source_ids == {
         "openfda_drug_enforcement",
         "openfda_drug_event",
+        "openfda_food_enforcement",
         "regional_health_pulse_demo",
     }
