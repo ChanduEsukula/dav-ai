@@ -109,7 +109,7 @@ def test_everyday_safety_food_search_returns_multi_source_normalized_records(mon
     assert body["category"] == "food_supplement"
     assert body["category_label"] == "Food & Supplements"
     assert body["source_name"] == "FoodRadar multi-source search"
-    assert body["search_strategy_used"] == "multi_source_exact_phrase"
+    assert body["search_strategy_used"] == "intent_supplement_v1"
     assert body["count"] == 2
     assert body["audit"]["module"] == "FoodRadar"
     assert body["audit"]["source_id"] == "foodradar_multi_source"
@@ -129,7 +129,7 @@ def test_everyday_safety_food_search_returns_multi_source_normalized_records(mon
     assert fda_result["source_type"] == "FDA_FOOD_ENFORCEMENT"
     assert fda_result["recall_number"] == "F-1234-2026"
     assert fda_result["product_description"] == "Example protein powder"
-    assert fda_result["search_strategy_used"] == "multi_source_exact_phrase"
+    assert fda_result["search_strategy_used"] == "intent_supplement_v1"
 
     fsis_result = body["results"][1]
     assert fsis_result["source_type"] == "USDA_FSIS_RECALL"
@@ -273,3 +273,85 @@ def test_everyday_safety_rejects_invalid_limit():
     )
 
     assert response.status_code == 422
+
+
+def test_everyday_safety_chicken_intent_excludes_chicken_of_the_sea_brand_noise(monkeypatch):
+    now = datetime.now(timezone.utc).isoformat()
+
+    async def fake_search_food_recalls(query, limit, request_id=None):
+        return {
+            "source_id": "openfda_food_enforcement",
+            "source_name": "openFDA Food Enforcement API",
+            "endpoint": "https://api.fda.gov/food/enforcement.json",
+            "query": query,
+            "retrieval_timestamp": now,
+            "raw": {
+                "results": [
+                    {
+                        "recall_number": "F-BRAND-2026",
+                        "product_description": "Chicken of the Sea canned tuna",
+                        "reason_for_recall": "Can lid issue",
+                        "classification": "Class II",
+                        "status": "Ongoing",
+                        "recall_initiation_date": "20260601",
+                        "report_date": "20260603",
+                        "distribution_pattern": "Nationwide",
+                        "recalling_firm": "Chicken of the Sea",
+                        "product_quantity": "100 cases",
+                        "code_info": "Lot BRAND",
+                    }
+                ]
+            },
+        }
+
+    async def fake_search_fsis_recalls(query, limit, request_id=None):
+        return {
+            "source_id": "usda_fsis_recall",
+            "source_name": "USDA FSIS Recall API",
+            "endpoint": "https://www.fsis.usda.gov/fsis/api/recall/v/1",
+            "query": query,
+            "retrieval_timestamp": now,
+            "raw": {"results": []},
+            "records": [
+                {
+                    "id": "fsis-chicken-1",
+                    "field_recall_number": "025-2026",
+                    "field_product_items": "Ready-to-eat chicken breast meal",
+                    "field_recall_reason": "Possible Listeria contamination",
+                    "field_recall_classification": "Class I",
+                    "field_active_notice": "Active",
+                    "field_recall_date": "20260602",
+                    "field_publication_date": "20260603",
+                    "field_states": "MN, WI",
+                    "field_establishment": "Example Poultry LLC",
+                    "field_pounds_recalled": "8,000 pounds",
+                    "field_labels": "EST. 67890",
+                }
+            ],
+        }
+
+    monkeypatch.setattr(
+        everyday_safety_search.food_client,
+        "search_food_recalls",
+        fake_search_food_recalls,
+    )
+    monkeypatch.setattr(
+        everyday_safety_search.fsis_client,
+        "search_recalls",
+        fake_search_fsis_recalls,
+    )
+    _patch_persistence(monkeypatch)
+
+    response = client.get(
+        "/api/v1/everyday-safety/search",
+        params={"category": "food_supplement", "q": "chicken", "limit": 5},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+
+    assert body["search_strategy_used"] == "intent_poultry_meat_v1"
+    assert body["count"] == 1
+    assert body["results"][0]["source_type"] == "USDA_FSIS_RECALL"
+    assert body["results"][0]["product_description"] == "Ready-to-eat chicken breast meal"
+    assert "Chicken of the Sea" not in str(body["results"])
