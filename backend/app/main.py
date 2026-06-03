@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routes import saved_monitors
 from app.routes.assistant import router as assistant_router
 from app.routes.audit_events import router as audit_events_router
+from app.routes.cosmetic_events import router as cosmetic_events_router
 from app.routes.drug_events import router as drug_events_router
 from app.routes.everyday_safety import router as everyday_safety_router
 from app.routes.recalls import router as recalls_router
@@ -111,6 +112,7 @@ async def request_id_logging_middleware(request: Request, call_next):
 
 app.include_router(recalls_router, prefix="/api/v1/recalls", tags=["RecallRadar"])
 app.include_router(drug_events_router, prefix="/api/v1/drug-events", tags=["DrugSignal"])
+app.include_router(cosmetic_events_router, prefix="/api/v1/cosmetic-events", tags=["CosmeticSignal"])
 app.include_router(everyday_safety_router, prefix="/api/v1/everyday-safety", tags=["Everyday Safety"])
 app.include_router(sources_router, prefix="/api/v1/sources", tags=["Sources"])
 app.include_router(audit_events_router, tags=["Audit History"])
@@ -130,6 +132,7 @@ def root():
         "modules": [
             "RecallRadar",
             "DrugSignal",
+            "CosmeticSignal",
             "Everyday Safety",
             "Sources",
             "Audit History",

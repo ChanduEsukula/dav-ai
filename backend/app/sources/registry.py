@@ -24,6 +24,16 @@ OPENFDA_DRUG_EVENT = {
 }
 
 
+OPENFDA_COSMETIC_EVENT = {
+    "source_id": "openfda_cosmetic_event",
+    "source_name": "openFDA Cosmetic Event API",
+    "endpoint": "https://api.fda.gov/cosmetic/event.json",
+    "module": "CosmeticSignal",
+    "description": "Cosmetic adverse-event reports from openFDA for skincare, makeup, hair, fragrance, and related products.",
+    "update_cadence": "Source-dependent FDA cosmetic event updates",
+}
+
+
 OPENFDA_FOOD_ENFORCEMENT = {
     "source_id": "openfda_food_enforcement",
     "source_name": "openFDA Food Enforcement API",
@@ -55,6 +65,7 @@ REGIONAL_HEALTH_PULSE_DEMO = {
 REGISTERED_SOURCES = [
     OPENFDA_DRUG_ENFORCEMENT,
     OPENFDA_DRUG_EVENT,
+    OPENFDA_COSMETIC_EVENT,
     OPENFDA_FOOD_ENFORCEMENT,
     USDA_FSIS_RECALL,
     REGIONAL_HEALTH_PULSE_DEMO,
