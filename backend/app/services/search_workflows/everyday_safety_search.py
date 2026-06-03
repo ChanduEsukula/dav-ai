@@ -5,6 +5,7 @@ from app.audit.audit_event import build_audit_event
 from app.db.audit_repository import save_audit_event
 from app.db.source_pull_repository import save_source_pull_with_snapshot
 from app.scoring.recall_score import calculate_recall_risk_score
+from app.services.foodradar_search_intent import FoodRadarSearchIntent, classify_foodradar_search_intent
 from app.services.openfda_food_enforcement_client import OpenFDAFoodEnforcementClient
 from app.services.usda_fsis_recall_client import USDAFSISRecallClient
 from app.sources.registry import OPENFDA_FOOD_ENFORCEMENT, USDA_FSIS_RECALL
@@ -264,6 +265,75 @@ def _checked_source(
     }
 
 
+def _record_search_text(record: dict[str, Any]) -> str:
+    parts = [
+        record.get("product_description"),
+        record.get("reason_for_recall"),
+        record.get("recalling_firm"),
+    ]
+    source = record.get("source") or {}
+    parts.append(source.get("name"))
+
+    return " ".join(str(part).lower() for part in parts if part)
+
+
+def _should_exclude_for_intent(record: dict[str, Any], intent: FoodRadarSearchIntent) -> bool:
+    if not intent.excluded_brand_phrases:
+        return False
+
+    search_text = _record_search_text(record)
+    return any(phrase in search_text for phrase in intent.excluded_brand_phrases)
+
+
+def _intent_relevance_score(record: dict[str, Any], intent: FoodRadarSearchIntent) -> int:
+    search_text = _record_search_text(record)
+    score = 0
+
+    for term in intent.expanded_terms:
+        if term and term in search_text:
+            score += 20
+
+    if intent.intent_type in {"poultry_meat", "meat", "egg_product"}:
+        if record.get("source_type") == "USDA_FSIS_RECALL":
+            score += 30
+        if any(term in search_text for term in ("poultry", "chicken", "turkey", "beef", "pork", "egg")):
+            score += 15
+
+    if intent.intent_type == "supplement":
+        if record.get("source_type") == "FDA_FOOD_ENFORCEMENT":
+            score += 20
+        if any(term in search_text for term in ("supplement", "protein", "whey", "powder", "vitamin")):
+            score += 15
+
+    if intent.intent_type == "brand":
+        if intent.normalized_query in search_text:
+            score += 50
+
+    if record.get("risk_score"):
+        score += min(int(record["risk_score"].get("score", 0) / 10), 10)
+
+    return score
+
+
+def _rank_and_filter_results(
+    *,
+    records: list[dict[str, Any]],
+    intent: FoodRadarSearchIntent,
+    limit: int,
+) -> list[dict[str, Any]]:
+    filtered_records = [
+        record
+        for record in records
+        if not _should_exclude_for_intent(record, intent)
+    ]
+
+    return sorted(
+        filtered_records,
+        key=lambda record: _intent_relevance_score(record, intent),
+        reverse=True,
+    )[:limit]
+
+
 async def execute_everyday_safety_search(
     *,
     category: str,
@@ -274,7 +344,8 @@ async def execute_everyday_safety_search(
     if category != "food_supplement":
         raise ValueError("Only category=food_supplement is implemented in v0.1.")
 
-    search_strategy_used = "multi_source_exact_phrase"
+    intent = classify_foodradar_search_intent(query)
+    search_strategy_used = intent.search_strategy_used
 
     try:
         fda_payload = await food_client.search_food_recalls(
@@ -328,7 +399,11 @@ async def execute_everyday_safety_search(
                 )
             )
 
-        normalized_results = normalized_results[:limit]
+        normalized_results = _rank_and_filter_results(
+            records=normalized_results,
+            intent=intent,
+            limit=limit,
+        )
         upstream_status = "empty" if not normalized_results else "success"
 
         sources_checked = [
@@ -361,6 +436,9 @@ async def execute_everyday_safety_search(
                     USDA_FSIS_RECALL["source_id"],
                 ],
                 "search_strategy_used": search_strategy_used,
+                "intent_type": intent.intent_type,
+                "primary_source_hint": intent.primary_source_hint,
+                "excluded_brand_phrases": intent.excluded_brand_phrases,
             },
             retrieval_timestamp=retrieval_timestamp,
             upstream_status=upstream_status,
