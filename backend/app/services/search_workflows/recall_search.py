@@ -21,7 +21,7 @@ async def _search_drug_recalls_with_request_id(
     try:
         return await client.search_drug_recalls(
             query=query,
-            limit=limit,
+            limit=25,
             request_id=request_id,
         )
     except TypeError as exc:
@@ -90,11 +90,36 @@ def _persist_recall_error_audit(
     return audit_event
 
 
+def _recall_date_value(record: dict[str, Any]) -> int:
+    value = record.get("recall_initiation_date") or ""
+    try:
+        return int(str(value))
+    except ValueError:
+        return 0
+
+
+def _sort_recall_results(
+    *,
+    records: list[dict[str, Any]],
+    sort: str,
+    limit: int,
+) -> list[dict[str, Any]]:
+    if sort == "latest":
+        return sorted(records, key=_recall_date_value, reverse=True)[:limit]
+
+    return sorted(
+        records,
+        key=lambda record: record.get("risk_score", {}).get("score", 0),
+        reverse=True,
+    )[:limit]
+
+
 async def execute_recall_search(
     *,
     query: str,
     limit: int,
     request_id: str | None,
+    sort: str = "score",
 ) -> dict[str, Any]:
     """Run RecallRadar search workflow.
 
@@ -137,13 +162,20 @@ async def execute_recall_search(
                 }
             )
 
+        normalized_results = _sort_recall_results(
+            records=normalized_results,
+            sort=sort,
+            limit=limit,
+        )
+        upstream_status = "empty" if not normalized_results else "success"
+
         audit_event = build_audit_event(
             module="RecallRadar",
             source_id=payload["source_id"],
             source_name=payload["source_name"],
             endpoint=payload["endpoint"],
             query=query,
-            query_params={"q": query, "limit": limit},
+            query_params={"q": query, "limit": limit, "sort": sort, "source_limit": 25},
             retrieval_timestamp=payload["retrieval_timestamp"],
             upstream_status=upstream_status,
             record_count=len(normalized_results),
@@ -173,6 +205,7 @@ async def execute_recall_search(
             "endpoint": payload["endpoint"],
             "retrieval_timestamp": payload["retrieval_timestamp"],
             "score_version": "recall-risk-v0.1",
+            "sort": sort,
             "medical_disclaimer": "Dav AI provides public-data safety intelligence only. It is not medical advice, diagnostic output, or care guidance.",
             "audit": {
                 "audit_id": audit_event["audit_id"],

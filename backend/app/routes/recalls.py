@@ -1,3 +1,5 @@
+from typing import Literal
+
 from fastapi import APIRouter, HTTPException, Query, Request
 
 from app.schemas.recalls import RecallSearchResponse
@@ -11,6 +13,10 @@ async def search_recalls(
     request: Request,
     q: str = Query(..., min_length=2, description="Drug, product, brand, or recall keyword"),
     limit: int = Query(10, ge=1, le=25),
+    sort: Literal["score", "latest"] = Query(
+        "score",
+        description="Sort recall results by review score or latest recall initiation date.",
+    ),
 ):
     request_id = getattr(request.state, "request_id", None)
 
@@ -19,6 +25,7 @@ async def search_recalls(
             query=q,
             limit=limit,
             request_id=request_id,
+            sort=sort,
         )
 
     except Exception as exc:

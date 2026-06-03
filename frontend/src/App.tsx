@@ -21,7 +21,7 @@ import {
   buildRecallAssistantContext,
   type AssistantChatContext,
 } from './api/assistant'
-import { searchRecalls, type RecallSearchResponse } from './api/recalls'
+import { searchRecalls, type RecallSearchResponse, type RecallSort } from './api/recalls'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import SafetyWorkspace from './components/SafetyWorkspace'
@@ -102,14 +102,14 @@ function App() {
     }
   }, [])
 
-  async function handleSearch() {
+  async function handleSearch(sort: RecallSort = 'score') {
     if (!query.trim() || loading) return
 
     setLoading(true)
     setError('')
 
     try {
-      const result = await searchRecalls(query.trim(), 5)
+      const result = await searchRecalls(query.trim(), 5, sort)
       setData(result)
       setAssistantContext(buildRecallAssistantContext(result))
     } catch {
