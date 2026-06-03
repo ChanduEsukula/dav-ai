@@ -47,11 +47,15 @@ DAIRY_TERMS = {
 }
 
 SUPPLEMENT_TERMS = {
+    "protein",
     "protein powder",
     "whey",
+    "whey protein",
     "creatine",
     "pre workout",
+    "pre-workout",
     "supplement",
+    "dietary supplement",
     "vitamin",
 }
 
@@ -69,6 +73,49 @@ HAZARD_TERMS = {
 KNOWN_BRAND_PHRASES = {
     "chicken of the sea",
 }
+
+
+def _unique_terms(terms: list[str]) -> list[str]:
+    return list(dict.fromkeys(term for term in terms if term))
+
+
+def _build_supplement_terms(normalized_query: str) -> list[str]:
+    if normalized_query in {"protein", "protein powder", "whey", "whey protein"}:
+        return _unique_terms(
+            [
+                normalized_query,
+                "protein",
+                "whey",
+                "whey protein",
+                "protein powder",
+                "dietary supplement",
+                "supplement",
+            ]
+        )
+
+    if normalized_query in {"creatine", "pre workout", "pre-workout"}:
+        return _unique_terms(
+            [
+                normalized_query,
+                "creatine",
+                "pre workout",
+                "pre-workout",
+                "dietary supplement",
+                "supplement",
+            ]
+        )
+
+    if normalized_query in {"vitamin", "supplement", "dietary supplement"}:
+        return _unique_terms(
+            [
+                normalized_query,
+                "vitamin",
+                "dietary supplement",
+                "supplement",
+            ]
+        )
+
+    return [normalized_query]
 
 
 def classify_foodradar_search_intent(query: str) -> FoodRadarSearchIntent:
@@ -135,7 +182,7 @@ def classify_foodradar_search_intent(query: str) -> FoodRadarSearchIntent:
             normalized_query=normalized_query,
             intent_type="supplement",
             primary_source_hint="openfda_food",
-            expanded_terms=[normalized_query],
+            expanded_terms=_build_supplement_terms(normalized_query),
             excluded_brand_phrases=[],
             search_strategy_used="intent_supplement_v1",
         )
