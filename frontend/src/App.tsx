@@ -15,6 +15,11 @@ import './styles/briefing.css'
 import './styles/audit-history.css'
 import './styles/operational-overview.css'
 import './styles/safety-workspace.css'
+import './styles/ask-dav-ai.css'
+import {
+  buildRecallAssistantContext,
+  type AssistantChatContext,
+} from './api/assistant'
 import { searchRecalls, type RecallSearchResponse } from './api/recalls'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
@@ -31,6 +36,8 @@ import RegionalHealthPulse from './components/RegionalHealthPulse'
 import FaqPage from './components/FaqPage'
 import AboutPage from './components/AboutPage'
 import InfoPage from './components/InfoPage'
+import AskDavAIChat from './components/AskDavAIChat'
+import FloatingSafetyReportIntake from './components/FloatingSafetyReportIntake'
 import type { ActivePage, ActiveSection } from './types/navigation'
 import { infoPages } from './data/infoPages'
 
@@ -76,6 +83,7 @@ function App() {
   const [activeSection, setActiveSection] = useState<ActiveSection>('home')
   const [query, setQuery] = useState('')
   const [data, setData] = useState<RecallSearchResponse | null>(null)
+  const [assistantContext, setAssistantContext] = useState<AssistantChatContext | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -101,6 +109,7 @@ function App() {
     try {
       const result = await searchRecalls(query.trim(), 5)
       setData(result)
+      setAssistantContext(buildRecallAssistantContext(result))
     } catch {
       setError('Unable to load recall data. Make sure the FastAPI backend is running on port 8000.')
     } finally {
@@ -186,7 +195,7 @@ function App() {
             handleSearch={handleSearch}
           />
 
-          <DrugSignal />
+          <DrugSignal onAssistantContextChange={setAssistantContext} />
 
           <Signals />
         </>
@@ -207,6 +216,9 @@ function App() {
       {activePage === 'faq' && <FaqPage />}
 
       {activePage === 'help' && <InfoPage {...infoPages.help} />}
+
+      <AskDavAIChat context={assistantContext} />
+      <FloatingSafetyReportIntake />
     </main>
   )
 }

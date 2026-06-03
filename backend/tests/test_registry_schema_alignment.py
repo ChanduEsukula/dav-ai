@@ -21,11 +21,13 @@ def test_registered_sources_include_current_public_source_surfaces():
     assert source_ids == {
         "openfda_drug_enforcement",
         "openfda_drug_event",
+        "openfda_food_enforcement",
         "regional_health_pulse_demo",
     }
     assert modules == {
         "RecallRadar",
         "DrugSignal",
+        "FoodRadar",
         "RegionalHealthPulse",
     }
 

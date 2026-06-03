@@ -23,6 +23,16 @@ OPENFDA_DRUG_EVENT = {
     "update_cadence": "Periodic FDA FAERS updates",
 }
 
+
+OPENFDA_FOOD_ENFORCEMENT = {
+    "source_id": "openfda_food_enforcement",
+    "source_name": "openFDA Food Enforcement API",
+    "endpoint": "https://api.fda.gov/food/enforcement.json",
+    "module": "FoodRadar",
+    "description": "Food, supplement, grocery, and packaged-food recall enforcement records from openFDA.",
+    "update_cadence": "Source-dependent FDA updates",
+}
+
 REGIONAL_HEALTH_PULSE_DEMO = {
     "source_id": "regional_health_pulse_demo",
     "source_name": "Regional Health Pulse MVP scaffold",
@@ -35,5 +45,6 @@ REGIONAL_HEALTH_PULSE_DEMO = {
 REGISTERED_SOURCES = [
     OPENFDA_DRUG_ENFORCEMENT,
     OPENFDA_DRUG_EVENT,
+    OPENFDA_FOOD_ENFORCEMENT,
     REGIONAL_HEALTH_PULSE_DEMO,
 ]

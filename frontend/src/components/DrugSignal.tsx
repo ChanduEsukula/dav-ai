@@ -1,5 +1,9 @@
 import { useMemo, useState } from 'react'
 import {
+  buildDrugEventAssistantContext,
+  type AssistantChatContext,
+} from '../api/assistant'
+import {
   searchDrugEvents,
   type DrugEventSearchResponse,
 } from '../api/drugEvents'
@@ -11,7 +15,11 @@ import { briefingRoleLabels, type BriefingRole } from '../types/briefing'
 
 const briefingRoles: BriefingRole[] = ['consumer', 'pharmacy', 'clinic', 'public_health']
 
-function DrugSignal() {
+type DrugSignalProps = {
+  onAssistantContextChange?: (context: AssistantChatContext) => void
+}
+
+function DrugSignal({ onAssistantContextChange }: DrugSignalProps) {
   const [query, setQuery] = useState('')
   const [data, setData] = useState<DrugEventSearchResponse | null>(null)
   const [loading, setLoading] = useState(false)
@@ -32,6 +40,7 @@ function DrugSignal() {
     try {
       const response = await searchDrugEvents(trimmedQuery, 10)
       setData(response)
+      onAssistantContextChange?.(buildDrugEventAssistantContext(response))
     } catch {
       setError(
         'Unable to load drug event data. Make sure the FastAPI backend is running on port 8000.'
