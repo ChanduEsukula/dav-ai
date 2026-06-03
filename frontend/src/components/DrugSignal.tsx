@@ -6,6 +6,7 @@ import {
 import {
   searchDrugEvents,
   type DrugEventSearchResponse,
+  type DrugEventSort,
 } from '../api/drugEvents'
 import SafetyBriefingPanel from './SafetyBriefingPanel'
 import SafeInsightCards, { type SafeInsightCard } from './SafeInsightCards'
@@ -25,8 +26,9 @@ function DrugSignal({ onAssistantContextChange }: DrugSignalProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [briefingRole, setBriefingRole] = useState<BriefingRole>('consumer')
+  const [sortMode, setSortMode] = useState<DrugEventSort>('reports')
 
-  async function handleSearch() {
+  async function handleSearch(nextSortMode: DrugEventSort = sortMode) {
     const trimmedQuery = query.trim()
 
     if (!trimmedQuery) {
@@ -38,7 +40,8 @@ function DrugSignal({ onAssistantContextChange }: DrugSignalProps) {
     setError('')
 
     try {
-      const response = await searchDrugEvents(trimmedQuery, 10)
+      const response = await searchDrugEvents(trimmedQuery, 10, nextSortMode)
+      setSortMode(nextSortMode)
       setData(response)
       onAssistantContextChange?.(buildDrugEventAssistantContext(response))
     } catch {
@@ -112,7 +115,7 @@ function DrugSignal({ onAssistantContextChange }: DrugSignalProps) {
               onChange={(event) => setQuery(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === 'Enter') {
-                  handleSearch()
+                  handleSearch(sortMode)
                 }
               }}
               placeholder="Search FAERS reports: metformin, ibuprofen, aspirin"
@@ -125,7 +128,7 @@ function DrugSignal({ onAssistantContextChange }: DrugSignalProps) {
             </p>
           </div>
 
-          <button type="button" onClick={handleSearch} disabled={loading}>
+          <button type="button" onClick={() => handleSearch(sortMode)} disabled={loading}>
             {loading ? 'Checking public data...' : 'Analyze'}
           </button>
         </div>
@@ -294,6 +297,33 @@ function DrugSignal({ onAssistantContextChange }: DrugSignalProps) {
 
             <p className="drug-trend-limitation">{data.trend_snapshot.limitation}</p>
           </details>
+        )}
+
+        {data && data.top_reactions.length > 0 && (
+          <div className="recall-results-toolbar">
+            <div>
+              <span>Sort reactions</span>
+              <p>Choose how DrugSignal reaction patterns are ordered.</p>
+            </div>
+
+            <div className="recall-sort-control" role="group" aria-label="Sort DrugSignal reactions">
+              <button
+                type="button"
+                className={sortMode === 'reports' ? 'active' : ''}
+                onClick={() => handleSearch('reports')}
+              >
+                Most reports
+              </button>
+
+              <button
+                type="button"
+                className={sortMode === 'alpha' ? 'active' : ''}
+                onClick={() => handleSearch('alpha')}
+              >
+                A-Z
+              </button>
+            </div>
+          </div>
         )}
 
         {data && data.top_reactions.length > 0 && (

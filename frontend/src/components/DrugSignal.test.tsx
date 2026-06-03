@@ -135,7 +135,7 @@ test('shows loading state during search', async () => {
   expect(screen.getByRole('button', { name: /Checking public data/i })).toBeDisabled()
 
   await waitFor(() => {
-    expect(mockSearchDrugEvents).toHaveBeenCalledWith('metformin', 10)
+    expect(mockSearchDrugEvents).toHaveBeenCalledWith('metformin', 10, 'reports')
   })
 })
 
@@ -301,6 +301,6 @@ test('runs search when Enter key is pressed', async () => {
   )
 
   await waitFor(() => {
-    expect(mockSearchDrugEvents).toHaveBeenCalledWith('metformin', 10)
+    expect(mockSearchDrugEvents).toHaveBeenCalledWith('metformin', 10, 'reports')
   })
 })
