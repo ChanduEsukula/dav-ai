@@ -4,7 +4,7 @@ Date: June 2026
 
 ## Executive Summary
 
-DAV AI is a verified portfolio MVP for public-data healthcare safety intelligence. It helps reviewers search, score, audit, brief, monitor, and compare public safety signals from trusted public sources while keeping source transparency, reproducibility, and healthcare safety boundaries visible.
+DAV AI is a verified portfolio MVP for public-data healthcare and everyday safety intelligence. It helps reviewers search, score, audit, brief, monitor, and compare public safety signals from trusted public sources while keeping source transparency, reproducibility, and safety boundaries visible.
 
 The current MVP is strongest as an engineering and responsible-AI portfolio project: it demonstrates full-stack product behavior, deterministic scoring and briefing, audit history, source-pull provenance, saved-monitor workflows, scheduler groundwork, and offline ML experimentation. It is not production healthcare software, not clinical decision support, and not medical advice.
 
@@ -15,7 +15,7 @@ Current source-of-truth references:
 
 ## Current Verified Scope
 
-DAV AI currently supports public-data review workflows for FDA/openFDA-style safety signals, plus a scaffolded Regional Health Pulse workflow pattern. The verified MVP scope includes:
+DAV AI currently supports public-data review workflows for openFDA and USDA FSIS safety signals, plus a scaffolded Regional Health Pulse workflow pattern. The verified MVP scope includes:
 
 - Public-data search and review using FastAPI backend routes and a React/Vite frontend.
 - Deterministic scoring, classification, trend, briefing, and monitor-insight outputs.
@@ -48,6 +48,18 @@ DrugSignal searches public openFDA Drug Event / FAERS-style reporting data and s
 
 DrugSignal now exposes `semantic_preview` in `GET /api/v1/drug-events/search` as a deterministic public-data text similarity preview.
 
+### FoodRadar
+
+FoodRadar searches everyday food, supplement, grocery, meat, poultry, and egg-product safety records using openFDA Food Enforcement data plus USDA FSIS recall and public-health-alert data. It returns source-checked cards, deterministic review-priority scoring, highest-score/latest sorting, audit/source context, and official-source verification language.
+
+FoodRadar is public recall/public-health-alert review only. A missing result does not prove that a product is safe or unsafe.
+
+### CosmeticSignal
+
+CosmeticSignal searches public openFDA Cosmetic Event data using cosmetic product, brand, reaction, or outcome terms such as rash, hair dye, and mascara. It returns a cosmetic reporting signal score, top reactions, normalized records, public openFDA source context, retrieval timestamp, and audit context.
+
+Cosmetic adverse-event reports do **not** prove causation. Reports may be incomplete, duplicated, delayed, influenced by reporting behavior, or missing context.
+
 ### Semantic Similarity Preview
 
 RecallRadar and DrugSignal include a verified `semantic_preview` JSON object in their search responses.
@@ -72,7 +84,7 @@ The Safety Briefing Engine generates deterministic, role-aware public-data brief
 
 ### Source Registry
 
-The Source Registry exposes public-source metadata for transparency, including source identity, source type, endpoints, and status context used by the product's Data Sources and System Status surfaces.
+The Source Registry exposes public-source metadata for transparency, including source identity, source type, endpoints, and status context used by the product's Data Sources and System Status surfaces. Current registered sources include openFDA Drug Enforcement, openFDA Drug Event, openFDA Food Enforcement, USDA FSIS Recall, openFDA Cosmetic Event, and the Regional Health Pulse MVP scaffold.
 
 ### Audit History
 
@@ -115,11 +127,11 @@ These items remain future work and should not be presented as current implementa
 
 Latest confirmed verification evidence:
 
-- Backend tests: 235 passed.
-- Frontend tests: 8 test files passed, 64 tests passed.
+- Backend tests: 260 passed.
+- Frontend tests: 70 passed.
 - Frontend lint: passed.
 - Frontend production build: passed.
-- Vercel deployment: Ready after recent merged PRs.
+- Deployment smoke should be re-run after current FoodRadar/CosmeticSignal documentation and any hosted app changes before claiming current deployed readiness.
 - Live smoke tests confirmed `semantic_preview` appears in both `/api/v1/recalls/search` and `/api/v1/drug-events/search`.
 
 This evidence supports DAV AI's current portfolio MVP quality posture. It does not establish clinical validity, production healthcare readiness, or production AI readiness.
@@ -128,13 +140,11 @@ This evidence supports DAV AI's current portfolio MVP quality posture. It does n
 
 Recent documentation and backend credibility improvements:
 
-- README current MVP scope cleanup.
-- Current architecture overview added.
-- Historical checkpoint docs labeled.
-- Backend upstream error responses sanitized.
-- PDF report route coverage added.
-- Source-pull provenance raw-payload non-exposure test strengthened.
-- Deterministic semantic similarity previews verified for RecallRadar and DrugSignal.
+- README and current docs now include FoodRadar and CosmeticSignal.
+- Public data source language now includes openFDA Food Enforcement, USDA FSIS Recall API, and openFDA Cosmetic Event API.
+- Safety boundaries now explicitly cover FAERS causation, cosmetic adverse-event causation, official-source verification, and missing-result limitations.
+- Current verification counts are updated to backend 260 passed, frontend 70 passed, and production build passed.
+- Historical checkpoint docs remain useful as milestone records but should not override README/current architecture docs.
 
 These changes improve reviewer trust by making the current scope clearer, reducing stale historical-doc conflicts, and tightening API response behavior around upstream failures and provenance payload exposure.
 
@@ -145,6 +155,8 @@ DAV AI is designed around public-data review and responsible AI boundaries:
 - It does not use PHI, private patient records, diagnosis history, prescription history, insurance data, addresses, or private medical narratives.
 - It does not provide diagnosis, treatment recommendations, medication-change guidance, clinical decision support, patient-specific risk prediction, or causation claims.
 - It does not present FAERS-style adverse-event reports as proof that a drug caused a reaction.
+- It does not present cosmetic adverse-event reports as proof that a cosmetic product caused a reaction.
+- It does not treat a missing RecallRadar, FoodRadar, DrugSignal, or CosmeticSignal result as proof that a product is safe or unsafe.
 - It keeps production ML, RAG/LLM assistance, and CNN/OCR scanning out of the current MVP until evaluation, grounding, safety, and governance work are stronger.
 - It keeps semantic similarity previews framed as deterministic public-data text similarity, not clinical AI.
 - It keeps Regional Health Pulse clearly framed as a scaffold, not live surveillance or emergency guidance.

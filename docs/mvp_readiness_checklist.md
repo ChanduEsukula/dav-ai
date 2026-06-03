@@ -4,7 +4,7 @@
 
 This checklist defines what must be true before DAV AI is considered MVP-ready for portfolio review, demo use, and interview discussion.
 
-DAV AI is a public-data healthcare safety intelligence platform. It is not medical advice, diagnosis, treatment guidance, clinical decision support, or proof of causality.
+DAV AI is a public-data healthcare and everyday safety intelligence platform. It is not medical advice, diagnosis, treatment guidance, clinical decision support, proof of causality, or an official product-safety verdict.
 
 ## Current MVP Scope
 
@@ -12,6 +12,8 @@ DAV AI is a public-data healthcare safety intelligence platform. It is not medic
 
 - RecallRadar public drug recall search
 - DrugSignal public adverse-event search
+- FoodRadar public food/supplement/meat/poultry/egg-product recall and public-health-alert search
+- CosmeticSignal public cosmetic adverse-event search
 - Regional Health Pulse public regional signal workflow
 - Saved Monitors for repeatable public-data checks
 - Manual saved-monitor run history
@@ -47,6 +49,7 @@ DAV AI is a public-data healthcare safety intelligence platform. It is not medic
 
 - [x] FastAPI routes are organized by product workflow
 - [x] openFDA workflows are separated into service layers
+- [x] USDA FSIS recall/public-health-alert workflow is separated into a service layer for FoodRadar
 - [x] Audit events are persisted with source, query, timestamp, status, and record count
 - [x] Source registry exposes public-data metadata
 - [x] Source freshness is deterministic and test-covered
@@ -58,7 +61,7 @@ DAV AI is a public-data healthcare safety intelligence platform. It is not medic
 
 ### Frontend
 
-- [x] RecallRadar, DrugSignal, Regional Health Pulse, Saved Monitors, Data Sources, System Status, and Audit History pages are available
+- [x] RecallRadar, DrugSignal, FoodRadar, CosmeticSignal, Regional Health Pulse, Saved Monitors, Data Sources, System Status, and Audit History pages are available
 - [x] Saved Monitors display latest/previous values, run history, monitor insights, and payload-change status
 - [x] Data Sources and System Status display source freshness signals
 - [x] Audit History supports filters, CSV export, deep links, trace copy, and provenance copy actions
@@ -98,12 +101,12 @@ npm run build
 
 Latest confirmed verification evidence:
 
-- Backend tests: 235 passed
-- Frontend tests: 8 test files passed, 64 tests passed
+- Backend tests: 260 passed
+- Frontend tests: 70 passed
 - Frontend lint: passed
 - Frontend production build: passed
-- Vercel deployment: Ready after recent merged PRs
+- Deployment smoke should be re-run after current FoodRadar/CosmeticSignal documentation and any hosted app changes before claiming current deployed readiness
 - Live smoke tests confirmed `semantic_preview` appears in both `/api/v1/recalls/search` and `/api/v1/drug-events/search`.
-- Recent credibility/documentation improvements: README current MVP scope cleanup, current architecture overview added, historical checkpoint docs labeled, backend upstream error responses sanitized, PDF report route coverage added, source-pull provenance testing strengthened so raw payload contents are not exposed in API responses, and deterministic semantic similarity previews verified for RecallRadar and DrugSignal.
+- Recent credibility/documentation improvements: README/docs current MVP scope cleanup, FoodRadar and CosmeticSignal documentation, expanded source registry language, updated public-data safety boundaries, and current verification results.
 
 This evidence supports portfolio MVP readiness for review and demo discussion. It does not indicate production healthcare readiness or clinical validity.

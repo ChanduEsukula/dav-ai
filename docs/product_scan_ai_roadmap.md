@@ -14,7 +14,7 @@ This is public-data safety intelligence only. It is not medical advice, diagnosi
 4. Product candidate extraction identifies product names, brands, lot numbers, sizes, and categories when visible.
 5. USDA FoodData Central can normalize food/product identity where appropriate.
 6. User reviews and confirms extracted product candidates.
-7. DAV AI searches source-specific public safety endpoints.
+7. DAV AI searches source-specific public safety endpoints, including the current RecallRadar, DrugSignal, FoodRadar, and CosmeticSignal lookup foundations where appropriate.
 8. DAV AI generates a layered report:
    - Simple Summary
    - Key Findings
@@ -41,9 +41,10 @@ These are roadmap endpoints and are not implemented in the current backend found
 | Sensitive-info redaction | Ignores card numbers, addresses, phone numbers, membership IDs, Rx numbers, patient names, and pharmacy labels. |
 | USDA FoodData Central | Normalizes food/product identity, branded-food candidates, categories, ingredients, and product metadata. |
 | openFDA Food Enforcement | Checks food, supplement, grocery, and packaged-food recall enforcement records. |
+| USDA FSIS Recall API | Checks meat, poultry, and egg-product recall and public-health-alert records. |
 | openFDA Drug Enforcement | Checks medicine, OTC, eye-drop, and drug product recall records. |
 | openFDA Drug Event | Checks public adverse-event reporting patterns without claiming causation. |
-| openFDA Cosmetic Event | Future cosmetic adverse-event and product complaint exploration. |
+| openFDA Cosmetic Event | Checks public cosmetic adverse-event reporting patterns through the current CosmeticSignal foundation without claiming causation. |
 | DAV AI report engine | Produces source-grounded reports with disclaimers, limitations, and audit context. |
 
 ## Privacy and safety boundaries

@@ -2,7 +2,7 @@
 
 ## 1. Project Overview
 
-DAV AI is a public-data healthcare safety intelligence platform that helps users search, review, audit, monitor, and explain FDA/openFDA-style safety signals.
+DAV AI is a public-data healthcare and everyday safety intelligence platform that helps users search, review, audit, monitor, and explain openFDA, USDA FSIS, and scaffolded public-health safety signals.
 
 The project is designed as a source-aware review workspace, not a medical chatbot or clinical decision-support tool. Its core value is turning public safety data into a traceable workflow with normalized results, deterministic scoring, audit history, saved monitors, and responsible ML readiness.
 
@@ -100,6 +100,38 @@ Key capabilities:
 - deterministic briefing support
 
 DrugSignal explicitly avoids saying that a drug caused a reaction. FAERS-style data is treated as reporting-pattern data only.
+
+### FoodRadar
+
+FoodRadar extends the source-aware workflow into everyday food and supplement safety.
+
+Key capabilities:
+
+- openFDA Food Enforcement search
+- USDA FSIS Recall API coverage for meat, poultry, and egg-product recalls/public-health alerts
+- source-checked result cards
+- deterministic review-priority scoring
+- highest-score and latest-recall sorting
+- audit/source metadata
+- official-source verification language
+
+FoodRadar explicitly states that a missing result does not prove that a product is safe or unsafe.
+
+### CosmeticSignal
+
+CosmeticSignal supports public cosmetic adverse-event report review.
+
+Key capabilities:
+
+- openFDA Cosmetic Event search
+- query expansion for common cosmetic/product/reaction terms
+- cosmetic reporting signal score
+- top reported cosmetic reactions
+- normalized cosmetic-event records
+- audit/source metadata
+- cosmetic adverse-event limitations
+
+CosmeticSignal explicitly avoids causation claims. Cosmetic adverse-event reports may be incomplete, duplicated, delayed, influenced by reporting behavior, or missing context.
 
 ### Audit History
 
@@ -206,6 +238,8 @@ Important frontend areas include:
 
 - RecallRadar
 - DrugSignal
+- FoodRadar
+- CosmeticSignal
 - Audit History
 - Data Sources
 - System Status
@@ -309,14 +343,14 @@ The strongest engineering theme is:
 
 Latest confirmed verification evidence:
 
-- Backend tests: 235 passed
-- Frontend tests: 8 test files passed, 64 tests passed
+- Backend tests: 260 passed
+- Frontend tests: 70 passed
 - Frontend lint: passed
 - Frontend production build: passed
-- Vercel deployment: Ready after recent merged PRs
+- Deployment smoke should be re-run after current FoodRadar/CosmeticSignal documentation and any hosted app changes before claiming current deployed readiness
 - CI workflow includes backend tests, frontend tests, lint, build, and smoke-test coverage
 - Live smoke tests confirmed `semantic_preview` appears in both `/api/v1/recalls/search` and `/api/v1/drug-events/search`.
-- Recent credibility/documentation improvements: README current MVP scope cleanup, current architecture overview added, historical checkpoint docs labeled, backend upstream error responses sanitized, PDF report route coverage added, source-pull provenance testing strengthened so raw payload contents are not exposed in API responses, and deterministic semantic similarity previews verified for RecallRadar and DrugSignal.
+- Recent documentation improvements: README/docs now include FoodRadar, CosmeticSignal, expanded public data sources, updated safety boundaries, and current verification results.
 
 Important note:
 
@@ -328,6 +362,8 @@ Implemented:
 
 - RecallRadar
 - DrugSignal
+- FoodRadar
+- CosmeticSignal
 - Audit History
 - Data Sources
 - System Status
@@ -391,7 +427,7 @@ The project includes several modules, so scope control matters.
 
 Decision:
 
-- keep RecallRadar, DrugSignal, Audit History, and Saved Monitors as the core product loop
+- keep RecallRadar, DrugSignal, FoodRadar, CosmeticSignal, Audit History, and Saved Monitors as the core product loop
 - describe Regional Health Pulse as scaffold only
 - keep advanced AI on the roadmap
 

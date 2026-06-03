@@ -2,7 +2,7 @@
 
 ## 1. One-Sentence Product Description
 
-DAV AI is a public-data healthcare safety intelligence workspace that helps users search, review, audit, monitor, and explain FDA/openFDA-style safety signals with source transparency, deterministic review workflows, and responsible AI boundaries.
+DAV AI is a public-data healthcare and everyday safety intelligence workspace that helps users search, review, audit, monitor, and explain openFDA, USDA FSIS, and scaffolded public-health safety signals with source transparency, deterministic review workflows, and responsible AI boundaries.
 
 DAV AI is not a medical chatbot, not a clinical decision-support system, not a diagnosis tool, and not a patient-risk prediction product.
 
@@ -29,7 +29,7 @@ The correct framing is:
 
 ## 3. Problem
 
-Public healthcare safety data from sources like FDA/openFDA is available, but it is difficult to search, compare, audit, monitor, and explain in a structured way.
+Public healthcare and everyday product safety data from sources like openFDA and USDA FSIS is available, but it is difficult to search, compare, audit, monitor, and explain in a structured way.
 
 Raw public data often has several challenges:
 
@@ -55,7 +55,7 @@ Before showing screens, explain the safety boundary clearly.
 
 Say:
 
-> DAV AI works with public FDA/openFDA-style data. It does not use PHI, private patient records, diagnosis history, prescription history, insurance data, or personal medical information. The goal is public-data review support, not medical advice.
+> DAV AI works with public openFDA, USDA FSIS, and scaffolded public-health data. It does not use PHI, private patient records, diagnosis history, prescription history, insurance data, or personal medical information. The goal is public-data review support, not medical advice.
 
 This establishes maturity immediately and prevents the project from sounding like an unsafe healthcare chatbot.
 
@@ -123,9 +123,62 @@ What to emphasize:
 
 ---
 
-### Step 4: Audit History
+### Step 4: FoodRadar
 
-Show Audit History after RecallRadar and DrugSignal.
+Show FoodRadar after DrugSignal to demonstrate the everyday safety direction.
+
+Explain:
+
+- FoodRadar searches public food, supplement, meat, poultry, and egg-product recall/public-health-alert data.
+- It uses openFDA Food Enforcement plus USDA FSIS Recall API coverage.
+- Results are source-checked and sorted by highest score or latest recall/report date.
+- It keeps public-data limitations visible.
+- A missing result does not prove a product is safe or unsafe.
+
+Key phrase:
+
+> FoodRadar extends the same source-aware review workflow into everyday food and supplement safety without turning search results into safety verdicts.
+
+What to emphasize:
+
+- openFDA Food Enforcement
+- USDA FSIS coverage
+- source-checked cards
+- review-priority scoring
+- official-source verification
+- no safe/unsafe conclusion from missing matches
+
+---
+
+### Step 5: CosmeticSignal
+
+Show CosmeticSignal next.
+
+Explain:
+
+- CosmeticSignal searches public openFDA Cosmetic Event reports.
+- It supports terms such as rash, hair dye, mascara, skincare, hair, and fragrance.
+- It uses query expansion for common cosmetic/product/reaction terms.
+- It shows top reactions and a cosmetic reporting signal score.
+- It avoids causation claims.
+
+Key phrase:
+
+> Cosmetic adverse-event reports are public reporting signals. They do not prove that a cosmetic product caused a reaction.
+
+What to emphasize:
+
+- public openFDA source context
+- top reactions
+- transparent reporting-signal score
+- retrieved timestamp and audit context
+- reports may be incomplete, duplicated, delayed, or influenced by reporting behavior
+
+---
+
+### Step 6: Audit History
+
+Show Audit History after the search modules.
 
 Explain:
 
@@ -152,7 +205,7 @@ What to emphasize:
 
 ---
 
-### Step 5: Data Sources and System Status
+### Step 7: Data Sources and System Status
 
 Show Data Sources and System Status.
 
@@ -181,7 +234,7 @@ What to emphasize:
 
 ---
 
-### Step 6: Saved Monitors
+### Step 8: Saved Monitors
 
 Show Saved Monitors.
 
@@ -211,7 +264,7 @@ What to emphasize:
 
 ---
 
-### Step 7: Regional Health Pulse
+### Step 9: Regional Health Pulse
 
 Show Regional Health Pulse carefully.
 
@@ -242,7 +295,7 @@ What to emphasize:
 
 ---
 
-### Step 8: Offline Responsible ML Experiments
+### Step 10: Offline Responsible ML Experiments
 
 Show backend/ml_experiments.
 
@@ -380,6 +433,8 @@ Correct framing:
 
 - RecallRadar
 - DrugSignal
+- FoodRadar
+- CosmeticSignal
 - Data Sources
 - System Status
 - Audit History
@@ -547,13 +602,12 @@ Instead say:
 
 ## 12. Current Verification Snapshot
 
-Current verification from the responsible ML progress review:
+Current verification from the latest docs refresh:
 
-- Backend tests: 203 passed
-- Frontend tests: 64 passed
+- Backend tests: 260 passed
+- Frontend tests: 70 passed
 - Frontend lint: passed
-- Repository was clean before and after inspection
-- Frontend build was intentionally skipped locally to avoid modifying frontend/dist
+- Frontend production build: passed
 - CI workflow includes backend tests, frontend tests, lint, build, and smoke-test coverage
 
 Important explanation:
@@ -567,12 +621,14 @@ Use this order in interviews or presentations:
 1. Start with the product boundary.
 2. Show RecallRadar.
 3. Show DrugSignal.
-4. Show Audit History.
-5. Show Data Sources/System Status.
-6. Show Saved Monitors.
-7. Show Regional Health Pulse as scaffold only.
-8. Show offline ML experiments.
-9. End with roadmap and what you intentionally did not productionize.
+4. Show FoodRadar.
+5. Show CosmeticSignal.
+6. Show Audit History.
+7. Show Data Sources/System Status.
+8. Show Saved Monitors.
+9. Show Regional Health Pulse as scaffold only.
+10. Show offline ML experiments.
+11. End with roadmap and what you intentionally did not productionize.
 
 This order tells a clean story:
 
@@ -582,29 +638,29 @@ This order tells a clean story:
 
 The next responsible technical milestone is:
 
-> Source freshness risk scoring and payload-change intelligence.
+> Current-state portfolio polish, deployed smoke verification, and source reliability hardening for FoodRadar and CosmeticSignal.
 
 This should come before deep learning, RAG, or production ML.
 
 Why:
 
-- the project already has source/audit foundations
-- saved monitors need stronger change intelligence
-- payload hashes can become meaningful change indicators
-- source freshness matters for trust
-- this improves the core product without unsafe AI overclaiming
-- it creates better real-world data for later ML
+- the project now spans medicine, adverse events, food/supplements, cosmetics, and scaffolded public-health workflows
+- the newest modules need the same deployment smoke evidence and source reliability polish as RecallRadar and DrugSignal
+- public-source retries, rate-limit handling, and source-specific error categories matter more than adding speculative AI
+- this improves the core product without unsafe medical, causation, or safe/unsafe claims
+- stronger source behavior creates better real-world data for later ML evaluation
 
 Recommended next technical sequence:
 
-1. Source freshness risk scoring
-2. Payload-change intelligence
-3. Real public-data dataset export from audit and monitor history
-4. Reviewed-label fixtures
-5. Evaluation dashboard
-6. Feature-flagged internal ML preview
-7. Semantic search or RAG only after stronger grounding
-8. Deep learning only if data volume and use case justify it
+1. Deployed smoke verification for RecallRadar, DrugSignal, FoodRadar, CosmeticSignal, Data Sources, Audit History, System Status, and Saved Monitors
+2. Source reliability hardening for openFDA and USDA FSIS clients
+3. Contract checks for current backend responses and frontend API types
+4. Real public-data dataset export from audit and monitor history
+5. Reviewed-label fixtures
+6. Evaluation dashboard
+7. Feature-flagged internal ML preview
+8. Semantic search or RAG only after stronger grounding
+9. Deep learning only if data volume and use case justify it
 
 ## 15. Closing Statement
 
@@ -628,8 +684,8 @@ The system uses audit history, source-pull metadata, and payload hashes to expos
 
 Verified status:
 
-- Backend tests: 203 passed
-- Frontend tests: 64 passed
+- Backend tests: 260 passed
+- Frontend tests: 70 passed
 - Frontend lint: passed
 - Frontend production build: passed
 

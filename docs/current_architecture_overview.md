@@ -3,7 +3,7 @@
 Date: June 2026  
 Status: Current portfolio MVP architecture summary
 
-DAV AI is a public-data healthcare safety intelligence prototype. It is designed to help reviewers search, score, audit, brief, monitor, and compare public safety signals from trusted public sources.
+DAV AI is a public-data healthcare and everyday safety intelligence prototype. It is designed to help reviewers search, score, audit, brief, monitor, and compare public safety signals from trusted public sources.
 
 DAV AI is not production healthcare software. It is not medical advice, not diagnosis, not treatment guidance, not clinical decision support, and not a medical device. It does not use PHI or private patient records.
 
@@ -19,6 +19,8 @@ Older planning materials may reference MedSignal AI or MedTrek AI. Those names s
 - FastAPI backend.
 - RecallRadar search using openFDA Drug Enforcement public data.
 - DrugSignal search using openFDA Drug Event public data.
+- FoodRadar search using openFDA Food Enforcement public data plus USDA FSIS recall and public-health-alert data for meat, poultry, and egg-product coverage.
+- CosmeticSignal search using openFDA Cosmetic Event public data.
 - Regional Health Pulse MVP scaffold for public-health signal workflow design.
 - Source Registry and Data Sources visibility.
 - Audit History for public-data traceability.
@@ -26,6 +28,7 @@ Older planning materials may reference MedSignal AI or MedTrek AI. Those names s
 - Raw public-source snapshot persistence where supported.
 - Stable SHA-256 payload hashing for reproducibility and change review.
 - Deterministic Recall Review Score and DrugSignal intelligence outputs.
+- Deterministic FoodRadar review-priority scoring and CosmeticSignal reporting-signal scoring.
 - Deterministic semantic similarity previews in RecallRadar and DrugSignal API responses.
 - Deterministic role-based safety briefings.
 - Saved Monitors manual workflow for repeatable public-data searches.
@@ -38,6 +41,8 @@ Older planning materials may reference MedSignal AI or MedTrek AI. Those names s
 ## Partial / Scaffold
 
 - Regional Health Pulse is a scaffolded MVP workflow. It is not live CDC/HHS surveillance, not outbreak detection, not emergency guidance, and not personal disease-risk prediction.
+- FoodRadar is public recall/public-health-alert review only. A missing match does not prove that a food, supplement, meat, poultry, egg, or packaged product is safe or unsafe.
+- CosmeticSignal is public cosmetic adverse-event report review only. Cosmetic adverse-event reports do not prove causation and may be incomplete, duplicated, delayed, or influenced by reporting behavior.
 - Saved Monitors support manual review and backend scheduling groundwork, but they are not production alerting.
 - Scheduler logic and Render Cron planning exist, but production Cron activation is not enabled.
 - Semantic similarity previews use deterministic public-data text similarity only. They are not production ML, RAG, LLM output, alerting, clinical decision support, diagnostic output, care guidance, or medical advice.
@@ -83,6 +88,8 @@ flowchart LR
 
     API --> RR[RecallRadar Workflow]
     API --> DS[DrugSignal Workflow]
+    API --> FR[FoodRadar Workflow]
+    API --> CS[CosmeticSignal Workflow]
     API --> RHP[Regional Health Pulse Scaffold]
     API --> SM[Saved Monitors]
     API --> AH[Audit History]
@@ -90,15 +97,22 @@ flowchart LR
 
     RR --> OFDA1[openFDA Drug Enforcement API]
     DS --> OFDA2[openFDA Drug Event API]
+    FR --> OFDA3[openFDA Food Enforcement API]
+    FR --> FSIS[USDA FSIS Recall API]
+    CS --> OFDA4[openFDA Cosmetic Event API]
     RHP --> Scaffold[Scaffold Public-Health Source]
 
     RR --> Audit[Audit Events]
     DS --> Audit
+    FR --> Audit
+    CS --> Audit
     RHP --> Audit
     SM --> Audit
 
     RR --> Pulls[Source Pulls]
     DS --> Pulls
+    FR --> Pulls
+    CS --> Pulls
     RHP --> Pulls
 
     Pulls --> Snapshots[Raw Public-Source Snapshots]
@@ -120,12 +134,12 @@ flowchart LR
 
 Latest confirmed verification evidence:
 
-- Backend tests: 235 passed.
-- Frontend tests: 8 test files passed, 64 tests passed.
+- Backend tests: 260 passed.
+- Frontend tests: 70 passed.
 - Frontend lint: passed.
 - Frontend production build: passed.
-- Vercel deployment: Ready after recent merged PRs.
+- Deployment smoke should be re-run after current FoodRadar/CosmeticSignal documentation and any hosted app changes before claiming current deployed readiness.
 - Live smoke tests confirmed `semantic_preview` appears in both `/api/v1/recalls/search` and `/api/v1/drug-events/search`.
-- Recent credibility/documentation improvements: README current MVP scope cleanup, current architecture overview added, historical checkpoint docs labeled, backend upstream error responses sanitized, PDF report route coverage added, source-pull provenance testing strengthened so raw payload contents are not exposed in API responses, and deterministic semantic similarity previews verified for RecallRadar and DrugSignal.
+- Recent current-state documentation improvements: README/docs now include FoodRadar, CosmeticSignal, expanded public data sources, updated safety boundaries, and current verification results.
 
 This verification supports DAV AI's current portfolio MVP quality posture. It does not make DAV AI production healthcare software, clinical decision support, or medical advice.

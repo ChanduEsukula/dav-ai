@@ -2,11 +2,11 @@
 
 This is the React + TypeScript + Vite frontend for DAV AI.
 
-DAV AI is a healthcare safety intelligence product prototype that turns public FDA/openFDA recall, adverse-event, and scaffolded public-health signal data into source-aware, auditable safety signals and role-based safety briefings.
+DAV AI is a healthcare and everyday safety intelligence product prototype that turns public openFDA, USDA FSIS, and scaffolded public-health signal data into source-aware, auditable safety signals and role-based safety briefings.
 
 ## Current MVP Status and Limitations
 
-DAV AI is a public-data healthcare safety intelligence MVP/prototype. It does not provide medical advice, does not use PHI, and does not make diagnosis, treatment, clinical decision-support, patient-risk, or causation claims.
+DAV AI is a public-data healthcare and everyday safety intelligence MVP/prototype. It does not provide medical advice, does not use PHI, and does not make diagnosis, treatment, clinical decision-support, patient-risk, safe/unsafe verdict, or causation claims.
 
 The current frontend presents deterministic/rule-based intelligence from backend APIs and frontend utilities. Offline ML experiments exist in the repository, but production ML is not deployed in the user-facing frontend yet. Auth/RBAC, automated alerts, production scheduler activation, notification preferences, and full live Health Pulse data integration remain future work.
 
@@ -14,6 +14,8 @@ The current frontend supports:
 
 - RecallRadar
 - DrugSignal
+- FoodRadar
+- CosmeticSignal
 - Regional Health Pulse MVP scaffold
 - Safety Briefing Engine v1
 - Data Sources page
@@ -46,7 +48,7 @@ The landing page explains the DAV AI product idea, public-data safety intelligen
 
 ### RecallRadar
 
-RecallRadar allows users to search public FDA/openFDA Drug Enforcement recall records and view:
+RecallRadar allows users to search public openFDA Drug Enforcement recall records and view:
 
 - Matched recall records
 - Product descriptions
@@ -80,6 +82,33 @@ DrugSignal allows users to search public openFDA Drug Event / FAERS records and 
 - Role-based safety briefing
 
 Important: FAERS adverse-event reports are reporting patterns only. They do not prove that a drug caused a reaction.
+
+### FoodRadar
+
+FoodRadar allows users to search public food, supplement, packaged grocery, meat, poultry, and egg-product safety records and view:
+
+- Source-checked cards from openFDA Food Enforcement and USDA FSIS Recall API data
+- Product descriptions, recall/public-health-alert reasons, status, dates, firms, distribution context, quantity, and code/lot details when available
+- Deterministic review-priority scoring
+- Highest-score and latest-recall sorting
+- Source metadata, retrieval timestamp, and audit context
+- Public-data limitations and official-source verification language
+- Empty-result handling
+
+Important: a missing FoodRadar result does not prove that a product is safe or unsafe. Users must verify exact product names, lot numbers, establishment numbers, package sizes, and official FDA/USDA source records.
+
+### CosmeticSignal
+
+CosmeticSignal allows users to search public openFDA Cosmetic Event reports and view:
+
+- Cosmetic reporting signal score
+- Top reported cosmetic reactions
+- Normalized cosmetic-event records
+- Source name, endpoint, retrieval timestamp, and audit context
+- Query expansion for common terms such as rash, hair dye, mascara, cream, skin, shampoo, fragrance, and deodorant
+- Cosmetic adverse-event limitations and public-data boundaries
+
+Important: cosmetic adverse-event reports do not prove causation. Reports may be incomplete, duplicated, delayed, influenced by reporting behavior, or missing context.
 
 ### Regional Health Pulse
 
@@ -131,6 +160,9 @@ Current source categories include:
 
 - openFDA Drug Enforcement API
 - openFDA Drug Event API
+- openFDA Food Enforcement API
+- USDA FSIS Recall API
+- openFDA Cosmetic Event API
 - Regional Health Pulse MVP scaffold
 
 ### Audit History
