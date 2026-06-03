@@ -9,6 +9,8 @@ export type AuditSummary = {
   transform_version: string
 }
 
+export type DrugEventSort = 'reports' | 'alpha'
+
 export type DrugEventReaction = {
   reaction: string
   count: number
@@ -58,13 +60,14 @@ export type DrugEventSearchResponse = {
   top_reactions: DrugEventReaction[]
 }
 
-export async function searchDrugEvents(query: string, limit = 10) {
+export async function searchDrugEvents(query: string, limit = 10, sort: DrugEventSort = 'reports') {
   const response = await apiClient.get<DrugEventSearchResponse>(
     `/api/v1/drug-events/search`,
     {
       params: {
         q: query,
         limit,
+        sort,
       },
     }
   )

@@ -120,6 +120,7 @@ async def execute_drug_signal_search(
     query: str,
     limit: int,
     request_id: str | None,
+    sort: str = "reports",
 ) -> dict[str, Any]:
     """Run DrugSignal search workflow.
 
@@ -154,6 +155,18 @@ async def execute_drug_signal_search(
             for reaction, count in reaction_counter.most_common(10)
         ]
 
+        if sort == "alpha":
+            top_reactions = sorted(
+                top_reactions,
+                key=lambda item: item["reaction"].lower(),
+            )
+        else:
+            sort = "reports"
+            top_reactions = sorted(
+                top_reactions,
+                key=lambda item: (-item["count"], item["reaction"].lower()),
+            )
+
         intelligence_score = calculate_drug_signal_intelligence_score(
             record_count=len(raw_results),
             top_reactions=top_reactions,
@@ -166,7 +179,7 @@ async def execute_drug_signal_search(
             source_name=payload["source_name"],
             endpoint=payload["endpoint"],
             query=query,
-            query_params={"q": query, "limit": limit},
+            query_params={"q": query, "limit": limit, "sort": sort},
             retrieval_timestamp=payload["retrieval_timestamp"],
             upstream_status=upstream_status,
             record_count=len(raw_results),
