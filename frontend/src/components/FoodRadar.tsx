@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import {
   searchEverydaySafety,
   type EverydaySafetyRecord,
   type EverydaySafetySearchResponse,
+  type EverydaySafetySort,
 } from '../api/everydaySafety'
 import { formatDate, formatTimestamp, riskExplanation } from '../utils/recallFormatters'
 
@@ -19,7 +20,7 @@ function FoodRadar() {
   const [data, setData] = useState<EverydaySafetySearchResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [sortMode, setSortMode] = useState<'score' | 'latest'>('score')
+  const [sortMode, setSortMode] = useState<EverydaySafetySort>('score')
 
   async function handleSearch() {
     const trimmedQuery = query.trim()
@@ -33,7 +34,7 @@ function FoodRadar() {
     setError('')
 
     try {
-      const response = await searchEverydaySafety(trimmedQuery, 5)
+      const response = await searchEverydaySafety(trimmedQuery, 5, 'food_supplement', sortMode)
       setData(response)
     } catch {
       setError(
@@ -44,18 +45,28 @@ function FoodRadar() {
     }
   }
 
-  const sortedResults = useMemo(() => {
-    if (!data) return []
+  async function handleSortChange(nextSortMode: EverydaySafetySort) {
+    setSortMode(nextSortMode)
 
-    return [...data.results].sort((left, right) => {
-      if (sortMode === 'latest') {
-        return Number(right.recall_initiation_date || 0) - Number(left.recall_initiation_date || 0)
-      }
+    const trimmedQuery = query.trim()
+    if (!trimmedQuery || loading) return
 
-      return right.risk_score.score - left.risk_score.score
-    })
-  }, [data, sortMode])
+    setLoading(true)
+    setError('')
 
+    try {
+      const response = await searchEverydaySafety(trimmedQuery, 5, 'food_supplement', nextSortMode)
+      setData(response)
+    } catch {
+      setError(
+        'Unable to reload FoodRadar data with the selected sort. Make sure the FastAPI backend is running on port 8000.'
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const sortedResults = data?.results ?? []
   const topResult = sortedResults[0] ?? null
   const hasResults = sortedResults.length > 0
   const hasNoResults = data && sortedResults.length === 0
@@ -181,7 +192,7 @@ function FoodRadar() {
                 <button
                   type="button"
                   className={sortMode === 'score' ? 'active' : ''}
-                  onClick={() => setSortMode('score')}
+                  onClick={() => handleSortChange('score')}
                 >
                   Highest score
                 </button>
@@ -189,7 +200,7 @@ function FoodRadar() {
                 <button
                   type="button"
                   className={sortMode === 'latest' ? 'active' : ''}
-                  onClick={() => setSortMode('latest')}
+                  onClick={() => handleSortChange('latest')}
                 >
                   Latest recall
                 </button>

@@ -5,6 +5,7 @@ export type EverydaySafetySourceType =
   | 'USDA_FSIS_RECALL'
 
 export type EverydaySafetyCategory = 'food_supplement'
+export type EverydaySafetySort = 'score' | 'latest'
 
 export type EverydaySafetyScoreComponents = {
   classification_score: number
@@ -87,7 +88,8 @@ export type EverydaySafetySearchResponse = {
 export async function searchEverydaySafety(
   query: string,
   limit = 5,
-  category: EverydaySafetyCategory = 'food_supplement'
+  category: EverydaySafetyCategory = 'food_supplement',
+  sort: EverydaySafetySort = 'score'
 ): Promise<EverydaySafetySearchResponse> {
   const response = await apiClient.get<EverydaySafetySearchResponse>(
     '/api/v1/everyday-safety/search',
@@ -96,6 +98,7 @@ export async function searchEverydaySafety(
         category,
         q: query,
         limit,
+        sort,
       },
     }
   )
