@@ -206,7 +206,7 @@ async def execute_cosmetic_signal_search(
     try:
         payload = await client.search_cosmetic_events(
             query=query,
-            limit=limit,
+            limit=25,
             request_id=request_id,
         )
 
@@ -280,7 +280,7 @@ async def execute_cosmetic_signal_search(
             },
             "signal_score": signal_score,
             "top_reactions": top_reactions,
-            "records": normalized_records,
+            "records": normalized_records[:limit],
         }
 
     except Exception as exc:
