@@ -202,3 +202,20 @@ def test_search_cosmetic_events_rejects_limit_above_maximum():
     )
 
     assert response.status_code == 422
+
+
+def test_cosmetic_search_expands_common_user_terms():
+    from app.services.openfda_cosmetic_event_client import _build_cosmetic_search_query
+
+    hair_query = _build_cosmetic_search_query("hair dye")
+    assert 'products.brand_name:"hair color"' in hair_query
+    assert 'products.name_brand:"hair coloring"' in hair_query
+    assert 'products.industry_name:"hair"' in hair_query
+
+    rash_query = _build_cosmetic_search_query("rash")
+    assert 'reactions:"irritation"' in rash_query
+    assert 'outcomes:"burning"' in rash_query
+
+    mascara_query = _build_cosmetic_search_query("mascara")
+    assert 'products.name_brand:"eye"' in mascara_query
+    assert 'products.brand_name:"eyelash"' in mascara_query

@@ -10,6 +10,53 @@ from app.sources.registry import OPENFDA_COSMETIC_EVENT
 logger = logging.getLogger("medtrek.openfda.cosmetic")
 
 
+COSMETIC_QUERY_EXPANSIONS = {
+    "cream": ["cream", "lotion", "moisturizer"],
+    "skin": ["skin", "face", "facial"],
+    "hair dye": ["hair dye", "hair color", "hair coloring", "hair"],
+    "shampoo": ["shampoo", "hair"],
+    "mascara": ["mascara", "eye", "eyelash"],
+    "rash": ["rash", "irritation", "burning", "redness"],
+    "fragrance": ["fragrance", "perfume", "scent"],
+    "deodorant": ["deodorant", "antiperspirant"],
+}
+
+
+def _normalize_query(query: str) -> str:
+    return " ".join(query.lower().strip().split())
+
+
+def _expanded_cosmetic_terms(query: str) -> list[str]:
+    normalized = _normalize_query(query)
+    terms = COSMETIC_QUERY_EXPANSIONS.get(normalized, [normalized])
+
+    cleaned_terms = []
+    for term in terms:
+        cleaned = " ".join(term.lower().strip().split())
+        if cleaned and cleaned not in cleaned_terms:
+            cleaned_terms.append(cleaned)
+
+    return cleaned_terms
+
+
+def _build_cosmetic_search_query(query: str) -> str:
+    terms = _expanded_cosmetic_terms(query)
+    clauses = []
+
+    for term in terms:
+        clauses.extend(
+            [
+                f'products.brand_name:"{term}"',
+                f'products.name_brand:"{term}"',
+                f'products.industry_name:"{term}"',
+                f'reactions:"{term}"',
+                f'outcomes:"{term}"',
+            ]
+        )
+
+    return " OR ".join(clauses)
+
+
 class OpenFDACosmeticEventClient:
     def __init__(self, timeout_seconds: float = 15.0):
         self.timeout_seconds = timeout_seconds
@@ -24,13 +71,7 @@ class OpenFDACosmeticEventClient:
         endpoint = self.source["endpoint"]
 
         params = {
-            "search": (
-                f'products.brand_name:"{query}" '
-                f'OR products.name_brand:"{query}" '
-                f'OR products.industry_code:"{query}" '
-                f'OR reactions:"{query}" '
-                f'OR outcomes:"{query}"'
-            ),
+            "search": _build_cosmetic_search_query(query),
             "limit": min(limit, 25),
         }
 
