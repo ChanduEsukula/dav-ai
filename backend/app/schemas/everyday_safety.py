@@ -7,12 +7,22 @@ from app.schemas.recalls import RecallRiskScore
 
 
 EverydaySafetyCategory = Literal["food_supplement"]
+EverydaySafetySourceType = Literal["FDA_FOOD_ENFORCEMENT", "USDA_FSIS_RECALL"]
 
 
 class EverydaySafetySource(BaseModel):
     name: str
     endpoint: str
     retrieval_timestamp: str
+
+
+class EverydaySafetyCheckedSource(BaseModel):
+    source_id: str
+    source_name: str
+    source_type: EverydaySafetySourceType
+    endpoint: str
+    upstream_status: str
+    record_count: int
 
 
 class EverydaySafetyRecord(BaseModel):
@@ -28,6 +38,8 @@ class EverydaySafetyRecord(BaseModel):
     recalling_firm: str | None = None
     product_quantity: str | None = None
     code_info: str | None = None
+    source_type: EverydaySafetySourceType
+    search_strategy_used: str
     risk_score: RecallRiskScore
     source: EverydaySafetySource
 
@@ -42,6 +54,8 @@ class EverydaySafetySearchResponse(BaseModel):
     endpoint: str
     retrieval_timestamp: str
     score_version: str
+    search_strategy_used: str
+    sources_checked: list[EverydaySafetyCheckedSource]
     public_data_disclaimer: str
     limitations: list[str]
     audit: AuditSummary

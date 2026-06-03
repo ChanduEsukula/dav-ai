@@ -40,5 +40,6 @@ def test_sources_route_count_and_ids_match_shared_registry():
         "openfda_drug_enforcement",
         "openfda_drug_event",
         "openfda_food_enforcement",
+        "usda_fsis_recall",
         "regional_health_pulse_demo",
     }

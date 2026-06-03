@@ -22,6 +22,7 @@ def test_registered_sources_include_current_public_source_surfaces():
         "openfda_drug_enforcement",
         "openfda_drug_event",
         "openfda_food_enforcement",
+        "usda_fsis_recall",
         "regional_health_pulse_demo",
     }
     assert modules == {
