@@ -1,5 +1,7 @@
 import { apiClient } from './client'
 
+export type RecallSort = 'score' | 'latest'
+
 export type AuditSummary = {
   audit_id: string
   source_id: string
@@ -44,18 +46,20 @@ export type RecallSearchResponse = {
   endpoint: string
   retrieval_timestamp: string
   score_version: string
+  sort?: RecallSort
   medical_disclaimer: string
   audit: AuditSummary
   results: RecallResult[]
 }
 
-export async function searchRecalls(query: string, limit = 5) {
+export async function searchRecalls(query: string, limit = 5, sort: RecallSort = 'score') {
   const response = await apiClient.get<RecallSearchResponse>(
     `/api/v1/recalls/search`,
     {
       params: {
         q: query,
         limit,
+        sort,
       },
     }
   )

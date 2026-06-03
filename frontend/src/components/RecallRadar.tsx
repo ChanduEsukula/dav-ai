@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import type { RecallSearchResponse } from '../api/recalls'
+import type { RecallSearchResponse, RecallSort } from '../api/recalls'
 import AuditPanel from './AuditPanel'
 import SafetyBriefingPanel from './SafetyBriefingPanel'
 import SafeInsightCards, { type SafeInsightCard } from './SafeInsightCards'
@@ -13,7 +13,7 @@ type RecallRadarProps = {
   data: RecallSearchResponse | null
   loading: boolean
   error: string
-  handleSearch: () => void
+  handleSearch: (sort?: RecallSort) => void
 }
 
 const briefingRoles: BriefingRole[] = ['consumer', 'pharmacy', 'clinic', 'public_health']
@@ -27,7 +27,7 @@ function RecallRadar({
   handleSearch,
 }: RecallRadarProps) {
   const [briefingRole, setBriefingRole] = useState<BriefingRole>('consumer')
-  const [sortMode, setSortMode] = useState<'score' | 'latest'>('score')
+  const [sortMode, setSortMode] = useState<RecallSort>('score')
 
   const hasNoResults = data && data.results.length === 0
   const hasResults = data && data.results.length > 0
@@ -63,20 +63,15 @@ function RecallRadar({
       ]
     : []
 
-  const sortedResults = useMemo(() => {
-    if (!data) return []
+  function handleSortChange(nextSortMode: RecallSort) {
+    setSortMode(nextSortMode)
 
-    return [...data.results].sort((left, right) => {
-      if (sortMode === 'latest') {
-        return (
-          Number(right.recall_initiation_date || 0) -
-          Number(left.recall_initiation_date || 0)
-        )
-      }
+    if (query.trim()) {
+      handleSearch(nextSortMode)
+    }
+  }
 
-      return right.risk_score.score - left.risk_score.score
-    })
-  }, [data, sortMode])
+  const sortedResults = data?.results ?? []
 
   const briefing = useMemo(() => {
     if (!data) return null
@@ -108,7 +103,7 @@ function RecallRadar({
               onChange={(event) => setQuery(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === 'Enter') {
-                  handleSearch()
+                  handleSearch(sortMode)
                 }
               }}
               placeholder="Search recalls: eye drops, insulin, metformin"
@@ -120,7 +115,7 @@ function RecallRadar({
             </p>
           </div>
 
-          <button type="button" onClick={handleSearch} disabled={loading}>
+          <button type="button" onClick={() => handleSearch(sortMode)} disabled={loading}>
             {loading ? 'Checking public data...' : 'Analyze'}
           </button>
         </div>
@@ -199,7 +194,7 @@ function RecallRadar({
                 <button
                   type="button"
                   className={sortMode === 'score' ? 'active' : ''}
-                  onClick={() => setSortMode('score')}
+                  onClick={() => handleSortChange('score')}
                 >
                   Highest score
                 </button>
@@ -207,7 +202,7 @@ function RecallRadar({
                 <button
                   type="button"
                   className={sortMode === 'latest' ? 'active' : ''}
-                  onClick={() => setSortMode('latest')}
+                  onClick={() => handleSortChange('latest')}
                 >
                   Latest recall
                 </button>
