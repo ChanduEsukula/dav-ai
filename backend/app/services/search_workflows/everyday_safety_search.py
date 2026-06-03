@@ -315,11 +315,25 @@ def _intent_relevance_score(record: dict[str, Any], intent: FoodRadarSearchInten
     return score
 
 
+def _date_sort_value(record: dict[str, Any]) -> int:
+    for key in ("report_date", "recall_initiation_date"):
+        value = record.get(key)
+        if value in (None, ""):
+            continue
+
+        digits = "".join(character for character in str(value) if character.isdigit())
+        if len(digits) >= 8:
+            return int(digits[:8])
+
+    return 0
+
+
 def _rank_and_filter_results(
     *,
     records: list[dict[str, Any]],
     intent: FoodRadarSearchIntent,
     limit: int,
+    sort: str,
 ) -> list[dict[str, Any]]:
     filtered_records = [
         record
@@ -327,9 +341,24 @@ def _rank_and_filter_results(
         if not _should_exclude_for_intent(record, intent)
     ]
 
+    if sort == "latest":
+        return sorted(
+            filtered_records,
+            key=lambda record: (
+                _date_sort_value(record),
+                _intent_relevance_score(record, intent),
+                record.get("risk_score", {}).get("score", 0),
+            ),
+            reverse=True,
+        )[:limit]
+
     return sorted(
         filtered_records,
-        key=lambda record: _intent_relevance_score(record, intent),
+        key=lambda record: (
+            _intent_relevance_score(record, intent),
+            record.get("risk_score", {}).get("score", 0),
+            _date_sort_value(record),
+        ),
         reverse=True,
     )[:limit]
 
@@ -339,7 +368,8 @@ async def execute_everyday_safety_search(
     category: str,
     query: str,
     limit: int,
-    request_id: str | None,
+    sort: str = "score",
+    request_id: str | None = None,
 ) -> dict[str, Any]:
     if category != "food_supplement":
         raise ValueError("Only category=food_supplement is implemented in v0.1.")
@@ -350,7 +380,7 @@ async def execute_everyday_safety_search(
     try:
         fda_payload = await food_client.search_food_recalls(
             query=query,
-            limit=limit,
+            limit=25,
             request_id=request_id,
         )
 
@@ -358,7 +388,7 @@ async def execute_everyday_safety_search(
         try:
             fsis_payload = await fsis_client.search_recalls(
                 query=query,
-                limit=limit,
+                limit=25,
                 request_id=request_id,
             )
         except Exception as exc:
@@ -403,6 +433,7 @@ async def execute_everyday_safety_search(
             records=normalized_results,
             intent=intent,
             limit=limit,
+            sort=sort,
         )
         upstream_status = "empty" if not normalized_results else "success"
 
@@ -431,6 +462,8 @@ async def execute_everyday_safety_search(
                 "category": category,
                 "q": query,
                 "limit": limit,
+                "sort": sort,
+                "upstream_fetch_limit": 25,
                 "sources_checked": [
                     OPENFDA_FOOD_ENFORCEMENT["source_id"],
                     USDA_FSIS_RECALL["source_id"],

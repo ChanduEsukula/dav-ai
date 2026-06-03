@@ -17,6 +17,10 @@ async def search_everyday_safety(
     ),
     q: str = Query(..., min_length=2, description="Food, supplement, product, brand, or recall keyword"),
     limit: int = Query(10, ge=1, le=25),
+    sort: Literal["score", "latest"] = Query(
+        "score",
+        description="FoodRadar result ordering. score ranks by review score; latest ranks by newest report/recall date.",
+    ),
 ):
     request_id = getattr(request.state, "request_id", None)
 
@@ -25,6 +29,7 @@ async def search_everyday_safety(
             category=category,
             query=q,
             limit=limit,
+            sort=sort,
             request_id=request_id,
         )
 
