@@ -6,9 +6,11 @@ from app.db.audit_repository import save_audit_event
 from app.db.source_pull_repository import save_source_pull_with_snapshot
 from app.scoring.recall_score import calculate_recall_risk_score
 from app.services.openfda_food_enforcement_client import OpenFDAFoodEnforcementClient
-from app.sources.registry import OPENFDA_FOOD_ENFORCEMENT
+from app.services.usda_fsis_recall_client import USDAFSISRecallClient
+from app.sources.registry import OPENFDA_FOOD_ENFORCEMENT, USDA_FSIS_RECALL
 
 food_client = OpenFDAFoodEnforcementClient()
+fsis_client = USDAFSISRecallClient()
 
 
 def _save_audit_event_with_request_id(audit_event, request_id: str | None):
@@ -50,15 +52,15 @@ def _persist_food_error_audit(
 ):
     audit_event = build_audit_event(
         module="FoodRadar",
-        source_id=OPENFDA_FOOD_ENFORCEMENT["source_id"],
-        source_name=OPENFDA_FOOD_ENFORCEMENT["source_name"],
-        endpoint=OPENFDA_FOOD_ENFORCEMENT["endpoint"],
+        source_id="foodradar_multi_source",
+        source_name="FoodRadar multi-source search",
+        endpoint="openFDA Food Enforcement + USDA FSIS Recall API",
         query=query,
         query_params={"category": "food_supplement", "q": query, "limit": limit},
         retrieval_timestamp=datetime.now(timezone.utc).isoformat(),
         upstream_status="error",
         record_count=0,
-        transform_version="everyday-safety-food-transform-v0.1",
+        transform_version="everyday-safety-food-transform-v0.2",
         score_version="recall-risk-v0.1",
         error_message=error_message,
     )
@@ -71,6 +73,197 @@ def _persist_food_error_audit(
     return audit_event
 
 
+def _get_first_value(record: dict[str, Any], keys: tuple[str, ...]) -> Any:
+    for key in keys:
+        value = record.get(key)
+        if value not in (None, ""):
+            return value
+    return None
+
+
+def _normalize_fda_record(
+    *,
+    record: dict[str, Any],
+    index: int,
+    payload: dict[str, Any],
+    search_strategy_used: str,
+) -> dict[str, Any]:
+    risk = calculate_recall_risk_score(record)
+
+    return {
+        "record_id": record.get("event_id") or record.get("recall_number") or f"fda-{index}",
+        "recall_number": record.get("recall_number"),
+        "product_description": record.get("product_description"),
+        "reason_for_recall": record.get("reason_for_recall"),
+        "classification": record.get("classification"),
+        "status": record.get("status"),
+        "recall_initiation_date": record.get("recall_initiation_date"),
+        "report_date": record.get("report_date"),
+        "distribution_pattern": record.get("distribution_pattern"),
+        "recalling_firm": record.get("recalling_firm"),
+        "product_quantity": record.get("product_quantity"),
+        "code_info": record.get("code_info"),
+        "source_type": "FDA_FOOD_ENFORCEMENT",
+        "search_strategy_used": search_strategy_used,
+        "risk_score": risk,
+        "source": {
+            "name": payload["source_name"],
+            "endpoint": payload["endpoint"],
+            "retrieval_timestamp": payload["retrieval_timestamp"],
+        },
+    }
+
+
+def _normalize_fsis_record(
+    *,
+    record: dict[str, Any],
+    index: int,
+    payload: dict[str, Any],
+    search_strategy_used: str,
+) -> dict[str, Any]:
+    normalized_for_score = {
+        "classification": _get_first_value(
+            record,
+            (
+                "field_recall_classification",
+                "recall_classification",
+                "classification",
+                "field_recall_type",
+            ),
+        ),
+        "status": _get_first_value(
+            record,
+            (
+                "field_active_notice",
+                "active_notice",
+                "status",
+                "field_status",
+            ),
+        ),
+        "recall_initiation_date": _get_first_value(
+            record,
+            (
+                "field_recall_date",
+                "recall_date",
+                "field_publication_date",
+                "publication_date",
+            ),
+        ),
+        "distribution_pattern": _get_first_value(
+            record,
+            (
+                "field_states",
+                "states",
+                "field_distribution_list",
+                "distribution",
+            ),
+        ),
+    }
+
+    risk = calculate_recall_risk_score(normalized_for_score)
+
+    product_description = _get_first_value(
+        record,
+        (
+            "field_product_items",
+            "product_items",
+            "field_product",
+            "product",
+            "title",
+            "recall_title",
+            "field_title",
+        ),
+    )
+
+    reason_for_recall = _get_first_value(
+        record,
+        (
+            "field_recall_reason",
+            "recall_reason",
+            "field_reason",
+            "reason",
+            "summary",
+            "body",
+        ),
+    )
+
+    return {
+        "record_id": str(
+            _get_first_value(
+                record,
+                (
+                    "id",
+                    "uuid",
+                    "field_recall_number",
+                    "recall_number",
+                    "field_recall_id",
+                ),
+            )
+            or f"fsis-{index}"
+        ),
+        "recall_number": _get_first_value(
+            record,
+            ("field_recall_number", "recall_number", "field_recall_id"),
+        ),
+        "product_description": product_description,
+        "reason_for_recall": reason_for_recall,
+        "classification": normalized_for_score["classification"],
+        "status": normalized_for_score["status"],
+        "recall_initiation_date": normalized_for_score["recall_initiation_date"],
+        "report_date": _get_first_value(
+            record,
+            ("field_publication_date", "publication_date", "created", "changed"),
+        ),
+        "distribution_pattern": normalized_for_score["distribution_pattern"],
+        "recalling_firm": _get_first_value(
+            record,
+            (
+                "field_establishment",
+                "establishment",
+                "field_company",
+                "company",
+                "recalling_firm",
+            ),
+        ),
+        "product_quantity": _get_first_value(
+            record,
+            ("field_pounds_recalled", "pounds_recalled", "product_quantity"),
+        ),
+        "code_info": _get_first_value(
+            record,
+            ("field_labels", "labels", "field_product_labels", "code_info"),
+        ),
+        "source_type": "USDA_FSIS_RECALL",
+        "search_strategy_used": search_strategy_used,
+        "risk_score": risk,
+        "source": {
+            "name": payload["source_name"],
+            "endpoint": payload["endpoint"],
+            "retrieval_timestamp": payload["retrieval_timestamp"],
+        },
+    }
+
+
+def _checked_source(
+    *,
+    payload: dict[str, Any],
+    source_type: str,
+    record_count: int,
+) -> dict[str, Any]:
+    upstream_status = payload.get("upstream_status")
+    if upstream_status not in {"success", "empty", "error"}:
+        upstream_status = "success" if record_count else "empty"
+
+    return {
+        "source_id": payload["source_id"],
+        "source_name": payload["source_name"],
+        "source_type": source_type,
+        "endpoint": payload["endpoint"],
+        "upstream_status": upstream_status,
+        "record_count": record_count,
+    }
+
+
 async def execute_everyday_safety_search(
     *,
     category: str,
@@ -81,54 +274,98 @@ async def execute_everyday_safety_search(
     if category != "food_supplement":
         raise ValueError("Only category=food_supplement is implemented in v0.1.")
 
+    search_strategy_used = "multi_source_exact_phrase"
+
     try:
-        payload = await food_client.search_food_recalls(
+        fda_payload = await food_client.search_food_recalls(
             query=query,
             limit=limit,
             request_id=request_id,
         )
 
-        raw_results = payload["raw"].get("results", [])
-        upstream_status = "empty" if not raw_results else "success"
-        normalized_results = []
-
-        for index, record in enumerate(raw_results):
-            risk = calculate_recall_risk_score(record)
-
-            normalized_results.append(
-                {
-                    "record_id": record.get("event_id") or record.get("recall_number") or str(index),
-                    "recall_number": record.get("recall_number"),
-                    "product_description": record.get("product_description"),
-                    "reason_for_recall": record.get("reason_for_recall"),
-                    "classification": record.get("classification"),
-                    "status": record.get("status"),
-                    "recall_initiation_date": record.get("recall_initiation_date"),
-                    "report_date": record.get("report_date"),
-                    "distribution_pattern": record.get("distribution_pattern"),
-                    "recalling_firm": record.get("recalling_firm"),
-                    "product_quantity": record.get("product_quantity"),
-                    "code_info": record.get("code_info"),
-                    "risk_score": risk,
-                    "source": {
-                        "name": payload["source_name"],
-                        "endpoint": payload["endpoint"],
-                        "retrieval_timestamp": payload["retrieval_timestamp"],
-                    },
-                }
+        fsis_error_message = None
+        try:
+            fsis_payload = await fsis_client.search_recalls(
+                query=query,
+                limit=limit,
+                request_id=request_id,
             )
+        except Exception as exc:
+            fsis_error_message = str(exc)
+            fsis_payload = {
+                "source_id": USDA_FSIS_RECALL["source_id"],
+                "source_name": USDA_FSIS_RECALL["source_name"],
+                "endpoint": USDA_FSIS_RECALL["endpoint"],
+                "query": query,
+                "retrieval_timestamp": datetime.now(timezone.utc).isoformat(),
+                "raw": {"results": [], "error": fsis_error_message},
+                "records": [],
+                "upstream_status": "error",
+            }
+
+        fda_raw_results = fda_payload["raw"].get("results", [])
+        fsis_raw_results = fsis_payload.get("records", [])
+
+        normalized_results: list[dict[str, Any]] = []
+
+        for index, record in enumerate(fda_raw_results):
+            normalized_results.append(
+                _normalize_fda_record(
+                    record=record,
+                    index=index,
+                    payload=fda_payload,
+                    search_strategy_used=search_strategy_used,
+                )
+            )
+
+        for index, record in enumerate(fsis_raw_results):
+            normalized_results.append(
+                _normalize_fsis_record(
+                    record=record,
+                    index=index,
+                    payload=fsis_payload,
+                    search_strategy_used=search_strategy_used,
+                )
+            )
+
+        normalized_results = normalized_results[:limit]
+        upstream_status = "empty" if not normalized_results else "success"
+
+        sources_checked = [
+            _checked_source(
+                payload=fda_payload,
+                source_type="FDA_FOOD_ENFORCEMENT",
+                record_count=len(fda_raw_results),
+            ),
+            _checked_source(
+                payload=fsis_payload,
+                source_type="USDA_FSIS_RECALL",
+                record_count=len(fsis_raw_results),
+            ),
+        ]
+
+        retrieval_timestamp = datetime.now(timezone.utc).isoformat()
 
         audit_event = build_audit_event(
             module="FoodRadar",
-            source_id=payload["source_id"],
-            source_name=payload["source_name"],
-            endpoint=payload["endpoint"],
+            source_id="foodradar_multi_source",
+            source_name="FoodRadar multi-source search",
+            endpoint="openFDA Food Enforcement + USDA FSIS Recall API",
             query=query,
-            query_params={"category": category, "q": query, "limit": limit},
-            retrieval_timestamp=payload["retrieval_timestamp"],
+            query_params={
+                "category": category,
+                "q": query,
+                "limit": limit,
+                "sources_checked": [
+                    OPENFDA_FOOD_ENFORCEMENT["source_id"],
+                    USDA_FSIS_RECALL["source_id"],
+                ],
+                "search_strategy_used": search_strategy_used,
+            },
+            retrieval_timestamp=retrieval_timestamp,
             upstream_status=upstream_status,
             record_count=len(normalized_results),
-            transform_version="everyday-safety-food-transform-v0.1",
+            transform_version="everyday-safety-food-transform-v0.2",
             score_version="recall-risk-v0.1",
         )
 
@@ -136,7 +373,10 @@ async def execute_everyday_safety_search(
 
         source_pull_result = _save_source_pull_with_request_id(
             audit_event=audit_event,
-            raw_payload=payload["raw"],
+            raw_payload={
+                "openfda_food_enforcement": fda_payload.get("raw", {}),
+                "usda_fsis_recall": fsis_payload.get("raw", {}),
+            },
             request_id=request_id,
         )
 
@@ -146,19 +386,24 @@ async def execute_everyday_safety_search(
             "category_label": "Food & Supplements",
             "count": len(normalized_results),
             "limit": limit,
-            "source_name": payload["source_name"],
-            "endpoint": payload["endpoint"],
-            "retrieval_timestamp": payload["retrieval_timestamp"],
+            "source_name": "FoodRadar multi-source search",
+            "endpoint": "openFDA Food Enforcement + USDA FSIS Recall API",
+            "retrieval_timestamp": retrieval_timestamp,
             "score_version": "recall-risk-v0.1",
+            "search_strategy_used": search_strategy_used,
+            "sources_checked": sources_checked,
             "public_data_disclaimer": (
                 "DAV AI provides public-data safety intelligence only. "
-                "Food and supplement recall records should be verified against the official FDA/openFDA source. "
-                "This is not medical advice, diagnosis, treatment guidance, or a substitute for official recall instructions."
+                "Food, supplement, meat, poultry, and egg-product recall records should be verified "
+                "against official FDA/openFDA and USDA FSIS sources. This is not medical advice, "
+                "diagnosis, treatment guidance, or a substitute for official recall instructions."
             ),
             "limitations": [
-                "openFDA enforcement records are public-source records and may update on a source-dependent cadence.",
-                "Search results depend on product descriptions, recalling firm names, and recall reason text available in the source record.",
-                "Users should verify exact product names, lot numbers, package sizes, and official FDA recall notices before taking action.",
+                "openFDA Food Enforcement covers FDA-regulated food, supplement, grocery, and packaged-food enforcement records.",
+                "USDA FSIS Recall API covers meat, poultry, and egg-product recalls and public health alerts.",
+                "If one public source is temporarily unavailable, DAV AI may return partial results from the available source and mark the unavailable source as error.",
+                "Search results depend on product descriptions, recalling firm names, recall reason text, and source-specific metadata.",
+                "Users should verify exact product names, lot numbers, establishment numbers, package sizes, and official FDA/USDA recall notices before taking action.",
             ],
             "audit": {
                 "audit_id": audit_event["audit_id"],

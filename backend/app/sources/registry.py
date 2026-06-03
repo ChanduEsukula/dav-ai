@@ -33,6 +33,16 @@ OPENFDA_FOOD_ENFORCEMENT = {
     "update_cadence": "Source-dependent FDA updates",
 }
 
+
+USDA_FSIS_RECALL = {
+    "source_id": "usda_fsis_recall",
+    "source_name": "USDA FSIS Recall API",
+    "endpoint": "https://www.fsis.usda.gov/fsis/api/recall/v/1",
+    "module": "FoodRadar",
+    "description": "Meat, poultry, egg-product recall and public-health-alert records from USDA FSIS.",
+    "update_cadence": "Real-time FSIS recall and public health alert updates",
+}
+
 REGIONAL_HEALTH_PULSE_DEMO = {
     "source_id": "regional_health_pulse_demo",
     "source_name": "Regional Health Pulse MVP scaffold",
@@ -46,5 +56,6 @@ REGISTERED_SOURCES = [
     OPENFDA_DRUG_ENFORCEMENT,
     OPENFDA_DRUG_EVENT,
     OPENFDA_FOOD_ENFORCEMENT,
+    USDA_FSIS_RECALL,
     REGIONAL_HEALTH_PULSE_DEMO,
 ]
