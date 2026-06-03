@@ -232,6 +232,11 @@ function RecallRadar({
                       </svg>
                     </span>
 
+                    <span className="recall-date-inline">
+                      <strong>{formatDate(result.recall_initiation_date)}</strong>
+                      <small>Recall date</small>
+                    </span>
+
                     <span className="recall-score-inline">
                       <strong>{result.risk_score.score}</strong>
                       <small>Risk score</small>

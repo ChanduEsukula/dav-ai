@@ -995,3 +995,31 @@
     transform: none !important;
   }
 }
+.recall-date-inline {
+  display: inline-flex;
+  min-width: 118px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  border: 1px solid rgba(20, 184, 166, 0.18);
+  border-radius: 16px;
+  padding: 0.65rem 0.85rem;
+  background: rgba(240, 253, 250, 0.78);
+  color: #0f172a;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+}
+
+.recall-date-inline strong {
+  font-size: 0.9rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.recall-date-inline small {
+  color: #0f766e;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
