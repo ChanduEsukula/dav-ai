@@ -6,6 +6,7 @@ type NavbarProps = {
   goHome: () => void
   goToRecallRadar: () => void
   goToDrugSignal: () => void
+  goToFoodRadar: () => void
   goToPage: (page: ActivePage) => void
 }
 
@@ -22,6 +23,7 @@ function Navbar({
   goHome,
   goToRecallRadar,
   goToDrugSignal,
+  goToFoodRadar,
   goToPage,
 }: NavbarProps) {
   const isHomeActive = activePage === 'home' && activeSection === 'home'
@@ -46,10 +48,10 @@ function Navbar({
       onClick: goToDrugSignal,
     },
     {
-      id: 'regional-health',
-      label: 'Health Pulse',
-      isActive: activePage === 'regional-health',
-      onClick: () => goToPage('regional-health'),
+      id: 'foodradar',
+      label: 'FoodRadar',
+      isActive: activePage === 'home' && activeSection === 'foodradar',
+      onClick: goToFoodRadar,
     },
     {
       id: 'saved-monitors',
@@ -118,27 +120,22 @@ function Navbar({
       <button
         type="button"
         className="brand brand-button"
-        aria-current={isHomeActive ? 'page' : undefined}
         onClick={goHome}
+        aria-label="Dav AI home"
       >
-        <span className="brand-mark" aria-hidden="true">
-          ✚
-        </span>
-        <span>Dav AI</span>
+        Dav AI
       </button>
 
-      <div className="nav-links" aria-label="Navigation groups">
-        <div className="nav-group nav-group-primary" aria-label="Primary product navigation">
-          {primaryNavItems.map(renderNavItem)}
-        </div>
+      <div className="nav-links" aria-label="Primary modules">
+        {primaryNavItems.map(renderNavItem)}
+      </div>
 
-        <div className="nav-group nav-group-operations" aria-label="Trust and operations">
-          {operationsNavItems.map(renderNavItem)}
-        </div>
+      <div className="nav-links nav-links-secondary" aria-label="Operations">
+        {operationsNavItems.map(renderNavItem)}
+      </div>
 
-        <div className="nav-group nav-group-secondary" aria-label="Help and information">
-          {secondaryNavItems.map(renderNavItem)}
-        </div>
+      <div className="nav-actions" aria-label="Information pages">
+        {secondaryNavItems.map(renderNavItem)}
       </div>
     </nav>
   )

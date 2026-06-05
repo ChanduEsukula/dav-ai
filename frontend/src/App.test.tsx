@@ -8,7 +8,7 @@ beforeEach(() => {
 test('renders Dav AI landing page', () => {
   render(<App />)
 
-  expect(screen.getByRole('button', { name: /^Dav AI$/i })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: /Dav AI home/i })).toBeInTheDocument()
 
   expect(screen.getByRole('heading', { name: /Public safety/i })).toBeInTheDocument()
 
@@ -26,7 +26,7 @@ test('renders Dav AI landing page', () => {
 
   expect(
     screen.getByRole('button', {
-      name: /Health Pulse.*Regional signal preview/i,
+      name: /FoodRadar.*Food & supplement recalls/i,
     }),
   ).toBeInTheDocument()
 

@@ -1,7 +1,7 @@
 type SafetyWorkspaceProps = {
   goToRecallRadar: () => void
   goToDrugSignal: () => void
-  goToHealthPulse: () => void
+  goToFoodRadar: () => void
 }
 
 type SafetyModule = {
@@ -17,7 +17,7 @@ type SafetyModule = {
 function SafetyWorkspace({
   goToRecallRadar,
   goToDrugSignal,
-  goToHealthPulse,
+  goToFoodRadar,
 }: SafetyWorkspaceProps) {
   const modules: SafetyModule[] = [
     {
@@ -39,13 +39,13 @@ function SafetyWorkspace({
       onClick: goToDrugSignal,
     },
     {
-      title: 'Health Pulse',
-      eyebrow: 'Regional signal preview',
-      description: 'Preview regional public-health patterns and context.',
-      chips: ['Regional view', 'Signal preview', 'Context layer'],
-      actionLabel: 'Open Health Pulse',
+      title: 'FoodRadar',
+      eyebrow: 'Food and supplement lens',
+      description: 'Check public food, supplement, meat, poultry, and egg-product recall signals.',
+      chips: ['FDA food recalls', 'USDA FSIS', 'Source trail'],
+      actionLabel: 'Open FoodRadar',
       variant: 'health',
-      onClick: goToHealthPulse,
+      onClick: goToFoodRadar,
     },
   ]
 
@@ -58,7 +58,8 @@ function SafetyWorkspace({
         </div>
 
         <p>
-          Start with official recall records, then compare public adverse-event reporting patterns.
+          Start with official recall records, compare public adverse-event reporting patterns,
+          then check food and supplement recall signals.
         </p>
       </div>
 
@@ -153,7 +154,7 @@ function SafetyWorkspace({
 
       <div className="safety-workspace__bridge">
         <strong>Recommended workflow:</strong>
-        <span>Start with RecallRadar, then compare with DrugSignal.</span>
+        <span>Start with RecallRadar, compare with DrugSignal, then check FoodRadar.</span>
       </div>
     </section>
   )

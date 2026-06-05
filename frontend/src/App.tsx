@@ -154,6 +154,19 @@ function App() {
     }, 80)
   }
 
+  function goToFoodRadar() {
+    setActivePage('home')
+    setActiveSection('foodradar')
+    updatePageInUrl('home')
+
+    setTimeout(() => {
+      document.getElementById('foodradar')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    }, 80)
+  }
+
   function goToPage(page: ActivePage) {
     setActivePage(page)
     setActiveSection('home')
@@ -169,6 +182,7 @@ function App() {
         goHome={goHome}
         goToRecallRadar={goToRecallRadar}
         goToDrugSignal={goToDrugSignal}
+        goToFoodRadar={goToFoodRadar}
         goToPage={goToPage}
       />
 
@@ -178,14 +192,14 @@ function App() {
             data={data}
             goToRecallRadar={goToRecallRadar}
             goToDrugSignal={goToDrugSignal}
-            goToHealthPulse={() => goToPage('regional-health')}
+            goToFoodRadar={goToFoodRadar}
             goToAbout={() => goToPage('about')}
           />
 
           <SafetyWorkspace
             goToRecallRadar={goToRecallRadar}
             goToDrugSignal={goToDrugSignal}
-            goToHealthPulse={() => goToPage('regional-health')}
+            goToFoodRadar={goToFoodRadar}
           />
 
           <OperationalOverview />
@@ -201,7 +215,9 @@ function App() {
 
           <DrugSignal onAssistantContextChange={setAssistantContext} />
 
-          <FoodRadar />
+          <section id="foodradar">
+            <FoodRadar />
+          </section>
 
           <CosmeticSignal />
 

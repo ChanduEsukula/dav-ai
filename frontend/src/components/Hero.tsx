@@ -4,14 +4,14 @@ type HeroProps = {
   data: RecallSearchResponse | null
   goToRecallRadar: () => void
   goToDrugSignal: () => void
-  goToHealthPulse: () => void
+  goToFoodRadar: () => void
   goToAbout: () => void
 }
 
 type HeroModule = {
   title: string
   subtitle: string
-  key: 'recallradar' | 'drugsignal' | 'health-pulse'
+  key: 'recallradar' | 'drugsignal' | 'foodradar'
   className: string
   icon: 'recall' | 'drug' | 'health'
 }
@@ -32,9 +32,9 @@ const heroModules: HeroModule[] = [
     icon: 'drug',
   },
   {
-    title: 'Health Pulse',
-    subtitle: 'Regional signal preview',
-    key: 'health-pulse',
+    title: 'FoodRadar',
+    subtitle: 'Food & supplement recalls',
+    key: 'foodradar',
     className: 'hero-module-health',
     icon: 'health',
   },
@@ -92,7 +92,7 @@ function Hero({
   data,
   goToRecallRadar,
   goToDrugSignal,
-  goToHealthPulse,
+  goToFoodRadar,
   goToAbout,
 }: HeroProps) {
   const topResult = data?.results?.[0]
@@ -100,13 +100,13 @@ function Hero({
   const moduleActions = {
     recallradar: goToRecallRadar,
     drugsignal: goToDrugSignal,
-    'health-pulse': goToHealthPulse,
+    foodradar: goToFoodRadar,
   }
 
   return (
     <section className="hero">
       <div className="hero-copy">
-        <p className="eyebrow">Public health intelligence</p>
+        <p className="eyebrow">Everyday safety intelligence</p>
 
         <h1>
           Public safety
@@ -117,7 +117,7 @@ function Hero({
         </h1>
 
         <p className="subtitle">
-          Dav AI turns public recall, drug-safety, and regional signal data into clear,
+          Dav AI turns public recall, drug-safety, food, and supplement data into clear,
           source-aware intelligence.
         </p>
 
