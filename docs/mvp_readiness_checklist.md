@@ -135,5 +135,11 @@ Latest confirmed verification evidence:
   - Source registry returned 7 registered sources.
   - `/api/v1/everyday-safety/search?q=chicken&category=food_supplement&limit=5` returned 200 OK with FoodRadar audit metadata.
   - FoodRadar deployed fail-soft behavior was confirmed: openFDA Food Enforcement succeeded while USDA FSIS was marked error.
+- Local frontend smoke verified on June 5, 2026:
+  - Landing page primary story showed RecallRadar, DrugSignal, and FoodRadar.
+  - FoodRadar navigation scrolled to the FoodRadar module.
+  - FoodRadar search for `chicken` rendered 1 matching public food/supplement recall record.
+  - FoodRadar UI displayed openFDA Food Enforcement success and USDA FSIS error as fail-soft source status.
+  - FoodRadar result card rendered review score 32 / Moderate.
 
 This evidence supports portfolio MVP readiness for review and demo discussion. It does not indicate production healthcare readiness or clinical validity.
