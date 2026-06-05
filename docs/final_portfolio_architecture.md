@@ -38,7 +38,7 @@ Secondary and extension surfaces support the platform story without becoming the
 
 - CosmeticSignal
 - Regional Health Pulse scaffold
-- Saved Monitors
+- Saved Monitors, including manual FoodRadar monitor create/run/history support
 - Data Sources
 - System Status
 - Audit History
@@ -61,7 +61,7 @@ After the primary path is clear, secondary surfaces can be shown as support:
 
 - Audit History for traceability.
 - Data Sources and System Status for operational transparency.
-- Saved Monitors for repeatable public-data checks.
+- Saved Monitors for repeatable public-data checks, including manual FoodRadar monitor create/run/history support.
 - CosmeticSignal as a secondary public cosmetic adverse-event extension.
 - Regional Health Pulse as a scaffolded architecture extension only.
 
@@ -154,7 +154,7 @@ flowchart LR
     Pull --> Snapshot["Raw Public-Source Snapshot<br/>where supported"]
     Pull --> Provenance["Source-Pull Provenance UI"]
 
-    Search --> Monitor["Saved Monitor<br/>Manual Repeatable Check"]
+    Search --> Monitor["Saved Monitor<br/>Manual Repeatable Check<br/>RecallRadar / DrugSignal / FoodRadar / Health Pulse"]
     Monitor --> RunHistory["Saved Monitor Run History<br/>latest/previous comparison"]
     RunHistory --> AuditEvent
 
@@ -176,7 +176,7 @@ Deployment responsibilities:
 
 - Vercel serves the public frontend and routes browser API requests to the configured backend URL.
 - Render serves the FastAPI backend, public `/api/v1` routes, health/status endpoints, source registry, search workflows, audit history, saved monitors, and system/data-quality surfaces.
-- Supabase/PostgreSQL stores audit events, source registry metadata, source-pull metadata, saved-monitor definitions, run history, scheduler-lock state, and related persistence records where configured.
+- Supabase/PostgreSQL stores audit events, source registry metadata, source-pull metadata, saved-monitor definitions, FoodRadar manual monitor runs, run history, scheduler-lock state, and related persistence records where configured.
 
 ## 8. Safety and Responsible-AI Boundaries
 
@@ -264,7 +264,7 @@ The current MVP does not include:
 - RAG/LLM features
 - auth/RBAC
 - alert delivery
-- production Cron activation
+- production Cron activation, including scheduled FoodRadar monitor refresh
 - live CDC/HHS-backed Regional Health Pulse connectors
 - clinical decision support
 - PHI storage
