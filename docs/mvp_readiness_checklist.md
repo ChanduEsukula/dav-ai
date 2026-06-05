@@ -141,5 +141,11 @@ Latest confirmed verification evidence:
   - FoodRadar search for `chicken` rendered 1 matching public food/supplement recall record.
   - FoodRadar UI displayed openFDA Food Enforcement success and USDA FSIS error as fail-soft source status.
   - FoodRadar result card rendered review score 32 / Moderate.
+- Deployed frontend smoke verified on June 5, 2026 against `https://dav-ai.vercel.app`:
+  - Sources page loaded and displayed 7 registered public data sources.
+  - FoodRadar deployed UI search for `chicken` rendered 1 matching public food/supplement recall record.
+  - FoodRadar deployed UI displayed openFDA Food Enforcement success with 23 source records and USDA FSIS error with 0 records.
+  - FoodRadar deployed result card rendered review score 32 / Moderate.
+  - System page loaded backend status with API ok, database configured, audit readable, and 7 sources.
 
 This evidence supports portfolio MVP readiness for review and demo discussion. It does not indicate production healthcare readiness or clinical validity.
