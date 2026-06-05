@@ -190,7 +190,7 @@ Key capabilities:
 
 ### Saved Monitors
 
-Saved Monitors allow repeatable public-data searches, including manual FoodRadar monitor create/run/history support.
+Saved Monitors allow repeatable public-data searches, including manual FoodRadar monitor create/run/history support and scheduled FoodRadar refresh backend foundation.
 
 Key capabilities:
 
@@ -202,7 +202,7 @@ Key capabilities:
 - link runs to audit history
 - generate deterministic monitor insights
 
-Saved Monitors are a foundation for longitudinal public-data review. FoodRadar now supports manual saved-monitor runs, latest score/count/audit tracking, and run history. Saved Monitors are not yet a full production alerting system, and scheduled FoodRadar refresh remains future work.
+Saved Monitors are a foundation for longitudinal public-data review. FoodRadar now supports manual saved-monitor runs, latest score/count/audit tracking, run history, and scheduled-refresh backend execution. Saved Monitors are not yet a full production alerting system, and production Cron/alerts remain future work.
 
 ### Regional Health Pulse
 
@@ -453,7 +453,7 @@ Not production-grade yet:
 - auth/RBAC
 - ProductScan
 - OCR/CNN label scanning
-- production Cron activation, including scheduled FoodRadar monitor refresh
+- production Cron activation; scheduled FoodRadar refresh exists as backend foundation but is not production Cron-enabled
 - full deployment observability dashboard
 - model registry
 - semantic search

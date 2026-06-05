@@ -93,7 +93,7 @@ The following surfaces are implemented, scaffolded, or available as supporting p
 
 - CosmeticSignal
 - Regional Health Pulse scaffold
-- Saved Monitors, including manual FoodRadar monitor create/run/history support
+- Saved Monitors, including manual FoodRadar monitor create/run/history support and scheduled FoodRadar refresh backend foundation
 - Data Sources
 - System Status
 - Audit History
@@ -154,7 +154,7 @@ Current strengths:
 - Source Registry, Data Sources, and System Status surfaces for operational transparency.
 - Audit History and source-pull provenance foundations for traceability.
 - Deterministic scoring and briefing logic before production ML.
-- Saved Monitors foundation for repeatable public-data review, now including manual FoodRadar monitor create/run/history support.
+- Saved Monitors foundation for repeatable public-data review, now including manual FoodRadar monitor create/run/history support and scheduled FoodRadar refresh backend foundation.
 - Offline responsible ML experiments kept separate from production behavior.
 - Passing backend tests, frontend tests, lint, and production build.
 - Verified deployed backend and frontend smoke coverage for the current FoodRadar story.
@@ -170,7 +170,7 @@ Known follow-up items:
 - Keep FoodRadar deployment smoke verification current after future frontend or backend changes.
 - Add final portfolio architecture diagram before broad interview use.
 - Continue improving saved-monitor detail, run-history review, FoodRadar monitor smoke coverage, and source freshness communication.
-- Keep production Cron disabled until deployment-environment scheduler observability, locking behavior, rollback guidance, ownership boundaries, and scheduled FoodRadar monitor behavior are stronger.
+- Keep production Cron disabled until deployment-environment scheduler observability, locking behavior, rollback guidance, ownership boundaries, and FoodRadar scheduled-monitor deployment behavior are stronger.
 - Do not add user-specific alerts until auth/RBAC, monitor ownership, notification preferences, and safety copy are designed.
 - Keep ProductScan, OCR/CNN scanning, production ML, RAG/LLM features, personal health workflows, and live CDC/HHS Health Pulse connectors on the roadmap until the current source-grounded MVP remains stable.
 

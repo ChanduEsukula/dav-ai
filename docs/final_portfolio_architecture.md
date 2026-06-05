@@ -38,7 +38,7 @@ Secondary and extension surfaces support the platform story without becoming the
 
 - CosmeticSignal
 - Regional Health Pulse scaffold
-- Saved Monitors, including manual FoodRadar monitor create/run/history support
+- Saved Monitors, including manual FoodRadar monitor create/run/history support and scheduled FoodRadar refresh backend foundation
 - Data Sources
 - System Status
 - Audit History
@@ -61,7 +61,7 @@ After the primary path is clear, secondary surfaces can be shown as support:
 
 - Audit History for traceability.
 - Data Sources and System Status for operational transparency.
-- Saved Monitors for repeatable public-data checks, including manual FoodRadar monitor create/run/history support.
+- Saved Monitors for repeatable public-data checks, including manual FoodRadar monitor create/run/history support and scheduled FoodRadar refresh backend foundation.
 - CosmeticSignal as a secondary public cosmetic adverse-event extension.
 - Regional Health Pulse as a scaffolded architecture extension only.
 
@@ -264,7 +264,7 @@ The current MVP does not include:
 - RAG/LLM features
 - auth/RBAC
 - alert delivery
-- production Cron activation, including scheduled FoodRadar monitor refresh
+- production Cron activation; scheduled FoodRadar refresh exists as backend foundation but is not production Cron-enabled
 - live CDC/HHS-backed Regional Health Pulse connectors
 - clinical decision support
 - PHI storage

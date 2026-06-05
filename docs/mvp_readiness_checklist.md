@@ -66,7 +66,7 @@ The following surfaces are implemented or scaffolded, but should be presented as
 - [x] Audit events are persisted with source, query, timestamp, status, and record count
 - [x] Source registry exposes public-data metadata
 - [x] Source freshness is deterministic and test-covered
-- [x] Saved monitors support manual run history, including FoodRadar monitor create/run/history support
+- [x] Saved monitors support manual run history, including FoodRadar monitor create/run/history support and scheduled FoodRadar refresh backend foundation
 - [x] Saved-monitor runs include payload-change status
 - [x] Source-pull provenance metadata is exposed without raw payload display
 - [x] Scheduler-lock protection exists as backend foundation
@@ -77,7 +77,7 @@ The following surfaces are implemented or scaffolded, but should be presented as
 - [x] Primary UI story promotes RecallRadar, DrugSignal, and FoodRadar as the main MVP modules
 - [x] CosmeticSignal and Regional Health Pulse remain available as secondary/extension surfaces
 - [x] Saved Monitors, Data Sources, System Status, and Audit History pages are available
-- [x] Saved Monitors display latest/previous values, run history, monitor insights, and payload-change status; FoodRadar manual monitors now store latest score/count/audit history
+- [x] Saved Monitors display latest/previous values, run history, monitor insights, and payload-change status; FoodRadar manual monitors now store latest score/count/audit history and scheduled refresh can run FoodRadar monitors in the backend foundation
 - [x] Data Sources and System Status display source freshness signals
 - [x] Audit History supports filters, CSV export, deep links, trace copy, and provenance copy actions
 - [x] UI avoids presenting public-data signals as medical certainty
