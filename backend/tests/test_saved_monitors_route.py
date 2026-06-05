@@ -760,3 +760,68 @@ def test_run_regional_health_pulse_saved_monitor_validates_query_format() -> Non
 
     assert run_response.status_code == 422
     assert "Regional Health Pulse saved monitor query" in run_response.json()["detail"]
+
+
+def test_run_foodradar_saved_monitor(monkeypatch) -> None:
+    async def fake_foodradar_search(
+        category: str,
+        query: str,
+        limit: int,
+        request_id: str | None = None,
+    ):
+        return {
+            "query": query,
+            "category": category,
+            "count": 1,
+            "audit": {
+                "audit_id": "33333333-3333-4333-8333-333333333333",
+            },
+            "results": [
+                {
+                    "risk_score": {
+                        "score": 32,
+                        "label": "Moderate",
+                    }
+                }
+            ],
+        }
+
+    monkeypatch.setattr(
+        "app.routes.saved_monitors.execute_everyday_safety_search",
+        fake_foodradar_search,
+    )
+
+    create_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Chicken monitor",
+            "query": "chicken",
+            "module": "foodradar",
+        },
+    )
+    assert create_response.status_code == 201
+    monitor_id = create_response.json()["id"]
+
+    run_response = client.post(f"/api/v1/saved-monitors/{monitor_id}/run")
+
+    assert run_response.status_code == 200
+    data = run_response.json()
+
+    assert data["module"] == "foodradar"
+    assert data["status"] == "checked"
+    assert data["latest_audit_id"] == "33333333-3333-4333-8333-333333333333"
+    assert data["latest_score"] == 32
+    assert data["latest_record_count"] == 1
+
+    runs_response = client.get(f"/api/v1/saved-monitors/{monitor_id}/runs")
+    assert runs_response.status_code == 200
+    runs = runs_response.json()
+
+    assert len(runs) == 1
+    assert runs[0]["module"] == "foodradar"
+    assert runs[0]["query"] == "chicken"
+    assert runs[0]["status"] == "success"
+    assert runs[0]["record_count"] == 1
+    assert runs[0]["score"] == 32
+    assert runs[0]["score_label"] == "Moderate"
+    assert runs[0]["audit_id"] == "33333333-3333-4333-8333-333333333333"

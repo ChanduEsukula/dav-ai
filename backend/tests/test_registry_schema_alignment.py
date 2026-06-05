@@ -43,7 +43,7 @@ def test_schema_snapshot_includes_regional_health_source_and_monitor_constraints
     assert "'Regional Health Pulse MVP scaffold'" in schema_sql
     assert "saved_monitors_module_check" in schema_sql
     assert "saved_monitor_runs_module_check" in schema_sql
-    assert "check (module in ('recallradar', 'drugsignal', 'regional_health_pulse'))" in schema_sql
+    assert "check (module in ('recallradar', 'drugsignal', 'foodradar', 'regional_health_pulse'))" in schema_sql
 
 
 def test_regional_health_alignment_migration_covers_seed_and_constraints():
@@ -79,3 +79,19 @@ def test_no_duplicate_registered_source_ids():
     source_ids = [source["source_id"] for source in REGISTERED_SOURCES]
 
     assert len(source_ids) == len(set(source_ids))
+
+
+def test_foodradar_saved_monitor_constraint_migration_exists():
+    migration_source = (
+        REPO_ROOT
+        / "backend"
+        / "migrations"
+        / "versions"
+        / "20260605_0008_add_foodradar_saved_monitor_constraints.py"
+    ).read_text()
+
+    assert 'revision = "20260605_0008"' in migration_source
+    assert 'down_revision = "20260527_0007"' in migration_source
+    assert "drop constraint if exists saved_monitors_module_check" in migration_source
+    assert "drop constraint if exists saved_monitor_runs_module_check" in migration_source
+    assert "check (module in ('recallradar', 'drugsignal', 'foodradar', 'regional_health_pulse'))" in migration_source

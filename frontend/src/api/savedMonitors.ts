@@ -1,6 +1,6 @@
 import { apiClient } from './client'
 
-export type SavedMonitorModule = 'recallradar' | 'drugsignal' | 'regional_health_pulse'
+export type SavedMonitorModule = 'recallradar' | 'drugsignal' | 'foodradar' | 'regional_health_pulse'
 export type SavedMonitorStatus = 'not_checked' | 'checked' | 'error'
 
 export interface SavedMonitor {

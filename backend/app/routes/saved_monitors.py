@@ -22,6 +22,7 @@ from app.scoring.source_freshness import (
     payload_change_result_to_dict,
 )
 from app.services.search_workflows.drug_signal_search import execute_drug_signal_search
+from app.services.search_workflows.everyday_safety_search import execute_everyday_safety_search
 from app.services.search_workflows.recall_search import execute_recall_search
 from app.services.search_workflows.regional_health_search import execute_regional_health_search
 router = APIRouter(prefix="/api/v1/saved-monitors", tags=["saved-monitors"])
@@ -58,6 +59,26 @@ def _extract_drug_signal_score(response: dict[str, Any]) -> tuple[int | None, st
             label if isinstance(label, str) else None,
         )
     return None, None
+
+def _extract_foodradar_score(response: dict[str, Any]) -> tuple[int | None, str | None]:
+    """Return the highest FoodRadar review score and label from a search response."""
+    best_score: int | None = None
+    best_label: str | None = None
+
+    for result in response.get("results", []):
+        risk_score = result.get("risk_score")
+        if not isinstance(risk_score, dict):
+            continue
+
+        raw_score = risk_score.get("score")
+        label = risk_score.get("label")
+        score = raw_score if isinstance(raw_score, int) else None
+
+        if score is not None and (best_score is None or score > best_score):
+            best_score = score
+            best_label = label if isinstance(label, str) else None
+
+    return best_score, best_label
 def _parse_regional_health_monitor_query(query: str) -> tuple[str, str]:
     """Parse saved Health Pulse monitor query into region and category.
     The current no-migration format is: "<region> <category>", for example:
@@ -213,6 +234,14 @@ async def run_saved_monitor(monitor_id: UUID, request: Request) -> SavedMonitor:
                 request_id=request_id,
             )
             latest_score, score_label = _extract_drug_signal_score(response)
+        elif monitor.module == SavedMonitorModule.FOODRADAR:
+            response = await execute_everyday_safety_search(
+                category="food_supplement",
+                query=monitor.query,
+                limit=5,
+                request_id=request_id,
+            )
+            latest_score, score_label = _extract_foodradar_score(response)
         elif monitor.module == SavedMonitorModule.REGIONAL_HEALTH_PULSE:
             region, category = _parse_regional_health_monitor_query(monitor.query)
             response_model = execute_regional_health_search(

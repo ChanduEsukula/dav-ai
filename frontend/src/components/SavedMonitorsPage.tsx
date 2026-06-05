@@ -21,12 +21,14 @@ import "./SavedMonitorsPage.css";
 const moduleLabels: Record<SavedMonitorModule, string> = {
   recallradar: "RecallRadar",
   drugsignal: "DrugSignal",
+  foodradar: "FoodRadar",
   regional_health_pulse: "Regional Health Pulse",
 };
 
 const moduleQueryHelp: Record<SavedMonitorModule, string> = {
   recallradar: "Example: eye drops, insulin, metformin, or aspirin",
   drugsignal: "Example: metformin, aspirin, ibuprofen, or insulin",
+  foodradar: "Example: chicken, protein powder, peanut butter, spinach, or salmonella",
   regional_health_pulse: "Use format: MN respiratory. Example: MN respiratory or MN hospital pressure",
 };
 
@@ -335,7 +337,7 @@ export default function SavedMonitorsPage() {
         <p className="eyebrow">Saved Monitors</p>
         <h1 id="saved-monitors-title">Saved Monitors</h1>
         <p>
-          Save repeatable RecallRadar, DrugSignal, or Regional Health Pulse searches, run checks manually,
+          Save repeatable RecallRadar, DrugSignal, FoodRadar, or Regional Health Pulse searches, run checks manually,
           compare changes over time, and review deterministic monitor insights
           based on stored public-data history.
         </p>
@@ -358,7 +360,7 @@ export default function SavedMonitorsPage() {
             id="monitor-query"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder={module === "regional_health_pulse" ? "MN respiratory" : "eye drops"}
+            placeholder={module === "regional_health_pulse" ? "MN respiratory" : module === "foodradar" ? "chicken" : "eye drops"}
           />
           <small className="saved-monitor-muted-inline">
             {moduleQueryHelp[module]}
@@ -376,6 +378,7 @@ export default function SavedMonitorsPage() {
           >
             <option value="recallradar">RecallRadar</option>
             <option value="drugsignal">DrugSignal</option>
+            <option value="foodradar">FoodRadar</option>
             <option value="regional_health_pulse">Regional Health Pulse</option>
           </select>
         </div>
@@ -642,7 +645,7 @@ export default function SavedMonitorsPage() {
 
       <div className="saved-monitor-note">
         <strong>Current scope:</strong> Saved Monitors currently support manual
-        run checks for RecallRadar, DrugSignal, and Regional Health Pulse, Supabase persistence,
+        run checks for RecallRadar, DrugSignal, FoodRadar, and Regional Health Pulse, Supabase persistence,
         latest/previous result comparison, run history, change indicators, duplicate prevention,
         audit linking, deterministic monitor insights, and backend scheduler-lock protection.
         Production Cron, alert notifications, and public scheduling UI are not

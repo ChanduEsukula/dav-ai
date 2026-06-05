@@ -146,7 +146,7 @@ create table if not exists saved_monitors (
     last_scheduled_status text,
 
     constraint saved_monitors_module_check
-        check (module in ('recallradar', 'drugsignal', 'regional_health_pulse')),
+        check (module in ('recallradar', 'drugsignal', 'foodradar', 'regional_health_pulse')),
 
     constraint saved_monitors_status_check
         check (status in ('not_checked', 'checked', 'error')),
@@ -206,7 +206,7 @@ create table if not exists saved_monitor_runs (
     error_message text,
 
     constraint saved_monitor_runs_module_check
-        check (module in ('recallradar', 'drugsignal', 'regional_health_pulse')),
+        check (module in ('recallradar', 'drugsignal', 'foodradar', 'regional_health_pulse')),
 
     constraint saved_monitor_runs_status_check
         check (status in ('success', 'error')),
