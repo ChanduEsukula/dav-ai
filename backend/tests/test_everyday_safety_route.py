@@ -355,3 +355,69 @@ def test_everyday_safety_chicken_intent_excludes_chicken_of_the_sea_brand_noise(
     assert body["results"][0]["source_type"] == "USDA_FSIS_RECALL"
     assert body["results"][0]["product_description"] == "Ready-to-eat chicken breast meal"
     assert "Chicken of the Sea" not in str(body["results"])
+
+
+def test_everyday_safety_food_search_uses_normalized_query_upstream(monkeypatch):
+    now = datetime.now(timezone.utc).isoformat()
+    seen_queries = []
+
+    async def fake_search_food_recalls(query, limit, request_id=None):
+        seen_queries.append(("fda", query))
+        return {
+            "source_id": "openfda_food_enforcement",
+            "source_name": "openFDA Food Enforcement API",
+            "endpoint": "https://api.fda.gov/food/enforcement.json",
+            "query": query,
+            "retrieval_timestamp": now,
+            "raw": {"results": []},
+        }
+
+    async def fake_search_fsis_recalls(query, limit, request_id=None):
+        seen_queries.append(("fsis", query))
+        return {
+            "source_id": "usda_fsis_recall",
+            "source_name": "USDA FSIS Recall API",
+            "endpoint": "https://www.fsis.usda.gov/fsis/api/recall/v/1",
+            "query": query,
+            "retrieval_timestamp": now,
+            "raw": {"results": []},
+            "records": [],
+        }
+
+    monkeypatch.setattr(
+        everyday_safety_search.food_client,
+        "search_food_recalls",
+        fake_search_food_recalls,
+    )
+    monkeypatch.setattr(
+        everyday_safety_search.fsis_client,
+        "search_recalls",
+        fake_search_fsis_recalls,
+    )
+    _patch_persistence(monkeypatch)
+
+    response = client.get(
+        "/api/v1/everyday-safety/search",
+        params={"category": "food_supplement", "q": "  protien    powder  ", "limit": 5},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+
+    assert body["query"] == "protein powder"
+    assert body["raw_query"] == "  protien    powder  "
+    assert body["normalized_query"] == "protein powder"
+    assert body["correction_applied"] is True
+    assert body["suggestion_message"] == "Showing results for protein powder."
+    assert body["search_strategy_used"] == "intent_supplement_v1"
+    assert seen_queries == [("fda", "protein powder"), ("fsis", "protein powder")]
+
+
+def test_everyday_safety_rejects_whitespace_only_query():
+    response = client.get(
+        "/api/v1/everyday-safety/search",
+        params={"category": "food_supplement", "q": "   ", "limit": 5},
+    )
+
+    assert response.status_code == 400
+    assert response.json()["detail"]["code"] == "EVERYDAY_SAFETY_QUERY_EMPTY"

@@ -5,6 +5,7 @@ from app.audit.audit_event import build_audit_event
 from app.db.audit_repository import save_audit_event
 from app.db.source_pull_repository import save_source_pull_with_snapshot
 from app.scoring.recall_score import calculate_recall_risk_score
+from app.services.foodradar_query_normalization import normalize_foodradar_query
 from app.services.foodradar_search_intent import FoodRadarSearchIntent, classify_foodradar_search_intent
 from app.services.openfda_food_enforcement_client import OpenFDAFoodEnforcementClient
 from app.services.usda_fsis_recall_client import USDAFSISRecallClient
@@ -374,12 +375,17 @@ async def execute_everyday_safety_search(
     if category != "food_supplement":
         raise ValueError("Only category=food_supplement is implemented in v0.1.")
 
-    intent = classify_foodradar_search_intent(query)
+    query_normalization = normalize_foodradar_query(query)
+    search_query = query_normalization.normalized_query
+    if not search_query:
+        raise ValueError("FoodRadar search query must contain at least two non-whitespace characters.")
+
+    intent = classify_foodradar_search_intent(search_query)
     search_strategy_used = intent.search_strategy_used
 
     try:
         fda_payload = await food_client.search_food_recalls(
-            query=query,
+            query=search_query,
             limit=25,
             request_id=request_id,
         )
@@ -387,7 +393,7 @@ async def execute_everyday_safety_search(
         fsis_error_message = None
         try:
             fsis_payload = await fsis_client.search_recalls(
-                query=query,
+                query=search_query,
                 limit=25,
                 request_id=request_id,
             )
@@ -397,7 +403,7 @@ async def execute_everyday_safety_search(
                 "source_id": USDA_FSIS_RECALL["source_id"],
                 "source_name": USDA_FSIS_RECALL["source_name"],
                 "endpoint": USDA_FSIS_RECALL["endpoint"],
-                "query": query,
+                "query": search_query,
                 "retrieval_timestamp": datetime.now(timezone.utc).isoformat(),
                 "raw": {"results": [], "error": fsis_error_message},
                 "records": [],
@@ -457,10 +463,13 @@ async def execute_everyday_safety_search(
             source_id="foodradar_multi_source",
             source_name="FoodRadar multi-source search",
             endpoint="openFDA Food Enforcement + USDA FSIS Recall API",
-            query=query,
+            query=search_query,
             query_params={
                 "category": category,
-                "q": query,
+                "q": search_query,
+                "raw_query": query_normalization.raw_query,
+                "normalized_query": query_normalization.normalized_query,
+                "correction_applied": query_normalization.correction_applied,
                 "limit": limit,
                 "sort": sort,
                 "upstream_fetch_limit": 25,
@@ -492,7 +501,11 @@ async def execute_everyday_safety_search(
         )
 
         return {
-            "query": query,
+            "query": search_query,
+            "raw_query": query_normalization.raw_query,
+            "normalized_query": query_normalization.normalized_query,
+            "correction_applied": query_normalization.correction_applied,
+            "suggestion_message": query_normalization.suggestion_message,
             "category": "food_supplement",
             "category_label": "Food & Supplements",
             "count": len(normalized_results),

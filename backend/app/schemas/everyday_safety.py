@@ -46,6 +46,10 @@ class EverydaySafetyRecord(BaseModel):
 
 class EverydaySafetySearchResponse(BaseModel):
     query: str
+    raw_query: str
+    normalized_query: str
+    correction_applied: bool
+    suggestion_message: str | None = None
     category: EverydaySafetyCategory
     category_label: str
     count: int

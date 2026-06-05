@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from app.services.foodradar_query_normalization import normalize_foodradar_query
+
 
 @dataclass(frozen=True)
 class FoodRadarSearchIntent:
@@ -119,7 +121,7 @@ def _build_supplement_terms(normalized_query: str) -> list[str]:
 
 
 def classify_foodradar_search_intent(query: str) -> FoodRadarSearchIntent:
-    normalized_query = " ".join(query.lower().strip().split())
+    normalized_query = normalize_foodradar_query(query).normalized_query
 
     if normalized_query in KNOWN_BRAND_PHRASES:
         return FoodRadarSearchIntent(

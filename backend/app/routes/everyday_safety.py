@@ -24,6 +24,15 @@ async def search_everyday_safety(
 ):
     request_id = getattr(request.state, "request_id", None)
 
+    if not q.strip():
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "message": "FoodRadar search query must contain at least two non-whitespace characters.",
+                "code": "EVERYDAY_SAFETY_QUERY_EMPTY",
+            },
+        )
+
     try:
         return await execute_everyday_safety_search(
             category=category,

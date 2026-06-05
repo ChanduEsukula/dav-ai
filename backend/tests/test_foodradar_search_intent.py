@@ -39,3 +39,25 @@ def test_unknown_query_falls_back_to_general_food():
 
     assert intent.intent_type == "general_food"
     assert intent.search_strategy_used == "multi_source_exact_phrase"
+
+
+def test_foodradar_query_normalization_handles_common_typos_and_spacing():
+    cases = [
+        ("chiken", "chicken", "poultry_meat"),
+        ("protien powder", "protein powder", "supplement"),
+        ("proteinpowder", "protein powder", "supplement"),
+        ("protein-powder", "protein powder", "supplement"),
+        ("chicken,", "chicken", "poultry_meat"),
+        ("E coli", "e. coli", "hazard"),
+        ("e-coli", "e. coli", "hazard"),
+        ("e.coli", "e. coli", "hazard"),
+        ("multivitamin", "vitamin", "supplement"),
+        ("vitamins", "vitamin", "supplement"),
+        ("  protein    powder  ", "protein powder", "supplement"),
+    ]
+
+    for raw_query, expected_normalized_query, expected_intent in cases:
+        intent = classify_foodradar_search_intent(raw_query)
+
+        assert intent.normalized_query == expected_normalized_query
+        assert intent.intent_type == expected_intent
