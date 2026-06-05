@@ -24,6 +24,7 @@ def test_registered_sources_include_current_public_source_surfaces():
         "openfda_cosmetic_event",
         "openfda_food_enforcement",
         "usda_fsis_recall",
+        "foodradar_multi_source",
         "regional_health_pulse_demo",
     }
     assert modules == {
@@ -54,3 +55,27 @@ def test_regional_health_alignment_migration_covers_seed_and_constraints():
     assert "drop constraint if exists saved_monitors_module_check" in migration_source
     assert "drop constraint if exists saved_monitor_runs_module_check" in migration_source
     assert "check (module in ('recallradar', 'drugsignal', 'regional_health_pulse'))" in migration_source
+
+
+def test_runtime_sources_are_seeded_in_database_schema():
+    schema_sql = SCHEMA_PATH.read_text()
+
+    for source in REGISTERED_SOURCES:
+        assert source["source_id"] in schema_sql
+        assert source["source_name"] in schema_sql
+        assert source["endpoint"] in schema_sql
+        assert source["module"] in schema_sql
+
+
+def test_foodradar_audit_source_id_is_registered_and_seeded():
+    schema_sql = SCHEMA_PATH.read_text()
+    registered_source_ids = {source["source_id"] for source in REGISTERED_SOURCES}
+
+    assert "foodradar_multi_source" in registered_source_ids
+    assert "foodradar_multi_source" in schema_sql
+
+
+def test_no_duplicate_registered_source_ids():
+    source_ids = [source["source_id"] for source in REGISTERED_SOURCES]
+
+    assert len(source_ids) == len(set(source_ids))

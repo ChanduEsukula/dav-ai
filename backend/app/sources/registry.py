@@ -23,7 +23,6 @@ OPENFDA_DRUG_EVENT = {
     "update_cadence": "Periodic FDA FAERS updates",
 }
 
-
 OPENFDA_COSMETIC_EVENT = {
     "source_id": "openfda_cosmetic_event",
     "source_name": "openFDA Cosmetic Event API",
@@ -32,7 +31,6 @@ OPENFDA_COSMETIC_EVENT = {
     "description": "Cosmetic adverse-event reports from openFDA for skincare, makeup, hair, fragrance, and related products.",
     "update_cadence": "Source-dependent FDA cosmetic event updates",
 }
-
 
 OPENFDA_FOOD_ENFORCEMENT = {
     "source_id": "openfda_food_enforcement",
@@ -43,7 +41,6 @@ OPENFDA_FOOD_ENFORCEMENT = {
     "update_cadence": "Source-dependent FDA updates",
 }
 
-
 USDA_FSIS_RECALL = {
     "source_id": "usda_fsis_recall",
     "source_name": "USDA FSIS Recall API",
@@ -51,6 +48,15 @@ USDA_FSIS_RECALL = {
     "module": "FoodRadar",
     "description": "Meat, poultry, egg-product recall and public-health-alert records from USDA FSIS.",
     "update_cadence": "Real-time FSIS recall and public health alert updates",
+}
+
+FOODRADAR_MULTI_SOURCE = {
+    "source_id": "foodradar_multi_source",
+    "source_name": "FoodRadar Multi-Source Recall Search",
+    "endpoint": "https://api.fda.gov/food/enforcement.json + https://www.fsis.usda.gov/fsis/api/recall/v/1",
+    "module": "FoodRadar",
+    "description": "Aggregate FoodRadar workflow combining openFDA Food Enforcement and USDA FSIS recall/public-health-alert records.",
+    "update_cadence": "Source-dependent FDA updates plus FSIS recall/public-health-alert updates",
 }
 
 REGIONAL_HEALTH_PULSE_DEMO = {
@@ -68,5 +74,6 @@ REGISTERED_SOURCES = [
     OPENFDA_COSMETIC_EVENT,
     OPENFDA_FOOD_ENFORCEMENT,
     USDA_FSIS_RECALL,
+    FOODRADAR_MULTI_SOURCE,
     REGIONAL_HEALTH_PULSE_DEMO,
 ]
