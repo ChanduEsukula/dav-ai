@@ -21,6 +21,7 @@ from app.schemas.saved_monitors import (
     SavedMonitorScheduledStatus,
 )
 from app.services.search_workflows.drug_signal_search import execute_drug_signal_search
+from app.services.search_workflows.everyday_safety_search import execute_everyday_safety_search
 from app.services.search_workflows.recall_search import execute_recall_search
 from app.services.search_workflows.regional_health_search import execute_regional_health_search
 
@@ -65,6 +66,17 @@ def _extract_drug_signal_score(result: dict[str, Any]) -> tuple[int | None, str 
 
     intelligence_score = result.get("intelligence_score") or {}
     return intelligence_score.get("score"), intelligence_score.get("label")
+
+
+def _extract_foodradar_score(result: dict[str, Any]) -> tuple[int | None, str | None]:
+    """Extract the first FoodRadar review score and label from a result payload."""
+
+    results = result.get("results") or []
+    if not results:
+        return None, None
+
+    risk_score = results[0].get("risk_score") or {}
+    return risk_score.get("score"), risk_score.get("label")
 
 
 def _parse_regional_health_monitor_query(query: str) -> tuple[str, str]:
@@ -118,6 +130,21 @@ async def _run_monitor(monitor: SavedMonitor) -> dict[str, Any]:
             request_id=request_id,
         )
         score, score_label = _extract_drug_signal_score(result)
+        return {
+            "record_count": result.get("count", 0),
+            "score": score,
+            "score_label": score_label,
+            "audit_id": (result.get("audit") or {}).get("audit_id"),
+        }
+
+    if monitor.module == SavedMonitorModule.FOODRADAR:
+        result = await execute_everyday_safety_search(
+            category="food_supplement",
+            query=monitor.query,
+            limit=5,
+            request_id=request_id,
+        )
+        score, score_label = _extract_foodradar_score(result)
         return {
             "record_count": result.get("count", 0),
             "score": score,

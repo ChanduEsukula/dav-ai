@@ -372,3 +372,47 @@ async def test_run_monitor_supports_regional_health_pulse(monkeypatch):
     assert result["score"] == 46
     assert result["score_label"] == "Increasing"
     assert result["audit_id"] == "33333333-3333-4333-8333-333333333333"
+
+
+@pytest.mark.anyio
+async def test_run_monitor_supports_foodradar(monkeypatch):
+    monitor = _create_monitor(
+        query="chicken",
+        module=SavedMonitorModule.FOODRADAR,
+    )
+
+    async def fake_everyday_safety_search(
+        category: str,
+        query: str,
+        limit: int,
+        request_id: str | None = None,
+    ):
+        return {
+            "query": query,
+            "category": category,
+            "count": 1,
+            "audit": {
+                "audit_id": "44444444-4444-4444-8444-444444444444",
+            },
+            "results": [
+                {
+                    "risk_score": {
+                        "score": 32,
+                        "label": "Moderate",
+                    }
+                }
+            ],
+        }
+
+    monkeypatch.setattr(
+        scheduled_monitor_refresh,
+        "execute_everyday_safety_search",
+        fake_everyday_safety_search,
+    )
+
+    result = await scheduled_monitor_refresh._run_monitor(monitor)
+
+    assert result["record_count"] == 1
+    assert result["score"] == 32
+    assert result["score_label"] == "Moderate"
+    assert result["audit_id"] == "44444444-4444-4444-8444-444444444444"
