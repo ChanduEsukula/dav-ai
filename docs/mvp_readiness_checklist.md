@@ -124,5 +124,10 @@ Latest confirmed verification evidence:
 - Deployment smoke should be re-run after current FoodRadar/CosmeticSignal documentation and any hosted app changes before claiming current deployed readiness
 - Live smoke tests confirmed `semantic_preview` appears in both `/api/v1/recalls/search` and `/api/v1/drug-events/search`.
 - Recent credibility/documentation improvements: README/docs current MVP scope cleanup, FoodRadar and CosmeticSignal documentation, expanded source registry language, updated public-data safety boundaries, and current verification results.
+- Local backend smoke verified on June 5, 2026:
+  - `/api/v1/system/status` returned 200 OK.
+  - `/api/v1/sources` returned 7 registered sources.
+  - `/api/v1/everyday-safety/search?q=chicken&category=food_supplement&limit=5` returned 200 OK with FoodRadar audit metadata.
+  - FoodRadar fail-soft behavior was confirmed: openFDA Food Enforcement succeeded while USDA FSIS was marked error.
 
 This evidence supports portfolio MVP readiness for review and demo discussion. It does not indicate production healthcare readiness or clinical validity.
