@@ -178,6 +178,12 @@ describe('AuditHistoryPage', () => {
 
     expect(screen.getByText('22222222-2222-4222-8222-222222222222')).toBeInTheDocument()
 
+    await waitFor(() => {
+      expect(mockedGetAuditEventSourcePull).toHaveBeenCalledWith(
+        '22222222-2222-4222-8222-222222222222',
+      )
+    })
+
     window.history.replaceState(null, '', '/')
   })
 
