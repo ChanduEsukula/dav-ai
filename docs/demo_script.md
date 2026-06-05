@@ -4,6 +4,8 @@
 
 DAV AI is a public-data healthcare and everyday safety intelligence workspace that helps users search, review, audit, monitor, and explain openFDA, USDA FSIS, and scaffolded public-health safety signals with source transparency, deterministic review workflows, and responsible AI boundaries.
 
+The primary MVP demo path is **RecallRadar → DrugSignal → FoodRadar**. CosmeticSignal is an optional extension surface, and Regional Health Pulse is a scaffolded architecture extension rather than a primary MVP module.
+
 DAV AI is not a medical chatbot, not a clinical decision-support system, not a diagnosis tool, and not a patient-risk prediction product.
 
 ## 2. Product Positioning
@@ -125,7 +127,7 @@ What to emphasize:
 
 ### Step 4: FoodRadar
 
-Show FoodRadar after DrugSignal to demonstrate the everyday safety direction.
+Show FoodRadar third as the final primary MVP module and the clearest demonstration of the everyday safety direction.
 
 Explain:
 
@@ -150,9 +152,9 @@ What to emphasize:
 
 ---
 
-### Step 5: CosmeticSignal
+### Step 5: Optional Extension - CosmeticSignal
 
-Show CosmeticSignal next.
+Show CosmeticSignal only after the primary RecallRadar, DrugSignal, and FoodRadar story is clear.
 
 Explain:
 
@@ -264,9 +266,9 @@ What to emphasize:
 
 ---
 
-### Step 9: Regional Health Pulse
+### Step 9: Architecture Extension - Regional Health Pulse Scaffold
 
-Show Regional Health Pulse carefully.
+Show Regional Health Pulse carefully only if you want to discuss architecture extension beyond the primary MVP path.
 
 Explain:
 
@@ -431,15 +433,13 @@ Correct framing:
 
 ### Implemented
 
-- RecallRadar
-- DrugSignal
-- FoodRadar
-- CosmeticSignal
+- Primary MVP modules: RecallRadar, DrugSignal, FoodRadar
+- Secondary extension surface: CosmeticSignal
 - Data Sources
 - System Status
 - Audit History
 - Saved Monitors foundation
-- Regional Health Pulse scaffold
+- Regional Health Pulse scaffold extension
 - deterministic safety briefings
 - source registry
 - audit/source transparency
@@ -622,11 +622,11 @@ Use this order in interviews or presentations:
 2. Show RecallRadar.
 3. Show DrugSignal.
 4. Show FoodRadar.
-5. Show CosmeticSignal.
+5. Optionally show CosmeticSignal as an extension surface.
 6. Show Audit History.
 7. Show Data Sources/System Status.
 8. Show Saved Monitors.
-9. Show Regional Health Pulse as scaffold only.
+9. Optionally show Regional Health Pulse as scaffold/architecture extension only.
 10. Show offline ML experiments.
 11. End with roadmap and what you intentionally did not productionize.
 

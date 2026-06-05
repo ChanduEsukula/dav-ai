@@ -4,6 +4,8 @@
 
 DAV AI is a full-stack public-data safety intelligence prototype for healthcare and everyday products. It turns public openFDA and USDA FSIS recall, public-health-alert, and adverse-event data into source-aware, explainable review workflows with audit trails, versioned scoring, reaction classification, trend snapshots, deterministic role-based safety briefings, and repeatable saved-monitor workflows.
 
+The primary MVP demo path is **RecallRadar → DrugSignal → FoodRadar**. CosmeticSignal, Regional Health Pulse, Saved Monitors, Data Sources, System Status, Audit History, Source Registry, and provenance/freshness surfaces are implemented or scaffolded secondary/extension surfaces that support the broader platform story.
+
 ## Responsible ML Milestone
 
 DAV AI includes an offline responsible ML experiment layer under `backend/ml_experiments`.
@@ -41,6 +43,8 @@ This project is an MVP and portfolio-grade engineering prototype. It is not a me
 
 DAV AI is a public-data healthcare and everyday safety intelligence MVP/prototype. It helps reviewers search, score, audit, monitor, and explain public safety signals for medicines, adverse-event reports, food/supplement recalls, cosmetic-event reports, and scaffolded public-health workflows, but it is not production healthcare software yet.
 
+The current primary product story is **RecallRadar → DrugSignal → FoodRadar**: public drug recall review, public adverse-event reporting-pattern review, and everyday food/supplement/meat/poultry/egg-product recall and public-health-alert review.
+
 - DAV AI does not provide medical advice, diagnosis, treatment guidance, clinical decision support, or proof of causation.
 - DAV AI does not use PHI, private patient records, diagnosis history, prescription history, insurance data, or personal medical information.
 - Recall records and adverse-event reports must be verified against official public sources before action.
@@ -52,16 +56,17 @@ DAV AI is a public-data healthcare and everyday safety intelligence MVP/prototyp
 
 ## Demo Path
 
-For a concise walkthrough, use this path:
+For a concise walkthrough, use the primary MVP path first:
 
 1. **Home**: Introduce DAV AI as public-data healthcare safety intelligence with traceability and responsible boundaries.
 2. **RecallRadar**: Search a recall term, review scoring, source metadata, audit details, and safety briefing output.
 3. **DrugSignal**: Search a drug term, review FAERS-style reporting patterns, deterministic scoring, reaction classification, and trend context.
 4. **FoodRadar**: Search food, supplement, meat, poultry, or egg-product recall terms, review multi-source public recall cards, score/sort behavior, and source limitations.
-5. **CosmeticSignal**: Search cosmetic product or reaction terms such as `rash`, `hair dye`, or `mascara`, review cosmetic reporting signals, top reactions, source context, and causation boundaries.
+5. **CosmeticSignal (optional extension)**: Search cosmetic product or reaction terms such as `rash`, `hair dye`, or `mascara`, review cosmetic reporting signals, top reactions, source context, and causation boundaries.
 6. **Audit History**: Show persisted search traceability, filters, detail view, copy actions, CSV export, and source-pull provenance when available.
 7. **Sources/System Status**: Show registered public sources, freshness, backend health, audit persistence visibility, and data-quality transparency.
 8. **Saved Monitors**: Create or review repeatable public-data monitors, run a manual check, inspect run history, compare latest/previous results, and open the related audit event.
+9. **Regional Health Pulse (scaffold extension only)**: Mention it as a scaffolded architecture extension, not live CDC/HHS surveillance, outbreak detection, emergency guidance, or a primary MVP module.
 
 ## Engineering Highlights
 
@@ -103,14 +108,16 @@ docs/saved_monitors_v2_1_release_checkpoint.md
 
 ## Current Project Status
 
-DAV AI currently includes:
-
-- **Regional Health Pulse MVP scaffold** for public-health signal review. This backend and frontend foundation uses a clearly labeled scaffold source, deterministic trend labeling, source registry metadata, audit summary metadata, source-pull snapshot handling, scaffold source freshness status, polished Health Pulse UI, mobile/tablet navigation improvements, Audit History linking, Saved Monitors backend support, scheduled-refresh compatibility, and public-health safety disclaimers. It is not live CDC/HHS surveillance, not outbreak detection, not emergency guidance, not medical advice, and not a personal disease-risk predictor.
+DAV AI's **primary MVP product story** currently centers on:
 
 - **RecallRadar** for live openFDA Drug Enforcement recall search.
 - **DrugSignal** for openFDA Drug Event / FAERS-style adverse-event reporting-pattern review.
 - **FoodRadar** for everyday food/supplement safety searches using openFDA Food Enforcement plus USDA FSIS recall and public-health-alert coverage for meat, poultry, and egg products.
+
+Secondary/extension surfaces and platform foundations include:
+
 - **CosmeticSignal** for openFDA Cosmetic Event searches with query expansion for common product/reaction terms such as rash, hair dye, mascara, skincare, makeup, hair, and fragrance.
+- **Regional Health Pulse MVP scaffold** for public-health signal review. This backend and frontend foundation uses a clearly labeled scaffold source, deterministic trend labeling, source registry metadata, audit summary metadata, source-pull snapshot handling, scaffold source freshness status, polished Health Pulse UI, mobile/tablet navigation improvements, Audit History linking, Saved Monitors backend support, scheduled-refresh compatibility, and public-health safety disclaimers. It is not live CDC/HHS surveillance, not outbreak detection, not emergency guidance, not medical advice, and not a personal disease-risk predictor.
 - **Recall Review Score** for transparent recall review-priority scoring.
 - **DrugSignal Intelligence Score v1** for explainable FAERS reporting-pattern scoring.
 - **Reaction Classification v1** for rule-based grouping of DrugSignal reaction terms.
@@ -150,7 +157,7 @@ DAV AI is intentionally focused on public-data traceability, operational readine
 
 | Status | Features |
 |---|---|
-| Implemented | RecallRadar; DrugSignal; FoodRadar; CosmeticSignal; Regional Health Pulse MVP scaffold; Audit History; System Status / Data Quality; Data Sources; deterministic safety briefings; deterministic semantic similarity previews for RecallRadar and DrugSignal; Saved Monitors run history for RecallRadar, DrugSignal, and Health Pulse; saved-monitor latest/previous comparison; source-pull provenance; raw public-source snapshots; SHA-256 payload hashing; backend scheduled-refresh foundation; scheduler CLI guardrails; database-backed scheduler locks; Render Cron dry-run documentation. |
+| Implemented | Primary MVP modules: RecallRadar; DrugSignal; FoodRadar. Secondary/extension surfaces: CosmeticSignal; Regional Health Pulse MVP scaffold; Audit History; System Status / Data Quality; Data Sources; deterministic safety briefings; deterministic semantic similarity previews for RecallRadar and DrugSignal; Saved Monitors run history for RecallRadar, DrugSignal, and Health Pulse; saved-monitor latest/previous comparison; source-pull provenance; raw public-source snapshots; SHA-256 payload hashing; backend scheduled-refresh foundation; scheduler CLI guardrails; database-backed scheduler locks; Render Cron dry-run documentation. |
 | Partial | Deployment hardening; production observability; scheduled refresh backend foundation; authentication/RBAC planning. |
 | Planned | Production Cron activation; automated alerts and alert delivery; public scheduling UI; authentication/RBAC; notification preferences; briefing persistence/history; production ML integration; live CDC/HHS-backed Regional Health Pulse data connectors; EnviroHealth Signal; CNN/OCR label scanner; RAG/LLM upgrades. |
 
@@ -425,7 +432,7 @@ docs/render_cron_saved_monitors_plan.md
 
 ## Current Engineering Status
 
-The active MVP modules are RecallRadar, DrugSignal, FoodRadar, CosmeticSignal, Regional Health Pulse MVP scaffold, Audit History, Safety Briefing Engine, Source Registry, System Status, Data Quality, and Saved Monitors v2.6 foundation.
+The primary MVP engineering path is RecallRadar, DrugSignal, and FoodRadar. Additional implemented or scaffolded extension surfaces include CosmeticSignal, Regional Health Pulse MVP scaffold, Audit History, Safety Briefing Engine, Source Registry, System Status, Data Quality, and Saved Monitors v2.6 foundation.
 
 Current engineering support includes:
 
@@ -1299,16 +1306,17 @@ These docs support reproducibility, reviewer confidence, and production-readines
 
 Recommended next steps:
 
-1. Keep RecallRadar, DrugSignal, FoodRadar, CosmeticSignal, Audit History, Source Registry, System/Data Quality, Safety Briefing Engine, and Saved Monitors v2.6 foundation stable.
-2. Keep production Cron disabled until deployment-environment scheduler verification, scheduler observability, and rollback guidance are stronger.
-3. Improve Trend Snapshot examples using repeated-query audit history.
-4. Add frontend trend comparison visualization improvements.
-5. Expand saved monitor detail and run-history review.
-6. Re-verify database-backed scheduler locking in the target deployment environment before any recurring production job.
-7. Add authentication and role-aware access control before user-specific scheduling or alerts.
-8. Add a production observability dashboard or monitoring summary beyond current request tracing and operational transparency.
-9. Add formal NLP/ML evaluation dataset for reaction classification.
-10. Explore NLP-assisted clustering only after the rule-based baseline is evaluated.
+1. Keep the primary MVP path stable: RecallRadar, DrugSignal, and FoodRadar.
+2. Keep secondary/extension surfaces stable without making them the main MVP story: CosmeticSignal, Regional Health Pulse scaffold, Audit History, Source Registry, System/Data Quality, Safety Briefing Engine, and Saved Monitors v2.6 foundation.
+3. Keep production Cron disabled until deployment-environment scheduler verification, scheduler observability, and rollback guidance are stronger.
+4. Improve Trend Snapshot examples using repeated-query audit history.
+5. Add frontend trend comparison visualization improvements.
+6. Expand saved monitor detail and run-history review.
+7. Re-verify database-backed scheduler locking in the target deployment environment before any recurring production job.
+8. Add authentication and role-aware access control before user-specific scheduling or alerts.
+9. Add a production observability dashboard or monitoring summary beyond current request tracing and operational transparency.
+10. Add formal NLP/ML evaluation dataset for reaction classification.
+11. Explore NLP-assisted clustering only after the rule-based baseline is evaluated.
 
 ---
 

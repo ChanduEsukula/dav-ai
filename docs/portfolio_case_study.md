@@ -427,7 +427,8 @@ The project includes several modules, so scope control matters.
 
 Decision:
 
-- keep RecallRadar, DrugSignal, FoodRadar, CosmeticSignal, Audit History, and Saved Monitors as the core product loop
+- keep RecallRadar, DrugSignal, and FoodRadar as the primary MVP product loop
+- describe CosmeticSignal as a secondary extension surface
 - describe Regional Health Pulse as scaffold only
 - keep advanced AI on the roadmap
 
