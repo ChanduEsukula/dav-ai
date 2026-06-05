@@ -129,5 +129,11 @@ Latest confirmed verification evidence:
   - `/api/v1/sources` returned 7 registered sources.
   - `/api/v1/everyday-safety/search?q=chicken&category=food_supplement&limit=5` returned 200 OK with FoodRadar audit metadata.
   - FoodRadar fail-soft behavior was confirmed: openFDA Food Enforcement succeeded while USDA FSIS was marked error.
+- Deployed backend smoke verified on June 5, 2026 against `https://medtrek-ai.onrender.com`:
+  - `/api/v1/system/status` returned HTTP/2 200.
+  - Database configuration and audit readability both returned true.
+  - Source registry returned 7 registered sources.
+  - `/api/v1/everyday-safety/search?q=chicken&category=food_supplement&limit=5` returned 200 OK with FoodRadar audit metadata.
+  - FoodRadar deployed fail-soft behavior was confirmed: openFDA Food Enforcement succeeded while USDA FSIS was marked error.
 
 This evidence supports portfolio MVP readiness for review and demo discussion. It does not indicate production healthcare readiness or clinical validity.
