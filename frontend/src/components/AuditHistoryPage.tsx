@@ -6,7 +6,7 @@ import {
   type SourcePullProvenanceItem,
 } from '../api/auditEvents'
 
-type ModuleFilter = 'all' | 'RecallRadar' | 'DrugSignal' | 'RegionalHealthPulse'
+type ModuleFilter = 'all' | 'RecallRadar' | 'DrugSignal' | 'FoodRadar' | 'RegionalHealthPulse'
 type StatusFilter = 'all' | 'success' | 'empty' | 'error'
 type AuditDetailViewMode = 'basic' | 'technical'
 
@@ -446,6 +446,7 @@ export default function AuditHistoryPage() {
                 <option value="all">All modules</option>
                 <option value="RecallRadar">RecallRadar</option>
                 <option value="DrugSignal">DrugSignal</option>
+                <option value="FoodRadar">FoodRadar</option>
                 <option value="RegionalHealthPulse">Regional Health Pulse</option>
               </select>
             </label>
