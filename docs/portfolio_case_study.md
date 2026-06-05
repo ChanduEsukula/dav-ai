@@ -6,6 +6,19 @@ DAV AI is a public-data healthcare and everyday safety intelligence platform tha
 
 The project is designed as a source-aware review workspace, not a medical chatbot or clinical decision-support tool. Its core value is turning public safety data into a traceable workflow with normalized results, deterministic scoring, audit history, saved monitors, and responsible ML readiness.
 
+The current portfolio MVP story is intentionally focused:
+
+```text
+RecallRadar → DrugSignal → FoodRadar
+```
+
+CosmeticSignal, Regional Health Pulse, Saved Monitors, Data Sources, System Status, Audit History, Source Registry, source freshness, and provenance surfaces support the platform story, but they are secondary to the main demo path.
+
+Final supporting docs:
+
+- `docs/final_portfolio_mvp_checkpoint.md`
+- `docs/final_portfolio_architecture.md`
+
 ## 2. My Role
 
 I worked on DAV AI as a full-stack engineer, AI/ML engineer, responsible AI designer, and product builder.
@@ -48,14 +61,17 @@ DAV AI is not a medical advice tool.
 It does not provide:
 
 - diagnosis
-- treatment recommendations
+- treatment guidance
 - medication-change guidance
 - clinical decision support
+- official product-safety verdicts
 - patient-specific risk prediction
 - causation claims
 - outbreak prediction
+- medical device functionality
+- replacement guidance for FDA, USDA, CDC, clinicians, pharmacists, emergency services, or official source guidance
 
-DAV AI uses public data only.
+DAV AI uses public data only in the current MVP.
 
 It does not use:
 
@@ -72,6 +88,8 @@ The correct framing is:
 > DAV AI supports public-data review. It does not make clinical decisions.
 
 ## 5. What I Built
+
+The primary MVP modules are RecallRadar, DrugSignal, and FoodRadar. They are the first demo path because they show the same source-aware pattern across public recalls, public adverse-event reporting patterns, and everyday food/supplement safety.
 
 ### RecallRadar
 
@@ -115,7 +133,11 @@ Key capabilities:
 - audit/source metadata
 - official-source verification language
 
-FoodRadar explicitly states that a missing result does not prove that a product is safe or unsafe.
+FoodRadar explicitly states that a missing result does not prove that a product is safe or unsafe. It also supports fail-soft multi-source behavior, so available source results can still render with source status when one upstream source errors.
+
+### Supporting Surfaces
+
+The following surfaces are implemented or scaffolded as secondary/supporting parts of the platform. They strengthen trust, traceability, and product depth, but they should not replace the RecallRadar → DrugSignal → FoodRadar portfolio story.
 
 ### CosmeticSignal
 
@@ -228,17 +250,21 @@ The frontend is built with:
 - React
 - TypeScript
 - Vite
+- Vercel deployment at `https://dav-ai.vercel.app`
 - Axios API clients
 - component-based product pages
 - custom CSS
 - Vitest
 - React Testing Library
 
-Important frontend areas include:
+Primary frontend areas include:
 
 - RecallRadar
 - DrugSignal
 - FoodRadar
+
+Supporting frontend areas include:
+
 - CosmeticSignal
 - Audit History
 - Data Sources
@@ -252,6 +278,7 @@ Important frontend areas include:
 The backend is built with:
 
 - FastAPI
+- Render deployment at `https://medtrek-ai.onrender.com`
 - Pydantic schemas
 - route/service/scoring/repository separation
 - openFDA clients
@@ -261,6 +288,7 @@ The backend is built with:
 - saved-monitor workflows
 - scheduled-refresh foundation
 - PostgreSQL/Supabase-ready persistence
+- Supabase/PostgreSQL audit, source, and saved-monitor persistence
 - Alembic migrations
 - pytest
 
@@ -294,7 +322,9 @@ A typical DAV AI workflow looks like this:
 11. Future monitor runs compare latest vs. previous public-data activity.
 12. Offline ML experiments prepare future review-priority and trend intelligence without changing production behavior.
 
-This makes the project more than a simple frontend calling an API. It has a review workflow, source registry, audit trail, scoring layer, persistence boundary, monitor loop, and responsible ML roadmap.
+FoodRadar adds a useful distributed-systems wrinkle: it combines openFDA Food Enforcement and USDA FSIS Recall API coverage, and it can display partial source success/failure instead of treating every upstream issue as a total product failure.
+
+This makes the project more than a simple frontend calling an API. It has a review workflow, source registry, audit trail, scoring layer, persistence boundary, monitor loop, fail-soft source behavior, and responsible ML roadmap.
 
 ## 8. Responsible AI Decisions
 
@@ -343,14 +373,39 @@ The strongest engineering theme is:
 
 Latest confirmed verification evidence:
 
-- Backend tests: 260 passed
+- Backend tests: 263 passed
 - Frontend tests: 70 passed
 - Frontend lint: passed
 - Frontend production build: passed
-- Deployment smoke should be re-run after current FoodRadar/CosmeticSignal documentation and any hosted app changes before claiming current deployed readiness
+- Backend deployment URL: `https://medtrek-ai.onrender.com`
+- Frontend deployment URL: `https://dav-ai.vercel.app`
+- Latest verified commit when the final checkpoint was written: `45be0be` Document deployed frontend FoodRadar smoke verification
+- Current final docs commits also exist:
+  - `ffb8d8e` Add final portfolio MVP checkpoint
+  - `b02027e` Add final portfolio architecture document
+- Final checkpoint doc: `docs/final_portfolio_mvp_checkpoint.md`
+- Final architecture doc: `docs/final_portfolio_architecture.md`
 - CI workflow includes backend tests, frontend tests, lint, build, and smoke-test coverage
 - Live smoke tests confirmed `semantic_preview` appears in both `/api/v1/recalls/search` and `/api/v1/drug-events/search`.
-- Recent documentation improvements: README/docs now include FoodRadar, CosmeticSignal, expanded public data sources, updated safety boundaries, and current verification results.
+
+Deployed backend smoke verified:
+
+- `/api/v1/system/status` returned 200.
+- API status was ok.
+- Database was configured.
+- Audit history was readable.
+- Source registry returned 7 sources.
+- FoodRadar API search for `chicken` returned 200 with audit metadata.
+- FoodRadar fail-soft behavior was confirmed: openFDA Food Enforcement succeeded while USDA FSIS was marked error.
+
+Deployed frontend smoke verified:
+
+- Sources page loaded and showed 7 sources.
+- System page loaded API ok, database configured, audit readable, and 7 sources.
+- FoodRadar search for `chicken` rendered 1 matching public food/supplement recall record.
+- FoodRadar displayed openFDA Food Enforcement success with 23 source records.
+- FoodRadar displayed USDA FSIS error with 0 records.
+- FoodRadar result card rendered review score 32 / Moderate.
 
 Important note:
 
@@ -358,11 +413,14 @@ Important note:
 
 ## 11. What Is Implemented
 
-Implemented:
+Primary MVP modules:
 
 - RecallRadar
 - DrugSignal
 - FoodRadar
+
+Secondary/supporting surfaces:
+
 - CosmeticSignal
 - Audit History
 - Data Sources
@@ -372,7 +430,9 @@ Implemented:
 - deterministic safety briefings
 - source registry
 - audit/source transparency
+- source freshness surfaces
 - source-pull metadata foundation
+- provenance and payload-hash surfaces
 - rule-based review scoring
 - offline Responsible ML experiments
 - backend tests
@@ -391,6 +451,9 @@ Not production-grade yet:
 - production alert delivery
 - notification preferences
 - auth/RBAC
+- ProductScan
+- OCR/CNN label scanning
+- production Cron activation
 - full deployment observability dashboard
 - model registry
 - semantic search
@@ -508,20 +571,20 @@ Key points:
 
 The next responsible engineering milestone is:
 
-> Source freshness risk scoring and payload-change intelligence.
+> Source reliability hardening, deployed smoke maintenance, and careful portfolio polish around the verified RecallRadar → DrugSignal → FoodRadar story.
 
 This should come before deep learning, RAG, or production ML.
 
 Recommended sequence:
 
-1. Source freshness risk scoring
-2. Payload-change intelligence
-3. Real public-data dataset export from audit and monitor history
-4. Reviewed-label fixtures
-5. Evaluation dashboard
-6. Feature-flagged internal ML preview
-7. Semantic search or RAG after stronger grounding
-8. Deep learning only if data volume and use case justify it
+1. Keep deployed smoke verification current for RecallRadar, DrugSignal, FoodRadar, Sources, System Status, and Audit History.
+2. Harden source reliability and source-status language for openFDA and USDA FSIS.
+3. Continue polishing source freshness, payload-change, and provenance surfaces as supporting trust features.
+4. Export real public-data history from audit and monitor runs.
+5. Add reviewed-label fixtures and evaluation dashboards.
+6. Introduce feature-flagged internal ML previews only after evaluation and rollback controls exist.
+7. Add semantic search or RAG only after stronger grounding.
+8. Add deep learning only if data volume and use case justify it.
 
 ## 16. Final Summary
 
