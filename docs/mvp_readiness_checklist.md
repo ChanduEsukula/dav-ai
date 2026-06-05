@@ -99,7 +99,18 @@ The following surfaces are implemented or scaffolded, but should be presented as
 
 Run these before declaring the MVP stable:
 
-bash cd /Users/chanduesukula/dav-ai  source /Users/chanduesukula/dav-ai/.venv/bin/activate  PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest backend -p no:cacheprovider  cd frontend npm test npm run lint npm run build 
+```bash
+cd /Users/chanduesukula/dav-ai
+
+source /Users/chanduesukula/dav-ai/.venv/bin/activate
+
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest backend -p no:cacheprovider
+
+cd frontend
+npm test
+npm run lint
+npm run build
+```
 
 ## Latest Verification Evidence
 
@@ -111,7 +122,7 @@ Latest confirmed verification evidence:
 - Frontend lint: passed
 - Frontend production build: passed
 - Deployment smoke should be re-run after current FoodRadar/CosmeticSignal documentation and any hosted app changes before claiming current deployed readiness
-- Live smoke tests confirmed semantic_preview appears in both /api/v1/recalls/search and /api/v1/drug-events/search.
+- Live smoke tests confirmed `semantic_preview` appears in both `/api/v1/recalls/search` and `/api/v1/drug-events/search`.
 - Recent credibility/documentation improvements: README/docs current MVP scope cleanup, FoodRadar and CosmeticSignal documentation, expanded source registry language, updated public-data safety boundaries, and current verification results.
 
 This evidence supports portfolio MVP readiness for review and demo discussion. It does not indicate production healthcare readiness or clinical validity.
