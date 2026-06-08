@@ -16,6 +16,7 @@ ReportRole = Literal[
 ReportModule = Literal[
     "recallradar",
     "drugsignal",
+    "foodradar",
     "both",
 ]
 
