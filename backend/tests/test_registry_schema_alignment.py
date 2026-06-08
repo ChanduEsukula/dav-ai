@@ -54,7 +54,7 @@ def test_regional_health_alignment_migration_covers_seed_and_constraints():
     assert "'regional_health_pulse_demo'" in migration_source
     assert "drop constraint if exists saved_monitors_module_check" in migration_source
     assert "drop constraint if exists saved_monitor_runs_module_check" in migration_source
-    assert "check (module in ('recallradar', 'drugsignal', 'regional_health_pulse'))" in migration_source
+    assert "check (module in ('recallradar', 'drugsignal', 'foodradar', 'regional_health_pulse'))" in migration_source
 
 
 def test_runtime_sources_are_seeded_in_database_schema():

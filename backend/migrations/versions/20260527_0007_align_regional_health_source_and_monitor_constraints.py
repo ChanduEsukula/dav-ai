@@ -53,7 +53,7 @@ def upgrade() -> None:
         """
         alter table saved_monitors
         add constraint saved_monitors_module_check
-        check (module in ('recallradar', 'drugsignal', 'regional_health_pulse'))
+        check (module in ('recallradar', 'drugsignal', 'foodradar', 'regional_health_pulse'))
         """
     )
 
@@ -67,7 +67,7 @@ def upgrade() -> None:
         """
         alter table saved_monitor_runs
         add constraint saved_monitor_runs_module_check
-        check (module in ('recallradar', 'drugsignal', 'regional_health_pulse'))
+        check (module in ('recallradar', 'drugsignal', 'foodradar', 'regional_health_pulse'))
         """
     )
 
