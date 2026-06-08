@@ -20,6 +20,13 @@ DISCLAIMER = (
     "do not prove causation. Verify official sources and consult qualified professionals."
 )
 
+FOODRADAR_DISCLAIMER = (
+    "Generated from public FDA/openFDA and USDA FSIS recall data. Not medical advice "
+    "or official recall instructions. Food and supplement recall records do not prove "
+    "safety or risk by themselves. Verify exact product, package, lot code, firm, and "
+    "official source notices."
+)
+
 PRIVACY_NOTE = (
     "Do not include personal medical history, diagnoses, prescription history, "
     "patient records, insurance information, addresses, or private health information."
@@ -550,7 +557,12 @@ def _draw_reactions_card(
     return y_top - height - 12
 
 
-def _draw_safety_card(c: canvas.Canvas, *, y_top: float) -> float:
+def _draw_safety_card(
+    c: canvas.Canvas,
+    *,
+    y_top: float,
+    disclaimer: str = DISCLAIMER,
+) -> float:
     height = 68
 
     _draw_card(
@@ -571,7 +583,7 @@ def _draw_safety_card(c: canvas.Canvas, *, y_top: float) -> float:
 
     _draw_paragraph(
         c,
-        DISCLAIMER,
+        disclaimer,
         x=MARGIN + 16,
         y_top=y_top - 26,
         width=CONTENT_WIDTH - 32,
@@ -887,7 +899,7 @@ def _draw_foodradar_one_page(
         rows=record_rows,
     )
 
-    y = _draw_safety_card(c, y_top=y)
+    y = _draw_safety_card(c, y_top=y, disclaimer=FOODRADAR_DISCLAIMER)
     _draw_privacy_footer_note(c, y_top=y)
 
     _draw_footer(c, 1)
@@ -940,7 +952,7 @@ def _draw_foodradar_one_page(
             rows=source_rows,
         )
 
-    y = _draw_safety_card(c, y_top=y)
+    y = _draw_safety_card(c, y_top=y, disclaimer=FOODRADAR_DISCLAIMER)
     _draw_privacy_footer_note(c, y_top=y)
 
     _draw_footer(c, 2)
@@ -953,7 +965,30 @@ def _draw_compact_detail_card(
     title: str,
     rows: list[tuple[str, Any]],
 ) -> float:
-    height = 206
+    visible_rows = rows[:6]
+    title_height = 38
+    row_gap = 11
+    min_row_height = 25
+    bottom_padding = 18
+
+    value_x = MARGIN + 142
+    value_width = CONTENT_WIDTH - 166
+
+    measured_row_heights: list[float] = []
+
+    for _, value in visible_rows:
+        paragraph = Paragraph(
+            escape(_safe_text(value)),
+            _style(font_size=7.4, leading=9.2, color=INK),
+        )
+        _, paragraph_height = paragraph.wrap(value_width, 1000)
+        measured_row_heights.append(max(min_row_height, paragraph_height + 8))
+
+    content_height = sum(measured_row_heights)
+    if measured_row_heights:
+        content_height += row_gap * (len(measured_row_heights) - 1)
+
+    height = max(206, title_height + content_height + bottom_padding)
 
     _draw_card(
         c,
@@ -972,7 +1007,7 @@ def _draw_compact_detail_card(
 
     row_y = y_top - 52
 
-    for label, value in rows[:6]:
+    for index, (label, value) in enumerate(visible_rows):
         c.setFillColor(SOFT_MUTED)
         c.setFont("Helvetica-Bold", 6.6)
         c.drawString(MARGIN + 18, row_y, label.upper())
@@ -980,22 +1015,27 @@ def _draw_compact_detail_card(
         _draw_paragraph(
             c,
             _safe_text(value),
-            x=MARGIN + 132,
-            y_top=row_y + 6,
-            width=CONTENT_WIDTH - 150,
-            font_size=7.7,
-            leading=9.5,
+            x=value_x,
+            y_top=row_y + 4,
+            width=value_width,
+            font_size=7.4,
+            leading=9.2,
             color=INK,
         )
 
-        c.setStrokeColor(colors.HexColor("#E8F0F2"))
-        c.setLineWidth(0.35)
-        c.line(MARGIN + 18, row_y - 9, PAGE_WIDTH - MARGIN - 18, row_y - 9)
+        row_height = measured_row_heights[index]
+        c.setStrokeColor(colors.HexColor("#E8EEF2"))
+        c.setLineWidth(0.4)
+        c.line(
+            MARGIN + 18,
+            row_y - row_height + 8,
+            MARGIN + CONTENT_WIDTH - 18,
+            row_y - row_height + 8,
+        )
 
-        row_y -= 27
+        row_y -= row_height + row_gap
 
-    return y_top - height - 12
-
+    return y_top - height - 16
 
 def _draw_both_modules_report(
     c: canvas.Canvas,

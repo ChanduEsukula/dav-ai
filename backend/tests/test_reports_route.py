@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -158,6 +160,16 @@ def test_create_foodradar_safety_intelligence_report_returns_pdf(monkeypatch):
         'attachment; filename="dav-ai-safety-report-protein-powder.pdf"'
     )
     assert response.content.startswith(b"%PDF-1.4")
+
+
+def test_foodradar_pdf_uses_food_specific_safety_boundary():
+    report_pdf_source = Path("app/services/report_pdf.py").read_text()
+
+    assert "FOODRADAR_DISCLAIMER" in report_pdf_source
+    assert "Food and supplement recall records do not prove" in report_pdf_source
+    assert "FAERS reports " in report_pdf_source
+    assert "do not prove causation" in report_pdf_source
+    assert report_pdf_source.count("disclaimer=FOODRADAR_DISCLAIMER") == 2
 
 
 def test_build_foodradar_safety_intelligence_pdf_returns_valid_pdf_bytes():
