@@ -95,3 +95,25 @@ def test_foodradar_saved_monitor_constraint_migration_exists():
     assert "drop constraint if exists saved_monitors_module_check" in migration_source
     assert "drop constraint if exists saved_monitor_runs_module_check" in migration_source
     assert "check (module in ('recallradar', 'drugsignal', 'foodradar', 'regional_health_pulse'))" in migration_source
+
+def test_everyday_safety_source_seed_migration_exists():
+    migration_source = (
+        REPO_ROOT
+        / "backend"
+        / "migrations"
+        / "versions"
+        / "20260608_0009_seed_everyday_safety_sources.py"
+    ).read_text()
+
+    assert 'revision = "20260608_0009"' in migration_source
+    assert 'down_revision = "20260605_0008"' in migration_source
+
+    for source_id in {
+        "openfda_cosmetic_event",
+        "openfda_food_enforcement",
+        "usda_fsis_recall",
+        "foodradar_multi_source",
+    }:
+        assert source_id in migration_source
+
+    assert "on conflict (source_id) do update set" in migration_source
