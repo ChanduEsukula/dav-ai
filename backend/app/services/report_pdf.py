@@ -36,6 +36,7 @@ ROLE_LABELS = {
 MODULE_LABELS = {
     "recallradar": "RecallRadar",
     "drugsignal": "DrugSignal",
+    "foodradar": "FoodRadar",
     "both": "RecallRadar + DrugSignal",
 }
 
@@ -384,7 +385,7 @@ def _draw_score_card(
 
     c.setFillColor(DEEP_TEAL)
     c.setFont("Helvetica-Bold", 7)
-    c.drawString(x + 18, y_top - 22, "DRUGSIGNAL SCORE")
+    c.drawString(x + 18, y_top - 22, "SAFETY SCORE")
 
     c.setFillColor(DEEP_INK)
     c.setFont("Helvetica-Bold", 42)
@@ -403,7 +404,7 @@ def _draw_score_card(
         c,
         x=x + 18,
         y_top=y_top - 122,
-        text="FAERS pattern only",
+        text="Public data only",
         fill_color=WARNING_BG,
         text_color=WARNING_TEXT,
     )
@@ -786,6 +787,165 @@ def _draw_recall_one_page(
     _draw_footer(c, 1)
 
 
+def _draw_foodradar_one_page(
+    c: canvas.Canvas,
+    *,
+    request: SafetyIntelligenceReportRequest,
+    everyday_safety_result: dict[str, Any] | None,
+    generated_at: str,
+) -> None:
+    _draw_background(c)
+    y = _draw_header(
+        c,
+        generated_at=generated_at,
+        module_label="FoodRadar",
+        query=request.query,
+    )
+
+    y = _draw_title_area(
+        c,
+        y_top=y,
+        title="FoodRadar Safety Intelligence",
+        subtitle=(
+            "A compact public-data food and supplement recall summary for review, "
+            "traceability, and official-source verification."
+        ),
+    )
+
+    y = _draw_report_details_strip(
+        c,
+        request=request,
+        y_top=y,
+        generated_at=generated_at,
+    )
+
+    results = (everyday_safety_result or {}).get("results") or []
+    first = results[0] if results else {}
+    risk_score = first.get("risk_score") or {}
+
+    score_card_width = 250
+    metric_x = MARGIN + score_card_width + 12
+    metric_width = CONTENT_WIDTH - score_card_width - 12
+
+    _draw_score_card(
+        c,
+        x=MARGIN,
+        y_top=y,
+        width=score_card_width,
+        height=150,
+        score=risk_score.get("score", "N/A"),
+        label=risk_score.get("label", first.get("classification", "N/A")),
+        priority=first.get("status", "N/A"),
+        confidence=first.get("classification", "N/A"),
+    )
+
+    _draw_mini_metric(
+        c,
+        x=metric_x,
+        y_top=y,
+        width=metric_width,
+        height=68,
+        label="Records returned",
+        value=(everyday_safety_result or {}).get("count", 0),
+        note="Public food recall records",
+    )
+
+    _draw_mini_metric(
+        c,
+        x=metric_x,
+        y_top=y - 82,
+        width=metric_width,
+        height=68,
+        label="Search strategy",
+        value=(everyday_safety_result or {}).get("search_strategy_used", "N/A"),
+        note="FoodRadar query handling",
+    )
+
+    y -= 166
+
+    y = _draw_source_strip(
+        c,
+        y_top=y,
+        source_name=(everyday_safety_result or {}).get("source_name"),
+        endpoint=(everyday_safety_result or {}).get("endpoint"),
+        audit_id=((everyday_safety_result or {}).get("audit") or {}).get("audit_id"),
+    )
+
+    record_rows = [
+        ("Product", first.get("product_description")),
+        ("Classification", first.get("classification")),
+        ("Status", first.get("status")),
+        ("Recalling firm", first.get("recalling_firm")),
+        ("Initiation date", first.get("recall_initiation_date")),
+        ("Reason", first.get("reason_for_recall")),
+    ]
+
+    y = _draw_compact_detail_card(
+        c,
+        y_top=y,
+        title="First Returned Food / Supplement Recall Record",
+        rows=record_rows,
+    )
+
+    y = _draw_safety_card(c, y_top=y)
+    _draw_privacy_footer_note(c, y_top=y)
+
+    _draw_footer(c, 1)
+
+    c.showPage()
+    _draw_background(c)
+    _draw_header(
+        c,
+        generated_at=generated_at,
+        module_label="FoodRadar Details",
+        query=request.query,
+    )
+
+    y = PAGE_HEIGHT - 108
+    limitations = (everyday_safety_result or {}).get("limitations") or []
+    limitation_text = " ".join(str(item) for item in limitations[:2]) or (
+        "No matching public records found does not mean the product is safe. "
+        "Verify the exact product, package, lot code, and official source notice."
+    )
+
+    y = _draw_compact_detail_card(
+        c,
+        y_top=y,
+        title="Public Data Limitations",
+        rows=[
+            ("Boundary", "No matching public records found does not mean the product is safe."),
+            ("Verify", "Check exact product, package, lot code, firm, and official notice."),
+            ("Sources", (everyday_safety_result or {}).get("source_name")),
+            ("Timestamp", (everyday_safety_result or {}).get("retrieval_timestamp")),
+            ("Disclaimer", (everyday_safety_result or {}).get("public_data_disclaimer")),
+            ("Limitations", limitation_text),
+        ],
+    )
+
+    sources_checked = (everyday_safety_result or {}).get("sources_checked") or []
+    source_rows = [
+        (
+            _safe_text(source.get("source_name") or source.get("source_id")),
+            f"{_safe_text(source.get('upstream_status'))} · records: {_safe_text(source.get('record_count'))}",
+        )
+        for source in sources_checked[:6]
+        if isinstance(source, dict)
+    ]
+
+    if source_rows:
+        y = _draw_compact_detail_card(
+            c,
+            y_top=y,
+            title="Sources Checked",
+            rows=source_rows,
+        )
+
+    y = _draw_safety_card(c, y_top=y)
+    _draw_privacy_footer_note(c, y_top=y)
+
+    _draw_footer(c, 2)
+
+
 def _draw_compact_detail_card(
     c: canvas.Canvas,
     *,
@@ -983,6 +1143,7 @@ def build_safety_intelligence_pdf(
     request: SafetyIntelligenceReportRequest,
     recall_result: dict[str, Any] | None = None,
     drug_signal_result: dict[str, Any] | None = None,
+    everyday_safety_result: dict[str, Any] | None = None,
 ) -> bytes:
     """Build a compact Dav AI-branded public-data PDF report."""
 
@@ -1004,6 +1165,13 @@ def build_safety_intelligence_pdf(
             pdf,
             request=request,
             recall_result=recall_result,
+            generated_at=generated_at,
+        )
+    elif request.module == "foodradar":
+        _draw_foodradar_one_page(
+            pdf,
+            request=request,
+            everyday_safety_result=everyday_safety_result,
             generated_at=generated_at,
         )
     else:

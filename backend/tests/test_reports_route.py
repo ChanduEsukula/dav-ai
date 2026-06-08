@@ -6,12 +6,12 @@ from app.main import app
 client = TestClient(app)
 
 
-def report_payload(module: str = "both") -> dict:
+def report_payload(module: str = "both", query: str = "metformin") -> dict:
     return {
         "prepared_for": "Demo reviewer",
         "organization": "DAV AI Portfolio",
         "role": "student_researcher",
-        "query": "metformin",
+        "query": query,
         "module": module,
         "purpose": "Demo report",
     }
@@ -38,10 +38,16 @@ def test_create_safety_intelligence_report_returns_pdf(monkeypatch):
         assert request_id is not None
         return {"module": "DrugSignal", "query": query}
 
-    def fake_build_pdf(request, recall_result, drug_signal_result):
+    def fake_build_pdf(
+        request,
+        recall_result,
+        drug_signal_result,
+        everyday_safety_result=None,
+    ):
         assert request.query == "metformin"
         assert recall_result == {"module": "RecallRadar", "query": "metformin"}
         assert drug_signal_result == {"module": "DrugSignal", "query": "metformin"}
+        assert everyday_safety_result is None
         return b"%PDF-1.4\nDAV AI report\n%%EOF"
 
     monkeypatch.setattr("app.routes.reports.execute_recall_search", fake_recall_search)
@@ -57,6 +63,93 @@ def test_create_safety_intelligence_report_returns_pdf(monkeypatch):
     assert response.headers["content-type"] == "application/pdf"
     assert response.headers["content-disposition"] == (
         'attachment; filename="dav-ai-safety-report-metformin.pdf"'
+    )
+    assert response.content.startswith(b"%PDF-1.4")
+
+
+def test_create_foodradar_safety_intelligence_report_returns_pdf(monkeypatch):
+    async def fake_everyday_safety_search(
+        category: str,
+        query: str,
+        limit: int,
+        request_id: str | None = None,
+    ):
+        assert category == "food_supplement"
+        assert query == "protein powder"
+        assert limit == 5
+        assert request_id is not None
+        return {
+            "module": "FoodRadar",
+            "query": query,
+            "count": 1,
+            "source_name": "FoodRadar multi-source search",
+            "endpoint": "openFDA Food Enforcement + USDA FSIS Recall API",
+            "retrieval_timestamp": "2026-06-08T00:00:00+00:00",
+            "search_strategy_used": "normalized_keyword",
+            "public_data_disclaimer": (
+                "Public recall data only. No matching public records found does not mean the product is safe."
+            ),
+            "limitations": [
+                "No matching public records found does not mean the product is safe.",
+                "Verify exact product, package, lot code, and official notice.",
+            ],
+            "audit": {"audit_id": "audit-foodradar-1"},
+            "sources_checked": [
+                {
+                    "source_id": "openfda_food_enforcement",
+                    "source_name": "openFDA Food Enforcement",
+                    "source_type": "FDA_FOOD_ENFORCEMENT",
+                    "endpoint": "https://api.fda.gov/food/enforcement.json",
+                    "upstream_status": "ok",
+                    "record_count": 1,
+                }
+            ],
+            "results": [
+                {
+                    "product_description": "Demo protein powder",
+                    "classification": "Class II",
+                    "status": "Ongoing",
+                    "recalling_firm": "Demo Foods",
+                    "recall_initiation_date": "20260601",
+                    "reason_for_recall": "Undeclared allergen",
+                    "risk_score": {
+                        "score": 72,
+                        "label": "Elevated",
+                    },
+                }
+            ],
+        }
+
+    def fake_build_pdf(
+        request,
+        recall_result,
+        drug_signal_result,
+        everyday_safety_result=None,
+    ):
+        assert request.query == "protein powder"
+        assert request.module == "foodradar"
+        assert recall_result is None
+        assert drug_signal_result is None
+        assert everyday_safety_result is not None
+        assert everyday_safety_result["module"] == "FoodRadar"
+        assert "does not mean the product is safe" in everyday_safety_result["public_data_disclaimer"]
+        return b"%PDF-1.4\nDAV AI FoodRadar report\n%%EOF"
+
+    monkeypatch.setattr(
+        "app.routes.reports.execute_everyday_safety_search",
+        fake_everyday_safety_search,
+    )
+    monkeypatch.setattr("app.routes.reports.build_safety_intelligence_pdf", fake_build_pdf)
+
+    response = client.post(
+        "/api/v1/reports/safety-intelligence",
+        json=report_payload(module="foodradar", query="protein powder"),
+    )
+
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    assert response.headers["content-disposition"] == (
+        'attachment; filename="dav-ai-safety-report-protein-powder.pdf"'
     )
     assert response.content.startswith(b"%PDF-1.4")
 

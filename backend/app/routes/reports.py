@@ -9,6 +9,7 @@ from app.services.report_pdf import (
     build_safety_intelligence_pdf,
 )
 from app.services.search_workflows.drug_signal_search import execute_drug_signal_search
+from app.services.search_workflows.everyday_safety_search import execute_everyday_safety_search
 from app.services.search_workflows.recall_search import execute_recall_search
 
 router = APIRouter(prefix="/api/v1/reports", tags=["reports"])
@@ -28,6 +29,7 @@ async def create_safety_intelligence_report(
 
     recall_result = None
     drug_signal_result = None
+    everyday_safety_result = None
 
     try:
         if payload.module in {"recallradar", "both"}:
@@ -39,6 +41,14 @@ async def create_safety_intelligence_report(
 
         if payload.module in {"drugsignal", "both"}:
             drug_signal_result = await execute_drug_signal_search(
+                query=payload.query,
+                limit=5,
+                request_id=request_id,
+            )
+
+        if payload.module == "foodradar":
+            everyday_safety_result = await execute_everyday_safety_search(
+                category="food_supplement",
                 query=payload.query,
                 limit=5,
                 request_id=request_id,
@@ -56,6 +66,7 @@ async def create_safety_intelligence_report(
         request=payload,
         recall_result=recall_result,
         drug_signal_result=drug_signal_result,
+        everyday_safety_result=everyday_safety_result,
     )
 
     filename = build_report_filename(payload.query)
