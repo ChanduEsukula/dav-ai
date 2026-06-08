@@ -25,6 +25,8 @@ def test_system_status_returns_core_operational_fields(monkeypatch):
     assert data["sources"]["available"] is True
     assert "RecallRadar" in data["modules"]
     assert "DrugSignal" in data["modules"]
+    assert "FoodRadar" in data["modules"]
+    assert "CosmeticSignal" in data["modules"]
     assert "Regional Health Pulse" in data["modules"]
     assert "Saved Monitors" in data["modules"]
     assert "Sources" in data["modules"]

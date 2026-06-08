@@ -38,6 +38,8 @@ def get_system_status() -> SystemStatusResponse:
         modules=[
             "RecallRadar",
             "DrugSignal",
+            "FoodRadar",
+            "CosmeticSignal",
             "Regional Health Pulse",
             "Saved Monitors",
             "Sources",
