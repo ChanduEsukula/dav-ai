@@ -5,7 +5,7 @@ test('demo navigation exposes implemented modules without account placeholders',
 
   await expect(page.getByText('Dav AI').first()).toBeVisible()
 
-  const navItems = ['RecallRadar', 'DrugSignal', 'Sources', 'Audit', 'System', 'Monitors', 'Health Pulse']
+  const navItems = ['RecallRadar', 'DrugSignal', 'FoodRadar', 'Sources', 'Audit', 'System', 'Monitors']
 
   for (const item of navItems) {
     await expect(page.getByRole('button', { name: item, exact: true })).toBeVisible()
@@ -40,8 +40,8 @@ test('demo navigation exposes implemented modules without account placeholders',
   await page.getByRole('button', { name: 'Monitors', exact: true }).click()
   await expect(page.getByRole('heading', { name: 'Saved Monitors' })).toBeVisible()
 
-  await page.getByRole('button', { name: 'Health Pulse', exact: true }).click()
+  await page.getByRole('button', { name: 'FoodRadar', exact: true }).click()
   await expect(
-    page.getByRole('heading', { name: 'Review sample regional public-data signals.' }),
+    page.getByRole('heading', { name: 'Check everyday food and supplement recall signals.' }),
   ).toBeVisible()
 })

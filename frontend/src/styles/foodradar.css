@@ -102,3 +102,43 @@
 .foodradar-limitations p {
   color: #94a3b8;
 }
+
+.foodradar-report-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid rgba(15, 118, 110, 0.18);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(240, 253, 250, 0.9), rgba(236, 253, 245, 0.75));
+}
+
+.foodradar-report-action strong {
+  display: block;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.foodradar-report-action p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.foodradar-report-action button {
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .foodradar-report-action {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .foodradar-report-action button {
+    width: 100%;
+  }
+}
