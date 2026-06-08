@@ -15,9 +15,9 @@ from app.routes.everyday_safety import router as everyday_safety_router
 from app.routes.recalls import router as recalls_router
 from app.routes.regional_health import router as regional_health_router
 from app.routes.reports import router as reports_router
+from app.routes.semantic_similarity import router as semantic_similarity_router
 from app.routes.sources import router as sources_router
 from app.routes.system import router as system_router
-from app.routes.semantic_similarity import router as semantic_similarity_router
 
 
 logger = logging.getLogger("medtrek.request")
@@ -38,7 +38,10 @@ def get_allowed_origins() -> list[str]:
 
 app = FastAPI(
     title="Dav AI API",
-    description="Healthcare safety intelligence API for recalls, adverse-event signals, source transparency, audit-aware safety briefings, and public-data PDF reports.",
+    description=(
+        "Healthcare safety intelligence API for recalls, adverse-event signals, "
+        "source transparency, audit-aware safety briefings, and public-data PDF reports."
+    ),
     version="0.1.0",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -51,6 +54,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["Content-Disposition"],
 )
 
 
@@ -120,7 +124,11 @@ app.include_router(system_router, tags=["System"])
 app.include_router(saved_monitors.router)
 app.include_router(reports_router)
 app.include_router(regional_health_router, prefix="/api/v1/regional-health", tags=["Regional Health Pulse"])
-app.include_router(semantic_similarity_router, prefix="/api/v1/semantic-similarity", tags=["Semantic Similarity"])
+app.include_router(
+    semantic_similarity_router,
+    prefix="/api/v1/semantic-similarity",
+    tags=["Semantic Similarity"],
+)
 app.include_router(assistant_router)
 
 
@@ -132,6 +140,7 @@ def root():
         "modules": [
             "RecallRadar",
             "DrugSignal",
+            "FoodRadar",
             "CosmeticSignal",
             "Everyday Safety",
             "Sources",

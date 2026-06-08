@@ -1,4 +1,8 @@
 import { useMemo, useState } from "react";
+import {
+  downloadSafetyIntelligenceReport,
+  type SafetyReportModule,
+} from "../api/reports";
 import "../styles/floating-safety-report-intake.css";
 
 type ReportType =
@@ -68,11 +72,39 @@ function getModuleLabel(reportType: ReportType): string {
     return "DrugSignal";
   }
 
+  if (reportType === "food_product_recall") {
+    return "FoodRadar";
+  }
+
   if (reportType === "general_safety_briefing") {
     return "Briefing Engine";
   }
 
   return "RecallRadar";
+}
+
+function getReportModule(reportType: ReportType): SafetyReportModule {
+  if (reportType === "drug_safety_signal") {
+    return "drugsignal";
+  }
+
+  if (reportType === "food_product_recall") {
+    return "foodradar";
+  }
+
+  return "recallradar";
+}
+
+function getSourceScope(reportType: ReportType): string {
+  if (reportType === "food_product_recall") {
+    return "Public FDA/openFDA food enforcement + USDA FSIS recall data";
+  }
+
+  if (reportType === "drug_safety_signal") {
+    return "Public FDA/openFDA FAERS data";
+  }
+
+  return "Public FDA/openFDA recall data";
 }
 
 function getLocalStorageReports(): IntakeState[] {
@@ -109,8 +141,11 @@ export default function FloatingSafetyReportIntake() {
   const [form, setForm] = useState<IntakeState>(initialState);
   const [validationMessage, setValidationMessage] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
+  const [downloadMessage, setDownloadMessage] = useState("");
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const moduleLabel = useMemo(() => getModuleLabel(form.reportType), [form.reportType]);
+  const sourceScope = useMemo(() => getSourceScope(form.reportType), [form.reportType]);
   const trimmedQuery = form.query.trim();
   const trimmedEmail = form.email.trim();
 
@@ -126,6 +161,7 @@ export default function FloatingSafetyReportIntake() {
     }));
     setValidationMessage("");
     setEmailMessage("");
+    setDownloadMessage("");
   }
 
   function closeDrawer() {
@@ -133,6 +169,8 @@ export default function FloatingSafetyReportIntake() {
     setStep("intake");
     setValidationMessage("");
     setEmailMessage("");
+    setDownloadMessage("");
+    setIsDownloading(false);
   }
 
   function handleReview() {
@@ -159,9 +197,40 @@ export default function FloatingSafetyReportIntake() {
     setStep("preview");
   }
 
+  async function handleDownloadReport() {
+    if (!trimmedQuery) {
+      setDownloadMessage("Enter a search topic before downloading the report.");
+      return;
+    }
+
+    setIsDownloading(true);
+    setDownloadMessage("");
+    setEmailMessage("");
+
+    try {
+      const filename = await downloadSafetyIntelligenceReport({
+        prepared_for: roleLabels[form.role],
+        organization: "DAV AI",
+        role: form.role,
+        query: trimmedQuery,
+        module: getReportModule(form.reportType),
+        purpose: `${reportTypeLabels[form.reportType]} ${reportStyleLabels[
+          form.reportStyle
+        ].toLowerCase()} safety report`,
+      });
+
+      saveLocalReport(form);
+      setDownloadMessage(`Downloaded ${filename}`);
+    } catch {
+      setDownloadMessage("Unable to download the PDF report. Make sure the backend is running.");
+    } finally {
+      setIsDownloading(false);
+    }
+  }
+
   function handleEmailAction() {
     if (!trimmedEmail) {
-      setEmailMessage("Enter an email address to send this report when email delivery is connected.");
+      setEmailMessage("Enter an email address to save this report intent for future delivery.");
       return;
     }
 
@@ -198,7 +267,7 @@ export default function FloatingSafetyReportIntake() {
                 <p className="floating-safety-report-kicker">Public-data safety intelligence</p>
                 <h2>Generate a Safety Report</h2>
                 <p>
-                  Search FDA/openFDA public data for recalls and safety-signal patterns.
+                  Search FDA/openFDA and public recall data for recalls and safety-signal patterns.
                   This is not medical advice.
                 </p>
               </div>
@@ -395,28 +464,36 @@ export default function FloatingSafetyReportIntake() {
                   <p className="floating-safety-report-kicker">Preview prepared</p>
                   <h3>{trimmedQuery} safety report</h3>
                   <p>
-                    DAV AI is ready to generate a {reportStyleLabels[form.reportStyle].toLowerCase()}{" "}
-                    {roleLabels[form.role].toLowerCase()} report using the {moduleLabel} workflow.
+                    DAV AI is ready to download a{" "}
+                    {reportStyleLabels[form.reportStyle].toLowerCase()}{" "}
+                    {roleLabels[form.role].toLowerCase()} PDF report using the {moduleLabel}{" "}
+                    workflow.
                   </p>
 
                   <div className="floating-safety-report-preview-grid">
                     <span>Source scope</span>
-                    <strong>Public FDA/openFDA data</strong>
+                    <strong>{sourceScope}</strong>
                     <span>Medical boundary</span>
                     <strong>Not medical advice</strong>
                     <span>Storage</span>
-                    <strong>Saved on this device only</strong>
+                    <strong>Downloaded to this device only</strong>
                   </div>
                 </div>
 
                 <label>
-                  Email this report later
+                  Optional email for future delivery
                   <input
                     value={form.email}
                     onChange={(event) => updateField("email", event.target.value)}
                     placeholder="you@example.com"
                   />
                 </label>
+
+                {downloadMessage && (
+                  <p className="floating-safety-report-note" role="status">
+                    {downloadMessage}
+                  </p>
+                )}
 
                 {emailMessage && (
                   <p className="floating-safety-report-note" role="status">
@@ -428,9 +505,17 @@ export default function FloatingSafetyReportIntake() {
                   <button
                     className="floating-safety-report-primary"
                     type="button"
+                    onClick={handleDownloadReport}
+                    disabled={isDownloading}
+                  >
+                    {isDownloading ? "Downloading PDF..." : "Download PDF report"}
+                  </button>
+                  <button
+                    className="floating-safety-report-secondary"
+                    type="button"
                     onClick={handleEmailAction}
                   >
-                    Email me this report
+                    Save email intent — coming next
                   </button>
                   <button className="floating-safety-report-secondary" type="button" disabled>
                     Save to My Safety Profile — coming next
