@@ -5,6 +5,7 @@ import {
   type EverydaySafetySearchResponse,
   type EverydaySafetySort,
 } from '../api/everydaySafety'
+import { downloadSafetyIntelligenceReport } from '../api/reports'
 import { formatDate, formatTimestamp, riskExplanation } from '../utils/recallFormatters'
 
 function sourceLabel(sourceType: EverydaySafetyRecord['source_type']) {
@@ -19,12 +20,14 @@ function FoodRadar() {
   const [query, setQuery] = useState('')
   const [data, setData] = useState<EverydaySafetySearchResponse | null>(null)
   const [loading, setLoading] = useState(false)
+  const [reportLoading, setReportLoading] = useState(false)
   const [error, setError] = useState('')
+  const [reportMessage, setReportMessage] = useState('')
   const [sortMode, setSortMode] = useState<EverydaySafetySort>('score')
 
-  async function handleSearch() {
-    const trimmedQuery = query.trim()
+  const trimmedQuery = query.trim()
 
+  async function handleSearch() {
     if (!trimmedQuery) {
       setError('Enter a food, supplement, protein powder, meat, poultry, or packaged product.')
       return
@@ -32,6 +35,7 @@ function FoodRadar() {
 
     setLoading(true)
     setError('')
+    setReportMessage('')
 
     try {
       const response = await searchEverydaySafety(trimmedQuery, 5, 'food_supplement', sortMode)
@@ -48,11 +52,11 @@ function FoodRadar() {
   async function handleSortChange(nextSortMode: EverydaySafetySort) {
     setSortMode(nextSortMode)
 
-    const trimmedQuery = query.trim()
     if (!trimmedQuery || loading) return
 
     setLoading(true)
     setError('')
+    setReportMessage('')
 
     try {
       const response = await searchEverydaySafety(trimmedQuery, 5, 'food_supplement', nextSortMode)
@@ -66,10 +70,41 @@ function FoodRadar() {
     }
   }
 
+  async function handleDownloadReport() {
+    if (!trimmedQuery) {
+      setReportMessage('Search a food, supplement, or product before downloading a report.')
+      return
+    }
+
+    setReportLoading(true)
+    setError('')
+    setReportMessage('')
+
+    try {
+      const filename = await downloadSafetyIntelligenceReport({
+        prepared_for: 'Consumer',
+        organization: 'DAV AI',
+        role: 'consumer',
+        query: trimmedQuery,
+        module: 'foodradar',
+        purpose: 'FoodRadar public-data food and supplement recall report',
+      })
+
+      setReportMessage(`Downloaded ${filename}`)
+    } catch {
+      setReportMessage(
+        'Unable to download the FoodRadar PDF report. Make sure the FastAPI backend is running on port 8000.'
+      )
+    } finally {
+      setReportLoading(false)
+    }
+  }
+
   const sortedResults = data?.results ?? []
   const topResult = sortedResults[0] ?? null
   const hasResults = sortedResults.length > 0
   const hasNoResults = data && sortedResults.length === 0
+  const canDownloadReport = Boolean(trimmedQuery) && !reportLoading
 
   return (
     <section className="foodradar" id="foodradar">
@@ -93,7 +128,10 @@ function FoodRadar() {
             <input
               id="foodradar-search"
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => {
+                setQuery(event.target.value)
+                setReportMessage('')
+              }}
               onKeyDown={(event) => {
                 if (event.key === 'Enter') {
                   handleSearch()
@@ -113,6 +151,26 @@ function FoodRadar() {
             {loading ? 'Checking public data...' : 'Check FoodRadar'}
           </button>
         </div>
+
+        <div className="foodradar-report-action">
+          <div>
+            <strong>Need a shareable report?</strong>
+            <p>
+              Download a DAV AI FoodRadar PDF with source scope, audit context, public-data
+              limitations, and safety-boundary language.
+            </p>
+          </div>
+
+          <button type="button" onClick={handleDownloadReport} disabled={!canDownloadReport}>
+            {reportLoading ? 'Downloading report...' : 'Download FoodRadar Report'}
+          </button>
+        </div>
+
+        {reportMessage && (
+          <p className="loading-helper" role="status" aria-live="polite">
+            {reportMessage}
+          </p>
+        )}
 
         {loading && (
           <p className="loading-helper" role="status" aria-live="polite">
