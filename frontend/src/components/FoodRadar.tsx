@@ -46,7 +46,6 @@ function FoodRadar({ onAssistantContextChange }: FoodRadarProps) {
       const response = await searchEverydaySafety(trimmedQuery, 5, 'food_supplement', sortMode)
       setData(response)
       onAssistantContextChange?.(buildFoodAssistantContext(response))
-      onAssistantContextChange?.(buildFoodAssistantContext(response))
     } catch {
       setError(
         'Unable to load FoodRadar data. Make sure the FastAPI backend is running on port 8000.'
