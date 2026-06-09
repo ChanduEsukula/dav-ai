@@ -51,6 +51,33 @@ function contextLabel(context: AssistantChatContext | null) {
   return labels[context.module]
 }
 
+function contextBadge(context: AssistantChatContext | null) {
+  if (!context) return 'No active context'
+
+  const badges: Record<AssistantChatContext['module'], string> = {
+    recall: 'RecallRadar',
+    drug_event: 'DrugSignal',
+    food: 'FoodRadar',
+    cosmetic: 'CosmeticSignal',
+  }
+
+  return badges[context.module]
+}
+
+function answerParagraphs(answer: string) {
+  return answer
+    .split(/\n{2,}|\n(?=\*\*|[-•])/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean)
+    .map((paragraph) =>
+      paragraph
+        .replace(/\*\*/g, '')
+        .replace(/^[-•]\s*/, '')
+        .trim()
+    )
+    .filter(Boolean)
+}
+
 function AskDavAIChat({ context }: AskDavAIChatProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [question, setQuestion] = useState('')
@@ -81,6 +108,7 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
       })
       setAnswer(response)
       setQuestion('')
+      setError('')
     } catch {
       setError('Ask DAV AI is unavailable. Try again after the backend is running.')
     } finally {
@@ -105,7 +133,10 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
             <div>
               <p className="eyebrow">Ask DAV AI</p>
               <h2>Source-grounded safety assistant</h2>
-              <p>Answers use only the current RecallRadar, DrugSignal, FoodRadar, or CosmeticSignal results. Not medical advice, diagnosis, treatment guidance, causation proof, or safety guarantees.</p>
+              <p>
+                Answers stay inside the current module result, source metadata, audit context, and
+                safety limitations.
+              </p>
             </div>
 
             <button type="button" onClick={() => setIsOpen(false)} aria-label="Close Ask DAV AI">
@@ -113,7 +144,10 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
             </button>
           </div>
 
-          <p className="ask-dav-ai-chat__context">{contextLabel(context)}</p>
+          <div className="ask-dav-ai-chat__context">
+            <span>{contextBadge(context)}</span>
+            <p>{contextLabel(context)}</p>
+          </div>
 
           {!context && (
             <div className="ask-dav-ai-chat__empty" role="status">
@@ -172,8 +206,18 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
               }`}
               aria-live="polite"
             >
+              <div className="ask-dav-ai-chat__answer-header">
+                <span>{answer.refused ? 'Safety boundary' : 'DAV AI answer'}</span>
+                <small>{answer.model_info.provider} · {answer.model_info.model}</small>
+              </div>
+
               {answer.refused && <strong>Request refused safely</strong>}
-              <p>{answer.answer}</p>
+
+              <div className="ask-dav-ai-chat__answer-copy">
+                {answerParagraphs(answer.answer).map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+              </div>
 
               <ul>
                 {answer.bullets.map((bullet) => (
