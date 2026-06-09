@@ -73,7 +73,7 @@ Current verified status from the June 2026 repo review and follow-up fix:
 | Area | Current Status |
 |---|---|
 | Backend tests | 273 passed |
-| Frontend tests | 70 passed |
+| Frontend tests | 75 passed |
 | Frontend lint | Passed |
 | TypeScript no-emit | Passed |
 | Current merged report-intake fix | PR #91 |
@@ -244,7 +244,7 @@ After:
 - Unsupported report type options were removed from the floating report intake UI
 
 Validation:
-- Frontend tests: 70 passed
+- Frontend tests: 75 passed
 - Frontend lint: passed
 - TypeScript no-emit: passed
 - Backend tests: 273 passed
@@ -272,7 +272,7 @@ Validation:
 
 - Some components are large.
 - Routing can be improved.
-- More frontend tests are needed for FoodRadar, CosmeticSignal, Data Sources, and report intake.
+- More frontend tests are still useful for FoodRadar, CosmeticSignal, and Data Sources. Report intake is now covered by PR #93.
 - Accessibility and error-state testing should be expanded.
 
 ### AI/ML
@@ -333,9 +333,9 @@ Avoid during demo:
 
 Keep this document as the current status reference. Update README to point here and reduce reliance on stale milestone docs.
 
-### Priority 2: Frontend report-intake tests
+### Completed: Frontend report-intake tests
 
-Add dedicated frontend tests for the floating report intake to verify:
+PR #93 added dedicated frontend tests for the floating report intake to verify:
 - `public_health_analyst` is used
 - unsupported report types are not displayed
 - valid payload reaches the report API wrapper

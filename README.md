@@ -463,7 +463,7 @@ Current engineering support includes:
 Current backend test status:
 
 ```bash
-260 passed
+273 passed
 ```
 
 Current frontend test status:
@@ -1124,7 +1124,7 @@ pytest
 Current backend test status:
 
 ```bash
-260 passed
+273 passed
 ```
 
 Backend test coverage includes:
@@ -1259,8 +1259,8 @@ docs/render_cron_saved_monitors_plan.md
 
 Latest confirmed verification evidence:
 
-- Backend tests: 260 passed
-- Frontend tests: 70 passed
+- Backend tests: 273 passed
+- Frontend tests: 75 passed
 - Frontend lint: passed
 - Frontend production build: passed
 - Deployment smoke should be re-run after current FoodRadar/CosmeticSignal documentation and any hosted app changes before claiming current deployed readiness.
