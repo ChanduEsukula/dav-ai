@@ -68,7 +68,7 @@ The project is **not yet production-ready** because it still needs:
 
 Use executable evidence over older documentation when numbers differ.
 
-Current verified status from the June 2026 repo review and follow-up fix:
+Current verified status from the June 2026 repo review, assistant integration, and Phase 1 UI polish:
 
 | Area | Current Status |
 |---|---|
@@ -77,7 +77,9 @@ Current verified status from the June 2026 repo review and follow-up fix:
 | Frontend lint | Passed |
 | TypeScript no-emit | Passed |
 | Current merged report-intake fix | PR #91 |
-| Current main after PR #91 | `b18d2f5` |
+| Current Ask DAV AI multi-module context | PR #95 |
+| Current Phase 1 UI polish | PRs #96, #97, #98 |
+| Current main after Phase 1 polish | `0ef5625` |
 | Report intake 422 bug | Fixed in PR #91 |
 | ProductScan | Roadmap only, not implemented |
 

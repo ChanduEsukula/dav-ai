@@ -4,9 +4,9 @@
 
 DAV AI is a public-data healthcare and everyday safety intelligence workspace that helps users search, review, audit, monitor, and explain openFDA, USDA FSIS, and scaffolded public-health safety signals with source transparency, deterministic review workflows, and responsible AI boundaries.
 
-The primary MVP demo path is **RecallRadar → DrugSignal → FoodRadar**. CosmeticSignal is an optional extension surface, and Regional Health Pulse is a scaffolded architecture extension rather than a primary MVP module.
+The primary MVP demo path is **RecallRadar → DrugSignal → FoodRadar → Ask DAV AI → Audit/Sources**. CosmeticSignal is an optional extension surface, and Regional Health Pulse is a scaffolded architecture extension rather than a primary MVP module.
 
-DAV AI is not a medical chatbot, not a clinical decision-support system, not a diagnosis tool, and not a patient-risk prediction product.
+DAV AI is not a medical chatbot, not a clinical decision-support system, not a diagnosis tool, not a causation engine, and not a patient-risk prediction product.
 
 ## 2. Product Positioning
 
@@ -48,6 +48,19 @@ The core problem DAV AI addresses is not diagnosis.
 The core problem is review workflow:
 
 > Search public data → normalize results → score review priority → preserve audit trail → generate bounded briefing → save monitors → compare future changes → prepare for responsible ML.
+
+## Quick 3-Minute Demo Path
+
+Use this when time is limited:
+
+1. **Home** — Explain DAV AI as public-record safety intelligence with source and audit boundaries.
+2. **RecallRadar** — Search a stable recall term, show normalized cards, review score, and source context.
+3. **DrugSignal** — Search a drug term, show FAERS-style reporting patterns, and clearly state that reports do not prove causation.
+4. **FoodRadar** — Search a food/supplement term, show FDA/USDA source coverage, sorting, and public-data limitations.
+5. **Ask DAV AI** — Ask a bounded question about the current result, then show citations and limitations.
+6. **Audit/Sources** — Show traceability, source registry, freshness, and audit context.
+
+Close with: DAV AI is a student-built full-stack prototype focused on public-data review, provenance, auditability, and responsible AI boundaries.
 
 ## 4. Demo Flow
 

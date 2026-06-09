@@ -6,6 +6,18 @@ DAV AI is a full-stack public-data safety intelligence prototype for healthcare 
 
 The primary MVP demo path is **RecallRadar → DrugSignal → FoodRadar**. CosmeticSignal, Regional Health Pulse, Saved Monitors, Data Sources, System Status, Audit History, Source Registry, and provenance/freshness surfaces are implemented or scaffolded secondary/extension surfaces that support the broader platform story.
 
+## Demo Readiness Snapshot
+
+Current validated demo state after the June 2026 polish pass:
+
+- Primary walkthrough: **RecallRadar → DrugSignal → FoodRadar → Ask DAV AI → Audit/Sources**.
+- Optional extension surfaces: **CosmeticSignal**, **Saved Monitors**, and **Regional Health Pulse scaffold**.
+- Frontend validation: lint passed, TypeScript passed, production build passed, and **75 frontend tests passed**.
+- Backend validation: **273 backend tests passed**.
+- Product boundary: DAV AI uses public records only; it does not provide medical advice, diagnosis, treatment guidance, causation proof, safety guarantees, or clinical decision support.
+
+For a presentation walkthrough, use `docs/demo_script.md`.
+
 ## Responsible ML Milestone
 
 DAV AI includes an offline responsible ML experiment layer under `backend/ml_experiments`.
