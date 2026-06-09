@@ -133,6 +133,8 @@ describe('AskDavAIChat', () => {
 
     expect(screen.getByRole('dialog', { name: /Ask DAV AI/i })).toBeInTheDocument()
     expect(screen.getByText(/RecallRadar result context/i)).toBeInTheDocument()
+    expect(screen.getByText(/Source-grounded safety assistant/i)).toBeInTheDocument()
+    expect(screen.getByText(/Answers use only the current RecallRadar or DrugSignal results/i)).toBeInTheDocument()
   })
 
   it('shows no context state', () => {

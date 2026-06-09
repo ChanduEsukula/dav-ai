@@ -97,8 +97,8 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
           <div className="ask-dav-ai-chat__header">
             <div>
               <p className="eyebrow">Ask DAV AI</p>
-              <h2>Public-data review help</h2>
-              <p>Not medical advice, diagnosis, treatment guidance, or FAERS causation.</p>
+              <h2>Source-grounded safety assistant</h2>
+              <p>Answers use only the current RecallRadar or DrugSignal results. Not medical advice, diagnosis, treatment guidance, or FAERS causation.</p>
             </div>
 
             <button type="button" onClick={() => setIsOpen(false)} aria-label="Close Ask DAV AI">
@@ -110,7 +110,7 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
 
           {!context && (
             <div className="ask-dav-ai-chat__empty" role="status">
-              Search RecallRadar or DrugSignal first.
+              Search RecallRadar or DrugSignal first, then ask about the current public-source result.
             </div>
           )}
 
