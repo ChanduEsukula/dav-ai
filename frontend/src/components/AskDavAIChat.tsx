@@ -41,7 +41,14 @@ const drugSignalPrompt: PromptChip = {
 function contextLabel(context: AssistantChatContext | null) {
   if (!context) return 'No result context'
 
-  return context.module === 'recall' ? 'RecallRadar result context' : 'DrugSignal result context'
+  const labels: Record<AssistantChatContext['module'], string> = {
+    recall: 'RecallRadar result context',
+    drug_event: 'DrugSignal result context',
+    food: 'FoodRadar result context',
+    cosmetic: 'CosmeticSignal result context',
+  }
+
+  return labels[context.module]
 }
 
 function AskDavAIChat({ context }: AskDavAIChatProps) {
@@ -98,7 +105,7 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
             <div>
               <p className="eyebrow">Ask DAV AI</p>
               <h2>Source-grounded safety assistant</h2>
-              <p>Answers use only the current RecallRadar or DrugSignal results. Not medical advice, diagnosis, treatment guidance, or FAERS causation.</p>
+              <p>Answers use only the current RecallRadar, DrugSignal, FoodRadar, or CosmeticSignal results. Not medical advice, diagnosis, treatment guidance, causation proof, or safety guarantees.</p>
             </div>
 
             <button type="button" onClick={() => setIsOpen(false)} aria-label="Close Ask DAV AI">
@@ -110,7 +117,7 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
 
           {!context && (
             <div className="ask-dav-ai-chat__empty" role="status">
-              Search RecallRadar or DrugSignal first, then ask about the current public-source result.
+              Search RecallRadar, DrugSignal, FoodRadar, or CosmeticSignal first, then ask about the current public-source result.
             </div>
           )}
 

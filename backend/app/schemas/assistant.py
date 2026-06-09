@@ -3,7 +3,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 
-AssistantModule = Literal["recall", "drug_event"]
+AssistantModule = Literal["recall", "drug_event", "food", "cosmetic"]
 
 
 class AssistantSourceCitation(BaseModel):
@@ -46,6 +46,65 @@ class AssistantRecallContext(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     top_results: list[AssistantRecallResultContext] = Field(default_factory=list, max_length=5)
+
+
+class AssistantFoodResultContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    recall_number: str | None = None
+    product_description: str | None = None
+    reason_for_recall: str | None = None
+    classification: str | None = None
+    status: str | None = None
+    recall_initiation_date: str | None = None
+    report_date: str | None = None
+    distribution_pattern: str | None = None
+    recalling_firm: str | None = None
+    source_type: str | None = None
+    risk_score_label: str
+    risk_score_value: int
+
+
+class AssistantFoodContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    top_results: list[AssistantFoodResultContext] = Field(default_factory=list, max_length=5)
+
+
+class AssistantCosmeticSignalScoreContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    score: int
+    label: str
+    review_priority: str
+    data_confidence: str
+
+
+class AssistantCosmeticReactionContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    reaction: str
+    count: int
+
+
+class AssistantCosmeticRecordContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    report_number: str | None = None
+    report_date: str | None = None
+    serious: str | None = None
+    products: list[str] = Field(default_factory=list, max_length=10)
+    reactions: list[str] = Field(default_factory=list, max_length=10)
+    outcomes: list[str] = Field(default_factory=list, max_length=10)
+
+
+class AssistantCosmeticContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    signal_score: AssistantCosmeticSignalScoreContext
+    top_reactions: list[AssistantCosmeticReactionContext] = Field(default_factory=list, max_length=5)
+    records: list[AssistantCosmeticRecordContext] = Field(default_factory=list, max_length=5)
+    cosmetic_disclaimer: str
 
 
 class AssistantDrugSignalScoreContext(BaseModel):
@@ -93,6 +152,8 @@ class AssistantPageContext(BaseModel):
     limitations: list[str] = Field(default_factory=list, max_length=8)
     recall: AssistantRecallContext | None = None
     drug_event: AssistantDrugEventContext | None = None
+    food: AssistantFoodContext | None = None
+    cosmetic: AssistantCosmeticContext | None = None
 
 
 class AssistantChatRequest(BaseModel):

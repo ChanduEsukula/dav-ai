@@ -134,7 +134,7 @@ describe('AskDavAIChat', () => {
     expect(screen.getByRole('dialog', { name: /Ask DAV AI/i })).toBeInTheDocument()
     expect(screen.getByText(/RecallRadar result context/i)).toBeInTheDocument()
     expect(screen.getByText(/Source-grounded safety assistant/i)).toBeInTheDocument()
-    expect(screen.getByText(/Answers use only the current RecallRadar or DrugSignal results/i)).toBeInTheDocument()
+    expect(screen.getByText(/Answers use only the current RecallRadar, DrugSignal, FoodRadar, or CosmeticSignal results/i)).toBeInTheDocument()
   })
 
   it('shows no context state', () => {
@@ -142,7 +142,7 @@ describe('AskDavAIChat', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /Ask DAV AI/i }))
 
-    expect(screen.getByText(/Search RecallRadar or DrugSignal first/i)).toBeInTheDocument()
+    expect(screen.getByText(/Search RecallRadar, DrugSignal, FoodRadar, or CosmeticSignal first/i)).toBeInTheDocument()
   })
 
   it('sends sanitized context when asking a prompt', async () => {

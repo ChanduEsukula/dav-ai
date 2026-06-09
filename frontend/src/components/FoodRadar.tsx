@@ -5,6 +5,7 @@ import {
   type EverydaySafetySearchResponse,
   type EverydaySafetySort,
 } from '../api/everydaySafety'
+import { buildFoodAssistantContext, type AssistantChatContext } from '../api/assistant'
 import { downloadSafetyIntelligenceReport } from '../api/reports'
 import { formatDate, formatTimestamp, riskExplanation } from '../utils/recallFormatters'
 
@@ -16,7 +17,11 @@ function sourceLabel(sourceType: EverydaySafetyRecord['source_type']) {
   return 'FDA Food'
 }
 
-function FoodRadar() {
+type FoodRadarProps = {
+  onAssistantContextChange?: (context: AssistantChatContext | null) => void
+}
+
+function FoodRadar({ onAssistantContextChange }: FoodRadarProps) {
   const [query, setQuery] = useState('')
   const [data, setData] = useState<EverydaySafetySearchResponse | null>(null)
   const [loading, setLoading] = useState(false)
@@ -40,6 +45,8 @@ function FoodRadar() {
     try {
       const response = await searchEverydaySafety(trimmedQuery, 5, 'food_supplement', sortMode)
       setData(response)
+      onAssistantContextChange?.(buildFoodAssistantContext(response))
+      onAssistantContextChange?.(buildFoodAssistantContext(response))
     } catch {
       setError(
         'Unable to load FoodRadar data. Make sure the FastAPI backend is running on port 8000.'
