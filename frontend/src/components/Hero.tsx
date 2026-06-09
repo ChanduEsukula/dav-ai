@@ -117,11 +117,11 @@ function Hero({
         </h1>
 
         <p className="subtitle">
-          Dav AI turns public recall, drug-safety, food, and supplement data into clear,
-          source-aware intelligence.
+          Dav AI turns public recall, drug-safety, food, and supplement records into
+          source-aware safety intelligence you can inspect and verify.
         </p>
 
-        <p className="hero-trust-line">Public sources only • No PHI • Not medical advice</p>
+        <p className="hero-trust-line">Public records only • Source-backed • Not medical advice</p>
 
         <div className="hero-module-grid" aria-label="Dav AI intelligence modules">
           {heroModules.map((module) => (
@@ -178,17 +178,17 @@ function Hero({
         </div>
 
         <div className="floating-card card-one">
-          <small>Recall</small>
-          <strong>{topResult ? topResult.risk_score.label : 'Pattern detected'}</strong>
+          <small>Review signal</small>
+          <strong>{topResult ? topResult.risk_score.label : 'Source-backed'}</strong>
         </div>
 
         <div className="floating-card card-two">
-          <small>Source</small>
+          <small>Source trail</small>
           <strong>{data ? `${data.count} FDA records` : 'openFDA ready'}</strong>
         </div>
 
         <div className="floating-card card-three">
-          <small>Audit</small>
+          <small>Audit context</small>
           <strong>{data ? 'Timestamp verified' : 'Traceable results'}</strong>
         </div>
       </div>

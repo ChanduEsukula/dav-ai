@@ -23,8 +23,8 @@ function SafetyWorkspace({
     {
       title: 'RecallRadar',
       eyebrow: 'Official recall lens',
-      description: 'Search FDA recalls, risk score, status, and source trail.',
-      chips: ['Recall score', 'FDA class', 'Audit trail'],
+      description: 'Search recall records with review scores, status, and source trail.',
+      chips: ['Review score', 'FDA class', 'Audit trail'],
       actionLabel: 'Open RecallRadar',
       variant: 'recall',
       onClick: goToRecallRadar,
@@ -32,8 +32,8 @@ function SafetyWorkspace({
     {
       title: 'DrugSignal',
       eyebrow: 'Adverse-event lens',
-      description: 'Compare FAERS reactions, trends, and signal score.',
-      chips: ['Signal score', 'Top reactions', 'Trend snapshot'],
+      description: 'Compare public FAERS reporting patterns without treating reports as proof.',
+      chips: ['Review score', 'Top reactions', 'Trend snapshot'],
       actionLabel: 'Open DrugSignal',
       variant: 'drug',
       onClick: goToDrugSignal,
@@ -41,8 +41,8 @@ function SafetyWorkspace({
     {
       title: 'FoodRadar',
       eyebrow: 'Food and supplement lens',
-      description: 'Check public food, supplement, meat, poultry, and egg-product recall signals.',
-      chips: ['FDA food recalls', 'USDA FSIS', 'Source trail'],
+      description: 'Check food, supplement, meat, poultry, and egg-product recall records.',
+      chips: ['FDA food', 'USDA FSIS', 'Source trail'],
       actionLabel: 'Open FoodRadar',
       variant: 'health',
       onClick: goToFoodRadar,
@@ -58,8 +58,8 @@ function SafetyWorkspace({
         </div>
 
         <p>
-          Start with official recall records, compare public adverse-event reporting patterns,
-          then check food and supplement recall signals.
+          Start with recalls, compare public adverse-event patterns, then check food and
+          supplement records — all with source context preserved.
         </p>
       </div>
 
@@ -154,7 +154,7 @@ function SafetyWorkspace({
 
       <div className="safety-workspace__bridge">
         <strong>Recommended workflow:</strong>
-        <span>Start with RecallRadar, compare with DrugSignal, then check FoodRadar.</span>
+        <span>Start with RecallRadar, compare with DrugSignal, then verify FoodRadar source records.</span>
       </div>
     </section>
   )
