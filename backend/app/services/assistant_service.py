@@ -28,6 +28,8 @@ SYSTEM_PROMPT = """You are Ask DAV AI, a public-data review assistant for DAV AI
 You may answer only using the DAV AI context provided in this request:
 - current RecallRadar results
 - current DrugSignal results
+- current FoodRadar results
+- current CosmeticSignal results
 - source metadata
 - audit ID
 - scores
@@ -68,6 +70,12 @@ def _validate_request(request: AssistantChatRequest) -> None:
     if request.module == "drug_event" and request.page_context.drug_event is None:
         raise AssistantRequestError("DrugSignal assistant context is required.")
 
+    if request.module == "food" and request.page_context.food is None:
+        raise AssistantRequestError("FoodRadar assistant context is required.")
+
+    if request.module == "cosmetic" and request.page_context.cosmetic is None:
+        raise AssistantRequestError("CosmeticSignal assistant context is required.")
+
 
 def _source_citations(request: AssistantChatRequest) -> list[AssistantSourceCitation]:
     context = request.page_context
@@ -105,6 +113,22 @@ def _limitations(request: AssistantChatRequest) -> list[str]:
         if standard_limit not in limitations:
             limitations.append(standard_limit)
 
+    if request.module == "food":
+        food_limit = (
+            "FoodRadar uses public FDA/openFDA and USDA FSIS-style food recall data only. "
+            "It is not medical advice, official recall instruction, or a safety guarantee."
+        )
+        if food_limit not in limitations:
+            limitations.append(food_limit)
+
+    if request.module == "cosmetic":
+        cosmetic_limit = (
+            "CosmeticSignal uses public openFDA cosmetic adverse-event reports only. "
+            "Reports do not prove causation, incidence, personal risk, diagnosis, or treatment guidance."
+        )
+        if cosmetic_limit not in limitations:
+            limitations.append(cosmetic_limit)
+
     return limitations
 
 
@@ -118,6 +142,13 @@ def _context_for_prompt(request: AssistantChatRequest) -> dict:
     if "drug_event" in context:
         context["drug_event"]["top_reactions"] = context["drug_event"].get("top_reactions", [])[:max_results]
         context["drug_event"]["reaction_categories"] = context["drug_event"].get("reaction_categories", [])[:max_results]
+
+    if "food" in context:
+        context["food"]["top_results"] = context["food"].get("top_results", [])[:max_results]
+
+    if "cosmetic" in context:
+        context["cosmetic"]["top_reactions"] = context["cosmetic"].get("top_reactions", [])[:max_results]
+        context["cosmetic"]["records"] = context["cosmetic"].get("records", [])[:max_results]
 
     return {
         "module": request.module,
@@ -169,6 +200,48 @@ def _bullets(request: AssistantChatRequest) -> list[str]:
                 f"review priority: {context.drug_event.intelligence_score.review_priority}."
             ),
             "FAERS reports do not prove causation, incidence, personal risk, diagnosis, or treatment guidance.",
+        ]
+
+        if top_reaction:
+            bullets.insert(
+                2,
+                f"Top reported reaction term: {top_reaction.reaction} ({top_reaction.count} mention(s)).",
+            )
+
+        return bullets
+
+    if request.module == "food" and context.food:
+        top_result = context.food.top_results[0] if context.food.top_results else None
+        bullets = [
+            f"{context.count} public food/supplement recall record(s) matched this search.",
+            "Verify exact product name, recall number, lot/code details, recalling firm, status, source, and official record.",
+            "No match or low score does not prove a product is safe or unsafe.",
+        ]
+
+        if top_result:
+            bullets.insert(
+                1,
+                f"Top result: {top_result.product_description or 'Unknown product'}; "
+                f"class/status: {top_result.classification or 'Unknown'} / {top_result.status or 'Unknown'}.",
+            )
+            bullets.insert(
+                2,
+                f"Reason listed: {top_result.reason_for_recall or 'No reason provided'}.",
+            )
+
+        return bullets
+
+    if request.module == "cosmetic" and context.cosmetic:
+        top_reaction = context.cosmetic.top_reactions[0] if context.cosmetic.top_reactions else None
+        bullets = [
+            f"{context.count} public cosmetic adverse-event report record(s) were reviewed.",
+            (
+                "CosmeticSignal score: "
+                f"{context.cosmetic.signal_score.score}/100 "
+                f"{context.cosmetic.signal_score.label}; "
+                f"review priority: {context.cosmetic.signal_score.review_priority}."
+            ),
+            "Cosmetic adverse-event reports do not prove causation, incidence, personal risk, diagnosis, or treatment guidance.",
         ]
 
         if top_reaction:

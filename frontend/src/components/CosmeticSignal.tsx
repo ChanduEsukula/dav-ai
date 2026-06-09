@@ -3,6 +3,7 @@ import {
   searchCosmeticEvents,
   type CosmeticEventSearchResponse,
 } from '../api/cosmeticEvents'
+import { buildCosmeticAssistantContext, type AssistantChatContext } from '../api/assistant'
 import SafeInsightCards, { type SafeInsightCard } from './SafeInsightCards'
 import { formatDate, formatTimestamp } from '../utils/recallFormatters'
 
@@ -19,7 +20,11 @@ function productLabel(record: CosmeticEventSearchResponse['records'][number]) {
   )
 }
 
-function CosmeticSignal() {
+type CosmeticSignalProps = {
+  onAssistantContextChange?: (context: AssistantChatContext | null) => void
+}
+
+function CosmeticSignal({ onAssistantContextChange }: CosmeticSignalProps) {
   const [query, setQuery] = useState('')
   const [data, setData] = useState<CosmeticEventSearchResponse | null>(null)
   const [loading, setLoading] = useState(false)
@@ -39,6 +44,7 @@ function CosmeticSignal() {
     try {
       const response = await searchCosmeticEvents(trimmedQuery, 10)
       setData(response)
+      onAssistantContextChange?.(buildCosmeticAssistantContext(response))
     } catch {
       setError(
         'Unable to load cosmetic event data. Make sure the FastAPI backend is running on port 8000.'

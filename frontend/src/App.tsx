@@ -216,10 +216,10 @@ function App() {
           <DrugSignal onAssistantContextChange={setAssistantContext} />
 
           <section id="foodradar">
-            <FoodRadar />
+            <FoodRadar onAssistantContextChange={setAssistantContext} />
           </section>
 
-          <CosmeticSignal />
+          <CosmeticSignal onAssistantContextChange={setAssistantContext} />
 
           <Signals />
         </>
