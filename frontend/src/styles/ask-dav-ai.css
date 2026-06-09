@@ -1,5 +1,5 @@
 .ask-dav-ai-chat {
-  bottom: 1.25rem;
+  bottom: 6rem;
   position: fixed;
   right: 1.25rem;
   z-index: 50;
@@ -190,7 +190,7 @@
 
 @media (max-width: 640px) {
   .ask-dav-ai-chat {
-    bottom: 0.9rem;
+    bottom: 5.5rem;
     right: 0.9rem;
   }
 

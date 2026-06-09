@@ -102,7 +102,7 @@ class GeminiLLMProvider:
             ],
             "generationConfig": {
                 "temperature": 0.1,
-                "maxOutputTokens": 350,
+                "maxOutputTokens": 1000,
             },
         }
 
@@ -119,17 +119,21 @@ class GeminiLLMProvider:
             body = response.json()
         except ValueError as exc:
             raise LLMProviderError("Gemini assistant provider returned invalid JSON.") from exc
-        text = (
-            body.get("candidates", [{}])[0]
-            .get("content", {})
-            .get("parts", [{}])[0]
-            .get("text", "")
-        )
+        candidates = body.get("candidates", [])
+        parts = []
+        if candidates:
+            parts = candidates[0].get("content", {}).get("parts", [])
 
-        if not text.strip():
+        text = "\n".join(
+            part.get("text", "")
+            for part in parts
+            if isinstance(part, dict) and part.get("text")
+        ).strip()
+
+        if not text:
             raise LLMProviderError("Gemini assistant provider returned an empty answer.")
 
-        return LLMProviderResponse(text=text.strip(), provider="gemini", model=self.model)
+        return LLMProviderResponse(text=text, provider="gemini", model=self.model)
 
 
 def assistant_llm_enabled() -> bool:
