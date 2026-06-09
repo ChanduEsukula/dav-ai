@@ -8,15 +8,13 @@ import "../styles/floating-safety-report-intake.css";
 type ReportType =
   | "drug_product_recall"
   | "drug_safety_signal"
-  | "food_product_recall"
-  | "medical_device"
-  | "general_safety_briefing";
+  | "food_product_recall";
 
 type UserRole =
   | "consumer"
   | "pharmacy"
   | "clinic"
-  | "public_health"
+  | "public_health_analyst"
   | "student_researcher";
 
 type ReportStyle = "simple" | "technical" | "pharmacy_clinic";
@@ -49,15 +47,13 @@ const reportTypeLabels: Record<ReportType, string> = {
   drug_product_recall: "Drug / product recall",
   drug_safety_signal: "Drug safety signal",
   food_product_recall: "Food / product recall",
-  medical_device: "Medical device",
-  general_safety_briefing: "General safety briefing",
 };
 
 const roleLabels: Record<UserRole, string> = {
   consumer: "Consumer",
   pharmacy: "Pharmacy",
   clinic: "Clinic",
-  public_health: "Public-health analyst",
+  public_health_analyst: "Public-health analyst",
   student_researcher: "Student / researcher",
 };
 
@@ -74,10 +70,6 @@ function getModuleLabel(reportType: ReportType): string {
 
   if (reportType === "food_product_recall") {
     return "FoodRadar";
-  }
-
-  if (reportType === "general_safety_briefing") {
-    return "Briefing Engine";
   }
 
   return "RecallRadar";
@@ -148,6 +140,7 @@ export default function FloatingSafetyReportIntake() {
   const sourceScope = useMemo(() => getSourceScope(form.reportType), [form.reportType]);
   const trimmedQuery = form.query.trim();
   const trimmedEmail = form.email.trim();
+  const trimmedRegion = form.optionalStateRegion.trim();
 
   const canReview =
     trimmedQuery.length >= 2 &&
@@ -175,7 +168,7 @@ export default function FloatingSafetyReportIntake() {
 
   function handleReview() {
     if (!trimmedQuery) {
-      setValidationMessage("Enter a drug, product, food, device, or safety topic to check.");
+      setValidationMessage("Enter a drug, product, food, or safety topic to check.");
       return;
     }
 
@@ -207,6 +200,8 @@ export default function FloatingSafetyReportIntake() {
     setDownloadMessage("");
     setEmailMessage("");
 
+    const regionPurposeText = trimmedRegion ? ` Region/context: ${trimmedRegion}.` : "";
+
     try {
       const filename = await downloadSafetyIntelligenceReport({
         prepared_for: roleLabels[form.role],
@@ -216,7 +211,7 @@ export default function FloatingSafetyReportIntake() {
         module: getReportModule(form.reportType),
         purpose: `${reportTypeLabels[form.reportType]} ${reportStyleLabels[
           form.reportStyle
-        ].toLowerCase()} safety report`,
+        ].toLowerCase()} safety report.${regionPurposeText}`,
       });
 
       saveLocalReport(form);
@@ -429,7 +424,7 @@ export default function FloatingSafetyReportIntake() {
                     </div>
                     <div>
                       <dt>Region</dt>
-                      <dd>{form.optionalStateRegion.trim() || "Not provided"}</dd>
+                      <dd>{trimmedRegion || "Not provided"}</dd>
                     </div>
                   </dl>
                 </div>
