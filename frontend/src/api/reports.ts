@@ -1,6 +1,11 @@
 import { apiClient } from './client'
 
-export type SafetyReportModule = 'recallradar' | 'drugsignal' | 'foodradar' | 'both'
+export type SafetyReportModule =
+  | 'recallradar'
+  | 'drugsignal'
+  | 'foodradar'
+  | 'cosmeticsignal'
+  | 'both'
 
 export type SafetyReportRequest = {
   prepared_for: string

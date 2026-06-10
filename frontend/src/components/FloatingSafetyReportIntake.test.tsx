@@ -52,6 +52,7 @@ test('does not expose unsupported report types in the intake dropdown', async ()
   expect(screen.getByRole('option', { name: /Drug \/ product recall/i })).toBeInTheDocument()
   expect(screen.getByRole('option', { name: /Drug safety signal/i })).toBeInTheDocument()
   expect(screen.getByRole('option', { name: /Food \/ product recall/i })).toBeInTheDocument()
+  expect(screen.getByRole('option', { name: /Cosmetic product signal/i })).toBeInTheDocument()
 
   expect(
     screen.queryByRole('option', { name: /Medical device/i })
@@ -174,6 +175,56 @@ test('uses FoodRadar module when food product recall is selected', async () => {
       expect.objectContaining({
         query: 'protein powder',
         module: 'foodradar',
+      })
+    )
+  })
+})
+
+test('uses CosmeticSignal module when cosmetic product signal is selected', async () => {
+  const user = userEvent.setup()
+
+  mockDownloadSafetyIntelligenceReport.mockResolvedValue(
+    'dav-ai-cosmetic-signal-report.pdf'
+  )
+
+  render(<FloatingSafetyReportIntake />)
+
+  await user.click(
+    screen.getByRole('button', { name: /Open safety report intake/i })
+  )
+
+  await user.selectOptions(
+    screen.getByLabelText(/What do you want to check/i),
+    'cosmetic_product_signal'
+  )
+
+  await user.type(screen.getByLabelText(/Search topic/i), 'sunscreen')
+
+  await user.click(
+    screen.getByLabelText(/I understand this uses public FDA\/openFDA-style data only/i)
+  )
+
+  await user.click(
+    screen.getByLabelText(/I understand this is not medical advice/i)
+  )
+
+  await user.click(
+    screen.getByRole('button', { name: /Review report request/i })
+  )
+
+  expect(screen.getByText(/CosmeticSignal/i)).toBeInTheDocument()
+
+  await user.click(screen.getByRole('button', { name: /Generate preview/i }))
+
+  await user.click(
+    screen.getByRole('button', { name: /Download PDF report/i })
+  )
+
+  await waitFor(() => {
+    expect(mockDownloadSafetyIntelligenceReport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: 'sunscreen',
+        module: 'cosmeticsignal',
       })
     )
   })
