@@ -1,16 +1,16 @@
-# Source Freshness Risk Scoring and Payload-Change Intelligence Design
+# Source Freshness Review Signals and Payload-Change Intelligence Design
 
 > Historical planning note: This document describes DAV AI planning from an earlier project stage. It is retained for project history and may not reflect the current implementation. For current scope, architecture, and implemented/partial/future boundaries, see [README.md](../README.md) and [docs/current_architecture_overview.md](current_architecture_overview.md).
 
 ## Goal
 
-Design the next DAV AI engineering milestone: source freshness risk scoring and payload-change intelligence.
+Design the next DAV AI engineering milestone: source freshness review signals and payload-change intelligence.
 
 This milestone should improve trust, auditability, and saved-monitor change detection before any production ML, RAG, or deep learning work.
 
 ## Scope
 
-This is a design-first milestone. It should not change production behavior until the expected data model, scoring logic, UI language, tests, and safety boundaries are clearly documented.
+This is a design-first milestone. It should not change production behavior until the expected data model, signal logic, UI language, tests, and safety boundaries are clearly documented.
 
 ## Why This Comes Next
 
@@ -28,9 +28,9 @@ The next responsible step is to turn source freshness and payload hashes into cl
 
 ## Proposed Features
 
-### 1. Source Freshness Risk Score
+### 1. Source Freshness Review Signal
 
-Create a deterministic score that summarizes whether a public-data source appears current, stale, unknown, or unavailable based on DAV AI audit history.
+Create a deterministic review signal that summarizes whether a public-data source appears current, aging, stale, unknown, or unavailable based on DAV AI audit history.
 
 Possible labels:
 
@@ -41,6 +41,8 @@ Possible labels:
 - source_error
 
 This should be audit-backed and should not claim official source freshness unless the upstream source provides a trusted last-updated timestamp.
+
+This is an operational review signal only. It should not be presented as a medical-risk score, product-safety score, or source-authority score.
 
 ### 2. Payload-Change Intelligence
 
@@ -54,7 +56,7 @@ Possible labels:
 - unavailable
 - unknown
 
-This should support saved-monitor review, not clinical urgency or medical-risk prediction.
+This should support saved-monitor review, not clinical urgency, product danger, medical-risk prediction, or causation claims.
 
 ### 3. Saved Monitor Integration
 
@@ -97,6 +99,8 @@ They do not prove:
 - outbreak activity
 - clinical urgency
 - source correctness
+- personal safety
+- official source completeness
 
 ## Implementation Areas To Review
 
@@ -137,7 +141,7 @@ Likely tests:
 ## Recommended Implementation Sequence
 
 1. Document expected freshness labels and payload-change labels.
-2. Add deterministic scoring helper with unit tests.
+2. Add deterministic review-signal helper with unit tests.
 3. Extend backend schemas safely.
 4. Add source route response fields.
 5. Add saved-monitor response fields only if existing stored data supports them.
@@ -152,3 +156,60 @@ This milestone shows mature product engineering because it improves trust and re
 It strengthens the story:
 
 > DAV AI uses audit history and payload hashes to make public-data changes visible and explainable before production ML.
+
+## Recommended UI Language
+
+Use:
+
+- Source freshness
+- Review signal
+- Public-data change
+- Payload changed
+- Payload unchanged
+- Last successful retrieval
+- Last attempted retrieval
+- Source unavailable
+- Source status unknown
+
+Avoid:
+
+- risk score
+- safety score
+- medical risk
+- clinical urgency
+- product danger
+- outbreak probability
+- source is correct
+- source is complete
+
+## Example UI Copy
+
+### Fresh source
+
+> This source has a recent successful retrieval in DAV AI audit history.
+
+### Aging source
+
+> This source has not been refreshed recently. Verify official source pages before relying on the result.
+
+### Stale source
+
+> DAV AI has not successfully refreshed this source within the expected window. Treat results as needing source verification.
+
+### Source error
+
+> The latest retrieval attempt failed. DAV AI may show older stored context or no result for this source.
+
+### Payload changed
+
+> The public-source response changed compared with the previous saved-monitor run.
+
+### Payload unchanged
+
+> No payload-level change was detected compared with the previous saved-monitor run.
+
+## Current Safety Positioning
+
+Source freshness and payload-change intelligence should help users understand operational data quality. It should not create the impression that DAV AI can determine whether a product, drug, food, supplement, cosmetic, or public-health signal is personally safe or unsafe.
+
+DAV AI should continue to point users back to official FDA, openFDA, USDA FSIS, or other authoritative public sources for verification.

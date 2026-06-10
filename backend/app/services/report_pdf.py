@@ -93,7 +93,7 @@ def _safe_filename_part(value: str) -> str:
 
 
 def build_report_filename(query: str) -> str:
-    return f"dav-ai-safety-report-{_safe_filename_part(query)}.pdf"
+    return f"dav-ai-public-data-report-{_safe_filename_part(query)}.pdf"
 
 
 def _style(
@@ -104,7 +104,7 @@ def _style(
     color=INK,
 ) -> ParagraphStyle:
     return ParagraphStyle(
-        "medtrek_style",
+        "dav_ai_report_style",
         fontName=font_name,
         fontSize=font_size,
         leading=leading,
@@ -262,7 +262,7 @@ def _draw_footer(c: canvas.Canvas, page_number: int) -> None:
     c.drawString(
         MARGIN,
         17,
-        "Dav AI · Public FDA/openFDA safety intelligence · Not medical advice",
+        "Dav AI · Public FDA/openFDA data review · Not medical advice",
     )
     c.drawRightString(PAGE_WIDTH - MARGIN, 17, f"Page {page_number}")
 
@@ -300,7 +300,7 @@ def _draw_title_area(
 ) -> float:
     c.setFillColor(DEEP_TEAL)
     c.setFont("Helvetica-Bold", 7.2)
-    c.drawString(MARGIN, y_top, "SAFETY INTELLIGENCE REPORT")
+    c.drawString(MARGIN, y_top, "PUBLIC DATA INTELLIGENCE REPORT")
 
     y_top -= 27
 
@@ -392,7 +392,7 @@ def _draw_score_card(
 
     c.setFillColor(DEEP_TEAL)
     c.setFont("Helvetica-Bold", 7)
-    c.drawString(x + 18, y_top - 22, "SAFETY SCORE")
+    c.drawString(x + 18, y_top - 22, "REVIEW PRIORITY")
 
     c.setFillColor(DEEP_INK)
     c.setFont("Helvetica-Bold", 42)
@@ -404,8 +404,8 @@ def _draw_score_card(
 
     c.setFillColor(MUTED)
     c.setFont("Helvetica", 8.5)
-    c.drawString(x + 20, y_top - 94, f"Review priority: {_safe_text(priority)}")
-    c.drawString(x + 20, y_top - 110, f"Data confidence: {_safe_text(confidence)}")
+    c.drawString(x + 20, y_top - 94, f"Review status: {_safe_text(priority)}")
+    c.drawString(x + 20, y_top - 110, f"Evidence confidence: {_safe_text(confidence)}")
 
     _draw_pill(
         c,
@@ -621,7 +621,7 @@ def _draw_drug_signal_one_page(
     y = _draw_title_area(
         c,
         y_top=y,
-        title="DrugSignal Safety Intelligence",
+        title="DrugSignal Public Data Intelligence",
         subtitle="A compact public-data reporting-pattern summary for review, audit traceability, and safety awareness.",
     )
 
@@ -714,7 +714,7 @@ def _draw_recall_one_page(
     y = _draw_title_area(
         c,
         y_top=y,
-        title="RecallRadar Safety Intelligence",
+        title="RecallRadar Public Data Intelligence",
         subtitle="A compact public-data recall summary for review, traceability, and official-source verification.",
     )
 
@@ -727,7 +727,7 @@ def _draw_recall_one_page(
 
     results = (recall_result or {}).get("results") or []
     first = results[0] if results else {}
-    risk_score = first.get("risk_score") or {}
+    review_priority = first.get("risk_score") or {}
 
     score_card_width = 250
     metric_x = MARGIN + score_card_width + 12
@@ -739,8 +739,8 @@ def _draw_recall_one_page(
         y_top=y,
         width=score_card_width,
         height=150,
-        score=risk_score.get("score", "N/A"),
-        label=risk_score.get("label", first.get("classification", "N/A")),
+        score=review_priority.get("score", "N/A"),
+        label=review_priority.get("label", first.get("classification", "N/A")),
         priority=first.get("status", "N/A"),
         confidence=first.get("classification", "N/A"),
     )
@@ -817,7 +817,7 @@ def _draw_foodradar_one_page(
     y = _draw_title_area(
         c,
         y_top=y,
-        title="FoodRadar Safety Intelligence",
+        title="FoodRadar Public Data Intelligence",
         subtitle=(
             "A compact public-data food and supplement recall summary for review, "
             "traceability, and official-source verification."
@@ -833,7 +833,7 @@ def _draw_foodradar_one_page(
 
     results = (everyday_safety_result or {}).get("results") or []
     first = results[0] if results else {}
-    risk_score = first.get("risk_score") or {}
+    review_priority = first.get("risk_score") or {}
 
     score_card_width = 250
     metric_x = MARGIN + score_card_width + 12
@@ -845,8 +845,8 @@ def _draw_foodradar_one_page(
         y_top=y,
         width=score_card_width,
         height=150,
-        score=risk_score.get("score", "N/A"),
-        label=risk_score.get("label", first.get("classification", "N/A")),
+        score=review_priority.get("score", "N/A"),
+        label=review_priority.get("label", first.get("classification", "N/A")),
         priority=first.get("status", "N/A"),
         confidence=first.get("classification", "N/A"),
     )
@@ -1037,6 +1037,7 @@ def _draw_compact_detail_card(
 
     return y_top - height - 16
 
+
 def _draw_both_modules_report(
     c: canvas.Canvas,
     *,
@@ -1056,7 +1057,7 @@ def _draw_both_modules_report(
     y = _draw_title_area(
         c,
         y_top=y,
-        title="Combined Safety Intelligence",
+        title="Combined Public Data Intelligence",
         subtitle="A two-module public-data summary combining recall records and adverse-event reporting patterns.",
     )
 
@@ -1069,7 +1070,7 @@ def _draw_both_modules_report(
 
     recall_results = (recall_result or {}).get("results") or []
     first_recall = recall_results[0] if recall_results else {}
-    recall_score = first_recall.get("risk_score") or {}
+    recall_priority = first_recall.get("risk_score") or {}
     drug_score = (drug_signal_result or {}).get("intelligence_score") or {}
 
     card_gap = 12
@@ -1088,15 +1089,15 @@ def _draw_both_modules_report(
 
     c.setFillColor(DEEP_TEAL)
     c.setFont("Helvetica-Bold", 7)
-    c.drawString(MARGIN + 18, y - 22, "RECALLRADAR")
+    c.drawString(MARGIN + 18, y - 22, "RECALLRADAR REVIEW PRIORITY")
 
     c.setFillColor(DEEP_INK)
     c.setFont("Helvetica-Bold", 28)
-    c.drawString(MARGIN + 18, y - 60, _safe_text(recall_score.get("score", "N/A")))
+    c.drawString(MARGIN + 18, y - 60, _safe_text(recall_priority.get("score", "N/A")))
 
     c.setFillColor(CLINICAL_BLUE)
     c.setFont("Helvetica-Bold", 13)
-    c.drawString(MARGIN + 18, y - 86, _safe_text(recall_score.get("label", "N/A")))
+    c.drawString(MARGIN + 18, y - 86, _safe_text(recall_priority.get("label", "N/A")))
 
     c.setFillColor(MUTED)
     c.setFont("Helvetica", 8)
@@ -1117,7 +1118,7 @@ def _draw_both_modules_report(
 
     c.setFillColor(DEEP_TEAL)
     c.setFont("Helvetica-Bold", 7)
-    c.drawString(right_x + 18, y - 22, "DRUGSIGNAL")
+    c.drawString(right_x + 18, y - 22, "DRUGSIGNAL REVIEW PRIORITY")
 
     c.setFillColor(DEEP_INK)
     c.setFont("Helvetica-Bold", 28)
@@ -1189,7 +1190,7 @@ def build_safety_intelligence_pdf(
 
     buffer = BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=LETTER)
-    pdf.setTitle("Dav AI Safety Intelligence Report")
+    pdf.setTitle("Dav AI Public Data Intelligence Report")
 
     generated_at = datetime.now(timezone.utc).isoformat()
 

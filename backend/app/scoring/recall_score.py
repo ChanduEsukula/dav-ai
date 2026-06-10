@@ -15,6 +15,15 @@ STATUS_WEIGHTS = {
 
 
 def calculate_recall_risk_score(record: dict) -> dict:
+    """Calculate a deterministic RecallRadar review-priority signal.
+
+    The function name is kept for compatibility with existing routes, schemas,
+    frontend types, and tests that still expect a `risk_score` field.
+
+    This score is an operational review-priority signal over public recall
+    records. It is not a medical-risk score, personal safety score, product
+    danger score, or clinical urgency estimate.
+    """
     classification = record.get("classification", "")
     status = record.get("status", "")
 
@@ -35,7 +44,7 @@ def calculate_recall_risk_score(record: dict) -> dict:
             "recency_score": recency_score,
             "scope_score": scope_score,
         },
-        "score_version": "recall-risk-v0.1",
+        "score_version": "recall-review-priority-v0.2",
     }
 
 
@@ -72,7 +81,7 @@ def _scope_score(distribution_pattern: str) -> int:
 
 def _score_label(score: int) -> str:
     if score >= 81:
-        return "Critical"
+        return "High Attention"
     if score >= 61:
         return "High"
     if score >= 31:

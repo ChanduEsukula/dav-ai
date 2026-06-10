@@ -137,7 +137,7 @@ def test_everyday_safety_food_search_returns_multi_source_normalized_records(mon
     assert fsis_result["product_description"] == "Ready-to-eat chicken meal"
     assert fsis_result["code_info"] == "EST. 12345"
     assert fsis_result["source"]["name"] == "USDA FSIS Recall API"
-    assert fsis_result["risk_score"]["score_version"] == "recall-risk-v0.1"
+    assert fsis_result["risk_score"]["score_version"] == "recall-review-priority-v0.2"
 
 
 def test_everyday_safety_food_search_handles_empty_multi_source_results(monkeypatch):
@@ -248,7 +248,8 @@ def test_everyday_safety_returns_partial_results_when_fsis_fails(monkeypatch):
     assert body["results"][0]["source_type"] == "FDA_FOOD_ENFORCEMENT"
 
     fsis_source = next(
-        source for source in body["sources_checked"]
+        source
+        for source in body["sources_checked"]
         if source["source_type"] == "USDA_FSIS_RECALL"
     )
     assert fsis_source["upstream_status"] == "error"

@@ -110,7 +110,7 @@ def test_create_safety_intelligence_report_returns_pdf(monkeypatch):
     assert response.status_code == 200
     assert response.headers["content-type"] == "application/pdf"
     assert response.headers["content-disposition"] == (
-        'attachment; filename="dav-ai-safety-report-metformin.pdf"'
+        'attachment; filename="dav-ai-public-data-report-metformin.pdf"'
     )
     assert response.content.startswith(b"%PDF-1.4")
 
@@ -157,13 +157,14 @@ def test_create_foodradar_safety_intelligence_report_returns_pdf(monkeypatch):
     assert response.status_code == 200
     assert response.headers["content-type"] == "application/pdf"
     assert response.headers["content-disposition"] == (
-        'attachment; filename="dav-ai-safety-report-protein-powder.pdf"'
+        'attachment; filename="dav-ai-public-data-report-protein-powder.pdf"'
     )
     assert response.content.startswith(b"%PDF-1.4")
 
 
 def test_foodradar_pdf_uses_food_specific_safety_boundary():
-    report_pdf_source = Path("app/services/report_pdf.py").read_text()
+    report_pdf_path = Path(__file__).resolve().parents[1] / "app/services/report_pdf.py"
+    report_pdf_source = report_pdf_path.read_text()
 
     assert "FOODRADAR_DISCLAIMER" in report_pdf_source
     assert "Food and supplement recall records do not prove" in report_pdf_source
