@@ -33,7 +33,7 @@
   pointer-events: none;
 }
 
-/* Template 3: slow glass scan sweep */
+/* Slow glass scan sweep */
 .operational-flow__shell::after {
   content: "";
   position: absolute;
@@ -208,7 +208,6 @@
   animation: operationalFlowRing 2.6s ease-in-out infinite;
 }
 
-
 .operational-flow__card {
   position: relative;
   min-height: 160px;
@@ -287,6 +286,9 @@
 }
 
 .operational-flow__icon {
+  --particle-one: color-mix(in srgb, var(--accent, #0f766e), transparent 4%);
+  --particle-two: color-mix(in srgb, var(--accent, #0f766e), transparent 18%);
+
   position: relative;
   width: 78px;
   height: 78px;
@@ -303,7 +305,7 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
-/* Template 7: orbit rings and particles */
+/* Orbit rings and particles */
 .operational-flow__icon::before,
 .operational-flow__icon::after {
   content: "";
@@ -317,12 +319,19 @@
 .operational-flow__icon::before {
   width: 92px;
   height: 92px;
+  box-shadow:
+    0 -46px 0 -43px var(--particle-one),
+    46px 0 0 -43px var(--particle-two),
+    0 46px 0 -43px rgba(34, 211, 238, 0.76);
   animation: orbitParticleClockwise 6.4s linear infinite;
 }
 
 .operational-flow__icon::after {
   width: 110px;
   height: 110px;
+  box-shadow:
+    -55px 0 0 -52px var(--particle-one),
+    0 55px 0 -52px rgba(34, 211, 238, 0.62);
   animation: orbitParticleCounter 8s linear infinite;
 }
 
@@ -334,25 +343,6 @@
   stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-
-/* Small orbit particles using inner shadows */
-.operational-flow__icon {
-  --particle-one: color-mix(in srgb, var(--accent, #0f766e), transparent 4%);
-  --particle-two: color-mix(in srgb, var(--accent, #0f766e), transparent 18%);
-}
-
-.operational-flow__icon::before {
-  box-shadow:
-    0 -46px 0 -43px var(--particle-one),
-    46px 0 0 -43px var(--particle-two),
-    0 46px 0 -43px rgba(34, 211, 238, 0.76);
-}
-
-.operational-flow__icon::after {
-  box-shadow:
-    -55px 0 0 -52px var(--particle-one),
-    0 55px 0 -52px rgba(34, 211, 238, 0.62);
 }
 
 /* Meaningful micro-motions layered into the particle style */
@@ -373,11 +363,11 @@
 }
 
 .operational-flow__step:nth-child(5) .operational-flow__icon svg {
-  animation: bookmarkPingSoft 3.6s ease-in-out infinite;
+  animation: foodSignalGrow 3.8s ease-in-out infinite;
 }
 
 .operational-flow__step:nth-child(6) .operational-flow__icon svg {
-  animation: pulseTraceSoft 2.8s ease-in-out infinite;
+  animation: cosmeticBottleGlow 3.8s ease-in-out infinite;
 }
 
 .operational-flow__copy {
@@ -425,6 +415,10 @@
 
 .operational-flow__card--green {
   --accent: #0f8f6b;
+}
+
+.operational-flow__card--pink {
+  --accent: #be5cff;
 }
 
 .operational-flow__bottom {
@@ -619,29 +613,29 @@
   }
 }
 
-@keyframes bookmarkPingSoft {
+@keyframes foodSignalGrow {
   0%,
   100% {
-    transform: scale(0.98);
-    opacity: 0.82;
+    opacity: 0.78;
+    transform: translateY(0) scale(0.97);
   }
 
   50% {
-    transform: scale(1.05);
     opacity: 1;
+    transform: translateY(-2px) scale(1.05);
   }
 }
 
-@keyframes pulseTraceSoft {
+@keyframes cosmeticBottleGlow {
   0%,
   100% {
-    opacity: 0.72;
-    transform: scaleX(0.96);
+    opacity: 0.78;
+    transform: translateY(0) scale(0.97);
   }
 
   50% {
     opacity: 1;
-    transform: scaleX(1.04);
+    transform: translateY(-2px) scale(1.05);
   }
 }
 

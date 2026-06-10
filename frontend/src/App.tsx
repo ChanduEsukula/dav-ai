@@ -18,6 +18,7 @@ import './styles/audit-history.css'
 import './styles/operational-overview.css'
 import './styles/safety-workspace.css'
 import './styles/ask-dav-ai.css'
+import './styles/search-glass.css'
 import {
   buildRecallAssistantContext,
   type AssistantChatContext,

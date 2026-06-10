@@ -3,16 +3,16 @@ type FlowItem = {
   title: string
   subtitle: string
   detail: string
-  icon: 'database' | 'shield' | 'radar' | 'capsule' | 'bookmark' | 'pulse'
-  tone: 'teal' | 'blue' | 'purple' | 'green'
+  icon: 'database' | 'shield' | 'radar' | 'capsule' | 'leaf' | 'bottle'
+  tone: 'teal' | 'blue' | 'purple' | 'green' | 'pink'
 }
 
 const flowItems: FlowItem[] = [
   {
     number: '01',
-    title: 'openFDA',
-    subtitle: 'Public sources',
-    detail: 'Recall, adverse-event, and cosmetic-event data from public sources.',
+    title: 'Public sources',
+    subtitle: 'FDA + openFDA',
+    detail: 'Recall, adverse-event, food, cosmetic, and CAERS data from public sources.',
     icon: 'database',
     tone: 'teal',
   },
@@ -20,41 +20,41 @@ const flowItems: FlowItem[] = [
     number: '02',
     title: 'Provenance',
     subtitle: 'Audit trail',
-    detail: 'Source, timestamp, and request ID stay visible.',
+    detail: 'Source, timestamp, and request ID stay visible for every review.',
     icon: 'shield',
     tone: 'blue',
   },
   {
     number: '03',
-    title: 'Review priority',
-    subtitle: 'RecallRadar',
+    title: 'RecallRadar',
+    subtitle: 'Review priority',
     detail: 'Classification-aware recall review signals for source-backed records.',
     icon: 'radar',
     tone: 'purple',
   },
   {
     number: '04',
-    title: 'Signal scan',
-    subtitle: 'DrugSignal',
-    detail: 'Explore drug side-effect reporting patterns without causation claims.',
+    title: 'DrugSignal',
+    subtitle: 'Signal scan',
+    detail: 'Explore public adverse-event reporting patterns without causation claims.',
     icon: 'capsule',
     tone: 'blue',
   },
   {
     number: '05',
-    title: 'Watchlists',
-    subtitle: 'Saved monitors',
-    detail: 'Save monitors and review manual run history.',
-    icon: 'bookmark',
+    title: 'FoodRadar',
+    subtitle: 'Food + supplements',
+    detail: 'Review food, supplement, meat, poultry, and egg-product recall records.',
+    icon: 'leaf',
     tone: 'green',
   },
   {
     number: '06',
-    title: 'Data quality',
-    subtitle: 'System status',
-    detail: 'Track freshness and operational visibility.',
-    icon: 'pulse',
-    tone: 'teal',
+    title: 'CosmeticSignal',
+    subtitle: 'Cosmetic events',
+    detail: 'Review cosmetic-event public records with source context and limitations.',
+    icon: 'bottle',
+    tone: 'pink',
   },
 ]
 
@@ -98,17 +98,21 @@ function FlowIcon({ icon }: { icon: FlowItem['icon'] }) {
     )
   }
 
-  if (icon === 'bookmark') {
+  if (icon === 'leaf') {
     return (
       <svg viewBox="0 0 48 48" focusable="false">
-        <path d="M15 8h18c1.7 0 3 1.3 3 3v29L24 33l-12 7V11c0-1.7 1.3-3 3-3z" />
+        <path d="M24 39V22" />
+        <path d="M24 29c-8.5 0-14-5.5-14-14 8.5 0 14 5.5 14 14z" />
+        <path d="M24 29c8.5 0 14-5.5 14-14-8.5 0-14 5.5-14 14z" />
       </svg>
     )
   }
 
   return (
     <svg viewBox="0 0 48 48" focusable="false">
-      <path d="M6 25h9l4-8 6 17 5-12 4 3h8" />
+      <path d="M19 7h10" />
+      <path d="M21 7v8l-5 6v17c0 2 1.6 3.5 3.5 3.5h9c1.9 0 3.5-1.5 3.5-3.5V21l-5-6V7" />
+      <path d="M18 27h12" />
     </svg>
   )
 }
@@ -120,10 +124,10 @@ function OperationalOverview() {
         <div className="operational-flow__header">
           <div>
             <p className="operational-flow__eyebrow">Operational view</p>
-            <h2 id="operational-flow-title">Safety intelligence at a glance</h2>
+            <h2 id="operational-flow-title">Public-data intelligence at a glance</h2>
             <p>
-              A source-aware operating layer for public recall, drug-safety, food, cosmetic, and
-              regional signal workflows.
+              A source-aware operating layer for recall, adverse-event, food, cosmetic, and
+              regional public-data workflows.
             </p>
           </div>
 
@@ -167,7 +171,7 @@ function OperationalOverview() {
 
           <span className="operational-flow__live">
             <i aria-hidden="true"></i>
-            Live data flow
+            Saved monitors + system status
           </span>
         </div>
       </div>

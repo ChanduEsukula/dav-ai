@@ -1,0 +1,165 @@
+.search-panel,
+.drug-signal-panel,
+.foodradar-panel,
+.cosmetic-signal-panel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(25, 182, 201, 0.13), transparent 28%),
+    radial-gradient(circle at 90% 84%, rgba(36, 180, 126, 0.1), transparent 36%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.7), rgba(244, 252, 251, 0.54));
+  border: 1px solid rgba(15, 23, 42, 0.075);
+  box-shadow:
+    0 28px 76px rgba(16, 32, 51, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(22px);
+}
+
+.search-panel::before,
+.drug-signal-panel::before,
+.foodradar-panel::before,
+.cosmetic-signal-panel::before {
+  content: "";
+  position: absolute;
+  inset: 24px;
+  border-radius: 26px;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(11, 79, 113, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(11, 79, 113, 0.02) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: radial-gradient(circle at center, black 0%, transparent 78%);
+}
+
+.search-panel::after,
+.drug-signal-panel::after,
+.foodradar-panel::after,
+.cosmetic-signal-panel::after {
+  content: "";
+  position: absolute;
+  inset: -55%;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      105deg,
+      transparent 38%,
+      rgba(34, 211, 238, 0.055) 45%,
+      rgba(255, 255, 255, 0.24) 50%,
+      rgba(20, 184, 166, 0.065) 55%,
+      transparent 62%
+    );
+  transform: translateX(-42%) rotate(2deg);
+  animation: searchGlassSweep 8.5s ease-in-out infinite;
+}
+
+.search-panel > *,
+.drug-signal-panel > *,
+.foodradar-panel > *,
+.cosmetic-signal-panel > * {
+  position: relative;
+  z-index: 2;
+}
+
+.search-box {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 12% 10%, rgba(255, 255, 255, 0.95), transparent 32%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.58));
+  border: 1px solid rgba(15, 23, 42, 0.065);
+  box-shadow:
+    0 18px 42px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(18px);
+}
+
+.search-box::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #22d3ee;
+  box-shadow:
+    0 0 0 7px rgba(34, 211, 238, 0.1),
+    0 0 18px rgba(34, 211, 238, 0.52);
+  animation: searchLivePulse 2.8s ease-in-out infinite;
+}
+
+.search-field input {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow:
+    0 10px 26px rgba(15, 23, 42, 0.045),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+}
+
+.search-field input:focus {
+  border-color: rgba(20, 184, 166, 0.28);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    0 0 0 4px rgba(34, 211, 238, 0.11),
+    0 14px 30px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.94);
+  outline: none;
+}
+
+.search-box > button {
+  box-shadow:
+    0 16px 34px rgba(15, 118, 110, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+@keyframes searchGlassSweep {
+  0%,
+  22% {
+    transform: translateX(-46%) rotate(2deg);
+    opacity: 0;
+  }
+
+  34% {
+    opacity: 1;
+  }
+
+  62% {
+    opacity: 0.75;
+  }
+
+  78%,
+  100% {
+    transform: translateX(46%) rotate(2deg);
+    opacity: 0;
+  }
+}
+
+@keyframes searchLivePulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.9);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-panel::after,
+  .drug-signal-panel::after,
+  .foodradar-panel::after,
+  .cosmetic-signal-panel::after,
+  .search-box::after {
+    animation: none !important;
+  }
+}
