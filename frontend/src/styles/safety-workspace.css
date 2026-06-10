@@ -136,6 +136,15 @@
     linear-gradient(135deg, var(--medical-green), #0f8f6b);
 }
 
+.safety-workspace-card--cosmetic .safety-workspace-card__icon {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.28), transparent 34%),
+    linear-gradient(135deg, #be5cff, #f4a7d8);
+  box-shadow:
+    0 16px 34px rgba(190, 92, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
 .safety-workspace-card__icon svg {
   width: 25px;
   height: 25px;
@@ -207,6 +216,12 @@
   border-color: rgba(22, 163, 74, 0.09);
 }
 
+.safety-workspace-card--cosmetic .safety-workspace-card__meta [role="listitem"] {
+  color: #7b2cbf;
+  background: rgba(190, 92, 255, 0.1);
+  border-color: rgba(190, 92, 255, 0.18);
+}
+
 .safety-workspace-card__arrow {
   width: 30px;
   height: 30px;
@@ -229,6 +244,10 @@
   transform: translateX(2px);
   color: #ffffff;
   background: linear-gradient(135deg, var(--clinical-blue), var(--deep-teal));
+}
+
+.safety-workspace-card--cosmetic:hover .safety-workspace-card__arrow {
+  background: linear-gradient(135deg, #be5cff, #f4a7d8);
 }
 
 .safety-workspace__bridge {
