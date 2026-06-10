@@ -12,7 +12,7 @@ const flowItems: FlowItem[] = [
     number: '01',
     title: 'openFDA',
     subtitle: 'Public sources',
-    detail: 'Recall and adverse-event data from public FDA sources.',
+    detail: 'Recall, adverse-event, and cosmetic-event data from public sources.',
     icon: 'database',
     tone: 'teal',
   },
@@ -26,9 +26,9 @@ const flowItems: FlowItem[] = [
   },
   {
     number: '03',
-    title: 'Risk review',
+    title: 'Review priority',
     subtitle: 'RecallRadar',
-    detail: 'Classification-aware recall scoring for safety signals.',
+    detail: 'Classification-aware recall review signals for source-backed records.',
     icon: 'radar',
     tone: 'purple',
   },
@@ -36,7 +36,7 @@ const flowItems: FlowItem[] = [
     number: '04',
     title: 'Signal scan',
     subtitle: 'DrugSignal',
-    detail: 'Explore drug side-effect reporting patterns.',
+    detail: 'Explore drug side-effect reporting patterns without causation claims.',
     icon: 'capsule',
     tone: 'blue',
   },
@@ -122,8 +122,8 @@ function OperationalOverview() {
             <p className="operational-flow__eyebrow">Operational view</p>
             <h2 id="operational-flow-title">Safety intelligence at a glance</h2>
             <p>
-              A source-aware operating layer for public recall, drug-safety, and regional
-              signal workflows.
+              A source-aware operating layer for public recall, drug-safety, food, cosmetic, and
+              regional signal workflows.
             </p>
           </div>
 

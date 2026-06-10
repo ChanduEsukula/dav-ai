@@ -2,6 +2,7 @@ type SafetyWorkspaceProps = {
   goToRecallRadar: () => void
   goToDrugSignal: () => void
   goToFoodRadar: () => void
+  goToCosmeticSignal: () => void
 }
 
 type SafetyModule = {
@@ -10,7 +11,7 @@ type SafetyModule = {
   description: string
   chips: string[]
   actionLabel: string
-  variant: 'recall' | 'drug' | 'health'
+  variant: 'recall' | 'drug' | 'health' | 'cosmetic'
   onClick: () => void
 }
 
@@ -18,13 +19,14 @@ function SafetyWorkspace({
   goToRecallRadar,
   goToDrugSignal,
   goToFoodRadar,
+  goToCosmeticSignal,
 }: SafetyWorkspaceProps) {
   const modules: SafetyModule[] = [
     {
       title: 'RecallRadar',
       eyebrow: 'Official recall lens',
-      description: 'Search recall records with review scores, status, and source trail.',
-      chips: ['Review score', 'FDA class', 'Audit trail'],
+      description: 'Search recall records with review priority, status, and source trail.',
+      chips: ['Review priority', 'FDA class', 'Audit trail'],
       actionLabel: 'Open RecallRadar',
       variant: 'recall',
       onClick: goToRecallRadar,
@@ -33,7 +35,7 @@ function SafetyWorkspace({
       title: 'DrugSignal',
       eyebrow: 'Adverse-event lens',
       description: 'Compare public FAERS reporting patterns without treating reports as proof.',
-      chips: ['Review score', 'Top reactions', 'Trend snapshot'],
+      chips: ['Review signal', 'Top reactions', 'Trend snapshot'],
       actionLabel: 'Open DrugSignal',
       variant: 'drug',
       onClick: goToDrugSignal,
@@ -47,6 +49,15 @@ function SafetyWorkspace({
       variant: 'health',
       onClick: goToFoodRadar,
     },
+    {
+      title: 'CosmeticSignal',
+      eyebrow: 'Cosmetic source lens',
+      description: 'Review cosmetic-event public records with source context and careful limitations.',
+      chips: ['Cosmetics', 'Public records', 'Source trail'],
+      actionLabel: 'Open CosmeticSignal',
+      variant: 'cosmetic',
+      onClick: goToCosmeticSignal,
+    },
   ]
 
   return (
@@ -58,8 +69,8 @@ function SafetyWorkspace({
         </div>
 
         <p>
-          Start with recalls, compare public adverse-event patterns, then check food and
-          supplement records — all with source context preserved.
+          Start with recalls, compare public adverse-event patterns, then check food,
+          supplement, and cosmetic records — all with source context preserved.
         </p>
       </div>
 
@@ -125,6 +136,17 @@ function SafetyWorkspace({
                   />
                 </svg>
               )}
+
+              {module.variant === 'cosmetic' && (
+                <svg className="safety-health-icon" viewBox="0 0 48 48" focusable="false">
+                  <circle className="safety-pulse-guide" cx="24" cy="24" r="14" />
+                  <path
+                    className="safety-pulse-line"
+                    d="M16 24 C18 16 30 16 32 24 C30 32 18 32 16 24 Z"
+                  />
+                  <circle className="safety-pulse-line" cx="24" cy="24" r="3" />
+                </svg>
+              )}
             </span>
 
             <span className="safety-workspace-card__content">
@@ -154,7 +176,10 @@ function SafetyWorkspace({
 
       <div className="safety-workspace__bridge">
         <strong>Recommended workflow:</strong>
-        <span>Start with RecallRadar, compare with DrugSignal, then verify FoodRadar source records.</span>
+        <span>
+          Start with RecallRadar, compare with DrugSignal, then verify FoodRadar or CosmeticSignal
+          source records.
+        </span>
       </div>
     </section>
   )

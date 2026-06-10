@@ -167,6 +167,19 @@ function App() {
     }, 80)
   }
 
+  function goToCosmeticSignal() {
+    setActivePage('home')
+    setActiveSection('cosmeticsignal')
+    updatePageInUrl('home')
+
+    setTimeout(() => {
+      document.getElementById('cosmeticsignal')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    }, 80)
+  }
+
   function goToPage(page: ActivePage) {
     setActivePage(page)
     setActiveSection('home')
@@ -183,6 +196,7 @@ function App() {
         goToRecallRadar={goToRecallRadar}
         goToDrugSignal={goToDrugSignal}
         goToFoodRadar={goToFoodRadar}
+        goToCosmeticSignal={goToCosmeticSignal}
         goToPage={goToPage}
       />
 
@@ -193,6 +207,7 @@ function App() {
             goToRecallRadar={goToRecallRadar}
             goToDrugSignal={goToDrugSignal}
             goToFoodRadar={goToFoodRadar}
+            goToCosmeticSignal={goToCosmeticSignal}
             goToAbout={() => goToPage('about')}
           />
 
@@ -200,6 +215,7 @@ function App() {
             goToRecallRadar={goToRecallRadar}
             goToDrugSignal={goToDrugSignal}
             goToFoodRadar={goToFoodRadar}
+            goToCosmeticSignal={goToCosmeticSignal}
           />
 
           <OperationalOverview />
@@ -219,7 +235,9 @@ function App() {
             <FoodRadar onAssistantContextChange={setAssistantContext} />
           </section>
 
-          <CosmeticSignal onAssistantContextChange={setAssistantContext} />
+          <section id="cosmeticsignal">
+            <CosmeticSignal onAssistantContextChange={setAssistantContext} />
+          </section>
 
           <Signals />
         </>
