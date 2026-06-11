@@ -8,7 +8,8 @@ import "../styles/floating-safety-report-intake.css";
 type ReportType =
   | "drug_product_recall"
   | "drug_safety_signal"
-  | "food_product_recall";
+  | "food_product_recall"
+  | "cosmetic_product_signal";
 
 type UserRole =
   | "consumer"
@@ -47,6 +48,7 @@ const reportTypeLabels: Record<ReportType, string> = {
   drug_product_recall: "Drug / product recall",
   drug_safety_signal: "Drug safety signal",
   food_product_recall: "Food / product recall",
+  cosmetic_product_signal: "Cosmetic product signal",
 };
 
 const roleLabels: Record<UserRole, string> = {
@@ -72,6 +74,10 @@ function getModuleLabel(reportType: ReportType): string {
     return "FoodRadar";
   }
 
+  if (reportType === "cosmetic_product_signal") {
+    return "CosmeticSignal";
+  }
+
   return "RecallRadar";
 }
 
@@ -84,12 +90,20 @@ function getReportModule(reportType: ReportType): SafetyReportModule {
     return "foodradar";
   }
 
+  if (reportType === "cosmetic_product_signal") {
+    return "cosmeticsignal";
+  }
+
   return "recallradar";
 }
 
 function getSourceScope(reportType: ReportType): string {
   if (reportType === "food_product_recall") {
     return "Public FDA/openFDA food enforcement + USDA FSIS recall data";
+  }
+
+  if (reportType === "cosmetic_product_signal") {
+    return "Public FDA/openFDA cosmetic adverse-event report data";
   }
 
   if (reportType === "drug_safety_signal") {
@@ -310,7 +324,7 @@ export default function FloatingSafetyReportIntake() {
                   <input
                     value={form.query}
                     onChange={(event) => updateField("query", event.target.value)}
-                    placeholder="Example: eye drops, metformin, protein powder"
+                    placeholder="Example: eye drops, metformin, protein powder, sunscreen"
                   />
                 </label>
 

@@ -17,6 +17,7 @@ ReportModule = Literal[
     "recallradar",
     "drugsignal",
     "foodradar",
+    "cosmeticsignal",
     "both",
 ]
 

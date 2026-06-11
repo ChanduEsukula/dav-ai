@@ -14,6 +14,7 @@ class SavedMonitorModule(str, Enum):
     RECALLRADAR = "recallradar"
     DRUGSIGNAL = "drugsignal"
     FOODRADAR = "foodradar"
+    COSMETICSIGNAL = "cosmeticsignal"
     REGIONAL_HEALTH_PULSE = "regional_health_pulse"
 
 

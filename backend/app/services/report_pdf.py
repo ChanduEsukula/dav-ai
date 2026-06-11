@@ -27,6 +27,13 @@ FOODRADAR_DISCLAIMER = (
     "official source notices."
 )
 
+COSMETICSIGNAL_DISCLAIMER = (
+    "Generated from public FDA/openFDA cosmetic adverse-event report data. "
+    "Cosmetic public reporting records do not prove product danger, medical risk, "
+    "causation, incidence, or source completeness. Verify exact product details "
+    "and official source records."
+)
+
 PRIVACY_NOTE = (
     "Do not include personal medical history, diagnoses, prescription history, "
     "patient records, insurance information, addresses, or private health information."
@@ -44,6 +51,7 @@ MODULE_LABELS = {
     "recallradar": "RecallRadar",
     "drugsignal": "DrugSignal",
     "foodradar": "FoodRadar",
+    "cosmeticsignal": "CosmeticSignal",
     "both": "RecallRadar + DrugSignal",
 }
 
@@ -93,7 +101,7 @@ def _safe_filename_part(value: str) -> str:
 
 
 def build_report_filename(query: str) -> str:
-    return f"dav-ai-safety-report-{_safe_filename_part(query)}.pdf"
+    return f"dav-ai-public-data-report-{_safe_filename_part(query)}.pdf"
 
 
 def _style(
@@ -104,7 +112,7 @@ def _style(
     color=INK,
 ) -> ParagraphStyle:
     return ParagraphStyle(
-        "medtrek_style",
+        "dav_ai_report_style",
         fontName=font_name,
         fontSize=font_size,
         leading=leading,
@@ -262,7 +270,7 @@ def _draw_footer(c: canvas.Canvas, page_number: int) -> None:
     c.drawString(
         MARGIN,
         17,
-        "Dav AI · Public FDA/openFDA safety intelligence · Not medical advice",
+        "Dav AI · Public FDA/openFDA data review · Not medical advice",
     )
     c.drawRightString(PAGE_WIDTH - MARGIN, 17, f"Page {page_number}")
 
@@ -300,7 +308,7 @@ def _draw_title_area(
 ) -> float:
     c.setFillColor(DEEP_TEAL)
     c.setFont("Helvetica-Bold", 7.2)
-    c.drawString(MARGIN, y_top, "SAFETY INTELLIGENCE REPORT")
+    c.drawString(MARGIN, y_top, "PUBLIC DATA INTELLIGENCE REPORT")
 
     y_top -= 27
 
@@ -392,7 +400,7 @@ def _draw_score_card(
 
     c.setFillColor(DEEP_TEAL)
     c.setFont("Helvetica-Bold", 7)
-    c.drawString(x + 18, y_top - 22, "SAFETY SCORE")
+    c.drawString(x + 18, y_top - 22, "REVIEW PRIORITY")
 
     c.setFillColor(DEEP_INK)
     c.setFont("Helvetica-Bold", 42)
@@ -404,8 +412,8 @@ def _draw_score_card(
 
     c.setFillColor(MUTED)
     c.setFont("Helvetica", 8.5)
-    c.drawString(x + 20, y_top - 94, f"Review priority: {_safe_text(priority)}")
-    c.drawString(x + 20, y_top - 110, f"Data confidence: {_safe_text(confidence)}")
+    c.drawString(x + 20, y_top - 94, f"Review status: {_safe_text(priority)}")
+    c.drawString(x + 20, y_top - 110, f"Evidence confidence: {_safe_text(confidence)}")
 
     _draw_pill(
         c,
@@ -522,7 +530,11 @@ def _draw_reactions_card(
 
     c.setFillColor(MUTED)
     c.setFont("Helvetica", 7.5)
-    c.drawString(MARGIN + 18, y_top - 39, "Counts reflect returned public records, not incidence or causation.")
+    c.drawString(
+        MARGIN + 18,
+        y_top - 39,
+        "Counts reflect returned public records, not incidence or causation.",
+    )
 
     if not reactions:
         c.setFillColor(MUTED)
@@ -621,8 +633,11 @@ def _draw_drug_signal_one_page(
     y = _draw_title_area(
         c,
         y_top=y,
-        title="DrugSignal Safety Intelligence",
-        subtitle="A compact public-data reporting-pattern summary for review, audit traceability, and safety awareness.",
+        title="DrugSignal Public Data Intelligence",
+        subtitle=(
+            "A compact public-data reporting-pattern summary for review, "
+            "audit traceability, and safety awareness."
+        ),
     )
 
     y = _draw_report_details_strip(
@@ -714,8 +729,11 @@ def _draw_recall_one_page(
     y = _draw_title_area(
         c,
         y_top=y,
-        title="RecallRadar Safety Intelligence",
-        subtitle="A compact public-data recall summary for review, traceability, and official-source verification.",
+        title="RecallRadar Public Data Intelligence",
+        subtitle=(
+            "A compact public-data recall summary for review, traceability, "
+            "and official-source verification."
+        ),
     )
 
     y = _draw_report_details_strip(
@@ -727,7 +745,7 @@ def _draw_recall_one_page(
 
     results = (recall_result or {}).get("results") or []
     first = results[0] if results else {}
-    risk_score = first.get("risk_score") or {}
+    review_priority = first.get("risk_score") or {}
 
     score_card_width = 250
     metric_x = MARGIN + score_card_width + 12
@@ -739,8 +757,8 @@ def _draw_recall_one_page(
         y_top=y,
         width=score_card_width,
         height=150,
-        score=risk_score.get("score", "N/A"),
-        label=risk_score.get("label", first.get("classification", "N/A")),
+        score=review_priority.get("score", "N/A"),
+        label=review_priority.get("label", first.get("classification", "N/A")),
         priority=first.get("status", "N/A"),
         confidence=first.get("classification", "N/A"),
     )
@@ -817,7 +835,7 @@ def _draw_foodradar_one_page(
     y = _draw_title_area(
         c,
         y_top=y,
-        title="FoodRadar Safety Intelligence",
+        title="FoodRadar Public Data Intelligence",
         subtitle=(
             "A compact public-data food and supplement recall summary for review, "
             "traceability, and official-source verification."
@@ -833,7 +851,7 @@ def _draw_foodradar_one_page(
 
     results = (everyday_safety_result or {}).get("results") or []
     first = results[0] if results else {}
-    risk_score = first.get("risk_score") or {}
+    review_priority = first.get("risk_score") or {}
 
     score_card_width = 250
     metric_x = MARGIN + score_card_width + 12
@@ -845,8 +863,8 @@ def _draw_foodradar_one_page(
         y_top=y,
         width=score_card_width,
         height=150,
-        score=risk_score.get("score", "N/A"),
-        label=risk_score.get("label", first.get("classification", "N/A")),
+        score=review_priority.get("score", "N/A"),
+        label=review_priority.get("label", first.get("classification", "N/A")),
         priority=first.get("status", "N/A"),
         confidence=first.get("classification", "N/A"),
     )
@@ -958,6 +976,112 @@ def _draw_foodradar_one_page(
     _draw_footer(c, 2)
 
 
+def _draw_cosmetic_signal_one_page(
+    c: canvas.Canvas,
+    *,
+    request: SafetyIntelligenceReportRequest,
+    cosmetic_signal_result: dict[str, Any] | None,
+    generated_at: str,
+) -> None:
+    _draw_background(c)
+    y = _draw_header(
+        c,
+        generated_at=generated_at,
+        module_label="CosmeticSignal",
+        query=request.query,
+    )
+
+    y = _draw_title_area(
+        c,
+        y_top=y,
+        title="CosmeticSignal Public Data Intelligence",
+        subtitle=(
+            "A compact public-data cosmetic adverse-event reporting-pattern summary "
+            "for review, audit traceability, and source-aware safety awareness."
+        ),
+    )
+
+    y = _draw_report_details_strip(
+        c,
+        request=request,
+        y_top=y,
+        generated_at=generated_at,
+    )
+
+    score = (cosmetic_signal_result or {}).get("signal_score") or {}
+    results = (cosmetic_signal_result or {}).get("results") or []
+    first = results[0] if results else {}
+
+    score_card_width = 250
+    metric_x = MARGIN + score_card_width + 12
+    metric_width = CONTENT_WIDTH - score_card_width - 12
+
+    _draw_score_card(
+        c,
+        x=MARGIN,
+        y_top=y,
+        width=score_card_width,
+        height=150,
+        score=score.get("score", "N/A"),
+        label=score.get("label", "N/A"),
+        priority=score.get("review_priority", "N/A"),
+        confidence=score.get("data_confidence", "N/A"),
+    )
+
+    _draw_mini_metric(
+        c,
+        x=metric_x,
+        y_top=y,
+        width=metric_width,
+        height=68,
+        label="Records returned",
+        value=(cosmetic_signal_result or {}).get("count", 0),
+        note="Public cosmetic reports",
+    )
+
+    _draw_mini_metric(
+        c,
+        x=metric_x,
+        y_top=y - 82,
+        width=metric_width,
+        height=68,
+        label="Public signal",
+        value=score.get("label", "N/A"),
+        note="Reporting pattern only",
+    )
+
+    y -= 166
+
+    y = _draw_source_strip(
+        c,
+        y_top=y,
+        source_name=(cosmetic_signal_result or {}).get("source_name"),
+        endpoint=(cosmetic_signal_result or {}).get("endpoint"),
+        audit_id=((cosmetic_signal_result or {}).get("audit") or {}).get("audit_id"),
+    )
+
+    record_rows = [
+        ("Product", first.get("product_description") or first.get("product")),
+        ("Brand", first.get("brand_name") or first.get("brand")),
+        ("Report date", first.get("report_date")),
+        ("Reported event", first.get("event") or first.get("reaction")),
+        ("Outcome", first.get("outcome")),
+        ("Source", first.get("source")),
+    ]
+
+    y = _draw_compact_detail_card(
+        c,
+        y_top=y,
+        title="First Returned Cosmetic Report Record",
+        rows=record_rows,
+    )
+
+    y = _draw_safety_card(c, y_top=y, disclaimer=COSMETICSIGNAL_DISCLAIMER)
+    _draw_privacy_footer_note(c, y_top=y)
+
+    _draw_footer(c, 1)
+
+
 def _draw_compact_detail_card(
     c: canvas.Canvas,
     *,
@@ -1037,6 +1161,7 @@ def _draw_compact_detail_card(
 
     return y_top - height - 16
 
+
 def _draw_both_modules_report(
     c: canvas.Canvas,
     *,
@@ -1056,8 +1181,11 @@ def _draw_both_modules_report(
     y = _draw_title_area(
         c,
         y_top=y,
-        title="Combined Safety Intelligence",
-        subtitle="A two-module public-data summary combining recall records and adverse-event reporting patterns.",
+        title="Combined Public Data Intelligence",
+        subtitle=(
+            "A two-module public-data summary combining recall records and "
+            "adverse-event reporting patterns."
+        ),
     )
 
     y = _draw_report_details_strip(
@@ -1069,7 +1197,7 @@ def _draw_both_modules_report(
 
     recall_results = (recall_result or {}).get("results") or []
     first_recall = recall_results[0] if recall_results else {}
-    recall_score = first_recall.get("risk_score") or {}
+    recall_priority = first_recall.get("risk_score") or {}
     drug_score = (drug_signal_result or {}).get("intelligence_score") or {}
 
     card_gap = 12
@@ -1088,19 +1216,23 @@ def _draw_both_modules_report(
 
     c.setFillColor(DEEP_TEAL)
     c.setFont("Helvetica-Bold", 7)
-    c.drawString(MARGIN + 18, y - 22, "RECALLRADAR")
+    c.drawString(MARGIN + 18, y - 22, "RECALLRADAR REVIEW PRIORITY")
 
     c.setFillColor(DEEP_INK)
     c.setFont("Helvetica-Bold", 28)
-    c.drawString(MARGIN + 18, y - 60, _safe_text(recall_score.get("score", "N/A")))
+    c.drawString(MARGIN + 18, y - 60, _safe_text(recall_priority.get("score", "N/A")))
 
     c.setFillColor(CLINICAL_BLUE)
     c.setFont("Helvetica-Bold", 13)
-    c.drawString(MARGIN + 18, y - 86, _safe_text(recall_score.get("label", "N/A")))
+    c.drawString(MARGIN + 18, y - 86, _safe_text(recall_priority.get("label", "N/A")))
 
     c.setFillColor(MUTED)
     c.setFont("Helvetica", 8)
-    c.drawString(MARGIN + 18, y - 110, f"Records: {_safe_text((recall_result or {}).get('count', 0))}")
+    c.drawString(
+        MARGIN + 18,
+        y - 110,
+        f"Records: {_safe_text((recall_result or {}).get('count', 0))}",
+    )
 
     right_x = MARGIN + card_width + card_gap
 
@@ -1117,7 +1249,7 @@ def _draw_both_modules_report(
 
     c.setFillColor(DEEP_TEAL)
     c.setFont("Helvetica-Bold", 7)
-    c.drawString(right_x + 18, y - 22, "DRUGSIGNAL")
+    c.drawString(right_x + 18, y - 22, "DRUGSIGNAL REVIEW PRIORITY")
 
     c.setFillColor(DEEP_INK)
     c.setFont("Helvetica-Bold", 28)
@@ -1129,7 +1261,11 @@ def _draw_both_modules_report(
 
     c.setFillColor(MUTED)
     c.setFont("Helvetica", 8)
-    c.drawString(right_x + 18, y - 110, f"Records: {_safe_text((drug_signal_result or {}).get('count', 0))}")
+    c.drawString(
+        right_x + 18,
+        y - 110,
+        f"Records: {_safe_text((drug_signal_result or {}).get('count', 0))}",
+    )
 
     y -= 168
 
@@ -1184,12 +1320,13 @@ def build_safety_intelligence_pdf(
     recall_result: dict[str, Any] | None = None,
     drug_signal_result: dict[str, Any] | None = None,
     everyday_safety_result: dict[str, Any] | None = None,
+    cosmetic_signal_result: dict[str, Any] | None = None,
 ) -> bytes:
     """Build a compact Dav AI-branded public-data PDF report."""
 
     buffer = BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=LETTER)
-    pdf.setTitle("Dav AI Safety Intelligence Report")
+    pdf.setTitle("Dav AI Public Data Intelligence Report")
 
     generated_at = datetime.now(timezone.utc).isoformat()
 
@@ -1212,6 +1349,13 @@ def build_safety_intelligence_pdf(
             pdf,
             request=request,
             everyday_safety_result=everyday_safety_result,
+            generated_at=generated_at,
+        )
+    elif request.module == "cosmeticsignal":
+        _draw_cosmetic_signal_one_page(
+            pdf,
+            request=request,
+            cosmetic_signal_result=cosmetic_signal_result,
             generated_at=generated_at,
         )
     else:

@@ -1,6 +1,12 @@
 import { apiClient } from './client'
 
-export type SavedMonitorModule = 'recallradar' | 'drugsignal' | 'foodradar' | 'regional_health_pulse'
+export type SavedMonitorModule =
+  | 'recallradar'
+  | 'drugsignal'
+  | 'foodradar'
+  | 'cosmeticsignal'
+  | 'regional_health_pulse'
+
 export type SavedMonitorStatus = 'not_checked' | 'checked' | 'error'
 
 export interface SavedMonitor {
@@ -85,10 +91,7 @@ export async function listSavedMonitors(): Promise<SavedMonitor[]> {
 export async function createSavedMonitor(
   payload: CreateSavedMonitorPayload,
 ): Promise<SavedMonitor> {
-  const response = await apiClient.post<SavedMonitor>(
-    '/api/v1/saved-monitors',
-    payload,
-  )
+  const response = await apiClient.post<SavedMonitor>('/api/v1/saved-monitors', payload)
   return response.data
 }
 
@@ -97,24 +100,18 @@ export async function deleteSavedMonitor(monitorId: string): Promise<void> {
 }
 
 export async function runSavedMonitor(monitorId: string): Promise<SavedMonitor> {
-  const response = await apiClient.post<SavedMonitor>(
-    `/api/v1/saved-monitors/${monitorId}/run`,
-  )
+  const response = await apiClient.post<SavedMonitor>(`/api/v1/saved-monitors/${monitorId}/run`)
   return response.data
 }
 
-export async function listSavedMonitorRuns(
-  monitorId: string,
-): Promise<SavedMonitorRun[]> {
+export async function listSavedMonitorRuns(monitorId: string): Promise<SavedMonitorRun[]> {
   const response = await apiClient.get<SavedMonitorRun[]>(
     `/api/v1/saved-monitors/${monitorId}/runs`,
   )
   return response.data
 }
 
-export async function getSavedMonitorInsight(
-  monitorId: string,
-): Promise<MonitorInsight> {
+export async function getSavedMonitorInsight(monitorId: string): Promise<MonitorInsight> {
   const response = await apiClient.get<MonitorInsight>(
     `/api/v1/saved-monitors/${monitorId}/insights`,
   )

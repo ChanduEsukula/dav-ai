@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from app.scoring.recall_score import calculate_recall_risk_score
 
 
-def test_high_risk_ongoing_class_i_nationwide_recent_recall():
+def test_high_attention_ongoing_class_i_nationwide_recent_recall():
     recent_date = (datetime.now(timezone.utc) - timedelta(days=30)).strftime("%Y%m%d")
 
     record = {
@@ -16,15 +16,15 @@ def test_high_risk_ongoing_class_i_nationwide_recent_recall():
     result = calculate_recall_risk_score(record)
 
     assert result["score"] == 100
-    assert result["label"] == "Critical"
-    assert result["score_version"] == "recall-risk-v0.1"
+    assert result["label"] == "High Attention"
+    assert result["score_version"] == "recall-review-priority-v0.2"
     assert result["components"]["classification_score"] == 40
     assert result["components"]["status_score"] == 20
     assert result["components"]["recency_score"] == 20
     assert result["components"]["scope_score"] == 20
 
 
-def test_low_risk_completed_class_iii_old_local_recall():
+def test_low_review_priority_completed_class_iii_old_local_recall():
     old_date = (datetime.now(timezone.utc) - timedelta(days=1500)).strftime("%Y%m%d")
 
     record = {
@@ -44,7 +44,7 @@ def test_low_risk_completed_class_iii_old_local_recall():
     assert result["components"]["scope_score"] == 5
 
 
-def test_missing_fields_use_safe_default_scores():
+def test_missing_fields_use_safe_default_review_priority_scores():
     record = {}
 
     result = calculate_recall_risk_score(record)

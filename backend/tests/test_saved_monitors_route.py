@@ -669,7 +669,7 @@ def test_saved_monitor_insight_returns_insufficient_history():
     assert data["label"] == "insufficient_history"
     assert data["headline"] == "Insufficient history"
     assert data["confidence"] == "low"
-    assert data["insight_version"] == "monitor-insight-v0.1"
+    assert data["insight_version"] == "monitor-insight-v0.2"
     assert "not medical advice" in data["limitation"]
 
 

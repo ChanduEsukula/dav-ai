@@ -65,6 +65,33 @@ def foodradar_result_payload() -> dict:
     }
 
 
+def cosmetic_signal_result_payload() -> dict:
+    return {
+        "module": "CosmeticSignal",
+        "query": "sunscreen",
+        "count": 1,
+        "source_name": "openFDA Cosmetic Event",
+        "endpoint": "https://api.fda.gov/cosmetic/event.json",
+        "audit": {"audit_id": "audit-cosmeticsignal-1"},
+        "signal_score": {
+            "score": 41,
+            "label": "Moderate",
+            "review_priority": "Monitor",
+            "data_confidence": "Public reports only",
+        },
+        "results": [
+            {
+                "product_description": "Demo sunscreen",
+                "brand_name": "Demo Beauty",
+                "report_date": "20260601",
+                "event": "rash",
+                "outcome": "reported",
+                "source": "openFDA",
+            }
+        ],
+    }
+
+
 def test_create_safety_intelligence_report_returns_pdf(monkeypatch):
     async def fake_recall_search(
         query: str,
@@ -91,11 +118,13 @@ def test_create_safety_intelligence_report_returns_pdf(monkeypatch):
         recall_result,
         drug_signal_result,
         everyday_safety_result=None,
+        cosmetic_signal_result=None,
     ):
         assert request.query == "metformin"
         assert recall_result == {"module": "RecallRadar", "query": "metformin"}
         assert drug_signal_result == {"module": "DrugSignal", "query": "metformin"}
         assert everyday_safety_result is None
+        assert cosmetic_signal_result is None
         return b"%PDF-1.4\nDAV AI report\n%%EOF"
 
     monkeypatch.setattr("app.routes.reports.execute_recall_search", fake_recall_search)
@@ -110,7 +139,7 @@ def test_create_safety_intelligence_report_returns_pdf(monkeypatch):
     assert response.status_code == 200
     assert response.headers["content-type"] == "application/pdf"
     assert response.headers["content-disposition"] == (
-        'attachment; filename="dav-ai-safety-report-metformin.pdf"'
+        'attachment; filename="dav-ai-public-data-report-metformin.pdf"'
     )
     assert response.content.startswith(b"%PDF-1.4")
 
@@ -133,6 +162,7 @@ def test_create_foodradar_safety_intelligence_report_returns_pdf(monkeypatch):
         recall_result,
         drug_signal_result,
         everyday_safety_result=None,
+        cosmetic_signal_result=None,
     ):
         assert request.query == "protein powder"
         assert request.module == "foodradar"
@@ -140,6 +170,7 @@ def test_create_foodradar_safety_intelligence_report_returns_pdf(monkeypatch):
         assert drug_signal_result is None
         assert everyday_safety_result is not None
         assert everyday_safety_result["module"] == "FoodRadar"
+        assert cosmetic_signal_result is None
         assert "does not mean the product is safe" in everyday_safety_result["public_data_disclaimer"]
         return b"%PDF-1.4\nDAV AI FoodRadar report\n%%EOF"
 
@@ -157,19 +188,76 @@ def test_create_foodradar_safety_intelligence_report_returns_pdf(monkeypatch):
     assert response.status_code == 200
     assert response.headers["content-type"] == "application/pdf"
     assert response.headers["content-disposition"] == (
-        'attachment; filename="dav-ai-safety-report-protein-powder.pdf"'
+        'attachment; filename="dav-ai-public-data-report-protein-powder.pdf"'
+    )
+    assert response.content.startswith(b"%PDF-1.4")
+
+
+def test_create_cosmeticsignal_safety_intelligence_report_returns_pdf(monkeypatch):
+    async def fake_cosmetic_signal_search(
+        query: str,
+        limit: int,
+        request_id: str | None = None,
+    ):
+        assert query == "sunscreen"
+        assert limit == 10
+        assert request_id is not None
+        return cosmetic_signal_result_payload()
+
+    def fake_build_pdf(
+        request,
+        recall_result,
+        drug_signal_result,
+        everyday_safety_result=None,
+        cosmetic_signal_result=None,
+    ):
+        assert request.query == "sunscreen"
+        assert request.module == "cosmeticsignal"
+        assert recall_result is None
+        assert drug_signal_result is None
+        assert everyday_safety_result is None
+        assert cosmetic_signal_result is not None
+        assert cosmetic_signal_result["module"] == "CosmeticSignal"
+        return b"%PDF-1.4\nDAV AI CosmeticSignal report\n%%EOF"
+
+    monkeypatch.setattr(
+        "app.routes.reports.execute_cosmetic_signal_search",
+        fake_cosmetic_signal_search,
+    )
+    monkeypatch.setattr("app.routes.reports.build_safety_intelligence_pdf", fake_build_pdf)
+
+    response = client.post(
+        "/api/v1/reports/safety-intelligence",
+        json=report_payload(module="cosmeticsignal", query="sunscreen"),
+    )
+
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    assert response.headers["content-disposition"] == (
+        'attachment; filename="dav-ai-public-data-report-sunscreen.pdf"'
     )
     assert response.content.startswith(b"%PDF-1.4")
 
 
 def test_foodradar_pdf_uses_food_specific_safety_boundary():
-    report_pdf_source = Path("app/services/report_pdf.py").read_text()
+    report_pdf_path = Path(__file__).resolve().parents[1] / "app/services/report_pdf.py"
+    report_pdf_source = report_pdf_path.read_text()
 
     assert "FOODRADAR_DISCLAIMER" in report_pdf_source
     assert "Food and supplement recall records do not prove" in report_pdf_source
     assert "FAERS reports " in report_pdf_source
     assert "do not prove causation" in report_pdf_source
     assert report_pdf_source.count("disclaimer=FOODRADAR_DISCLAIMER") == 2
+
+
+def test_cosmeticsignal_pdf_uses_cosmetic_specific_safety_boundary():
+    report_pdf_path = Path(__file__).resolve().parents[1] / "app/services/report_pdf.py"
+    report_pdf_source = report_pdf_path.read_text()
+
+    assert "COSMETICSIGNAL_DISCLAIMER" in report_pdf_source
+    assert "cosmetic adverse-event report data" in report_pdf_source
+    assert "do not prove product danger" in report_pdf_source
+    assert "disclaimer=COSMETICSIGNAL_DISCLAIMER" in report_pdf_source
 
 
 def test_build_foodradar_safety_intelligence_pdf_returns_valid_pdf_bytes():
@@ -185,6 +273,26 @@ def test_build_foodradar_safety_intelligence_pdf_returns_valid_pdf_bytes():
     pdf_bytes = build_safety_intelligence_pdf(
         request=request,
         everyday_safety_result=foodradar_result_payload(),
+    )
+
+    assert pdf_bytes.startswith(b"%PDF")
+    assert len(pdf_bytes) > 1000
+    assert b"%%EOF" in pdf_bytes
+
+
+def test_build_cosmeticsignal_safety_intelligence_pdf_returns_valid_pdf_bytes():
+    request = SafetyIntelligenceReportRequest(
+        prepared_for="Demo reviewer",
+        organization="DAV AI Portfolio",
+        role="student_researcher",
+        query="sunscreen",
+        module="cosmeticsignal",
+        purpose="PDF builder regression test",
+    )
+
+    pdf_bytes = build_safety_intelligence_pdf(
+        request=request,
+        cosmetic_signal_result=cosmetic_signal_result_payload(),
     )
 
     assert pdf_bytes.startswith(b"%PDF")

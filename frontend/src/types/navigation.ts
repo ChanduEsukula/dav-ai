@@ -1,4 +1,9 @@
-export type ActiveSection = 'home' | 'recallradar' | 'drugsignal' | 'foodradar'
+export type ActiveSection =
+  | 'home'
+  | 'recallradar'
+  | 'drugsignal'
+  | 'foodradar'
+  | 'cosmeticsignal'
 
 export type ActivePage =
   | 'home'

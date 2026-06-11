@@ -8,6 +8,9 @@ from app.services.report_pdf import (
     build_report_filename,
     build_safety_intelligence_pdf,
 )
+from app.services.search_workflows.cosmetic_signal_search import (
+    execute_cosmetic_signal_search,
+)
 from app.services.search_workflows.drug_signal_search import execute_drug_signal_search
 from app.services.search_workflows.everyday_safety_search import execute_everyday_safety_search
 from app.services.search_workflows.recall_search import execute_recall_search
@@ -30,6 +33,7 @@ async def create_safety_intelligence_report(
     recall_result = None
     drug_signal_result = None
     everyday_safety_result = None
+    cosmetic_signal_result = None
 
     try:
         if payload.module in {"recallradar", "both"}:
@@ -53,6 +57,14 @@ async def create_safety_intelligence_report(
                 limit=5,
                 request_id=request_id,
             )
+
+        if payload.module == "cosmeticsignal":
+            cosmetic_signal_result = await execute_cosmetic_signal_search(
+                query=payload.query,
+                limit=10,
+                request_id=request_id,
+            )
+
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
@@ -67,6 +79,7 @@ async def create_safety_intelligence_report(
         recall_result=recall_result,
         drug_signal_result=drug_signal_result,
         everyday_safety_result=everyday_safety_result,
+        cosmetic_signal_result=cosmetic_signal_result,
     )
 
     filename = build_report_filename(payload.query)

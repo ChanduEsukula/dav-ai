@@ -46,7 +46,7 @@ function RecallRadar({
         {
           label: 'Review signal',
           title: hasResults
-            ? `Highest matched signal: ${topResult?.risk_score.label ?? 'Unknown'}`
+            ? `Highest matched review signal: ${topResult?.risk_score.label ?? 'Unknown'}`
             : 'No matched recall records returned.',
           detail: hasResults
             ? 'DavAI can highlight records to review, but you should verify product name, firm, lot details, and recall date.'
@@ -145,9 +145,9 @@ function RecallRadar({
           <div className="empty-state">
             <h3>No FDA recall records matched this search.</h3>
             <p>
-              This does not prove the product is safe or unsafe. It only means no matching
-              records were returned from the current openFDA Drug Enforcement search. Try
-              searching by brand name, product name, ingredient, or category.
+              This does not prove the product is safe or unsafe. It only means no matching records
+              were returned from the current openFDA Drug Enforcement search. Try searching by brand
+              name, product name, ingredient, or category.
             </p>
           </div>
         )}
@@ -155,7 +155,7 @@ function RecallRadar({
         {data && <SafeInsightCards cards={safeInsightCards} />}
 
         {topResult && (
-          <section className="consumer-summary" aria-label="Recall safety summary">
+          <section className="consumer-summary" aria-label="Recall review-priority summary">
             <div className="consumer-summary__icon" aria-hidden="true">
               <svg viewBox="0 0 48 48" focusable="false">
                 <path d="M24 6l14 5v11c0 9-5.6 16.6-14 20-8.4-3.4-14-11-14-20V11l14-5z" />
@@ -170,7 +170,7 @@ function RecallRadar({
               </h3>
 
               <div className="consumer-summary__signal">
-                <span>Highest signal:</span>
+                <span>Highest review signal:</span>
                 <strong>{topResult.risk_score.label}</strong>
               </div>
 
@@ -196,7 +196,7 @@ function RecallRadar({
                   className={sortMode === 'score' ? 'active' : ''}
                   onClick={() => handleSortChange('score')}
                 >
-                  Highest score
+                  Highest review priority
                 </button>
 
                 <button
@@ -221,7 +221,7 @@ function RecallRadar({
                     </span>
 
                     <span className={`risk-pill risk-${result.risk_score.label.toLowerCase()}`}>
-                      {result.risk_score.label} signal
+                      {result.risk_score.label} review signal
                     </span>
 
                     <h3 className="recall-card-title">{result.product_description}</h3>
@@ -239,7 +239,7 @@ function RecallRadar({
 
                     <span className="recall-score-inline">
                       <strong>{result.risk_score.score}</strong>
-                      <small>Risk score</small>
+                      <small>Review Priority</small>
                     </span>
                   </summary>
 
@@ -255,12 +255,13 @@ function RecallRadar({
                     </div>
 
                     <details className="recall-score-help">
-                      <summary>How this score works</summary>
+                      <summary>How this review-priority score works</summary>
                       <div>
                         <p>
-                          DavAI uses a transparent rule-based score. It reviews FDA class, recall
-                          status, recency, and distribution scope. Higher scores mean the record
-                          may deserve closer review, not that the product is personally unsafe.
+                          DavAI uses a transparent rule-based review-priority score. It reviews FDA
+                          class, recall status, recency, and distribution scope. Higher scores mean
+                          the record may deserve closer review, not that the product is personally
+                          unsafe.
                         </p>
 
                         <ul>
@@ -321,7 +322,7 @@ function RecallRadar({
                     </div>
 
                     <details className="recall-technical-details">
-                      <summary>Technical scoring details</summary>
+                      <summary>Technical review-priority details</summary>
                       <div className="audit-box">
                         <p>Source: {result.source.name}</p>
                         <p>Retrieved: {formatTimestamp(result.source.retrieval_timestamp)}</p>

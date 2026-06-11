@@ -5,15 +5,16 @@ type HeroProps = {
   goToRecallRadar: () => void
   goToDrugSignal: () => void
   goToFoodRadar: () => void
+  goToCosmeticSignal: () => void
   goToAbout: () => void
 }
 
 type HeroModule = {
   title: string
   subtitle: string
-  key: 'recallradar' | 'drugsignal' | 'foodradar'
+  key: 'recallradar' | 'drugsignal' | 'foodradar' | 'cosmeticsignal'
   className: string
-  icon: 'recall' | 'drug' | 'health'
+  icon: 'recall' | 'drug' | 'health' | 'cosmetic'
 }
 
 const heroModules: HeroModule[] = [
@@ -37,6 +38,13 @@ const heroModules: HeroModule[] = [
     key: 'foodradar',
     className: 'hero-module-health',
     icon: 'health',
+  },
+  {
+    title: 'CosmeticSignal',
+    subtitle: 'Cosmetic safety records',
+    key: 'cosmeticsignal',
+    className: 'hero-module-cosmetic',
+    icon: 'cosmetic',
   },
 ]
 
@@ -78,6 +86,18 @@ function HeroModuleIcon({ icon }: { icon: HeroModule['icon'] }) {
     )
   }
 
+  if (icon === 'cosmetic') {
+    return (
+      <span className="hero-module-icon hero-module-icon-health" aria-hidden="true">
+        <svg viewBox="0 0 48 48" focusable="false">
+          <circle className="pulse-guide" cx="24" cy="24" r="14" />
+          <path className="pulse-line" d="M16 24 C18 16 30 16 32 24 C30 32 18 32 16 24 Z" />
+          <circle className="pulse-line" cx="24" cy="24" r="3" />
+        </svg>
+      </span>
+    )
+  }
+
   return (
     <span className="hero-module-icon hero-module-icon-health" aria-hidden="true">
       <svg viewBox="0 0 48 48" focusable="false">
@@ -93,6 +113,7 @@ function Hero({
   goToRecallRadar,
   goToDrugSignal,
   goToFoodRadar,
+  goToCosmeticSignal,
   goToAbout,
 }: HeroProps) {
   const topResult = data?.results?.[0]
@@ -101,6 +122,7 @@ function Hero({
     recallradar: goToRecallRadar,
     drugsignal: goToDrugSignal,
     foodradar: goToFoodRadar,
+    cosmeticsignal: goToCosmeticSignal,
   }
 
   return (
@@ -117,8 +139,8 @@ function Hero({
         </h1>
 
         <p className="subtitle">
-          Dav AI turns public recall, drug-safety, food, and supplement records into
-          source-aware safety intelligence you can inspect and verify.
+          Dav AI turns public recall, drug-safety, food, supplement, and cosmetic records into
+          source-aware public-data intelligence you can inspect and verify.
         </p>
 
         <p className="hero-trust-line">Public records only • Source-backed • Not medical advice</p>
@@ -161,7 +183,7 @@ function Hero({
 
           <div className="signal-score">
             <div>
-              <p>{topResult ? 'Signal score from latest search' : 'Sample signal score'}</p>
+              <p>{topResult ? 'Review priority from latest search' : 'Sample review priority'}</p>
               <h2>{topResult ? topResult.risk_score.score : 82}</h2>
             </div>
             <div className="score-ring" aria-hidden="true"></div>

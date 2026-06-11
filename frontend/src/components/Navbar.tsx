@@ -7,6 +7,7 @@ type NavbarProps = {
   goToRecallRadar: () => void
   goToDrugSignal: () => void
   goToFoodRadar: () => void
+  goToCosmeticSignal: () => void
   goToPage: (page: ActivePage) => void
 }
 
@@ -24,6 +25,7 @@ function Navbar({
   goToRecallRadar,
   goToDrugSignal,
   goToFoodRadar,
+  goToCosmeticSignal,
   goToPage,
 }: NavbarProps) {
   const isHomeActive = activePage === 'home' && activeSection === 'home'
@@ -52,6 +54,12 @@ function Navbar({
       label: 'FoodRadar',
       isActive: activePage === 'home' && activeSection === 'foodradar',
       onClick: goToFoodRadar,
+    },
+    {
+      id: 'cosmeticsignal',
+      label: 'CosmeticSignal',
+      isActive: activePage === 'home' && activeSection === 'cosmeticsignal',
+      onClick: goToCosmeticSignal,
     },
     {
       id: 'saved-monitors',

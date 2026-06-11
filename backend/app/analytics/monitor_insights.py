@@ -2,7 +2,7 @@
 
 This module analyzes saved monitor run history for public FDA/openFDA data.
 It does not provide medical advice, diagnosis, treatment guidance, clinical
-decision support, patient-specific recommendations, or FAERS causality claims.
+decision support, patient-specific recommendations, or causality claims.
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ from typing import Sequence
 from app.schemas.saved_monitors import SavedMonitor, SavedMonitorRun
 
 
-INSIGHT_VERSION = "monitor-insight-v0.1"
+INSIGHT_VERSION = "monitor-insight-v0.2"
 SAFETY_LIMITATION = (
     "This insight is based only on stored Dav AI public-data monitor history. "
     "It is not medical advice, diagnosis, treatment guidance, clinical decision "
@@ -52,12 +52,64 @@ def _successful_runs(runs: Sequence[SavedMonitorRun]) -> list[SavedMonitorRun]:
     return [run for run in runs if run.status.value == "success"]
 
 
+def _latest_run(runs: Sequence[SavedMonitorRun]) -> SavedMonitorRun | None:
+    return runs[0] if runs else None
+
+
 def build_monitor_insight(
     *,
     monitor: SavedMonitor,
     runs: Sequence[SavedMonitorRun],
 ) -> MonitorInsight:
     """Build a deterministic monitor insight from recent saved monitor runs."""
+
+    latest_overall_run = _latest_run(runs)
+
+    if latest_overall_run is not None and latest_overall_run.status.value == "error":
+        return MonitorInsight(
+            monitor_id=str(monitor.id),
+            label="source_warning",
+            headline="Source or monitor warning",
+            explanation=(
+                "The latest saved monitor run ended in an error. Review the run "
+                "history, audit event, and source status before interpreting trends."
+            ),
+            latest_run_id=str(latest_overall_run.run_id),
+            previous_run_id=None,
+            latest_record_count=latest_overall_run.record_count,
+            previous_record_count=None,
+            record_count_delta=None,
+            percent_change=None,
+            latest_score=latest_overall_run.score,
+            previous_score=None,
+            score_delta=None,
+            confidence="low",
+            insight_version=INSIGHT_VERSION,
+            limitation=SAFETY_LIMITATION,
+        )
+
+    if monitor.status.value == "error":
+        return MonitorInsight(
+            monitor_id=str(monitor.id),
+            label="source_warning",
+            headline="Source or monitor warning",
+            explanation=(
+                "The saved monitor state indicates an error. Review the run history, "
+                "audit event, and source status before interpreting trends."
+            ),
+            latest_run_id=str(latest_overall_run.run_id) if latest_overall_run else None,
+            previous_run_id=None,
+            latest_record_count=latest_overall_run.record_count if latest_overall_run else None,
+            previous_record_count=None,
+            record_count_delta=None,
+            percent_change=None,
+            latest_score=latest_overall_run.score if latest_overall_run else None,
+            previous_score=None,
+            score_delta=None,
+            confidence="low",
+            insight_version=INSIGHT_VERSION,
+            limitation=SAFETY_LIMITATION,
+        )
 
     successful_runs = _successful_runs(runs)
 
@@ -118,21 +170,13 @@ def build_monitor_insight(
     )
     confidence = "medium"
 
-    if latest.status.value == "error" or monitor.status.value == "error":
-        label = "source_warning"
-        headline = "Source or monitor warning"
-        explanation = (
-            "The latest saved monitor state indicates an error. Review the run "
-            "history, audit event, and source status before interpreting trends."
-        )
-        confidence = "low"
-    elif latest_count is not None and previous_count is not None:
+    if latest_count is not None and previous_count is not None:
         if previous_count == 0 and latest_count > 0:
             label = "notable_increase"
             headline = "Notable increase detected"
             explanation = (
                 "The previous successful run returned no records, while the latest "
-                "successful run returned public FDA/openFDA records."
+                "successful run returned public records."
             )
             confidence = "medium"
         elif latest_count == 0 and previous_count > 0:
@@ -140,7 +184,7 @@ def build_monitor_insight(
             headline = "Notable decrease detected"
             explanation = (
                 "The latest successful run returned no records, while the previous "
-                "successful run returned public FDA/openFDA records."
+                "successful run returned public records."
             )
             confidence = "medium"
         elif (

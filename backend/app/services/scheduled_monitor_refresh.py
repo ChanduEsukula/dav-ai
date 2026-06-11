@@ -20,12 +20,15 @@ from app.schemas.saved_monitors import (
     SavedMonitorRunStatus,
     SavedMonitorScheduledStatus,
 )
+from app.services.search_workflows.cosmetic_signal_search import (
+    execute_cosmetic_signal_search,
+)
 from app.services.search_workflows.drug_signal_search import execute_drug_signal_search
 from app.services.search_workflows.everyday_safety_search import execute_everyday_safety_search
 from app.services.search_workflows.recall_search import execute_recall_search
 from app.services.search_workflows.regional_health_search import execute_regional_health_search
 
-logger = logging.getLogger("medtrek.scheduled_monitor_refresh")
+logger = logging.getLogger("dav_ai.scheduled_monitor_refresh")
 
 SCHEDULER_LOCK_NAME = "saved-monitor-refresh"
 SCHEDULER_LOCK_TTL_MINUTES = 15
@@ -77,6 +80,13 @@ def _extract_foodradar_score(result: dict[str, Any]) -> tuple[int | None, str | 
 
     risk_score = results[0].get("risk_score") or {}
     return risk_score.get("score"), risk_score.get("label")
+
+
+def _extract_cosmetic_signal_score(result: dict[str, Any]) -> tuple[int | None, str | None]:
+    """Extract CosmeticSignal public reporting score and label from a result payload."""
+
+    signal_score = result.get("signal_score") or {}
+    return signal_score.get("score"), signal_score.get("label")
 
 
 def _parse_regional_health_monitor_query(query: str) -> tuple[str, str]:
@@ -145,6 +155,20 @@ async def _run_monitor(monitor: SavedMonitor) -> dict[str, Any]:
             request_id=request_id,
         )
         score, score_label = _extract_foodradar_score(result)
+        return {
+            "record_count": result.get("count", 0),
+            "score": score,
+            "score_label": score_label,
+            "audit_id": (result.get("audit") or {}).get("audit_id"),
+        }
+
+    if monitor.module == SavedMonitorModule.COSMETICSIGNAL:
+        result = await execute_cosmetic_signal_search(
+            query=monitor.query,
+            limit=10,
+            request_id=request_id,
+        )
+        score, score_label = _extract_cosmetic_signal_score(result)
         return {
             "record_count": result.get("count", 0),
             "score": score,

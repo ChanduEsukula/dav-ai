@@ -20,9 +20,9 @@ export const faqs = [
       'DrugSignal uses the openFDA Drug Event API, which exposes public FAERS adverse-event report data. These reports are useful for reporting-pattern review, but they do not prove that a drug caused a reaction.',
   },
   {
-    question: 'How is the Recall Review Score calculated?',
+    question: 'How is the Recall Review Priority calculated?',
     answer:
-      'The score is a transparent review-priority score, not a medical risk score. It considers factors such as FDA recall classification, recall status, recency, and distribution scope. The goal is to help users prioritize which public records deserve review first.',
+      'RecallRadar uses a transparent review-priority score, not a medical risk score. It considers factors such as FDA recall classification, recall status, recency, and distribution scope. The goal is to help users prioritize which public records deserve review first.',
   },
   {
     question: 'Do FAERS reports prove that a drug caused a reaction?',
