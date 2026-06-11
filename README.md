@@ -4,16 +4,16 @@
 
 DAV AI is a full-stack public-data safety intelligence prototype for healthcare and everyday products. It turns public openFDA and USDA FSIS recall, public-health-alert, and adverse-event data into source-aware, explainable review workflows with audit trails, versioned scoring, reaction classification, trend snapshots, deterministic role-based safety briefings, and repeatable saved-monitor workflows.
 
-The primary MVP demo path is **RecallRadar → DrugSignal → FoodRadar**. CosmeticSignal, Regional Health Pulse, Saved Monitors, Data Sources, System Status, Audit History, Source Registry, and provenance/freshness surfaces are implemented or scaffolded secondary/extension surfaces that support the broader platform story.
+The primary MVP demo path is **RecallRadar → DrugSignal → FoodRadar → CosmeticSignal**. Regional Health Pulse, Saved Monitors, Data Sources, System Status, Audit History, Source Registry, and provenance/freshness surfaces support the broader platform story.
 
 ## Demo Readiness Snapshot
 
 Current validated demo state after the June 2026 polish pass:
 
-- Primary walkthrough: **RecallRadar → DrugSignal → FoodRadar → Ask DAV AI → Audit/Sources**.
-- Optional extension surfaces: **CosmeticSignal**, **Saved Monitors**, and **Regional Health Pulse scaffold**.
-- Frontend validation: lint passed, TypeScript passed, production build passed, and **75 frontend tests passed**.
-- Backend validation: **273 backend tests passed**.
+- Primary walkthrough: **RecallRadar → DrugSignal → FoodRadar → CosmeticSignal → Ask DAV AI → Audit/Sources**.
+- Extension surfaces: **Saved Monitors**, **Safety Report PDF generation**, and **Regional Health Pulse scaffold**.
+- Frontend validation: lint passed, TypeScript passed, production build passed, and **76 frontend tests passed**.
+- Backend validation: **276 backend tests passed**.
 - Product boundary: DAV AI uses public records only; it does not provide medical advice, diagnosis, treatment guidance, causation proof, safety guarantees, or clinical decision support.
 
 For a presentation walkthrough, use `docs/demo_script.md`.
@@ -55,7 +55,7 @@ This project is an MVP and portfolio-grade engineering prototype. It is not a me
 
 DAV AI is a public-data healthcare and everyday safety intelligence MVP/prototype. It helps reviewers search, score, audit, monitor, and explain public safety signals for medicines, adverse-event reports, food/supplement recalls, cosmetic-event reports, and scaffolded public-health workflows, but it is not production healthcare software yet.
 
-The current primary product story is **RecallRadar → DrugSignal → FoodRadar**: public drug recall review, public adverse-event reporting-pattern review, and everyday food/supplement/meat/poultry/egg-product recall and public-health-alert review.
+The current primary product story is **RecallRadar → DrugSignal → FoodRadar → CosmeticSignal**: public drug recall review, public adverse-event reporting-pattern review, everyday food/supplement/meat/poultry/egg-product recall and public-health-alert review, and public cosmetic adverse-event reporting-signal review.
 
 - DAV AI does not provide medical advice, diagnosis, treatment guidance, clinical decision support, or proof of causation.
 - DAV AI does not use PHI, private patient records, diagnosis history, prescription history, insurance data, or personal medical information.
@@ -74,7 +74,7 @@ For a concise walkthrough, use the primary MVP path first:
 2. **RecallRadar**: Search a recall term, review scoring, source metadata, audit details, and safety briefing output.
 3. **DrugSignal**: Search a drug term, review FAERS-style reporting patterns, deterministic scoring, reaction classification, and trend context.
 4. **FoodRadar**: Search food, supplement, meat, poultry, or egg-product recall terms, review multi-source public recall cards, score/sort behavior, and source limitations.
-5. **CosmeticSignal (optional extension)**: Search cosmetic product or reaction terms such as `rash`, `hair dye`, or `mascara`, review cosmetic reporting signals, top reactions, source context, and causation boundaries.
+5. **CosmeticSignal**: Search cosmetic product or reaction terms such as `rash`, `hair dye`, `sunscreen`, or `mascara`, review cosmetic reporting signals, top reactions, source context, and causation boundaries.
 6. **Audit History**: Show persisted search traceability, filters, detail view, copy actions, CSV export, and source-pull provenance when available.
 7. **Sources/System Status**: Show registered public sources, freshness, backend health, audit persistence visibility, and data-quality transparency.
 8. **Saved Monitors**: Create or review repeatable public-data monitors, run a manual check, inspect run history, compare latest/previous results, and open the related audit event.
@@ -137,7 +137,7 @@ Secondary/extension surfaces and platform foundations include:
 - **Safety Briefing Engine** for deterministic role-aware public-data safety briefings.
 - **Source Registry** for six public/scaffold data sources: openFDA Drug Enforcement, openFDA Drug Event, openFDA Food Enforcement, USDA FSIS Recall, openFDA Cosmetic Event, and Regional Health Pulse MVP scaffold.
 - **Audit History** for persisted source/search traceability.
-- **Saved Monitors v2.6 foundation** for saved repeatable RecallRadar, DrugSignal, and Regional Health Pulse searches, manual run checks, latest/previous comparison, run history, change indicators, duplicate prevention, audit linking, polished responsive layout, safer form spacing, internal-space preservation for monitor queries, backend scheduled-refresh foundation, CLI guardrails, database-backed scheduler locks, and Render Cron dry-run planning.
+- **Saved Monitors v2.7 foundation** for saved repeatable RecallRadar, DrugSignal, FoodRadar, CosmeticSignal, and Regional Health Pulse searches, manual run checks, latest/previous comparison, run history, change indicators, duplicate prevention, audit linking, polished responsive layout, safer form spacing, internal-space preservation for monitor queries, backend scheduled-refresh foundation, CLI guardrails, database-backed scheduler locks, and Render Cron dry-run planning.
 - **System/Data Quality views** for operational and audit-persistence visibility.
 - **Supabase/PostgreSQL audit and saved-monitor persistence** through fail-soft backend repositories.
 - **GitHub Actions CI** for backend tests, frontend tests, frontend lint, frontend production build, and Playwright smoke testing.
@@ -169,7 +169,7 @@ DAV AI is intentionally focused on public-data traceability, operational readine
 
 | Status | Features |
 |---|---|
-| Implemented | Primary MVP modules: RecallRadar; DrugSignal; FoodRadar. Secondary/extension surfaces: CosmeticSignal; Regional Health Pulse MVP scaffold; Audit History; System Status / Data Quality; Data Sources; deterministic safety briefings; deterministic semantic similarity previews for RecallRadar and DrugSignal; Saved Monitors run history for RecallRadar, DrugSignal, and Health Pulse; saved-monitor latest/previous comparison; source-pull provenance; raw public-source snapshots; SHA-256 payload hashing; backend scheduled-refresh foundation; scheduler CLI guardrails; database-backed scheduler locks; Render Cron dry-run documentation. |
+| Implemented | Primary MVP modules: RecallRadar; DrugSignal; FoodRadar; CosmeticSignal. Extension surfaces: Regional Health Pulse MVP scaffold; Audit History; System Status / Data Quality; Data Sources; deterministic safety briefings; deterministic semantic similarity previews for RecallRadar and DrugSignal; Saved Monitors run history for RecallRadar, DrugSignal, FoodRadar, CosmeticSignal, and Regional Health Pulse; safety report PDF generation for RecallRadar, DrugSignal, FoodRadar, and CosmeticSignal; saved-monitor latest/previous comparison; source-pull provenance; raw public-source snapshots; SHA-256 payload hashing; backend scheduled-refresh foundation; scheduler CLI guardrails; database-backed scheduler locks; Render Cron dry-run documentation. |
 | Partial | Deployment hardening; production observability; scheduled refresh backend foundation; authentication/RBAC planning. |
 | Planned | Production Cron activation; automated alerts and alert delivery; public scheduling UI; authentication/RBAC; notification preferences; briefing persistence/history; production ML integration; live CDC/HHS-backed Regional Health Pulse data connectors; EnviroHealth Signal; CNN/OCR label scanner; RAG/LLM upgrades. |
 
@@ -320,7 +320,7 @@ DrugSignal briefing output has been upgraded to use DrugSignal Intelligence Scor
 
 ### Saved Monitors v2.6 Foundation
 
-Saved Monitors v2.6 foundation lets users save repeatable RecallRadar, DrugSignal, or Regional Health Pulse searches, manually run checks over time, review run history, compare latest and previous values, and rely on a backend scheduled-refresh foundation for future Cron-based execution. The frontend now includes a more polished responsive card layout, improved form spacing, and test coverage confirming leading/trailing spaces are trimmed while internal query spaces are preserved.
+Saved Monitors v2.7 foundation lets users save repeatable RecallRadar, DrugSignal, FoodRadar, CosmeticSignal, or Regional Health Pulse searches, manually run checks over time, review run history, compare latest and previous values, and rely on a backend scheduled-refresh foundation for future Cron-based execution. The frontend now includes a polished responsive card layout, improved form spacing, CosmeticSignal module support, and test coverage confirming leading/trailing spaces are trimmed while internal query spaces are preserved.
 
 Current manual workflow:
 
@@ -330,7 +330,7 @@ Save monitor → Run check → Review latest score/count/audit ID → Review rec
 
 The current implementation supports:
 
-- Saved monitor definitions for RecallRadar, DrugSignal, or Regional Health Pulse.
+- Saved monitor definitions for RecallRadar, DrugSignal, FoodRadar, CosmeticSignal, or Regional Health Pulse.
 - Supabase/PostgreSQL persistence when configured.
 - Local fail-soft fallback when persistence is unavailable.
 - Manual run checks from the backend and frontend.
@@ -401,7 +401,7 @@ docs/render_cron_saved_monitors_plan.md
 - Supabase/PostgreSQL saved monitor schedule metadata support.
 - Audit History list/detail API.
 - Audit History frontend page with filters, detail panel, CSV export, and copy actions.
-- Saved Monitors v2.6 foundation for creating, listing, deleting, duplicate prevention, manually running repeatable RecallRadar, DrugSignal, or Regional Health Pulse monitors, reviewing run history, and supporting backend scheduled-refresh groundwork.
+- Saved Monitors v2.7 foundation for creating, listing, deleting, duplicate prevention, manually running repeatable RecallRadar, DrugSignal, FoodRadar, CosmeticSignal, or Regional Health Pulse monitors, reviewing run history, and supporting backend scheduled-refresh groundwork.
 - Saved monitor latest/previous comparison, run history, and change indicators.
 - Backend scheduled-refresh foundation.
 - Scheduler CLI guardrails.
@@ -782,7 +782,7 @@ POST /api/v1/saved-monitors/{monitor_id}/run
 DELETE /api/v1/saved-monitors/{monitor_id}
 ```
 
-Saved Monitors endpoints currently support repeatable public-data searches across RecallRadar, DrugSignal, and Regional Health Pulse, manual run checks, and run history. FoodRadar and CosmeticSignal are not currently listed as Saved Monitor modules. The backend also includes a scheduled-refresh foundation, scheduler lock repository, and CLI job for future Cron execution. Production Cron, public scheduling UI, and alerting are not enabled yet.
+Saved Monitors endpoints currently support repeatable public-data searches across RecallRadar, DrugSignal, FoodRadar, CosmeticSignal, and Regional Health Pulse, manual run checks, and run history. The backend also includes a scheduled-refresh foundation, scheduler lock repository, and CLI job for future Cron execution. Production Cron, public scheduling UI, and alerting are not enabled yet.
 
 ---
 
@@ -1196,7 +1196,7 @@ Frontend test coverage includes:
 - Safety briefing generator behavior.
 - Audit History filters, copy actions, CSV export, and URL state.
 - System Status / Data Quality page behavior.
-- Saved Monitors loading, empty state, creation, duplicate error handling, validation, RecallRadar/DrugSignal/Regional Health Pulse module selection, layout polish, responsive form/card spacing, internal-space preservation, run checks, run history, latest/previous values, change indicators, delete confirmation, audit linking, and error states.
+- Saved Monitors loading, empty state, creation, duplicate error handling, validation, RecallRadar/DrugSignal/FoodRadar/CosmeticSignal/Regional Health Pulse module selection, layout polish, responsive form/card spacing, internal-space preservation, run checks, run history, latest/previous values, change indicators, delete confirmation, audit linking, and error states.
 
 Run frontend lint and production build:
 
