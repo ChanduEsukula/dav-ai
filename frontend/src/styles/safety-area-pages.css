@@ -201,10 +201,10 @@
 }
 
 .safety-area-page--food {
-  --area-accent: #059669;
-  --area-accent-2: #14b8a6;
-  --area-deep: #064e3b;
-  --area-soft: rgba(5, 150, 105, 0.13);
+  --area-accent: #0f766e;
+  --area-accent-2: #2dd4bf;
+  --area-deep: #134e4a;
+  --area-soft: rgba(20, 184, 166, 0.13);
 }
 
 .safety-area-page--cosmetic {
@@ -1092,6 +1092,251 @@
 .pharmacy-record-row summary:focus-visible,
 .pharmacy-interpretation summary:focus-visible {
   outline: 3px solid rgba(6, 182, 212, 0.28);
+  outline-offset: 3px;
+}
+
+/* Food safety dashboard */
+.food-detail-page {
+  --area-accent: #0f766e;
+  --area-accent-2: #2dd4bf;
+  --area-deep: #134e4a;
+  --area-soft: rgba(20, 184, 166, 0.13);
+}
+
+.food-overview {
+  background:
+    radial-gradient(circle at 10% -10%, rgba(45, 212, 191, 0.18), transparent 34%),
+    radial-gradient(circle at 92% 4%, rgba(249, 115, 22, 0.055), transparent 28%),
+    linear-gradient(145deg, #102525, #123f3b);
+}
+
+.food-overview::after {
+  background: linear-gradient(
+    112deg,
+    rgba(255, 255, 255, 0.075),
+    transparent 24%,
+    transparent 74%,
+    rgba(153, 246, 228, 0.04)
+  );
+}
+
+.food-overview .eyebrow {
+  color: #99f6e4;
+}
+
+.food-overview h1 span,
+.food-typo-suggestion strong {
+  color: #7dd3fc;
+}
+
+.food-page-search > div {
+  background:
+    radial-gradient(circle at 8% 18%, rgba(153, 246, 228, 0.095), transparent 32%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.065));
+}
+
+.food-page-search input:focus-visible {
+  border-color: rgba(153, 246, 228, 0.52);
+  box-shadow:
+    0 0 0 4px rgba(45, 212, 191, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.food-page-search button {
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  box-shadow:
+    0 10px 24px rgba(15, 118, 110, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.food-typo-suggestion {
+  border-color: rgba(153, 246, 228, 0.2);
+  background: rgba(8, 47, 73, 0.22);
+}
+
+.food-typo-suggestion button {
+  border-color: rgba(153, 246, 228, 0.26);
+  color: #083344;
+  background: linear-gradient(135deg, #ccfbf1, #67e8f9);
+}
+
+.food-source-line > span:first-child {
+  background: #2dd4bf;
+  box-shadow: 0 0 0 4px rgba(45, 212, 191, 0.12);
+}
+
+.food-summary-strip {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(45, 212, 191, 0.14), transparent 34%),
+    radial-gradient(circle at 92% 100%, rgba(15, 118, 110, 0.08), transparent 30%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(240, 253, 250, 0.62));
+}
+
+.food-workspace {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(20, 184, 166, 0.055), transparent 30%),
+    rgba(255, 255, 255, 0.34);
+}
+
+.food-record-panel,
+.food-source-card,
+.food-verification-card {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(20, 184, 166, 0.06), transparent 34%),
+    rgba(255, 255, 255, 0.74);
+}
+
+.food-detail-page .recall-sort-control {
+  background: rgba(240, 253, 250, 0.82);
+  border-color: rgba(15, 118, 110, 0.09);
+}
+
+.food-detail-page .recall-sort-control button.active {
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  box-shadow: 0 8px 18px rgba(15, 118, 110, 0.16);
+}
+
+.food-record-row summary:hover,
+.food-record-row[open] > summary {
+  background: rgba(240, 253, 250, 0.76);
+}
+
+.food-record-row .pharmacy-record-row__badges small {
+  color: #0f766e;
+  background: rgba(204, 251, 241, 0.74);
+}
+
+.food-record-row .pharmacy-record-row__badges small:last-child {
+  color: #075985;
+  background: rgba(224, 242, 254, 0.72);
+}
+
+.food-record-row .pharmacy-record-row__arrow {
+  color: #0f766e;
+  background: rgba(204, 251, 241, 0.76);
+}
+
+.food-record-row[open] .pharmacy-record-row__arrow {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+}
+
+.food-record-details div {
+  background: rgba(248, 253, 251, 0.9);
+}
+
+.food-empty-card {
+  border-color: rgba(15, 118, 110, 0.18);
+}
+
+.food-source-count {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 14px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  box-shadow: 0 12px 24px rgba(15, 118, 110, 0.16);
+  font-size: 0.9rem;
+  font-weight: 950;
+}
+
+.food-source-list {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.8rem;
+}
+
+.food-source-list article {
+  min-width: 0;
+  padding: 0.7rem;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 15px;
+  background: rgba(248, 253, 251, 0.88);
+}
+
+.food-source-list article > div:first-child {
+  display: grid;
+  gap: 0.18rem;
+}
+
+.food-source-list article > div:first-child strong {
+  color: #0f172a;
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+
+.food-source-list article > div:first-child span {
+  color: #64748b;
+  font-size: 0.66rem;
+}
+
+.food-source-list dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin: 0.6rem 0 0;
+}
+
+.food-source-list dl div {
+  padding: 0.45rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.food-source-list dt {
+  color: #64748b;
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.food-source-list dd {
+  overflow: hidden;
+  margin: 0.18rem 0 0;
+  color: #0f766e;
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.food-source-list article > p {
+  overflow: hidden;
+  margin: 0.55rem 0 0;
+  color: #64748b;
+  font-size: 0.62rem;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.food-verification-card li::marker {
+  color: #0f766e;
+}
+
+.food-detail-page .safety-search-guidance,
+.food-detail-page .safety-route-suggestion {
+  border-color: rgba(15, 118, 110, 0.12);
+  background: rgba(240, 253, 250, 0.78);
+}
+
+.food-detail-page .safety-search-guidance button,
+.food-detail-page .safety-route-suggestion button {
+  border-color: rgba(15, 118, 110, 0.14);
+  color: #0f766e;
+}
+
+.food-page-search button:focus-visible,
+.food-detail-page .pharmacy-example-row button:focus-visible,
+.food-record-row summary:focus-visible,
+.food-typo-suggestion button:focus-visible,
+.food-detail-page .recall-sort-control button:focus-visible {
+  outline: 3px solid rgba(45, 212, 191, 0.28);
   outline-offset: 3px;
 }
 
