@@ -1,24 +1,45 @@
 import { useEffect, useState } from 'react'
 import { searchCosmeticEvents, type CosmeticEventSearchResponse } from '../api/cosmeticEvents'
+import type { ActivePage } from '../types/navigation'
+import {
+  getTypoSuggestion,
+  getWrongCategorySuggestion,
+  normalizeSearchTerm,
+} from '../utils/safetyRouteClassifier'
 
 type CosmeticSafetyPageProps = {
   initialQuery: string
   goToCosmeticSignal: () => void
+  goToPage: (page: ActivePage, query?: string) => void
 }
 
-function CosmeticSafetyPage({ initialQuery, goToCosmeticSignal }: CosmeticSafetyPageProps) {
-  const displayQuery = initialQuery || 'your cosmetic or personal-care product'
+function CosmeticSafetyPage({
+  initialQuery,
+  goToCosmeticSignal,
+  goToPage,
+}: CosmeticSafetyPageProps) {
+  const normalizedQuery = normalizeSearchTerm(initialQuery)
+  const displayQuery = normalizedQuery || 'your cosmetic or personal-care product'
   const [data, setData] = useState<CosmeticEventSearchResponse | null>(null)
-  const [loading, setLoading] = useState(Boolean(initialQuery))
+  const [loading, setLoading] = useState(Boolean(normalizedQuery))
   const [error, setError] = useState('')
 
   useEffect(() => {
-    const cleanQuery = initialQuery.trim()
-    if (!cleanQuery) return
-
+    const cleanQuery = normalizeSearchTerm(initialQuery)
     let isMounted = true
 
     async function loadCosmeticPreview() {
+      if (!cleanQuery) {
+        await Promise.resolve()
+        if (!isMounted) return
+
+        setData(null)
+        setLoading(false)
+        setError('')
+        return
+      }
+
+      setData(null)
       setLoading(true)
       setError('')
 
@@ -27,7 +48,7 @@ function CosmeticSafetyPage({ initialQuery, goToCosmeticSignal }: CosmeticSafety
         if (isMounted) setData(response)
       } catch {
         if (isMounted) {
-          setError('Unable to load cosmetic safety records. Make sure the backend is running.')
+          setError('Unable to load public records. Check backend/source availability.')
         }
       } finally {
         if (isMounted) setLoading(false)
@@ -44,6 +65,8 @@ function CosmeticSafetyPage({ initialQuery, goToCosmeticSignal }: CosmeticSafety
   const topReaction = data?.top_reactions[0] ?? null
   const topRecord = data?.records[0] ?? null
   const topProduct = topRecord?.products[0]
+  const wrongCategorySuggestion = getWrongCategorySuggestion('cosmetic', normalizedQuery)
+  const typoSuggestion = data?.count === 0 ? getTypoSuggestion(normalizedQuery) : null
 
   return (
     <section className="safety-area-page safety-area-page--cosmetic">
@@ -91,6 +114,35 @@ function CosmeticSafetyPage({ initialQuery, goToCosmeticSignal }: CosmeticSafety
         <p className="error-message" role="alert">
           {error}
         </p>
+      )}
+
+      {wrongCategorySuggestion && !loading && (
+        <aside className="safety-route-suggestion" aria-live="polite">
+          <span>{wrongCategorySuggestion.message}</span>
+          <button
+            type="button"
+            onClick={() => goToPage(wrongCategorySuggestion.page, normalizedQuery)}
+          >
+            Open {wrongCategorySuggestion.label}
+          </button>
+        </aside>
+      )}
+
+      {data?.count === 0 && !loading && (
+        <aside className="safety-search-guidance" aria-live="polite">
+          <span>
+            No public records returned for this exact search. Check spelling or try a
+            simpler/generic term.
+          </span>
+          {typoSuggestion && (
+            <button
+              type="button"
+              onClick={() => goToPage('cosmetic-safety', typoSuggestion)}
+            >
+              Did you mean {typoSuggestion}?
+            </button>
+          )}
+        </aside>
       )}
 
       {data && (

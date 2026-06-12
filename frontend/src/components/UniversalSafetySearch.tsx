@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { searchCosmeticEvents, type CosmeticEventSearchResponse } from '../api/cosmeticEvents'
 import { searchDrugEvents, type DrugEventSearchResponse } from '../api/drugEvents'
 import {
@@ -6,7 +6,13 @@ import {
   type EverydaySafetySearchResponse,
 } from '../api/everydaySafety'
 import { searchRecalls, type RecallSearchResponse } from '../api/recalls'
-import { classifySafetyQuery, type SafetyRouteSuggestion } from '../utils/safetyRouteClassifier'
+import {
+  classifySafetyQuery,
+  getSearchComparisonKey,
+  getTypoSuggestion,
+  normalizeSearchTerm,
+  type SafetyRouteSuggestion,
+} from '../utils/safetyRouteClassifier'
 import type { ActivePage } from '../types/navigation'
 
 type UniversalSafetySearchProps = {
@@ -131,6 +137,11 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
   const [searchData, setSearchData] = useState<UniversalSearchData>({})
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [helper, setHelper] = useState('')
+  const [notice, setNotice] = useState('')
+  const requestIdRef = useRef(0)
+  const inFlightKeyRef = useRef('')
+  const completedKeyRef = useRef('')
 
   const classification = useMemo(() => classifySafetyQuery(submittedQuery), [submittedQuery])
 
@@ -139,39 +150,100 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
   const preview = hasSubmittedQuery
     ? buildPreview(submittedQuery, classification, searchData)
     : null
+  const previewRecordCount =
+    (searchData.recall?.count ?? 0) +
+    (searchData.drug?.count ?? 0) +
+    (searchData.food?.count ?? 0) +
+    (searchData.cosmetic?.count ?? 0)
+  const typoSuggestion =
+    hasSubmittedQuery && !loading && !error && previewRecordCount === 0
+      ? getTypoSuggestion(submittedQuery)
+      : null
 
   async function runPreviewSearch(nextQuery: string) {
-    const cleanQuery = nextQuery.trim()
-    if (!cleanQuery || loading) return
+    const cleanQuery = normalizeSearchTerm(nextQuery)
+
+    if (!cleanQuery) {
+      setError('')
+      setNotice('')
+      setHelper(
+        'Enter a product, drug, food, cosmetic, UPC, NDC, or lot term to search public records.',
+      )
+      return
+    }
+
+    const requestKey = getSearchComparisonKey(cleanQuery)
+    if (inFlightKeyRef.current === requestKey) return
+    if (completedKeyRef.current === requestKey) {
+      setQuery(cleanQuery)
+      setSubmittedQuery(cleanQuery)
+      setError('')
+      setHelper('')
+      setNotice('')
+      return
+    }
 
     const nextClassification = classifySafetyQuery(cleanQuery)
+    const requestId = requestIdRef.current + 1
+    requestIdRef.current = requestId
+    inFlightKeyRef.current = requestKey
+    completedKeyRef.current = ''
 
+    setQuery(cleanQuery)
     setSubmittedQuery(cleanQuery)
     setSearchData({})
     setError('')
+    setHelper('')
+    setNotice('')
     setLoading(true)
 
     try {
+      let nextSearchData: UniversalSearchData = {}
+      let nextNotice = ''
+
       if (nextClassification.primaryArea === 'pharmacy') {
-        const [recall, drug] = await Promise.all([
+        const [recallResult, drugResult] = await Promise.allSettled([
           searchRecalls(cleanQuery, 3),
           searchDrugEvents(cleanQuery, 5),
         ])
 
-        setSearchData({ recall, drug })
+        if (recallResult.status === 'rejected' && drugResult.status === 'rejected') {
+          throw new Error('Both pharmacy preview sources failed.')
+        }
+
+        nextSearchData = {
+          recall: recallResult.status === 'fulfilled' ? recallResult.value : undefined,
+          drug: drugResult.status === 'fulfilled' ? drugResult.value : undefined,
+        }
+
+        if (recallResult.status === 'rejected' || drugResult.status === 'rejected') {
+          nextNotice =
+            'Some public sources were unavailable. Showing the preview that loaded successfully.'
+        }
       } else if (nextClassification.primaryArea === 'food') {
         const food = await searchEverydaySafety(cleanQuery, 5)
-        setSearchData({ food })
+        nextSearchData = { food }
       } else if (nextClassification.primaryArea === 'cosmetic') {
         const cosmetic = await searchCosmeticEvents(cleanQuery, 5)
-        setSearchData({ cosmetic })
+        nextSearchData = { cosmetic }
       }
+
+      if (requestId !== requestIdRef.current) return
+
+      setSearchData(nextSearchData)
+      setNotice(nextNotice)
+      completedKeyRef.current = requestKey
     } catch {
-      setError(
-        'Dav AI could not load public records for this quick preview. You can still continue to the detailed workflow.',
-      )
+      if (requestId === requestIdRef.current) {
+        setError(
+          'Unable to load public records. Check backend/source availability. You can still continue to the detailed workflow.',
+        )
+      }
     } finally {
-      setLoading(false)
+      if (requestId === requestIdRef.current) {
+        inFlightKeyRef.current = ''
+        setLoading(false)
+      }
     }
   }
 
@@ -181,7 +253,16 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
 
   function handleExampleClick(example: string) {
     setQuery(example)
+    setError('')
+    setHelper('')
+    setNotice('')
     void runPreviewSearch(example)
+  }
+
+  function handleTypoSuggestion(correctedQuery: string) {
+    setQuery(correctedQuery)
+    completedKeyRef.current = ''
+    void runPreviewSearch(correctedQuery)
   }
 
   function openSuggestion(suggestion: SafetyRouteSuggestion) {
@@ -209,7 +290,10 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
             <input
               id="universal-safety-query"
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => {
+                setQuery(event.target.value)
+                if (helper) setHelper('')
+              }}
               onKeyDown={(event) => {
                 if (event.key === 'Enter') {
                   handleAnalyze()
@@ -246,6 +330,26 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
         {error && (
           <p className="error-message" role="alert">
             {error}
+          </p>
+        )}
+
+        {helper && (
+          <p className="safety-search-guidance" role="status">
+            {helper}
+          </p>
+        )}
+
+        {notice && (
+          <p className="safety-search-guidance" role="status">
+            {notice}
+          </p>
+        )}
+
+        {typoSuggestion && (
+          <p className="safety-search-guidance" aria-live="polite">
+            <button type="button" onClick={() => handleTypoSuggestion(typoSuggestion)}>
+              Did you mean {typoSuggestion}?
+            </button>
           </p>
         )}
 

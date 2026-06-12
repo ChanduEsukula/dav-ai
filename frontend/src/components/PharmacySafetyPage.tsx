@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { searchDrugEvents, type DrugEventSearchResponse } from '../api/drugEvents'
 import {
   searchRecalls,
@@ -6,10 +6,25 @@ import {
   type RecallSearchResponse,
   type RecallSort,
 } from '../api/recalls'
+import type { ActivePage } from '../types/navigation'
 import { formatDate, formatTimestamp } from '../utils/recallFormatters'
+import {
+  getSearchComparisonKey,
+  getTypoSuggestion,
+  getWrongCategorySuggestion,
+  normalizeSearchTerm,
+} from '../utils/safetyRouteClassifier'
 
 type PharmacySafetyPageProps = {
   initialQuery: string
+  goToPage: (page: ActivePage, query?: string) => void
+}
+
+type PharmacySource = 'recall' | 'drug'
+
+type PharmacySearchOptions = {
+  updateUrl?: boolean
+  skipIfCompleted?: boolean
 }
 
 function truncateText(value: string | null | undefined, maxLength = 88) {
@@ -91,91 +106,209 @@ function PharmacyRecallRow({ record, index }: { record: RecallResult; index: num
   )
 }
 
-function PharmacySafetyPage({ initialQuery }: PharmacySafetyPageProps) {
-  const [query, setQuery] = useState(initialQuery)
-  const [submittedQuery, setSubmittedQuery] = useState(initialQuery)
+function updatePharmacyQueryInUrl(query: string, mode: 'push' | 'replace') {
+  const url = new URL(window.location.href)
+  const currentPage = url.searchParams.get('page')
+  const currentQuery = url.searchParams.get('q') ?? ''
+
+  if (currentPage === 'pharmacy-safety' && currentQuery === query) return
+
+  url.searchParams.set('page', 'pharmacy-safety')
+  url.searchParams.set('q', query)
+
+  if (mode === 'push') {
+    window.history.pushState(null, '', url.toString())
+  } else {
+    window.history.replaceState(null, '', url.toString())
+  }
+}
+
+function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps) {
+  const normalizedInitialQuery = normalizeSearchTerm(initialQuery)
+  const [query, setQuery] = useState(normalizedInitialQuery)
+  const [submittedQuery, setSubmittedQuery] = useState(normalizedInitialQuery)
   const [recallData, setRecallData] = useState<RecallSearchResponse | null>(null)
   const [drugData, setDrugData] = useState<DrugEventSearchResponse | null>(null)
   const [recallSort, setRecallSort] = useState<RecallSort>('score')
-  const [loading, setLoading] = useState(Boolean(initialQuery))
+  const [loading, setLoading] = useState(Boolean(normalizedInitialQuery))
   const [error, setError] = useState('')
+  const [helper, setHelper] = useState('')
+  const [notice, setNotice] = useState('')
+  const [failedSources, setFailedSources] = useState<PharmacySource[]>([])
+  const requestIdRef = useRef(0)
+  const inFlightKeyRef = useRef('')
+  const completedKeyRef = useRef('')
+  const isMountedRef = useRef(true)
 
-  async function loadPharmacyPreview(nextQuery: string, nextSort: RecallSort = recallSort) {
-    const cleanQuery = nextQuery.trim()
+  useEffect(() => {
+    isMountedRef.current = true
 
-    if (!cleanQuery) {
-      setError('Enter a drug, medication, brand, ingredient, or NDC.')
-      return
+    return () => {
+      isMountedRef.current = false
     }
+  }, [])
 
-    setLoading(true)
-    setError('')
-    setSubmittedQuery(cleanQuery)
+  const loadPharmacyPreview = useCallback(
+    async (
+      nextQuery: string,
+      nextSort: RecallSort,
+      options: PharmacySearchOptions = {},
+    ) => {
+      const cleanQuery = normalizeSearchTerm(nextQuery)
+      if (!cleanQuery) return
 
-    const nextParams = new URLSearchParams(window.location.search)
-    nextParams.set('page', 'pharmacy-safety')
-    nextParams.set('q', cleanQuery)
-    window.history.replaceState(null, '', `?${nextParams.toString()}`)
+      const requestKey = `${getSearchComparisonKey(cleanQuery)}::${nextSort}`
 
-    try {
-      const [recallResponse, drugResponse] = await Promise.all([
+      if (inFlightKeyRef.current === requestKey) return
+      if (options.skipIfCompleted && completedKeyRef.current === requestKey) {
+        setQuery(cleanQuery)
+        setSubmittedQuery(cleanQuery)
+        setError('')
+        setHelper('')
+        setNotice('')
+        return
+      }
+
+      const requestId = requestIdRef.current + 1
+      requestIdRef.current = requestId
+      inFlightKeyRef.current = requestKey
+      completedKeyRef.current = ''
+
+      setQuery(cleanQuery)
+      setSubmittedQuery(cleanQuery)
+      setRecallData(null)
+      setDrugData(null)
+      setFailedSources([])
+      setLoading(true)
+      setError('')
+      setHelper('')
+      setNotice('')
+
+      if (options.updateUrl) {
+        updatePharmacyQueryInUrl(cleanQuery, 'push')
+      }
+
+      const [recallResult, drugResult] = await Promise.allSettled([
         searchRecalls(cleanQuery, 8, nextSort),
         searchDrugEvents(cleanQuery, 8),
       ])
 
-      setRecallData(recallResponse)
-      setDrugData(drugResponse)
-    } catch {
-      setError('Unable to load pharmacy safety records. Make sure the backend is running.')
-    } finally {
+      if (!isMountedRef.current || requestId !== requestIdRef.current) return
+
+      const nextFailedSources: PharmacySource[] = []
+      const nextRecallData = recallResult.status === 'fulfilled' ? recallResult.value : null
+      const nextDrugData = drugResult.status === 'fulfilled' ? drugResult.value : null
+
+      if (recallResult.status === 'rejected') nextFailedSources.push('recall')
+      if (drugResult.status === 'rejected') nextFailedSources.push('drug')
+
+      setRecallData(nextRecallData)
+      setDrugData(nextDrugData)
+      setFailedSources(nextFailedSources)
+
+      if (!nextRecallData && !nextDrugData) {
+        setError('Unable to load public records. Check backend/source availability.')
+      } else if (nextFailedSources.length > 0) {
+        setNotice(
+          'Some public sources were unavailable. Showing the records that loaded successfully.',
+        )
+      } else {
+        completedKeyRef.current = requestKey
+      }
+
+      inFlightKeyRef.current = ''
       setLoading(false)
-    }
-  }
+    },
+    [],
+  )
 
   useEffect(() => {
-    const cleanQuery = initialQuery.trim()
-    if (!cleanQuery) return
+    const cleanQuery = normalizeSearchTerm(initialQuery)
+    let isCurrentEffect = true
 
-    let isMounted = true
+    async function syncInitialQuery() {
+      if (!cleanQuery) {
+        await Promise.resolve()
+        if (!isCurrentEffect) return
 
-    async function loadInitial() {
-      setLoading(true)
-      setError('')
-
-      try {
-        const [recallResponse, drugResponse] = await Promise.all([
-          searchRecalls(cleanQuery, 8, 'score'),
-          searchDrugEvents(cleanQuery, 8),
-        ])
-
-        if (isMounted) {
-          setRecallData(recallResponse)
-          setDrugData(drugResponse)
-          setSubmittedQuery(cleanQuery)
-          setQuery(cleanQuery)
-          setRecallSort('score')
-        }
-      } catch {
-        if (isMounted) {
-          setError('Unable to load pharmacy safety records. Make sure the backend is running.')
-        }
-      } finally {
-        if (isMounted) setLoading(false)
+        requestIdRef.current += 1
+        inFlightKeyRef.current = ''
+        completedKeyRef.current = ''
+        setQuery('')
+        setSubmittedQuery('')
+        setRecallData(null)
+        setDrugData(null)
+        setRecallSort('score')
+        setLoading(false)
+        setError('')
+        setHelper('')
+        setNotice('')
+        setFailedSources([])
+        return
       }
+
+      const urlQuery = new URLSearchParams(window.location.search).get('q') ?? ''
+      if (urlQuery !== cleanQuery) {
+        updatePharmacyQueryInUrl(cleanQuery, 'replace')
+      }
+
+      setRecallSort('score')
+      await loadPharmacyPreview(cleanQuery, 'score', { skipIfCompleted: true })
     }
 
-    void loadInitial()
+    void syncInitialQuery()
 
     return () => {
-      isMounted = false
+      isCurrentEffect = false
     }
-  }, [initialQuery])
+  }, [initialQuery, loadPharmacyPreview])
 
-  async function handleSortChange(nextSort: RecallSort) {
-    if (nextSort === recallSort || !submittedQuery.trim()) return
+  function handleSearch() {
+    const cleanInput = normalizeSearchTerm(query)
+    const cleanSubmittedQuery = normalizeSearchTerm(submittedQuery)
+
+    if (!cleanInput && !cleanSubmittedQuery) {
+      setError('')
+      setNotice('')
+      setHelper(
+        'Enter a product, drug, food, cosmetic, UPC, NDC, or lot term to search public records.',
+      )
+      return
+    }
+
+    if (!cleanInput) {
+      void loadPharmacyPreview(cleanSubmittedQuery, recallSort)
+      return
+    }
+
+    void loadPharmacyPreview(cleanInput, recallSort, {
+      updateUrl: true,
+      skipIfCompleted: true,
+    })
+  }
+
+  function handleSortChange(nextSort: RecallSort) {
+    const cleanSubmittedQuery = normalizeSearchTerm(submittedQuery)
+    if (nextSort === recallSort || !cleanSubmittedQuery) return
 
     setRecallSort(nextSort)
-    await loadPharmacyPreview(submittedQuery, nextSort)
+    void loadPharmacyPreview(cleanSubmittedQuery, nextSort)
+  }
+
+  function handleExampleClick(example: string) {
+    setQuery(example)
+    setError('')
+    setHelper('')
+    setNotice('')
+    void loadPharmacyPreview(example, recallSort, {
+      updateUrl: true,
+      skipIfCompleted: true,
+    })
+  }
+
+  function handleTypoSuggestion(correctedQuery: string) {
+    setQuery(correctedQuery)
+    void loadPharmacyPreview(correctedQuery, recallSort, { updateUrl: true })
   }
 
   const recallResults = recallData?.results ?? []
@@ -183,11 +316,19 @@ function PharmacySafetyPage({ initialQuery }: PharmacySafetyPageProps) {
   const topReactionCount = Math.max(topReactions[0]?.count ?? 0, 1)
   const displayQuery = submittedQuery || 'a medication or drug product'
   const hasResults = Boolean(recallData || drugData)
+  const hasZeroResults =
+    Boolean(recallData && drugData) && recallData?.count === 0 && drugData?.count === 0
+  const wrongCategorySuggestion = useMemo(
+    () => getWrongCategorySuggestion('pharmacy', submittedQuery),
+    [submittedQuery],
+  )
+  const typoSuggestion = hasZeroResults ? getTypoSuggestion(submittedQuery) : null
+  const loadedSourceNames = [recallData?.source_name, drugData?.source_name].filter(
+    (sourceName): sourceName is string => Boolean(sourceName),
+  )
   const sourceLabel =
-    recallData || drugData
-      ? `${recallData?.source_name ?? 'openFDA enforcement'} + ${
-          drugData?.source_name ?? 'openFDA FAERS'
-        }`
+    loadedSourceNames.length > 0
+      ? loadedSourceNames.join(' + ')
       : 'openFDA enforcement + openFDA FAERS'
 
   return (
@@ -215,7 +356,7 @@ function PharmacySafetyPage({ initialQuery }: PharmacySafetyPageProps) {
             className="pharmacy-page-search"
             onSubmit={(event) => {
               event.preventDefault()
-              void loadPharmacyPreview(query, recallSort)
+              handleSearch()
             }}
           >
             <label htmlFor="pharmacy-page-search">Search pharmacy records</label>
@@ -223,8 +364,11 @@ function PharmacySafetyPage({ initialQuery }: PharmacySafetyPageProps) {
               <input
                 id="pharmacy-page-search"
                 value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Drug, brand, ingredient, or NDC"
+                onChange={(event) => {
+                  setQuery(event.target.value)
+                  if (helper) setHelper('')
+                }}
+                placeholder="Search another drug, brand, ingredient, or NDC"
               />
               <button type="submit" disabled={loading}>
                 {loading ? 'Checking...' : 'Search'}
@@ -238,10 +382,7 @@ function PharmacySafetyPage({ initialQuery }: PharmacySafetyPageProps) {
               <button
                 key={example}
                 type="button"
-                onClick={() => {
-                  setQuery(example)
-                  void loadPharmacyPreview(example, recallSort)
-                }}
+                onClick={() => handleExampleClick(example)}
               >
                 {example}
               </button>
@@ -269,6 +410,46 @@ function PharmacySafetyPage({ initialQuery }: PharmacySafetyPageProps) {
         </p>
       )}
 
+      {helper && (
+        <p className="safety-search-guidance" role="status">
+          {helper}
+        </p>
+      )}
+
+      {notice && (
+        <p className="safety-search-guidance" role="status">
+          {notice}
+        </p>
+      )}
+
+      {wrongCategorySuggestion && !loading && (
+        <aside className="safety-route-suggestion" aria-live="polite">
+          <span>{wrongCategorySuggestion.message}</span>
+          <button
+            type="button"
+            onClick={() =>
+              goToPage(wrongCategorySuggestion.page, normalizeSearchTerm(submittedQuery))
+            }
+          >
+            Open {wrongCategorySuggestion.label}
+          </button>
+        </aside>
+      )}
+
+      {hasZeroResults && !loading && (
+        <aside className="safety-search-guidance" aria-live="polite">
+          <span>
+            No public records returned for this exact search. Check spelling or try a
+            simpler/generic term.
+          </span>
+          {typoSuggestion && (
+            <button type="button" onClick={() => handleTypoSuggestion(typoSuggestion)}>
+              Did you mean {typoSuggestion}?
+            </button>
+          )}
+        </aside>
+      )}
+
       {hasResults && (
         <section className="pharmacy-summary-strip" aria-label={`Summary for ${displayQuery}`}>
           <div className="pharmacy-summary-strip__query">
@@ -280,11 +461,11 @@ function PharmacySafetyPage({ initialQuery }: PharmacySafetyPageProps) {
           <dl className="pharmacy-summary-metrics">
             <div>
               <dt>Recall matches</dt>
-              <dd>{recallData?.count ?? 0}</dd>
+              <dd>{failedSources.includes('recall') ? 'Unavailable' : (recallData?.count ?? 0)}</dd>
             </div>
             <div>
               <dt>FAERS reports</dt>
-              <dd>{drugData?.count ?? 0}</dd>
+              <dd>{failedSources.includes('drug') ? 'Unavailable' : (drugData?.count ?? 0)}</dd>
             </div>
             <div>
               <dt>Reporting signal</dt>

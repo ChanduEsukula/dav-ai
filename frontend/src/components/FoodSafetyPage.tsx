@@ -1,24 +1,41 @@
 import { useEffect, useState } from 'react'
 import { searchEverydaySafety, type EverydaySafetySearchResponse } from '../api/everydaySafety'
+import type { ActivePage } from '../types/navigation'
+import {
+  getTypoSuggestion,
+  getWrongCategorySuggestion,
+  normalizeSearchTerm,
+} from '../utils/safetyRouteClassifier'
 
 type FoodSafetyPageProps = {
   initialQuery: string
   goToFoodRadar: () => void
+  goToPage: (page: ActivePage, query?: string) => void
 }
 
-function FoodSafetyPage({ initialQuery, goToFoodRadar }: FoodSafetyPageProps) {
-  const displayQuery = initialQuery || 'your food, supplement, ingredient, or brand'
+function FoodSafetyPage({ initialQuery, goToFoodRadar, goToPage }: FoodSafetyPageProps) {
+  const normalizedQuery = normalizeSearchTerm(initialQuery)
+  const displayQuery = normalizedQuery || 'your food, supplement, ingredient, or brand'
   const [data, setData] = useState<EverydaySafetySearchResponse | null>(null)
-  const [loading, setLoading] = useState(Boolean(initialQuery))
+  const [loading, setLoading] = useState(Boolean(normalizedQuery))
   const [error, setError] = useState('')
 
   useEffect(() => {
-    const cleanQuery = initialQuery.trim()
-    if (!cleanQuery) return
-
+    const cleanQuery = normalizeSearchTerm(initialQuery)
     let isMounted = true
 
     async function loadFoodPreview() {
+      if (!cleanQuery) {
+        await Promise.resolve()
+        if (!isMounted) return
+
+        setData(null)
+        setLoading(false)
+        setError('')
+        return
+      }
+
+      setData(null)
       setLoading(true)
       setError('')
 
@@ -27,7 +44,7 @@ function FoodSafetyPage({ initialQuery, goToFoodRadar }: FoodSafetyPageProps) {
         if (isMounted) setData(response)
       } catch {
         if (isMounted) {
-          setError('Unable to load food safety records. Make sure the backend is running.')
+          setError('Unable to load public records. Check backend/source availability.')
         }
       } finally {
         if (isMounted) setLoading(false)
@@ -42,6 +59,8 @@ function FoodSafetyPage({ initialQuery, goToFoodRadar }: FoodSafetyPageProps) {
   }, [initialQuery])
 
   const topResult = data?.results[0] ?? null
+  const wrongCategorySuggestion = getWrongCategorySuggestion('food', normalizedQuery)
+  const typoSuggestion = data?.count === 0 ? getTypoSuggestion(normalizedQuery) : null
 
   return (
     <section className="safety-area-page safety-area-page--food">
@@ -92,6 +111,35 @@ function FoodSafetyPage({ initialQuery, goToFoodRadar }: FoodSafetyPageProps) {
         <p className="error-message" role="alert">
           {error}
         </p>
+      )}
+
+      {wrongCategorySuggestion && !loading && (
+        <aside className="safety-route-suggestion" aria-live="polite">
+          <span>{wrongCategorySuggestion.message}</span>
+          <button
+            type="button"
+            onClick={() => goToPage(wrongCategorySuggestion.page, normalizedQuery)}
+          >
+            Open {wrongCategorySuggestion.label}
+          </button>
+        </aside>
+      )}
+
+      {data?.count === 0 && !loading && (
+        <aside className="safety-search-guidance" aria-live="polite">
+          <span>
+            No public records returned for this exact search. Check spelling or try a
+            simpler/generic term.
+          </span>
+          {typoSuggestion && (
+            <button
+              type="button"
+              onClick={() => goToPage('food-safety', typoSuggestion)}
+            >
+              Did you mean {typoSuggestion}?
+            </button>
+          )}
+        </aside>
       )}
 
       {data && (

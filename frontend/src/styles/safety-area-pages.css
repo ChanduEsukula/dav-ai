@@ -34,6 +34,43 @@
   text-align: center;
 }
 
+.safety-search-guidance,
+.safety-route-suggestion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid rgba(14, 116, 144, 0.12);
+  border-radius: 16px;
+  color: #334155;
+  background: rgba(240, 249, 255, 0.78);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  backdrop-filter: blur(14px);
+}
+
+.safety-search-guidance button,
+.safety-route-suggestion button {
+  flex: 0 0 auto;
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  border-radius: 999px;
+  padding: 0.42rem 0.68rem;
+  color: #1d4ed8;
+  background: rgba(255, 255, 255, 0.76);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+}
+
+.safety-search-guidance button:focus-visible,
+.safety-route-suggestion button:focus-visible {
+  outline: 3px solid rgba(6, 182, 212, 0.24);
+  outline-offset: 2px;
+}
+
 .safety-area-metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1126,5 +1163,11 @@
   .safety-area-metrics,
   .safety-area-preview-card dl div {
     grid-template-columns: 1fr;
+  }
+
+  .safety-search-guidance,
+  .safety-route-suggestion {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }

@@ -24,6 +24,7 @@ vi.mock('../api/drugEvents', async () => {
 
 const mockSearchRecalls = vi.mocked(searchRecalls)
 const mockSearchDrugEvents = vi.mocked(searchDrugEvents)
+const mockGoToPage = vi.fn()
 
 const longProductName =
   'Alprazolam tablets, 0.5 mg, packaged in 100-count bottles with additional distribution details and labeling information'
@@ -120,7 +121,34 @@ const drugResponse: DrugEventSearchResponse = {
   ],
 }
 
+const emptyRecallResponse: RecallSearchResponse = {
+  ...recallResponse,
+  count: 0,
+  results: [],
+  audit: {
+    ...recallResponse.audit,
+    record_count: 0,
+  },
+}
+
+const emptyDrugResponse: DrugEventSearchResponse = {
+  ...drugResponse,
+  count: 0,
+  top_reactions: [],
+  audit: {
+    ...drugResponse.audit,
+    record_count: 0,
+  },
+}
+
+function renderPharmacyPage(initialQuery = 'Xanax') {
+  return render(
+    <PharmacySafetyPage initialQuery={initialQuery} goToPage={mockGoToPage} />,
+  )
+}
+
 beforeEach(() => {
+  mockGoToPage.mockReset()
   mockSearchRecalls.mockReset()
   mockSearchDrugEvents.mockReset()
   mockSearchRecalls.mockResolvedValue(recallResponse)
@@ -129,7 +157,7 @@ beforeEach(() => {
 })
 
 test('renders a compact pharmacy dashboard with collapsed recall details', async () => {
-  render(<PharmacySafetyPage initialQuery="Xanax" />)
+  renderPharmacyPage()
 
   expect(
     await screen.findByRole('heading', { name: /Safety review for Xanax/i })
@@ -150,7 +178,7 @@ test('renders a compact pharmacy dashboard with collapsed recall details', async
 test('loads the selected recall sort once', async () => {
   const user = userEvent.setup()
 
-  render(<PharmacySafetyPage initialQuery="Xanax" />)
+  renderPharmacyPage()
 
   await waitFor(() => {
     expect(mockSearchRecalls).toHaveBeenCalledWith('Xanax', 8, 'score')
@@ -163,4 +191,192 @@ test('loads the selected recall sort once', async () => {
   })
 
   expect(mockSearchRecalls).toHaveBeenCalledTimes(2)
+})
+
+test('empty input falls back to the submitted Pharmacy query', async () => {
+  const user = userEvent.setup()
+  renderPharmacyPage()
+
+  await screen.findByRole('heading', { name: /Safety review for Xanax/i })
+  await user.clear(screen.getByLabelText(/Search pharmacy records/i))
+  await user.click(screen.getByRole('button', { name: 'Search' }))
+
+  await waitFor(() => {
+    expect(mockSearchRecalls).toHaveBeenCalledTimes(2)
+  })
+
+  expect(mockSearchRecalls).toHaveBeenLastCalledWith('Xanax', 8, 'score')
+  expect(screen.queryByText(/Enter a product, drug, food/i)).not.toBeInTheDocument()
+})
+
+test('spaces-only input falls back to the submitted Pharmacy query', async () => {
+  const user = userEvent.setup()
+  renderPharmacyPage()
+
+  await screen.findByRole('heading', { name: /Safety review for Xanax/i })
+  const input = screen.getByLabelText(/Search pharmacy records/i)
+  await user.clear(input)
+  await user.type(input, '   ')
+  await user.click(screen.getByRole('button', { name: 'Search' }))
+
+  await waitFor(() => {
+    expect(mockSearchDrugEvents).toHaveBeenCalledTimes(2)
+  })
+
+  expect(mockSearchDrugEvents).toHaveBeenLastCalledWith('Xanax', 8)
+})
+
+test.each(['', '   '])(
+  'shows quiet guidance for empty Pharmacy input without a current query: %j',
+  async (value) => {
+    const user = userEvent.setup()
+    window.history.replaceState(null, '', '?page=pharmacy-safety')
+    renderPharmacyPage('')
+
+    const input = screen.getByLabelText(/Search pharmacy records/i)
+    if (value) await user.type(input, value)
+    await user.click(screen.getByRole('button', { name: 'Search' }))
+
+    expect(
+      screen.getByText(
+        /Enter a product, drug, food, cosmetic, UPC, NDC, or lot term/i,
+      ),
+    ).toBeInTheDocument()
+    expect(mockSearchRecalls).not.toHaveBeenCalled()
+    expect(mockSearchDrugEvents).not.toHaveBeenCalled()
+  },
+)
+
+test('sort uses the submitted query even when the input is empty', async () => {
+  const user = userEvent.setup()
+  renderPharmacyPage()
+
+  await screen.findByRole('heading', { name: /Safety review for Xanax/i })
+  await user.clear(screen.getByLabelText(/Search pharmacy records/i))
+  await user.click(screen.getByRole('button', { name: 'Latest' }))
+
+  await waitFor(() => {
+    expect(mockSearchRecalls).toHaveBeenLastCalledWith('Xanax', 8, 'latest')
+  })
+})
+
+test('example search clears previous empty-search guidance', async () => {
+  const user = userEvent.setup()
+  window.history.replaceState(null, '', '?page=pharmacy-safety')
+  renderPharmacyPage('')
+
+  await user.click(screen.getByRole('button', { name: 'Search' }))
+  expect(screen.getByText(/Enter a product, drug, food/i)).toBeInTheDocument()
+
+  await user.click(screen.getByRole('button', { name: 'Metformin' }))
+
+  await waitFor(() => {
+    expect(mockSearchRecalls).toHaveBeenCalledWith('Metformin', 8, 'score')
+  })
+  expect(screen.queryByText(/Enter a product, drug, food/i)).not.toBeInTheDocument()
+})
+
+test.each([
+  ['chicken', 'Food Safety', 'food-safety'],
+  ['sunscreen', 'Cosmetic Safety', 'cosmetic-safety'],
+] as const)(
+  'suggests %s searches use the correct safety page',
+  async (query, label, page) => {
+    const user = userEvent.setup()
+    window.history.replaceState(null, '', '?page=pharmacy-safety')
+    renderPharmacyPage('')
+
+    await user.type(screen.getByLabelText(/Search pharmacy records/i), query)
+    await user.click(screen.getByRole('button', { name: 'Search' }))
+
+    const suggestion = await screen.findByText(
+      new RegExp(`This looks more like a ${label} search`, 'i'),
+    )
+    expect(suggestion).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: `Open ${label}` }))
+    expect(mockGoToPage).toHaveBeenCalledWith(page, query)
+  },
+)
+
+test('shows zero-result spelling guidance and runs the hardcoded typo correction', async () => {
+  const user = userEvent.setup()
+  mockSearchRecalls.mockResolvedValue(emptyRecallResponse)
+  mockSearchDrugEvents.mockResolvedValue(emptyDrugResponse)
+  window.history.replaceState(null, '', '?page=pharmacy-safety&q=metforimn')
+
+  renderPharmacyPage('metforimn')
+
+  expect(
+    await screen.findByText(/No public records returned for this exact search/i),
+  ).toBeInTheDocument()
+
+  await user.click(screen.getByRole('button', { name: /Did you mean Metformin/i }))
+
+  await waitFor(() => {
+    expect(mockSearchRecalls).toHaveBeenLastCalledWith('Metformin', 8, 'score')
+  })
+  expect(new URLSearchParams(window.location.search).get('q')).toBe('Metformin')
+})
+
+test('normalizes whitespace and skips a completed equivalent query', async () => {
+  const user = userEvent.setup()
+  renderPharmacyPage()
+
+  await screen.findByRole('heading', { name: /Safety review for Xanax/i })
+  const input = screen.getByLabelText(/Search pharmacy records/i)
+  await user.clear(input)
+  await user.type(input, '   xanax   ')
+  await user.click(screen.getByRole('button', { name: 'Search' }))
+
+  expect(mockSearchRecalls).toHaveBeenCalledTimes(1)
+  expect(input).toHaveValue('xanax')
+})
+
+test('reacts safely when the route initial query changes', async () => {
+  const { rerender } = renderPharmacyPage()
+
+  await screen.findByRole('heading', { name: /Safety review for Xanax/i })
+
+  window.history.replaceState(null, '', '?page=pharmacy-safety&q=Metformin%20XR')
+  rerender(
+    <PharmacySafetyPage initialQuery="  Metformin   XR  " goToPage={mockGoToPage} />,
+  )
+
+  await waitFor(() => {
+    expect(mockSearchRecalls).toHaveBeenLastCalledWith('Metformin XR', 8, 'score')
+  })
+  expect(
+    screen.getByRole('heading', { name: /Safety review for Metformin XR/i }),
+  ).toBeInTheDocument()
+})
+
+test('shows partial Pharmacy results when one public source fails', async () => {
+  mockSearchRecalls.mockRejectedValueOnce(new Error('Recall source unavailable'))
+  renderPharmacyPage()
+
+  expect(
+    await screen.findByText(/Some public sources were unavailable/i),
+  ).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: /FAERS reporting summary/i })).toBeInTheDocument()
+  expect(screen.getByText('SOMNOLENCE')).toBeInTheDocument()
+  expect(screen.getByText('Unavailable')).toBeInTheDocument()
+})
+
+test('clears a source error after a later successful search', async () => {
+  const user = userEvent.setup()
+  mockSearchRecalls.mockRejectedValueOnce(new Error('Recall source unavailable'))
+  mockSearchDrugEvents.mockRejectedValueOnce(new Error('Drug source unavailable'))
+  renderPharmacyPage()
+
+  expect(
+    await screen.findByText(/Unable to load public records/i),
+  ).toBeInTheDocument()
+
+  await user.click(screen.getByRole('button', { name: 'Metformin' }))
+
+  await waitFor(() => {
+    expect(screen.queryByText(/Unable to load public records/i)).not.toBeInTheDocument()
+  })
+  expect(mockSearchRecalls).toHaveBeenLastCalledWith('Metformin', 8, 'score')
 })

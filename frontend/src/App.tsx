@@ -43,6 +43,7 @@ import AskDavAIChat from './components/AskDavAIChat'
 import FloatingSafetyReportIntake from './components/FloatingSafetyReportIntake'
 import type { ActivePage, ActiveSection } from './types/navigation'
 import { infoPages } from './data/infoPages'
+import { normalizeSearchTerm } from './utils/safetyRouteClassifier'
 
 function getInitialPage(): ActivePage {
   const params = new URLSearchParams(window.location.search)
@@ -71,6 +72,10 @@ function getInitialPage(): ActivePage {
   return 'home'
 }
 
+function getInitialSafetyQuery() {
+  return normalizeSearchTerm(new URLSearchParams(window.location.search).get('q') ?? '')
+}
+
 function updatePageInUrl(page: ActivePage, safetyQuery?: string) {
   const url = new URL(window.location.href)
 
@@ -81,26 +86,30 @@ function updatePageInUrl(page: ActivePage, safetyQuery?: string) {
   } else {
     url.searchParams.set('page', page)
 
-    if (safetyQuery?.trim()) {
-      url.searchParams.set('q', safetyQuery.trim())
+    const normalizedQuery = normalizeSearchTerm(safetyQuery ?? '')
+
+    if (normalizedQuery) {
+      url.searchParams.set('q', normalizedQuery)
     } else {
       url.searchParams.delete('q')
     }
   }
 
-  window.history.replaceState(null, '', url.toString())
+  if (url.toString() !== window.location.href) {
+    window.history.pushState(null, '', url.toString())
+  }
 }
 
 function App() {
   const [activePage, setActivePage] = useState<ActivePage>(() => getInitialPage())
   const [activeSection, setActiveSection] = useState<ActiveSection>('home')
+  const [safetyQuery, setSafetyQuery] = useState(() => getInitialSafetyQuery())
   const [assistantContext] = useState<AssistantChatContext | null>(null)
-
-  const safetyQuery = new URLSearchParams(window.location.search).get('q') ?? ''
 
   useEffect(() => {
     function handlePopState() {
       setActivePage(getInitialPage())
+      setSafetyQuery(getInitialSafetyQuery())
       setActiveSection('home')
     }
 
@@ -113,6 +122,7 @@ function App() {
 
   function goHome() {
     setActivePage('home')
+    setSafetyQuery('')
     setActiveSection('home')
     updatePageInUrl('home')
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -120,6 +130,7 @@ function App() {
 
   function goToRecallRadar() {
     setActivePage('pharmacy-safety')
+    setSafetyQuery('')
     setActiveSection('recallradar')
     updatePageInUrl('pharmacy-safety')
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -127,6 +138,7 @@ function App() {
 
   function goToDrugSignal() {
     setActivePage('pharmacy-safety')
+    setSafetyQuery('')
     setActiveSection('drugsignal')
     updatePageInUrl('pharmacy-safety')
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -134,6 +146,7 @@ function App() {
 
   function goToFoodRadar() {
     setActivePage('food-safety')
+    setSafetyQuery('')
     setActiveSection('foodradar')
     updatePageInUrl('food-safety')
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -141,15 +154,18 @@ function App() {
 
   function goToCosmeticSignal() {
     setActivePage('cosmetic-safety')
+    setSafetyQuery('')
     setActiveSection('cosmeticsignal')
     updatePageInUrl('cosmetic-safety')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   function goToPage(page: ActivePage, safetyQuery?: string) {
+    const normalizedQuery = normalizeSearchTerm(safetyQuery ?? '')
     setActivePage(page)
+    setSafetyQuery(normalizedQuery)
     setActiveSection('home')
-    updatePageInUrl(page, safetyQuery)
+    updatePageInUrl(page, normalizedQuery)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -193,17 +209,22 @@ function App() {
       )}
 
       {activePage === 'pharmacy-safety' && (
-        <PharmacySafetyPage initialQuery={safetyQuery} />
+        <PharmacySafetyPage initialQuery={safetyQuery} goToPage={goToPage} />
       )}
 
       {activePage === 'food-safety' && (
-        <FoodSafetyPage initialQuery={safetyQuery} goToFoodRadar={goToFoodRadar} />
+        <FoodSafetyPage
+          initialQuery={safetyQuery}
+          goToFoodRadar={goToFoodRadar}
+          goToPage={goToPage}
+        />
       )}
 
       {activePage === 'cosmetic-safety' && (
         <CosmeticSafetyPage
           initialQuery={safetyQuery}
           goToCosmeticSignal={goToCosmeticSignal}
+          goToPage={goToPage}
         />
       )}
 
