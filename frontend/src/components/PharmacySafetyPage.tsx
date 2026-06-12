@@ -389,6 +389,17 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
             ))}
           </div>
 
+          {typoSuggestion && hasZeroResults && !loading && (
+            <div className="pharmacy-typo-suggestion" role="status" aria-live="polite">
+              <span>
+                Spelling suggestion: did you mean <strong>{typoSuggestion}</strong>?
+              </span>
+              <button type="button" onClick={() => handleTypoSuggestion(typoSuggestion)}>
+                Use {typoSuggestion}
+              </button>
+            </div>
+          )}
+
           <p className="pharmacy-source-line">
             <span aria-hidden="true" />
             <strong>Public FDA records</strong>
@@ -442,11 +453,6 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
             No public records returned for this exact search. Check spelling or try a
             simpler/generic term.
           </span>
-          {typoSuggestion && (
-            <button type="button" onClick={() => handleTypoSuggestion(typoSuggestion)}>
-              Did you mean {typoSuggestion}?
-            </button>
-          )}
         </aside>
       )}
 

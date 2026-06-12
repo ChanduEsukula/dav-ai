@@ -311,7 +311,11 @@ test('shows zero-result spelling guidance and runs the hardcoded typo correction
     await screen.findByText(/No public records returned for this exact search/i),
   ).toBeInTheDocument()
 
-  await user.click(screen.getByRole('button', { name: /Did you mean Metformin/i }))
+  expect(
+  screen.getByText(/Spelling suggestion: did you mean/i),
+).toBeInTheDocument()
+
+await user.click(screen.getByRole('button', { name: /Use Metformin/i }))
 
   await waitFor(() => {
     expect(mockSearchRecalls).toHaveBeenLastCalledWith('Metformin', 8, 'score')
