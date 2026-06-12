@@ -30,17 +30,35 @@ test('renders Dav AI landing page', () => {
     }),
   ).toBeInTheDocument()
 
+  expect(
+    screen.getByRole('button', {
+      name: /CosmeticSignal.*Cosmetic safety records/i,
+    }),
+  ).toBeInTheDocument()
+
   expect(screen.getByRole('button', { name: /How it works/i })).toBeInTheDocument()
 
   expect(
-    screen.getByRole('heading', { name: /Search public FDA recall signals/i }),
+    screen.getByRole('heading', { name: /Choose a safety lens/i }),
   ).toBeInTheDocument()
 
   expect(
-    screen.getByRole('heading', {
+    screen.getByRole('heading', { name: /Search across Dav AI records/i }),
+  ).toBeInTheDocument()
+
+  expect(
+    screen.getByRole('heading', { name: /Public-data intelligence at a glance/i }),
+  ).toBeInTheDocument()
+
+  expect(
+    screen.queryByRole('heading', { name: /Search public FDA recall signals/i }),
+  ).not.toBeInTheDocument()
+
+  expect(
+    screen.queryByRole('heading', {
       name: /Explore public FAERS adverse-event reporting patterns/i,
     }),
-  ).toBeInTheDocument()
+  ).not.toBeInTheDocument()
 })
 
 test('does not expose placeholder account pages in the main demo navigation', () => {

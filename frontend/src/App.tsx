@@ -17,22 +17,20 @@ import './styles/briefing.css'
 import './styles/audit-history.css'
 import './styles/operational-overview.css'
 import './styles/safety-workspace.css'
+import './styles/universal-safety-search.css'
+import './styles/safety-area-pages.css'
 import './styles/ask-dav-ai.css'
 import './styles/search-glass.css'
-import {
-  buildRecallAssistantContext,
-  type AssistantChatContext,
-} from './api/assistant'
-import { searchRecalls, type RecallSearchResponse, type RecallSort } from './api/recalls'
+import type { AssistantChatContext } from './api/assistant'
 import Navbar from './components/Navbar'
+import UniversalSafetySearch from './components/UniversalSafetySearch'
+import PharmacySafetyPage from './components/PharmacySafetyPage'
+import FoodSafetyPage from './components/FoodSafetyPage'
+import CosmeticSafetyPage from './components/CosmeticSafetyPage'
 import Hero from './components/Hero'
 import SafetyWorkspace from './components/SafetyWorkspace'
 import OperationalOverview from './components/OperationalOverview'
 import Signals from './components/Signals'
-import RecallRadar from './components/RecallRadar'
-import DrugSignal from './components/DrugSignal'
-import FoodRadar from './components/FoodRadar'
-import CosmeticSignal from './components/CosmeticSignal'
 import DataSourcesPage from './components/DataSourcesPage'
 import AuditHistoryPage from './components/AuditHistoryPage'
 import SystemStatusPage from './components/SystemStatusPage'
@@ -51,6 +49,9 @@ function getInitialPage(): ActivePage {
   const page = params.get('page')
 
   if (
+    page === 'pharmacy-safety' ||
+    page === 'food-safety' ||
+    page === 'cosmetic-safety' ||
     page === 'sources' ||
     page === 'audit' ||
     page === 'system' ||
@@ -70,14 +71,21 @@ function getInitialPage(): ActivePage {
   return 'home'
 }
 
-function updatePageInUrl(page: ActivePage) {
+function updatePageInUrl(page: ActivePage, safetyQuery?: string) {
   const url = new URL(window.location.href)
 
   if (page === 'home') {
     url.searchParams.delete('page')
     url.searchParams.delete('audit_id')
+    url.searchParams.delete('q')
   } else {
     url.searchParams.set('page', page)
+
+    if (safetyQuery?.trim()) {
+      url.searchParams.set('q', safetyQuery.trim())
+    } else {
+      url.searchParams.delete('q')
+    }
   }
 
   window.history.replaceState(null, '', url.toString())
@@ -86,11 +94,9 @@ function updatePageInUrl(page: ActivePage) {
 function App() {
   const [activePage, setActivePage] = useState<ActivePage>(() => getInitialPage())
   const [activeSection, setActiveSection] = useState<ActiveSection>('home')
-  const [query, setQuery] = useState('')
-  const [data, setData] = useState<RecallSearchResponse | null>(null)
-  const [assistantContext, setAssistantContext] = useState<AssistantChatContext | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [assistantContext] = useState<AssistantChatContext | null>(null)
+
+  const safetyQuery = new URLSearchParams(window.location.search).get('q') ?? ''
 
   useEffect(() => {
     function handlePopState() {
@@ -105,23 +111,6 @@ function App() {
     }
   }, [])
 
-  async function handleSearch(sort: RecallSort = 'score') {
-    if (!query.trim() || loading) return
-
-    setLoading(true)
-    setError('')
-
-    try {
-      const result = await searchRecalls(query.trim(), 5, sort)
-      setData(result)
-      setAssistantContext(buildRecallAssistantContext(result))
-    } catch {
-      setError('Unable to load recall data. Make sure the FastAPI backend is running on port 8000.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   function goHome() {
     setActivePage('home')
     setActiveSection('home')
@@ -130,61 +119,37 @@ function App() {
   }
 
   function goToRecallRadar() {
-    setActivePage('home')
+    setActivePage('pharmacy-safety')
     setActiveSection('recallradar')
-    updatePageInUrl('home')
-
-    setTimeout(() => {
-      document.getElementById('recallradar')?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      })
-    }, 80)
+    updatePageInUrl('pharmacy-safety')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   function goToDrugSignal() {
-    setActivePage('home')
+    setActivePage('pharmacy-safety')
     setActiveSection('drugsignal')
-    updatePageInUrl('home')
-
-    setTimeout(() => {
-      document.getElementById('drugsignal')?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      })
-    }, 80)
+    updatePageInUrl('pharmacy-safety')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   function goToFoodRadar() {
-    setActivePage('home')
+    setActivePage('food-safety')
     setActiveSection('foodradar')
-    updatePageInUrl('home')
-
-    setTimeout(() => {
-      document.getElementById('foodradar')?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      })
-    }, 80)
+    updatePageInUrl('food-safety')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   function goToCosmeticSignal() {
-    setActivePage('home')
+    setActivePage('cosmetic-safety')
     setActiveSection('cosmeticsignal')
-    updatePageInUrl('home')
-
-    setTimeout(() => {
-      document.getElementById('cosmeticsignal')?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      })
-    }, 80)
+    updatePageInUrl('cosmetic-safety')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  function goToPage(page: ActivePage) {
+  function goToPage(page: ActivePage, safetyQuery?: string) {
     setActivePage(page)
     setActiveSection('home')
-    updatePageInUrl(page)
+    updatePageInUrl(page, safetyQuery)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -204,7 +169,7 @@ function App() {
       {activePage === 'home' && (
         <>
           <Hero
-            data={data}
+            data={null}
             goToRecallRadar={goToRecallRadar}
             goToDrugSignal={goToDrugSignal}
             goToFoodRadar={goToFoodRadar}
@@ -219,29 +184,27 @@ function App() {
             goToCosmeticSignal={goToCosmeticSignal}
           />
 
+          <UniversalSafetySearch goToPage={goToPage} />
+
           <OperationalOverview />
-
-          <RecallRadar
-            query={query}
-            setQuery={setQuery}
-            data={data}
-            loading={loading}
-            error={error}
-            handleSearch={handleSearch}
-          />
-
-          <DrugSignal onAssistantContextChange={setAssistantContext} />
-
-          <section id="foodradar">
-            <FoodRadar onAssistantContextChange={setAssistantContext} />
-          </section>
-
-          <section id="cosmeticsignal">
-            <CosmeticSignal onAssistantContextChange={setAssistantContext} />
-          </section>
 
           <Signals />
         </>
+      )}
+
+      {activePage === 'pharmacy-safety' && (
+        <PharmacySafetyPage initialQuery={safetyQuery} />
+      )}
+
+      {activePage === 'food-safety' && (
+        <FoodSafetyPage initialQuery={safetyQuery} goToFoodRadar={goToFoodRadar} />
+      )}
+
+      {activePage === 'cosmetic-safety' && (
+        <CosmeticSafetyPage
+          initialQuery={safetyQuery}
+          goToCosmeticSignal={goToCosmeticSignal}
+        />
       )}
 
       {activePage === 'sources' && <DataSourcesPage />}
