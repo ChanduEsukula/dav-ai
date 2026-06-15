@@ -195,7 +195,7 @@ function CosmeticSignal({ onAssistantContextChange }: CosmeticSignalProps) {
 
               <div>
                 <small>Data confidence</small>
-                <span>{data.signal_score.data_confidence}</span>
+                <span>{data.count > 0 ? data.signal_score.data_confidence : 'Not assessable'}</span>
               </div>
 
               <div>

@@ -1,13 +1,8 @@
-import type { ActivePage, ActiveSection } from '../types/navigation'
+import type { ActivePage } from '../types/navigation'
 
 type NavbarProps = {
   activePage: ActivePage
-  activeSection: ActiveSection
   goHome: () => void
-  goToRecallRadar: () => void
-  goToDrugSignal: () => void
-  goToFoodRadar: () => void
-  goToCosmeticSignal: () => void
   goToPage: (page: ActivePage) => void
 }
 
@@ -20,46 +15,33 @@ type NavItem = {
 
 function Navbar({
   activePage,
-  activeSection,
   goHome,
-  goToRecallRadar,
-  goToDrugSignal,
-  goToFoodRadar,
-  goToCosmeticSignal,
   goToPage,
 }: NavbarProps) {
-  const isHomeActive = activePage === 'home' && activeSection === 'home'
-
   const primaryNavItems: NavItem[] = [
     {
       id: 'home',
       label: 'Home',
-      isActive: isHomeActive,
+      isActive: activePage === 'home',
       onClick: goHome,
     },
     {
-      id: 'recallradar',
-      label: 'RecallRadar',
-      isActive: activePage === 'home' && activeSection === 'recallradar',
-      onClick: goToRecallRadar,
+      id: 'pharmacy-safety',
+      label: 'Pharmacy Safety',
+      isActive: activePage === 'pharmacy-safety',
+      onClick: () => goToPage('pharmacy-safety'),
     },
     {
-      id: 'drugsignal',
-      label: 'DrugSignal',
-      isActive: activePage === 'home' && activeSection === 'drugsignal',
-      onClick: goToDrugSignal,
+      id: 'food-safety',
+      label: 'Food Safety',
+      isActive: activePage === 'food-safety',
+      onClick: () => goToPage('food-safety'),
     },
     {
-      id: 'foodradar',
-      label: 'FoodRadar',
-      isActive: activePage === 'home' && activeSection === 'foodradar',
-      onClick: goToFoodRadar,
-    },
-    {
-      id: 'cosmeticsignal',
-      label: 'CosmeticSignal',
-      isActive: activePage === 'home' && activeSection === 'cosmeticsignal',
-      onClick: goToCosmeticSignal,
+      id: 'cosmetic-safety',
+      label: 'Cosmetic Safety',
+      isActive: activePage === 'cosmetic-safety',
+      onClick: () => goToPage('cosmetic-safety'),
     },
     {
       id: 'saved-monitors',

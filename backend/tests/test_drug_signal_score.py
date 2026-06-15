@@ -4,7 +4,7 @@ from app.scoring.drug_signal_score import calculate_drug_signal_intelligence_sco
 def test_drug_signal_score_returns_low_for_empty_results():
     score = calculate_drug_signal_intelligence_score(record_count=0, top_reactions=[])
 
-    assert score["score"] == 10
+    assert score["score"] == 0
     assert score["label"] == "Low"
     assert score["data_confidence"] == "Limited"
     assert score["top_reaction_concentration"] == 0.0

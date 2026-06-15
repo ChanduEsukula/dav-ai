@@ -1,416 +1,190 @@
-# DAV AI Current Status — June 2026
+# DAV AI Current Status - June 15, 2026
 
-**Status date:** June 2026  
-**Current product name:** DAV AI  
-**Recommended tagline:** Public-data safety intelligence, grounded in source provenance.  
-**Current branch when created:** `docs/current-dav-ai-status-refresh`  
-**Purpose:** This document is the current source-of-truth status note for DAV AI. Older milestone documents may contain historical names, stale test counts, older migration heads, or roadmap items that are not implemented.
+**Branch:** `feature/universal-safety-search`
+**Baseline commit:** `226d499`
+**Status:** Demo-stabilized portfolio prototype
+**Source of truth:** Executable code and the validation results in this document
 
----
+## Product Positioning
 
-## 1. Product Identity
+DAV AI is a full-stack public-data safety intelligence prototype. It helps users
+search and review public FDA/openFDA and USDA safety records with visible source,
+retrieval, audit, and scoring context.
 
-DAV AI is an everyday safety intelligence platform that helps users search, explain, monitor, and audit safety signals from public data sources.
+The application is not a medical device, clinical decision-support system, safety
+guarantee, production monitoring service, or production AI platform.
 
-The project started from earlier MedSignal AI / MedTrek AI healthcare-safety concepts and has now evolved into DAV AI. Older references to MedSignal AI or MedTrek AI should be treated as historical planning context unless they appear in executable code that still needs cleanup.
+Current production behavior is primarily deterministic and rules-based. Offline ML
+experiments are not connected to live routes. No production RAG, vector database,
+OCR, ProductScan, or general-purpose LLM workflow is implemented.
 
-DAV AI should be described as:
+## Canonical Routed Experience
 
-> A full-stack public-data safety intelligence prototype that normalizes FDA, USDA, and related public safety records into explainable search, reporting, monitoring, and audit workflows.
+The consolidated pages are the canonical product surfaces:
 
-DAV AI should **not** currently be described as:
+1. **Pharmacy Safety**
+   - Combines official drug recall records and public FAERS reporting patterns.
+   - Keeps recall and adverse-event evidence visibly separate.
+   - Does not treat FAERS reports as proof of causation.
 
-- a production healthcare AI platform
-- a medical device
-- clinical decision support
-- a diagnosis or treatment system
-- a production ML risk-prediction platform
-- a fully commercialized product
-- a ProductScan/OCR/image-upload product
+2. **Food Safety**
+   - Reviews FDA food enforcement and USDA FSIS recall/public-health-alert records.
+   - Covers food, supplements, meat, poultry, and egg-product searches.
 
----
+3. **Cosmetic Safety**
+   - Reviews public cosmetic-event reports, reactions, outcomes, and product context.
+   - Does not treat reports as proof that a cosmetic caused an event.
 
-## 2. Current High-Level Status
+Internal names such as RecallRadar, DrugSignal, FoodRadar, and CosmeticSignal still
+appear in API payloads, audit records, report modules, and implementation details.
+They are not separate routed pages in the current application.
 
-DAV AI is a credible, demo-ready, portfolio-grade prototype.
+## What Works
 
-The strongest parts of the project are:
+- Universal keyword-based safety search and category routing.
+- Query normalization, typo suggestions for a controlled term list, and category hints.
+- Consolidated Pharmacy, Food, and Cosmetic safety pages.
+- Partial Pharmacy results when one of its two public sources fails.
+- Recall review-priority sorting and compact record disclosures.
+- Zero-result safety language that avoids declaring a product safe.
+- Source registry, source metadata, request IDs, audit events, and source-pull snapshots.
+- SHA-256 payload hashes and provenance/status surfaces.
+- Audit History, Data Sources, and System Status pages.
+- PDF report generation for supported internal workflows.
+- Manual Saved Monitor checks for RecallRadar, DrugSignal, FoodRadar, and Regional
+  Health Pulse.
+- Deterministic monitor insights and saved-monitor run history.
+- Regional Health Pulse sample/scaffold workflow with explicit limitations.
 
-- public data source integration
-- normalized safety search workflows
-- deterministic and explainable scoring
-- source transparency
-- audit history
-- raw snapshot/provenance concepts
-- saved monitor foundations
-- PDF/report generation
-- bounded assistant architecture
-- frontend safety modules
-- backend/frontend test coverage
-
-The project is **not yet production-ready** because it still needs:
-
-- authentication
-- user ownership
-- tenant/workspace isolation
-- privacy controls
-- deletion/export controls
-- rate limiting
-- stronger source retries/backoff
-- production observability
-- production alert delivery
-- verified deployment smoke testing
-- real user validation
-
----
-
-## 3. Current Verification Snapshot
-
-Use executable evidence over older documentation when numbers differ.
-
-Current verified status from the June 2026 repo review, assistant integration, and Phase 1 UI polish:
-
-| Area | Current Status |
-|---|---|
-| Backend tests | 273 passed |
-| Frontend tests | 75 passed |
-| Frontend lint | Passed |
-| TypeScript no-emit | Passed |
-| Current merged report-intake fix | PR #91 |
-| Current Ask DAV AI multi-module context | PR #95 |
-| Current Phase 1 UI polish | PRs #96, #97, #98 |
-| Current main after Phase 1 polish | `0ef5625` |
-| Report intake 422 bug | Fixed in PR #91 |
-| ProductScan | Roadmap only, not implemented |
-
-Older docs may mention 260 or 263 backend tests. Those are historical counts and should not be treated as current.
-
----
-
-## 4. Current Implemented Modules
-
-### RecallRadar
-
-**Status:** Implemented and demo-ready.
-
-RecallRadar searches public FDA/openFDA drug recall-style data, normalizes recall records, applies deterministic scoring, shows source context, and connects to audit/report/monitor workflows.
-
-Best demo use:
-- search a drug/product
-- show normalized results
-- explain score factors
-- show source timestamps and audit trail
-
-### DrugSignal
-
-**Status:** Implemented and demo-ready with responsible limitations.
-
-DrugSignal searches adverse-event style public data, summarizes reaction patterns, applies deterministic scoring/classification, and includes non-causation disclaimers.
-
-Important limitation:
-FAERS-style reports do not prove causation. DAV AI should present them as public safety signals, not clinical proof.
-
-### FoodRadar / Everyday Safety Search
-
-**Status:** Implemented and demo-ready; hardening still needed.
-
-FoodRadar extends the safety platform beyond drugs by searching food/supplement-style safety data, including FDA/openFDA food enforcement and USDA FSIS recall-style data where available.
-
-This is a strong proof that DAV AI can support multiple public safety domains using the same provenance-first architecture.
-
-### CosmeticSignal
-
-**Status:** Implemented, partially integrated.
-
-CosmeticSignal exists as a backend/frontend safety module for cosmetic event data. It is useful, but it is less integrated than RecallRadar, DrugSignal, and FoodRadar.
-
-Known gaps:
-- not as prominent in navigation
-- less frontend test coverage
-- less connected to reports/monitors/assistant flows than primary modules
-
-### Safety Briefing Engine
-
-**Status:** Implemented prototype.
-
-The briefing engine generates structured frontend safety briefings using deterministic logic. It is useful for demos because it converts search results into a readable narrative without depending on an LLM.
-
-Current limitation:
-It should be described as a deterministic briefing generator, not a validated medical or clinical briefing system.
+## Intentionally Hidden Or Restricted
 
 ### Ask DAV AI
 
-**Status:** Bounded assistant foundation implemented.
+The floating Ask DAV AI action is hidden when no real result context is available.
+The current routed application does not yet wire consolidated page results into
+`assistantContext`, so no visible chat entry point is shown.
 
-Ask DAV AI is designed as a bounded assistant that should answer from supplied DAV AI context, with limitations and citations. It should not provide unsafe medical advice.
+The bounded assistant backend and component tests remain in the repository. They
+must not be presented as an active routed demo feature until real page context is
+connected and evaluated.
 
-Important limitation:
-The default/live provider state must be verified before claiming production LLM behavior.
+### Cosmetic Saved Monitors
 
-### Reports
+Cosmetic monitor creation is hidden in the frontend and rejected by the create API
+with HTTP 422. Database constraint and manual-run parity are incomplete.
 
-**Status:** Implemented with recent contract fix.
+Existing internal enum/scheduled-refresh code is not evidence of end-to-end support.
+Do not advertise Cosmetic Safety monitors until schema, persistence, manual runs,
+scheduled runs, UI, and tests all agree.
 
-DAV AI supports downloadable safety intelligence reports. PR #91 fixed a report-intake contract mismatch where the frontend sent `public_health` while the backend expected `public_health_analyst`.
+## Search Boundaries
 
-Current report intake now avoids unsupported options:
-- `medical_device`
-- `general_safety_briefing`
+Search is keyword-based. Users can search product, brand, generic, ingredient,
+category, or reaction wording where supported by the relevant public source.
 
-Those options should not be shown as implemented report types unless real backend behavior is added.
+DAV AI does not currently provide guaranteed exact UPC, NDC, barcode, package-code,
+or lot-number matching. Returned records may contain these fields for verification,
+but the current source queries are not identifier-aware lookup services.
 
-### Audit History and Provenance
+Search result counts represent records returned and processed within configured
+source limits. They are not complete incidence, prevalence, exposure, or market-size
+counts.
 
-**Status:** Strong differentiator.
+## Scoring Boundaries
 
-Audit history, source pull tracking, and raw snapshot concepts are among the strongest senior-engineering features in the repo. They support traceability, source grounding, and reviewability.
+- Recall and food records use `recall-review-priority-v0.2`.
+- Drug reporting patterns use `drug-signal-intelligence-v0.1`.
+- Cosmetic reporting patterns use `cosmetic-signal-score-v0.1`.
 
-This is one of the best portfolio talking points.
+Each workflow now uses the same version constant for its score payload, audit
+metadata, report input, and tests.
 
-### Saved Monitors
+When DrugSignal or CosmeticSignal returns zero records, the UI and PDF presentation
+show the result as unscored/not assessable. No numeric signal or confidence should be
+interpreted from an empty result.
 
-**Status:** Manual/foundation implemented; production alerting not implemented.
+All scores are deterministic review aids over returned public records. They are not
+medical-risk scores, clinical urgency estimates, causation findings, or official
+regulatory determinations.
 
-Saved monitors provide the foundation for recurring safety checks and history, but DAV AI should not yet claim real production notifications or user-owned alerting.
+## Saved Monitor Boundaries
 
-Missing before release:
-- auth
-- ownership
-- scheduler hardening
-- delivery channels
-- alert retry/deduplication
-- user notification preferences
+Saved Monitors currently support:
 
-### System Status / Data Sources
+- manual checks
+- run history
+- latest/previous comparisons
+- deterministic change insights
+- audit links
+- database persistence when configured
+- scheduler and locking foundations
 
-**Status:** Implemented transparency feature; not full production observability.
+Saved Monitors do not currently provide:
 
-The app has useful source/system visibility. However, it should not be described as complete production monitoring.
+- authenticated ownership
+- production Cron activation
+- email, SMS, push, or webhook alerts
+- delivery retries or preferences
+- production notification observability
+- tenant isolation
 
-Missing:
-- metrics backend
-- traces
-- alerts
-- SLOs
-- incident workflow
-- runbooks tied to real production operations
+The repository may use an in-memory fallback when database persistence is unavailable.
+That behavior is suitable for tests/demos, not durable production monitoring.
 
-### Regional Health
+## Not Production-Ready
 
-**Status:** Experimental/sample-data scaffold.
+The current project still lacks:
 
-Regional Health should not be treated as a live CDC/HHS-backed production integration unless such source integrations are added and verified.
+- authentication, RBAC, and user ownership
+- tenant/workspace isolation
+- retention, deletion, and export controls
+- rate limiting and abuse protection
+- robust upstream retries, backoff, caching, and circuit breaking
+- guaranteed database durability and connection pooling
+- production scheduler activation and alert delivery
+- production metrics, traces, SLOs, and incident response
+- deployed-environment and live-source release verification
+- clinical validation or regulatory review
 
-### ProductScan
+No PHI or personal medical information should be entered.
 
-**Status:** Planned only.
+## Validation Snapshot
 
-ProductScan is currently a roadmap concept. It is not implemented as a working route, UI, upload system, OCR/barcode pipeline, storage layer, or test suite.
+Validation completed locally on June 15, 2026:
 
-Do not claim ProductScan is built.
+| Check | Result |
+|---|---|
+| Backend pytest | **277 passed** |
+| Frontend Vitest | **17 files, 148 tests passed** |
+| Frontend ESLint | **Passed** |
+| TypeScript and Vite production build | **Passed; 126 modules transformed** |
+| Playwright Chromium smoke test | **1 passed** |
+| `git diff --check` | **Passed** |
 
----
+The Playwright smoke path verifies:
 
-## 5. Current AI/ML Status
+`Home -> Pharmacy Safety -> Food Safety -> Cosmetic Safety -> Sources -> Audit`
 
-DAV AI’s current intelligence is mostly deterministic and rules-based. That is appropriate for a safety-focused MVP because explainability and source grounding matter more than black-box predictions.
+The in-app visual browser was unavailable during this sprint. Chromium Playwright
+provided the executable browser check instead.
 
-Current AI/ML-related elements:
+## Recommended Demo Story
 
-| Capability | Current Technique | Status |
-|---|---|---|
-| Recall scoring | deterministic rules | implemented |
-| Drug signal scoring | deterministic rules | implemented |
-| Briefings | deterministic templates | implemented prototype |
-| Ask DAV AI | bounded assistant architecture | foundation implemented |
-| Semantic preview | lightweight similarity | experimental |
-| ProductScan/OCR | roadmap | not implemented |
-| Production ML model | none verified | not implemented |
+1. Introduce DAV AI as a source-backed public-record review prototype.
+2. Open Pharmacy Safety and explain the difference between recalls and FAERS reports.
+3. Open Food Safety and show FDA/USDA source coverage.
+4. Open Cosmetic Safety and emphasize reporting/causation boundaries.
+5. Open Sources and Audit to demonstrate provenance.
+6. Mention reports and supported manual monitors as extension workflows.
 
-DAV AI should be described as a responsible AI/full-stack safety intelligence prototype, not as a finished production ML platform.
+Do not demo Ask DAV AI or Cosmetic monitor creation in the current routed branch.
 
----
+## Honest Portfolio Summary
 
-## 6. What Was Fixed in PR #91
+DAV AI demonstrates full-stack engineering, public API integration, deterministic
+scoring, source provenance, audit design, persistence foundations, PDF generation,
+testing, and responsible safety boundaries.
 
-PR #91 fixed the report intake audience contract.
-
-Before:
-- Frontend used `public_health`
-- Backend expected `public_health_analyst`
-- Public-health report selection could produce HTTP 422
-
-After:
-- Frontend uses `public_health_analyst`
-- Visible label remains user-friendly as “Public-health analyst”
-- Unsupported report type options were removed from the floating report intake UI
-
-Validation:
-- Frontend tests: 75 passed
-- Frontend lint: passed
-- TypeScript no-emit: passed
-- Backend tests: 273 passed
-
----
-
-## 7. Current Known Gaps
-
-### Product and UX
-
-- Too many modules can make the product story feel broad.
-- Primary user workflow still needs validation.
-- Some older docs may overstate production readiness.
-- ProductScan should remain clearly marked as future roadmap.
-
-### Backend
-
-- No auth, RBAC, user ownership, or tenant isolation.
-- External source calls need stronger retry/backoff/rate-limit behavior.
-- Database concurrency and pooling should be reviewed.
-- Error handling should become more structured.
-- Production configuration and secrets handling need hardening.
-
-### Frontend
-
-- Some components are large.
-- Routing can be improved.
-- More frontend tests are still useful for FoodRadar, CosmeticSignal, and Data Sources. Report intake is now covered by PR #93.
-- Accessibility and error-state testing should be expanded.
-
-### AI/ML
-
-- No validated production ML model exists.
-- Ask DAV AI needs evaluation before production claims.
-- Semantic features are experimental.
-- OCR/ProductScan should not be started before core hardening.
-
-### Documentation
-
-- Several docs contain stale test counts such as 260 or 263 backend tests.
-- Several docs reference older migration heads such as `20260519_0005`.
-- Older docs mention ProductScan as roadmap; this must not be mistaken for implementation.
-- README is large and may contain historical status mixed with current status.
-
----
-
-## 8. Current Demo Story
-
-Recommended 3-minute demo:
-
-1. Introduce DAV AI:
-   - “DAV AI is a public-data safety intelligence prototype grounded in source provenance.”
-
-2. Show RecallRadar:
-   - Search a drug/product recall topic.
-   - Explain normalized results, score factors, and source timestamps.
-
-3. Show DrugSignal:
-   - Search an adverse-event topic.
-   - Emphasize non-causation and public-data boundaries.
-
-4. Show FoodRadar:
-   - Demonstrate broader everyday safety use beyond drugs.
-
-5. Show Audit History:
-   - Explain traceability, source metadata, transformations, and evidence continuity.
-
-6. Show Reports:
-   - Generate/download a report using supported report types only.
-
-7. Close with next steps:
-   - auth, ownership, source reliability, observability, and real user validation.
-
-Avoid during demo:
-- claiming ProductScan is implemented
-- claiming production medical advice
-- claiming clinical validation
-- claiming real production alerting
-- claiming current deployment without rechecking it first
-
----
-
-## 9. Recommended Next Engineering Priorities
-
-### Priority 1: Documentation source-of-truth cleanup
-
-Keep this document as the current status reference. Update README to point here and reduce reliance on stale milestone docs.
-
-### Completed: Frontend report-intake tests
-
-PR #93 added dedicated frontend tests for the floating report intake to verify:
-- `public_health_analyst` is used
-- unsupported report types are not displayed
-- valid payload reaches the report API wrapper
-
-### Priority 3: Source reliability hardening
-
-Add shared source-client policies:
-- timeout
-- retry
-- backoff
-- clear error typing
-- source-level failure behavior
-
-### Priority 4: Auth and ownership plan
-
-Before production monitors or saved reports:
-- define user model
-- define workspace ownership
-- define data retention/deletion/export
-- define private vs public data boundaries
-
-### Priority 5: Pick one primary user workflow
-
-Validate one workflow with real users before adding more modules.
-
-Best candidates:
-- consumer recall report
-- pharmacy/clinic recall monitor
-- public-data safety research audit trail
-
----
-
-## 10. Current Portfolio Positioning
-
-Best honest portfolio statement:
-
-> Built DAV AI, a full-stack public-data safety intelligence prototype that normalizes FDA and USDA safety records into explainable search, reporting, monitoring, and audit workflows. Designed bounded AI assistance with source citations and safety guardrails while preserving retrieval and transformation provenance.
-
-Avoid these claims:
-
-- “production healthcare AI platform”
-- “medical device”
-- “clinical decision support”
-- “real-time alerting system”
-- “trained ML risk predictor”
-- “OCR/ProductScan implemented”
-- “fully commercial-ready product”
-
----
-
-## 11. Final Current Verdict
-
-DAV AI is a strong portfolio-grade full-stack and responsible-AI prototype.
-
-It is demo-ready and technically credible because it has:
-- working public safety modules
-- source-grounded workflows
-- audit/provenance features
-- report generation
-- saved monitor foundations
-- bounded assistant architecture
-- strong passing test suites
-
-It is not production-ready yet because it lacks:
-- authentication
-- ownership
-- privacy controls
-- source reliability hardening
-- observability
-- real notifications
-- user validation
-- production governance
-
-The next best direction is not more feature expansion. The next best direction is:
-
-> narrow, harden, validate, then add ownership-backed monitoring.
+Its strongest interview story is not autonomous AI. It is the engineering decision
+to make public-data transformations inspectable, versioned, testable, and explicit
+about what the evidence cannot prove.

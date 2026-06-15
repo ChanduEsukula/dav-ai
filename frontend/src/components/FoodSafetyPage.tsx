@@ -16,7 +16,6 @@ import {
 
 type FoodSafetyPageProps = {
   initialQuery: string
-  goToFoodRadar: () => void
   goToPage: (page: ActivePage, query?: string) => void
 }
 
@@ -272,7 +271,7 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
     if (!cleanInput && !cleanSubmittedQuery) {
       setError('')
       setHelper(
-        'Enter a food, supplement, brand, UPC, lot, or ingredient to search public records.',
+        'Enter a food, supplement, brand, ingredient, or product wording to search public records.',
       )
       return
     }
@@ -364,7 +363,7 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
                   setQuery(event.target.value)
                   if (helper) setHelper('')
                 }}
-                placeholder="Search another food, supplement, UPC, lot, or brand"
+                placeholder="Search another food, supplement, brand, or ingredient"
               />
               <button type="submit" disabled={loading}>
                 {loading ? 'Checking...' : 'Search'}
@@ -557,7 +556,7 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
               <p>
                 {hasWrongCategoryOnly
                   ? `Open ${wrongCategorySuggestion?.label} to review the more relevant public records for this search.`
-                  : 'Check spelling or try a simpler product, brand, ingredient, UPC, lot, or code term. No result does not prove a food or supplement is safe.'}
+                  : 'Check spelling or try a simpler product, brand, ingredient, or category term. No result does not prove a food or supplement is safe.'}
               </p>
             </div>
           ) : (

@@ -244,7 +244,7 @@ test('shows no-results state with safety language', async () => {
     },
     intelligence_score: {
       ...mockResponse.intelligence_score,
-      score: 10,
+      score: 0,
       label: 'Low',
       data_confidence: 'Limited',
       top_reaction_concentration: 0,
@@ -281,6 +281,11 @@ test('shows no-results state with safety language', async () => {
   expect(
     screen.getByRole('heading', { name: /Consumer briefing/i })
   ).toBeInTheDocument()
+
+  expect(screen.getByRole('heading', { name: 'Not assessed' })).toBeInTheDocument()
+  expect(screen.getByText('Not assessable')).toBeInTheDocument()
+  expect(screen.queryByText(/0\s*\/\s*100/i)).not.toBeInTheDocument()
+  expect(screen.queryByText('Limited')).not.toBeInTheDocument()
 
   expect(screen.getByText(/Safety Briefing Engine v2/i)).toBeInTheDocument()
 

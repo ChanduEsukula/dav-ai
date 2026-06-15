@@ -26,19 +26,19 @@ const moduleLabels: Record<SavedMonitorModule, string> = {
   regional_health_pulse: "Regional Health Pulse",
 };
 
-const moduleQueryHelp: Record<SavedMonitorModule, string> = {
+type CreatableSavedMonitorModule = Exclude<SavedMonitorModule, "cosmeticsignal">;
+
+const moduleQueryHelp: Record<CreatableSavedMonitorModule, string> = {
   recallradar: "Example: eye drops, insulin, metformin, or aspirin",
   drugsignal: "Example: metformin, aspirin, ibuprofen, or insulin",
   foodradar: "Example: chicken, protein powder, peanut butter, spinach, or salmonella",
-  cosmeticsignal: "Example: sunscreen, hair dye, face cream, fragrance, rash, or irritation",
   regional_health_pulse: "Use format: MN respiratory. Example: MN respiratory or MN hospital pressure",
 };
 
-const modulePlaceholders: Record<SavedMonitorModule, string> = {
+const modulePlaceholders: Record<CreatableSavedMonitorModule, string> = {
   recallradar: "eye drops",
   drugsignal: "metformin",
   foodradar: "chicken",
-  cosmeticsignal: "sunscreen",
   regional_health_pulse: "MN respiratory",
 };
 
@@ -175,7 +175,7 @@ export default function SavedMonitorsPage() {
   const [monitors, setMonitors] = useState<SavedMonitor[]>([]);
   const [name, setName] = useState("");
   const [query, setQuery] = useState("");
-  const [module, setModule] = useState<SavedMonitorModule>("recallradar");
+  const [module, setModule] = useState<CreatableSavedMonitorModule>("recallradar");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [runningMonitorId, setRunningMonitorId] = useState<string | null>(null);
@@ -347,8 +347,8 @@ export default function SavedMonitorsPage() {
         <p className="eyebrow">Saved Monitors</p>
         <h1 id="saved-monitors-title">Saved Monitors</h1>
         <p>
-          Save repeatable RecallRadar, DrugSignal, FoodRadar, CosmeticSignal, or Regional Health
-          Pulse searches, run checks manually, compare changes over time, and review deterministic
+          Save repeatable drug recall, adverse-event, food recall, or Regional Health Pulse
+          searches, run checks manually, compare changes over time, and review deterministic
           monitor insights based on stored public-data history.
         </p>
       </div>
@@ -383,13 +383,12 @@ export default function SavedMonitorsPage() {
             id="monitor-module"
             value={module}
             onChange={(event) =>
-              setModule(event.target.value as SavedMonitorModule)
+              setModule(event.target.value as CreatableSavedMonitorModule)
             }
           >
             <option value="recallradar">RecallRadar</option>
             <option value="drugsignal">DrugSignal</option>
             <option value="foodradar">FoodRadar</option>
-            <option value="cosmeticsignal">CosmeticSignal</option>
             <option value="regional_health_pulse">Regional Health Pulse</option>
           </select>
         </div>
@@ -658,11 +657,11 @@ export default function SavedMonitorsPage() {
 
       <div className="saved-monitor-note">
         <strong>Current scope:</strong> Saved Monitors currently support manual run checks for
-        RecallRadar, DrugSignal, FoodRadar, CosmeticSignal, and Regional Health Pulse, Supabase
-        persistence, latest/previous result comparison, run history, change indicators, duplicate
-        prevention, audit linking, deterministic monitor insights, and backend scheduler-lock
-        protection. Production Cron, alert notifications, and public scheduling UI are not enabled
-        yet.
+        RecallRadar, DrugSignal, FoodRadar, and Regional Health Pulse, Supabase persistence,
+        latest/previous result comparison, run history, change indicators, duplicate prevention,
+        audit linking, deterministic monitor insights, and backend scheduler-lock protection.
+        Cosmetic monitor creation, production Cron, alert notifications, and public scheduling UI
+        are not enabled yet.
       </div>
     </section>
   );

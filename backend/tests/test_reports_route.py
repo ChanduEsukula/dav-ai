@@ -59,6 +59,7 @@ def foodradar_result_payload() -> dict:
                 "risk_score": {
                     "score": 72,
                     "label": "Elevated",
+                    "score_version": "recall-review-priority-v0.2",
                 },
             }
         ],
@@ -78,6 +79,7 @@ def cosmetic_signal_result_payload() -> dict:
             "label": "Moderate",
             "review_priority": "Monitor",
             "data_confidence": "Public reports only",
+            "score_version": "cosmetic-signal-score-v0.1",
         },
         "results": [
             {

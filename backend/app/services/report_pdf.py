@@ -650,6 +650,8 @@ def _draw_drug_signal_one_page(
     score = (drug_result or {}).get("intelligence_score") or {}
     trend = (drug_result or {}).get("trend_snapshot") or {}
     reactions = (drug_result or {}).get("top_reactions") or []
+    record_count = (drug_result or {}).get("count", 0)
+    has_records = isinstance(record_count, int) and record_count > 0
 
     score_card_width = 250
     metric_x = MARGIN + score_card_width + 12
@@ -661,10 +663,10 @@ def _draw_drug_signal_one_page(
         y_top=y,
         width=score_card_width,
         height=150,
-        score=score.get("score", "N/A"),
-        label=score.get("label", "N/A"),
-        priority=score.get("review_priority", "N/A"),
-        confidence=score.get("data_confidence", "N/A"),
+        score=score.get("score", "N/A") if has_records else "N/A",
+        label=score.get("label", "N/A") if has_records else "Not assessed",
+        priority=score.get("review_priority", "N/A") if has_records else "Verify sources",
+        confidence=score.get("data_confidence", "N/A") if has_records else "Not assessable",
     )
 
     _draw_mini_metric(
@@ -674,7 +676,7 @@ def _draw_drug_signal_one_page(
         width=metric_width,
         height=68,
         label="Records returned",
-        value=(drug_result or {}).get("count", 0),
+        value=record_count,
         note="Public FAERS-style records",
     )
 
@@ -686,7 +688,7 @@ def _draw_drug_signal_one_page(
         height=68,
         label="Trend snapshot",
         value=trend.get("label", "N/A"),
-        note="Compared with stored audit history",
+        note=_safe_text(score.get("score_version") or "Version unavailable"),
     )
 
     y -= 166
@@ -782,7 +784,11 @@ def _draw_recall_one_page(
         height=68,
         label="Recall status",
         value=first.get("status", "N/A"),
-        note="First returned record",
+        note=_safe_text(
+            review_priority.get("score_version")
+            or (recall_result or {}).get("score_version")
+            or "Version unavailable"
+        ),
     )
 
     y -= 166
@@ -888,7 +894,11 @@ def _draw_foodradar_one_page(
         height=68,
         label="Search strategy",
         value=(everyday_safety_result or {}).get("search_strategy_used", "N/A"),
-        note="FoodRadar query handling",
+        note=_safe_text(
+            review_priority.get("score_version")
+            or (everyday_safety_result or {}).get("score_version")
+            or "Version unavailable"
+        ),
     )
 
     y -= 166
@@ -1011,6 +1021,8 @@ def _draw_cosmetic_signal_one_page(
     score = (cosmetic_signal_result or {}).get("signal_score") or {}
     results = (cosmetic_signal_result or {}).get("results") or []
     first = results[0] if results else {}
+    record_count = (cosmetic_signal_result or {}).get("count", 0)
+    has_records = isinstance(record_count, int) and record_count > 0
 
     score_card_width = 250
     metric_x = MARGIN + score_card_width + 12
@@ -1022,10 +1034,10 @@ def _draw_cosmetic_signal_one_page(
         y_top=y,
         width=score_card_width,
         height=150,
-        score=score.get("score", "N/A"),
-        label=score.get("label", "N/A"),
-        priority=score.get("review_priority", "N/A"),
-        confidence=score.get("data_confidence", "N/A"),
+        score=score.get("score", "N/A") if has_records else "N/A",
+        label=score.get("label", "N/A") if has_records else "Not assessed",
+        priority=score.get("review_priority", "N/A") if has_records else "Verify sources",
+        confidence=score.get("data_confidence", "N/A") if has_records else "Not assessable",
     )
 
     _draw_mini_metric(
@@ -1035,7 +1047,7 @@ def _draw_cosmetic_signal_one_page(
         width=metric_width,
         height=68,
         label="Records returned",
-        value=(cosmetic_signal_result or {}).get("count", 0),
+        value=record_count,
         note="Public cosmetic reports",
     )
 
@@ -1046,8 +1058,8 @@ def _draw_cosmetic_signal_one_page(
         width=metric_width,
         height=68,
         label="Public signal",
-        value=score.get("label", "N/A"),
-        note="Reporting pattern only",
+        value=score.get("label", "N/A") if has_records else "Not assessed",
+        note=_safe_text(score.get("score_version") or "Version unavailable"),
     )
 
     y -= 166

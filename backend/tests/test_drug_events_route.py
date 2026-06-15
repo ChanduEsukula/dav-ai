@@ -131,6 +131,7 @@ def test_search_drug_events_returns_empty_results_for_no_matches():
     assert body["count"] == 0
     assert body["top_reactions"] == []
     assert body["intelligence_score"]["label"] == "Low"
+    assert body["intelligence_score"]["score"] == 0
     assert body["intelligence_score"]["data_confidence"] == "Limited"
     assert body["intelligence_score"]["top_reaction_concentration"] == 0.0
     assert body["reaction_categories"] == []
@@ -183,7 +184,7 @@ def test_search_drug_events_returns_502_and_persists_error_audit(monkeypatch):
     assert audit_event["upstream_status"] == "error"
     assert audit_event["record_count"] == 0
     assert audit_event["transform_version"] == "drug-event-transform-v0.1"
-    assert audit_event["score_version"] == "drug-signal-score-v0.1"
+    assert audit_event["score_version"] == "drug-signal-intelligence-v0.1"
     assert "openFDA drug event unavailable" in audit_event["error_message"]
     assert audit_event["audit_id"]
     assert audit_event["retrieval_timestamp"]

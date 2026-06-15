@@ -16,7 +16,6 @@ import {
 
 type CosmeticSafetyPageProps = {
   initialQuery: string
-  goToCosmeticSignal: () => void
   goToPage: (page: ActivePage, query?: string) => void
 }
 
@@ -516,7 +515,7 @@ function CosmeticSafetyPage({ initialQuery, goToPage }: CosmeticSafetyPageProps)
             </div>
             <div>
               <dt>Confidence</dt>
-              <dd>{data.signal_score.data_confidence}</dd>
+              <dd>{data.count > 0 ? data.signal_score.data_confidence : 'Not assessable'}</dd>
             </div>
           </dl>
         </section>
@@ -613,7 +612,9 @@ function CosmeticSafetyPage({ initialQuery, goToPage }: CosmeticSafetyPageProps)
                   </div>
                   <div>
                     <dt>Confidence</dt>
-                    <dd>{data.signal_score.data_confidence}</dd>
+                    <dd>
+                      {data.count > 0 ? data.signal_score.data_confidence : 'Not assessable'}
+                    </dd>
                   </div>
                   <div>
                     <dt>Top concentration</dt>

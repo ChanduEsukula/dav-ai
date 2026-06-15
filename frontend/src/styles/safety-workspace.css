@@ -437,10 +437,10 @@
 
 .safety-dashboard-metric strong {
   color: var(--clinical-blue);
-  font-size: 1.5rem;
+  font-size: clamp(0.88rem, 1.4vw, 1.05rem);
   font-weight: 950;
   line-height: 1;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.02em;
 }
 
 .safety-dashboard-metric--records strong {

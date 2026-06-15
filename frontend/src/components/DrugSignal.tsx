@@ -77,8 +77,14 @@ function DrugSignal({ onAssistantContextChange }: DrugSignalProps) {
         },
         {
           label: 'Reporting signal',
-          title: `${data.intelligence_score.label} public reporting signal.`,
-          detail: `DrugSignal score: ${data.intelligence_score.score}/100. Treat this as a review signal from public reports, not proof of product harm or causation.`,
+          title:
+            data.count > 0
+              ? `${data.intelligence_score.label} public reporting signal.`
+              : 'No returned FAERS reports.',
+          detail:
+            data.count > 0
+              ? `DrugSignal score: ${data.intelligence_score.score}/100. Treat this as a review signal from public reports, not proof of product harm or causation.`
+              : 'No numeric reporting signal or confidence assessment is shown when no reports are returned.',
           tone: 'review',
         },
         {
@@ -160,15 +166,22 @@ function DrugSignal({ onAssistantContextChange }: DrugSignalProps) {
           <section className="drug-intelligence-card" aria-label="DrugSignal intelligence summary">
             <div className="drug-intelligence-score">
               <p className="eyebrow">DrugSignal Intelligence</p>
-              <h3>{data.intelligence_score.score} / 100</h3>
-              <span>{data.intelligence_score.label}</span>
+              <h3>{data.count > 0 ? `${data.intelligence_score.score} / 100` : 'Not assessed'}</h3>
+              <span>
+                {data.count > 0 ? data.intelligence_score.label : 'No returned-report signal'}
+              </span>
             </div>
 
             <div className="drug-intelligence-copy">
-              <h4>{data.intelligence_score.label} public reporting signal</h4>
+              <h4>
+                {data.count > 0
+                  ? `${data.intelligence_score.label} public reporting signal`
+                  : 'No numeric public reporting signal'}
+              </h4>
               <p>
-                Transparent signal score based on deterministic review of returned public FAERS
-                records, reaction concentration, reaction diversity, and data confidence.
+                {data.count > 0
+                  ? 'Transparent signal score based on deterministic review of returned public FAERS records, reaction concentration, reaction diversity, and data confidence.'
+                  : 'No public FAERS records were returned, so a numeric signal and confidence assessment are not shown.'}
               </p>
               <p className="drug-score-boundary">
                 Public reports only. This does not prove causation or provide medical advice.
@@ -178,17 +191,27 @@ function DrugSignal({ onAssistantContextChange }: DrugSignalProps) {
             <div className="drug-intelligence-grid">
               <div>
                 <small>Review priority</small>
-                <span>{data.intelligence_score.review_priority}</span>
+                <span>
+                  {data.count > 0
+                    ? data.intelligence_score.review_priority
+                    : 'Verify other sources'}
+                </span>
               </div>
 
               <div>
                 <small>Data confidence</small>
-                <span>{data.intelligence_score.data_confidence}</span>
+                <span>
+                  {data.count > 0 ? data.intelligence_score.data_confidence : 'Not assessable'}
+                </span>
               </div>
 
               <div>
                 <small>Top reaction concentration</small>
-                <span>{data.intelligence_score.top_reaction_concentration}%</span>
+                <span>
+                  {data.count > 0
+                    ? `${data.intelligence_score.top_reaction_concentration}%`
+                    : 'N/A'}
+                </span>
               </div>
 
               <div>

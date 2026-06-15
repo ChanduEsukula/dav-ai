@@ -160,7 +160,8 @@ export function classifySafetyQuery(rawQuery: string): SafetyRouteClassification
       query,
       primaryArea: 'ambiguous',
       confidence: 'low',
-      reason: 'Enter a product, drug, food, cosmetic, UPC, NDC, or lot term to search public records.',
+      reason:
+        'Enter a product, drug, brand, food, supplement, cosmetic, or ingredient to search public records.',
       suggestions: [pharmacySuggestion, foodSuggestion, cosmeticSuggestion],
     }
   }

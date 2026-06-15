@@ -271,7 +271,7 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
       setError('')
       setNotice('')
       setHelper(
-        'Enter a product, drug, food, cosmetic, UPC, NDC, or lot term to search public records.',
+        'Enter a drug, brand, active ingredient, or product wording to search public records.',
       )
       return
     }
@@ -370,7 +370,7 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
                   setQuery(event.target.value)
                   if (helper) setHelper('')
                 }}
-                placeholder="Search another drug, brand, ingredient, or NDC"
+                placeholder="Search another drug, brand, ingredient, or product"
               />
               <button type="submit" disabled={loading}>
                 {loading ? 'Checking...' : 'Search'}
@@ -583,7 +583,7 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
               <p>
                 {hasWrongCategoryOnly
                   ? `Open ${wrongCategorySuggestion?.label} to review the more relevant public records for this search.`
-                  : 'Try a generic name, brand, strength, product wording, or NDC. No match does not prove a medication is safe.'}
+                  : 'Try a generic name, brand, strength, active ingredient, or simpler product wording. No match does not prove a medication is safe.'}
               </p>
             </div>
           ) : (
@@ -621,7 +621,11 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
                   </div>
                   <div>
                     <dt>Confidence</dt>
-                    <dd>{drugData.intelligence_score.data_confidence}</dd>
+                    <dd>
+                      {drugData.count > 0
+                        ? drugData.intelligence_score.data_confidence
+                        : 'Not assessable'}
+                    </dd>
                   </div>
                 </dl>
 

@@ -137,12 +137,11 @@ describe('AskDavAIChat', () => {
     expect(screen.getByText(/Answers stay inside the current module result, source metadata, audit context, and safety limitations/i)).toBeInTheDocument()
   })
 
-  it('shows no context state', () => {
+  it('does not render a visible entry point without result context', () => {
     render(<AskDavAIChat context={null} />)
 
-    fireEvent.click(screen.getByRole('button', { name: /Ask DAV AI/i }))
-
-    expect(screen.getByText(/Search RecallRadar, DrugSignal, FoodRadar, or CosmeticSignal first/i)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Ask DAV AI/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('dialog', { name: /Ask DAV AI/i })).not.toBeInTheDocument()
   })
 
   it('sends sanitized context when asking a prompt', async () => {

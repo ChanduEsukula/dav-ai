@@ -114,5 +114,7 @@ test('does not present a zero-result CosmeticSignal response as a 0/100 safety s
 
   expect(await screen.findByRole('heading', { name: 'No reports' })).toBeInTheDocument()
   expect(screen.queryByText(/0\s*\/\s*100/i)).not.toBeInTheDocument()
+  expect(screen.getByText('Not assessable')).toBeInTheDocument()
+  expect(screen.queryByText('Limited')).not.toBeInTheDocument()
   expect(screen.getByText(/A no-match result does not prove safety or harm/i)).toBeInTheDocument()
 })

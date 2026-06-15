@@ -19,7 +19,6 @@ vi.mock('../api/everydaySafety', async () => {
 
 const mockSearchEverydaySafety = vi.mocked(searchEverydaySafety)
 const mockGoToPage = vi.fn()
-const mockGoToFoodRadar = vi.fn()
 
 const chickenProduct =
   'Ready-to-eat chicken salad in 12-ounce packages with establishment and label details'
@@ -153,7 +152,6 @@ function renderFoodPage(initialQuery = 'Chicken') {
   return render(
     <FoodSafetyPage
       initialQuery={initialQuery}
-      goToFoodRadar={mockGoToFoodRadar}
       goToPage={mockGoToPage}
     />,
   )
@@ -161,7 +159,6 @@ function renderFoodPage(initialQuery = 'Chicken') {
 
 beforeEach(() => {
   mockGoToPage.mockReset()
-  mockGoToFoodRadar.mockReset()
   mockSearchEverydaySafety.mockReset()
   mockSearchEverydaySafety.mockResolvedValue(foodResponse)
   window.history.replaceState(null, '', '?page=food-safety&q=Chicken')
@@ -244,7 +241,7 @@ test('empty input with no submitted query shows quiet Food guidance', async () =
 
   expect(
     screen.getByText(
-      /Enter a food, supplement, brand, UPC, lot, or ingredient to search public records/i,
+      /Enter a food, supplement, brand, ingredient, or product wording/i,
     ),
   ).toBeInTheDocument()
   expect(mockSearchEverydaySafety).not.toHaveBeenCalled()
@@ -403,7 +400,6 @@ test('a changed route initialQuery reloads the normalized Food query', async () 
   rerender(
     <FoodSafetyPage
       initialQuery="  Protein   powder "
-      goToFoodRadar={mockGoToFoodRadar}
       goToPage={mockGoToPage}
     />,
   )

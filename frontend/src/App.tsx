@@ -41,7 +41,7 @@ import AboutPage from './components/AboutPage'
 import InfoPage from './components/InfoPage'
 import AskDavAIChat from './components/AskDavAIChat'
 import FloatingSafetyReportIntake from './components/FloatingSafetyReportIntake'
-import type { ActivePage, ActiveSection } from './types/navigation'
+import type { ActivePage } from './types/navigation'
 import { infoPages } from './data/infoPages'
 import { normalizeSearchTerm } from './utils/safetyRouteClassifier'
 
@@ -78,10 +78,10 @@ function getInitialSafetyQuery() {
 
 function updatePageInUrl(page: ActivePage, safetyQuery?: string) {
   const url = new URL(window.location.href)
+  url.searchParams.delete('audit_id')
 
   if (page === 'home') {
     url.searchParams.delete('page')
-    url.searchParams.delete('audit_id')
     url.searchParams.delete('q')
   } else {
     url.searchParams.set('page', page)
@@ -102,15 +102,13 @@ function updatePageInUrl(page: ActivePage, safetyQuery?: string) {
 
 function App() {
   const [activePage, setActivePage] = useState<ActivePage>(() => getInitialPage())
-  const [activeSection, setActiveSection] = useState<ActiveSection>('home')
   const [safetyQuery, setSafetyQuery] = useState(() => getInitialSafetyQuery())
-  const [assistantContext] = useState<AssistantChatContext | null>(null)
+  const assistantContext: AssistantChatContext | null = null
 
   useEffect(() => {
     function handlePopState() {
       setActivePage(getInitialPage())
       setSafetyQuery(getInitialSafetyQuery())
-      setActiveSection('home')
     }
 
     window.addEventListener('popstate', handlePopState)
@@ -123,39 +121,27 @@ function App() {
   function goHome() {
     setActivePage('home')
     setSafetyQuery('')
-    setActiveSection('home')
     updatePageInUrl('home')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  function goToRecallRadar() {
+  function goToPharmacySafety() {
     setActivePage('pharmacy-safety')
     setSafetyQuery('')
-    setActiveSection('recallradar')
     updatePageInUrl('pharmacy-safety')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  function goToDrugSignal() {
-    setActivePage('pharmacy-safety')
-    setSafetyQuery('')
-    setActiveSection('drugsignal')
-    updatePageInUrl('pharmacy-safety')
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  function goToFoodRadar() {
+  function goToFoodSafety() {
     setActivePage('food-safety')
     setSafetyQuery('')
-    setActiveSection('foodradar')
     updatePageInUrl('food-safety')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  function goToCosmeticSignal() {
+  function goToCosmeticSafety() {
     setActivePage('cosmetic-safety')
     setSafetyQuery('')
-    setActiveSection('cosmeticsignal')
     updatePageInUrl('cosmetic-safety')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -164,7 +150,6 @@ function App() {
     const normalizedQuery = normalizeSearchTerm(safetyQuery ?? '')
     setActivePage(page)
     setSafetyQuery(normalizedQuery)
-    setActiveSection('home')
     updatePageInUrl(page, normalizedQuery)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -173,12 +158,7 @@ function App() {
     <main className="app">
       <Navbar
         activePage={activePage}
-        activeSection={activeSection}
         goHome={goHome}
-        goToRecallRadar={goToRecallRadar}
-        goToDrugSignal={goToDrugSignal}
-        goToFoodRadar={goToFoodRadar}
-        goToCosmeticSignal={goToCosmeticSignal}
         goToPage={goToPage}
       />
 
@@ -186,23 +166,21 @@ function App() {
         <>
           <Hero
             data={null}
-            goToRecallRadar={goToRecallRadar}
-            goToDrugSignal={goToDrugSignal}
-            goToFoodRadar={goToFoodRadar}
-            goToCosmeticSignal={goToCosmeticSignal}
+            goToPharmacySafety={goToPharmacySafety}
+            goToFoodSafety={goToFoodSafety}
+            goToCosmeticSafety={goToCosmeticSafety}
             goToAbout={() => goToPage('about')}
           />
 
           <SafetyWorkspace
-            goToRecallRadar={goToRecallRadar}
-            goToDrugSignal={goToDrugSignal}
-            goToFoodRadar={goToFoodRadar}
-            goToCosmeticSignal={goToCosmeticSignal}
+            goToPharmacySafety={goToPharmacySafety}
+            goToFoodSafety={goToFoodSafety}
+            goToCosmeticSafety={goToCosmeticSafety}
           />
 
           <UniversalSafetySearch goToPage={goToPage} />
 
-          <OperationalOverview />
+          <OperationalOverview goToPharmacySafety={goToPharmacySafety} />
 
           <Signals />
         </>
@@ -213,19 +191,11 @@ function App() {
       )}
 
       {activePage === 'food-safety' && (
-        <FoodSafetyPage
-          initialQuery={safetyQuery}
-          goToFoodRadar={goToFoodRadar}
-          goToPage={goToPage}
-        />
+        <FoodSafetyPage initialQuery={safetyQuery} goToPage={goToPage} />
       )}
 
       {activePage === 'cosmetic-safety' && (
-        <CosmeticSafetyPage
-          initialQuery={safetyQuery}
-          goToCosmeticSignal={goToCosmeticSignal}
-          goToPage={goToPage}
-        />
+        <CosmeticSafetyPage initialQuery={safetyQuery} goToPage={goToPage} />
       )}
 
       {activePage === 'sources' && <DataSourcesPage />}
@@ -244,7 +214,7 @@ function App() {
 
       {activePage === 'help' && <InfoPage {...infoPages.help} />}
 
-      <AskDavAIChat context={assistantContext} />
+      {assistantContext && <AskDavAIChat context={assistantContext} />}
       <FloatingSafetyReportIntake />
     </main>
   )

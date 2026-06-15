@@ -26,35 +26,35 @@ const flowItems: FlowItem[] = [
   },
   {
     number: '03',
-    title: 'RecallRadar',
-    subtitle: 'Review priority',
-    detail: 'Classification-aware recall review signals for source-backed records.',
+    title: 'Pharmacy Safety',
+    subtitle: 'Recalls + event patterns',
+    detail: 'Drug recall records and FAERS reporting patterns in one routed workspace.',
     icon: 'radar',
     tone: 'purple',
   },
   {
     number: '04',
-    title: 'DrugSignal',
-    subtitle: 'Signal scan',
-    detail: 'Explore public adverse-event reporting patterns without causation claims.',
-    icon: 'capsule',
-    tone: 'blue',
-  },
-  {
-    number: '05',
-    title: 'FoodRadar',
+    title: 'Food Safety',
     subtitle: 'Food + supplements',
     detail: 'Review food, supplement, meat, poultry, and egg-product recall records.',
     icon: 'leaf',
     tone: 'green',
   },
   {
-    number: '06',
-    title: 'CosmeticSignal',
+    number: '05',
+    title: 'Cosmetic Safety',
     subtitle: 'Cosmetic events',
     detail: 'Review cosmetic-event public records with source context and limitations.',
     icon: 'bottle',
     tone: 'pink',
+  },
+  {
+    number: '06',
+    title: 'Review boundaries',
+    subtitle: 'Verification first',
+    detail: 'Public records support review and source verification, not clinical decisions.',
+    icon: 'shield',
+    tone: 'blue',
   },
 ]
 
@@ -117,7 +117,7 @@ function FlowIcon({ icon }: { icon: FlowItem['icon'] }) {
   )
 }
 
-function OperationalOverview() {
+function OperationalOverview({ goToPharmacySafety }: { goToPharmacySafety: () => void }) {
   return (
     <section className="operational-flow" aria-labelledby="operational-flow-title">
       <div className="operational-flow__shell">
@@ -165,9 +165,13 @@ function OperationalOverview() {
         </div>
 
         <div className="operational-flow__bottom">
-          <a className="operational-flow__cta" href="#recallradar">
-            Start with RecallRadar <span aria-hidden="true">→</span>
-          </a>
+          <button
+            type="button"
+            className="operational-flow__cta"
+            onClick={goToPharmacySafety}
+          >
+            Open Pharmacy Safety <span aria-hidden="true">→</span>
+          </button>
 
           <span className="operational-flow__live">
             <i aria-hidden="true"></i>

@@ -45,6 +45,20 @@ def test_create_saved_monitor() -> None:
     assert data["status"] == "not_checked"
 
 
+def test_reject_cosmetic_saved_monitor_until_manual_run_and_schema_parity() -> None:
+    response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Sunscreen monitor",
+            "query": "sunscreen",
+            "module": "cosmeticsignal",
+        },
+    )
+
+    assert response.status_code == 422
+    assert "Cosmetic Safety monitor creation is unavailable" in response.json()["detail"]
+
+
 def test_reject_duplicate_saved_monitor_same_module_and_query() -> None:
     first_response = client.post(
         "/api/v1/saved-monitors",
