@@ -18,6 +18,13 @@ type RecallRadarProps = {
 
 const briefingRoles: BriefingRole[] = ['consumer', 'pharmacy', 'clinic', 'public_health']
 
+function recallTitle(record: RecallSearchResponse['results'][number]) {
+  return (
+    record.product_description ||
+    (record.recall_number ? `Recall ${record.recall_number}` : 'Public recall record')
+  )
+}
+
 function RecallRadar({
   query,
   setQuery,
@@ -83,7 +90,7 @@ function RecallRadar({
     <section className="recallradar" id="recallradar">
       <div className="section-heading">
         <p className="eyebrow">RecallRadar live module</p>
-        <h2>Search public FDA recall signals.</h2>
+        <h2>Search public FDA recall records.</h2>
         <p>
           Enter a product, drug, brand, or category. Dav AI checks public recall records,
           highlights matched results, and explains what to review next.
@@ -194,6 +201,7 @@ function RecallRadar({
                 <button
                   type="button"
                   className={sortMode === 'score' ? 'active' : ''}
+                  aria-pressed={sortMode === 'score'}
                   onClick={() => handleSortChange('score')}
                 >
                   Highest review priority
@@ -202,6 +210,7 @@ function RecallRadar({
                 <button
                   type="button"
                   className={sortMode === 'latest' ? 'active' : ''}
+                  aria-pressed={sortMode === 'latest'}
                   onClick={() => handleSortChange('latest')}
                 >
                   Latest recall
@@ -224,7 +233,9 @@ function RecallRadar({
                       {result.risk_score.label} review signal
                     </span>
 
-                    <h3 className="recall-card-title">{result.product_description}</h3>
+                    <h3 className="recall-card-title" title={recallTitle(result)}>
+                      {recallTitle(result)}
+                    </h3>
 
                     <span className="recall-card-expand" aria-hidden="true">
                       <svg viewBox="0 0 24 24" focusable="false">

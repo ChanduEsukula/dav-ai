@@ -86,7 +86,7 @@ function buildPreview(
       checklist: [
         'Check whether the product name and brand actually match your item.',
         'Review firm, recall reason, package size, lot codes, and dates.',
-        'No result does not guarantee that a product is safe.',
+        'No result does not prove that a product is safe.',
       ],
       disclaimer:
         'This preview is informational only. Public recall records should be verified against the exact product you have.',
@@ -111,7 +111,7 @@ function buildPreview(
         'Reports are signals only and do not prove a product defect.',
       ],
       disclaimer:
-        'Cosmetic-event reports are public safety signals. They do not prove cause, diagnosis, or product defect.',
+        'Cosmetic-event reports are public reporting signals. They do not prove cause, diagnosis, or product defect.',
     }
   }
 
@@ -379,7 +379,7 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
                 className="universal-safety-search__know-more"
                 onClick={() => openSuggestion(primarySuggestion)}
               >
-                Know more
+                Open {primarySuggestion.label}
               </button>
             ) : (
               <div className="universal-safety-search__choices">

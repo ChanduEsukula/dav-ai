@@ -30,7 +30,7 @@ test('keeps unknown queries ambiguous instead of overclaiming', () => {
 
 test('returns calm cross-category suggestions only for clear mismatches', () => {
   expect(getWrongCategorySuggestion('pharmacy', 'chicken')?.message).toBe(
-    'This looks more like a Food Safety search. Open Food Safety for better results?',
+    'This looks more like a Food & Supplement Safety search. Open Food & Supplement Safety for better results?',
   )
   expect(getWrongCategorySuggestion('pharmacy', 'unknown product')).toBeNull()
 })

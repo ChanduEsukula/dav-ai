@@ -78,7 +78,7 @@ function DrugSignal({ onAssistantContextChange }: DrugSignalProps) {
         {
           label: 'Reporting signal',
           title: `${data.intelligence_score.label} public reporting signal.`,
-          detail: `DrugSignal score: ${data.intelligence_score.score}/100. Treat this as a review signal from public reports, not proof of risk or causation.`,
+          detail: `DrugSignal score: ${data.intelligence_score.score}/100. Treat this as a review signal from public reports, not proof of product harm or causation.`,
           tone: 'review',
         },
         {
@@ -98,7 +98,7 @@ function DrugSignal({ onAssistantContextChange }: DrugSignalProps) {
         <h2>Explore public FAERS adverse-event reporting patterns.</h2>
         <p>
           Search a drug or medicinal product to view top reported reactions from openFDA Drug Event
-          records. These reports are safety signals only and do not prove causation.
+          records. These reports are reporting signals only and do not prove causation.
         </p>
       </div>
 
@@ -310,6 +310,7 @@ function DrugSignal({ onAssistantContextChange }: DrugSignalProps) {
               <button
                 type="button"
                 className={sortMode === 'reports' ? 'active' : ''}
+                aria-pressed={sortMode === 'reports'}
                 onClick={() => handleSearch('reports')}
               >
                 Most reports
@@ -318,6 +319,7 @@ function DrugSignal({ onAssistantContextChange }: DrugSignalProps) {
               <button
                 type="button"
                 className={sortMode === 'alpha' ? 'active' : ''}
+                aria-pressed={sortMode === 'alpha'}
                 onClick={() => handleSearch('alpha')}
               >
                 A-Z

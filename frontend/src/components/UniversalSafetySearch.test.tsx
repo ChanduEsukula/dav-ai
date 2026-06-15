@@ -83,7 +83,7 @@ test('normalizes universal search whitespace before API and route navigation', a
   })
   expect(mockSearchDrugEvents).toHaveBeenCalledWith('xanax xr', 5)
 
-  await user.click(await screen.findByRole('button', { name: 'Know more' }))
+  await user.click(await screen.findByRole('button', { name: 'Open Pharmacy Safety' }))
   expect(mockGoToPage).toHaveBeenCalledWith('pharmacy-safety', 'xanax xr')
 })
 
@@ -106,8 +106,12 @@ test.each([
       expect(mockSearchRecalls).toHaveBeenCalledWith(query, 3)
     } else if (area === 'food') {
       expect(mockSearchEverydaySafety).toHaveBeenCalledWith(query, 5)
+      expect(
+        screen.getByText(/No result does not prove that a product is safe/i),
+      ).toBeInTheDocument()
     } else {
       expect(mockSearchCosmeticEvents).toHaveBeenCalledWith(query, 5)
+      expect(screen.getByText(/public reporting signals/i)).toBeInTheDocument()
     }
   },
 )

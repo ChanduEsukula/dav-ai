@@ -108,7 +108,7 @@ const pharmacySuggestion: SafetyRouteSuggestion = {
 
 const foodSuggestion: SafetyRouteSuggestion = {
   area: 'food',
-  label: 'Food Safety',
+  label: 'Food & Supplement Safety',
   description: 'Check food, supplement, meat, poultry, and egg-product safety records.',
   page: 'food-safety',
 }

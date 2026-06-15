@@ -159,6 +159,19 @@ test('shows successful reaction results with source, disclaimers, and briefing i
     screen.getByRole('heading', { name: /Top reported reactions/i })
   ).toBeInTheDocument()
 
+  const reportsButton = screen.getByRole('button', { name: 'Most reports' })
+  const alphabeticalButton = screen.getByRole('button', { name: 'A-Z' })
+  expect(reportsButton).toHaveAttribute('aria-pressed', 'true')
+  expect(alphabeticalButton).toHaveAttribute('aria-pressed', 'false')
+
+  await user.click(alphabeticalButton)
+
+  await waitFor(() => {
+    expect(mockSearchDrugEvents).toHaveBeenLastCalledWith('metformin', 10, 'alpha')
+  })
+  expect(reportsButton).toHaveAttribute('aria-pressed', 'false')
+  expect(alphabeticalButton).toHaveAttribute('aria-pressed', 'true')
+
   expect(screen.getAllByText(/NAUSEA/i).length).toBeGreaterThan(0)
   expect(screen.getAllByText('12').length).toBeGreaterThan(0)
   expect(screen.getAllByText(/HEADACHE/i).length).toBeGreaterThan(0)
@@ -171,6 +184,7 @@ test('shows successful reaction results with source, disclaimers, and briefing i
   expect(
     screen.getAllByText(/not medical advice, diagnosis, or treatment/i).length
   ).toBeGreaterThan(0)
+  expect(screen.getByText(/not proof of product harm or causation/i)).toBeInTheDocument()
 
   expect(screen.getAllByText(/drug-audit-123/i).length).toBeGreaterThan(0)
   expect(screen.getAllByText(/DrugSignal/i).length).toBeGreaterThan(0)

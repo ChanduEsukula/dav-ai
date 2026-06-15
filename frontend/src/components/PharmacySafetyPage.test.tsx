@@ -180,6 +180,15 @@ test('loads the selected recall sort once', async () => {
 
   renderPharmacyPage()
 
+  expect(screen.getByRole('button', { name: 'Priority' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  expect(screen.getByRole('button', { name: 'Latest' })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  )
+
   await waitFor(() => {
     expect(mockSearchRecalls).toHaveBeenCalledWith('Xanax', 8, 'score')
   })
@@ -190,6 +199,14 @@ test('loads the selected recall sort once', async () => {
     expect(mockSearchRecalls).toHaveBeenCalledWith('Xanax', 8, 'latest')
   })
 
+  expect(screen.getByRole('button', { name: 'Priority' })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  )
+  expect(screen.getByRole('button', { name: 'Latest' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
   expect(mockSearchRecalls).toHaveBeenCalledTimes(2)
 })
 
@@ -277,7 +294,7 @@ test('example search clears previous empty-search guidance', async () => {
 })
 
 test.each([
-  ['chicken', 'Food Safety', 'food-safety'],
+  ['chicken', 'Food & Supplement Safety', 'food-safety'],
   ['sunscreen', 'Cosmetic Safety', 'cosmetic-safety'],
 ] as const)(
   'suggests %s searches use the correct safety page',
@@ -292,7 +309,12 @@ test.each([
     const suggestion = await screen.findByText(
       new RegExp(`This looks more like a ${label} search`, 'i'),
     )
-    expect(suggestion).toBeInTheDocument()
+    const suggestionBox = suggestion.closest('.safety-route-suggestion')
+    const examples = screen.getByLabelText('Example pharmacy searches')
+    expect(suggestion.closest('.pharmacy-overview')).toBeInTheDocument()
+    expect(
+      suggestionBox!.compareDocumentPosition(examples) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).not.toBe(0)
 
     await user.click(screen.getByRole('button', { name: `Open ${label}` }))
     expect(mockGoToPage).toHaveBeenCalledWith(page, query)
@@ -311,16 +333,44 @@ test('shows zero-result spelling guidance and runs the hardcoded typo correction
     await screen.findByText(/No public records returned for this exact search/i),
   ).toBeInTheDocument()
 
+  const suggestion = screen.getByText(/Spelling suggestion: did you mean/i)
+  const suggestionBox = suggestion.closest('.pharmacy-typo-suggestion')
+  const examples = screen.getByLabelText('Example pharmacy searches')
+  expect(suggestionBox).toBeInTheDocument()
   expect(
-  screen.getByText(/Spelling suggestion: did you mean/i),
-).toBeInTheDocument()
+    suggestionBox!.compareDocumentPosition(examples) & Node.DOCUMENT_POSITION_FOLLOWING,
+  ).not.toBe(0)
+  expect(screen.queryByText('52/100')).not.toBeInTheDocument()
+  expect(screen.getAllByText('No returned reports')).not.toHaveLength(0)
+  expect(screen.queryByText('Moderate')).not.toBeInTheDocument()
 
-await user.click(screen.getByRole('button', { name: /Use Metformin/i }))
+  await user.click(screen.getByRole('button', { name: /Use Metformin/i }))
 
   await waitFor(() => {
     expect(mockSearchRecalls).toHaveBeenLastCalledWith('Metformin', 8, 'score')
   })
   expect(new URLSearchParams(window.location.search).get('q')).toBe('Metformin')
+})
+
+test('wrong-category zero results show one focused route suggestion', async () => {
+  const user = userEvent.setup()
+  mockSearchRecalls.mockResolvedValue(emptyRecallResponse)
+  mockSearchDrugEvents.mockResolvedValue(emptyDrugResponse)
+  window.history.replaceState(null, '', '?page=pharmacy-safety')
+  renderPharmacyPage('')
+
+  await user.type(screen.getByLabelText(/Search pharmacy records/i), 'Chicken')
+  await user.click(screen.getByRole('button', { name: 'Search' }))
+
+  expect(
+    await screen.findByText(/This looks more like a Food & Supplement Safety search/i),
+  ).toBeInTheDocument()
+  expect(
+    screen.getByText(/This looks better suited for Food & Supplement Safety/i),
+  ).toBeInTheDocument()
+  expect(
+    screen.queryByText(/No public records returned for this exact search/i),
+  ).not.toBeInTheDocument()
 })
 
 test('normalizes whitespace and skips a completed equivalent query', async () => {

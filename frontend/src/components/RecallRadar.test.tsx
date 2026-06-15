@@ -80,7 +80,7 @@ test('renders RecallRadar search input and button', () => {
   renderRecallRadar()
 
   expect(
-    screen.getByRole('heading', { name: /Search public FDA recall signals/i })
+    screen.getByRole('heading', { name: /Search public FDA recall records/i })
   ).toBeInTheDocument()
 
   expect(screen.getByPlaceholderText(/Search recalls/i)).toBeInTheDocument()
@@ -160,7 +160,8 @@ test('shows no-results safety message', () => {
   expect(screen.getByLabelText(/Briefing role/i)).toBeInTheDocument()
 })
 
-test('shows successful recall result with source, audit, and briefing information', () => {
+test('shows successful recall result with source, audit, and briefing information', async () => {
+  const user = userEvent.setup()
   renderRecallRadar({ query: 'eye drops', data: mockResponse })
 
   expect(screen.getByText(/1 records matched/i)).toBeInTheDocument()
@@ -171,7 +172,7 @@ test('shows successful recall result with source, audit, and briefing informatio
 
   expect(
     screen.getByRole('heading', { name: /Example Eye Drops/i })
-  ).toBeInTheDocument()
+  ).toHaveAttribute('title', 'Example Eye Drops')
 
   expect(
     screen.getAllByText(/Potential microbial contamination/i).length
@@ -179,6 +180,16 @@ test('shows successful recall result with source, audit, and briefing informatio
 
   expect(screen.getAllByText(/High signal/i).length).toBeGreaterThan(0)
   expect(screen.getByText('72')).toBeInTheDocument()
+
+  const priorityButton = screen.getByRole('button', { name: 'Highest review priority' })
+  const latestButton = screen.getByRole('button', { name: 'Latest recall' })
+  expect(priorityButton).toHaveAttribute('aria-pressed', 'true')
+  expect(latestButton).toHaveAttribute('aria-pressed', 'false')
+
+  await user.click(latestButton)
+
+  expect(priorityButton).toHaveAttribute('aria-pressed', 'false')
+  expect(latestButton).toHaveAttribute('aria-pressed', 'true')
 
   expect(
     screen.getByRole('heading', { name: /Consumer briefing/i })
@@ -205,4 +216,23 @@ test('shows successful recall result with source, audit, and briefing informatio
       /Dav AI provides public-data safety intelligence only/i
     ).length
   ).toBeGreaterThan(0)
+})
+
+test('uses the recall number when a RecallRadar product description is unavailable', () => {
+  renderRecallRadar({
+    query: 'eye drops',
+    data: {
+      ...mockResponse,
+      results: [
+        {
+          ...mockResponse.results[0],
+          product_description: null,
+        },
+      ],
+    },
+  })
+
+  expect(
+    screen.getByRole('heading', { name: 'Recall D-1234-2026' }),
+  ).toHaveAttribute('title', 'Recall D-1234-2026')
 })
