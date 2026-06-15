@@ -167,7 +167,7 @@ function openAuditDetail(auditId: string) {
   const url = new URL(window.location.href);
   url.searchParams.set("page", "audit");
   url.searchParams.set("audit_id", auditId);
-  window.history.replaceState(null, "", url.toString());
+  window.history.pushState(null, "", url.toString());
   window.dispatchEvent(new PopStateEvent("popstate"));
 }
 

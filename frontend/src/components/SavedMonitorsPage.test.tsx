@@ -246,6 +246,7 @@ describe('SavedMonitorsPage', () => {
     vi.mocked(listSavedMonitors).mockResolvedValue([baseMonitor])
     vi.mocked(listSavedMonitorRuns).mockResolvedValue([baseRun])
     const dispatchSpy = vi.spyOn(window, 'dispatchEvent')
+    const pushStateSpy = vi.spyOn(window.history, 'pushState')
 
     render(<SavedMonitorsPage />)
 
@@ -259,8 +260,10 @@ describe('SavedMonitorsPage', () => {
     expect(window.location.search).toContain(
       'audit_id=11111111-1111-1111-1111-111111111111',
     )
+    expect(pushStateSpy).toHaveBeenCalled()
     expect(dispatchSpy).toHaveBeenCalled()
 
+    pushStateSpy.mockRestore()
     dispatchSpy.mockRestore()
   })
 
@@ -675,6 +678,7 @@ describe('SavedMonitorsPage', () => {
     ])
 
     const dispatchSpy = vi.spyOn(window, 'dispatchEvent')
+    const pushStateSpy = vi.spyOn(window.history, 'pushState')
 
     render(<SavedMonitorsPage />)
 
@@ -688,8 +692,10 @@ describe('SavedMonitorsPage', () => {
     expect(window.location.search).toContain(
       'audit_id=33333333-3333-3333-3333-333333333333',
     )
+    expect(pushStateSpy).toHaveBeenCalled()
     expect(dispatchSpy).toHaveBeenCalled()
 
+    pushStateSpy.mockRestore()
     dispatchSpy.mockRestore()
   })
 

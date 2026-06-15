@@ -555,6 +555,7 @@ export default function AuditHistoryPage() {
                   <button
                     type="button"
                     className={detailViewMode === 'basic' ? 'active' : ''}
+                    aria-pressed={detailViewMode === 'basic'}
                     onClick={() => setDetailViewMode('basic')}
                   >
                     Basic view
@@ -562,6 +563,7 @@ export default function AuditHistoryPage() {
                   <button
                     type="button"
                     className={detailViewMode === 'technical' ? 'active' : ''}
+                    aria-pressed={detailViewMode === 'technical'}
                     onClick={() => setDetailViewMode('technical')}
                   >
                     Technical view
