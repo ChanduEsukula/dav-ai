@@ -320,6 +320,8 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
   )
   const typoSuggestion =
     data?.count === 0 ? getTypoSuggestion(submittedQuery) : null
+  const hasZeroResults = data?.count === 0 && !loading
+  const hasWrongCategoryOnly = Boolean(wrongCategorySuggestion && hasZeroResults)
   const sourceNames = data?.sources_checked.map((source) => source.source_name) ?? []
   const sourceLabel =
     sourceNames.length > 0
@@ -370,6 +372,42 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
             </div>
           </form>
 
+          {(typoSuggestion || wrongCategorySuggestion) && !loading && (
+            <div className="pharmacy-query-guidance">
+              {typoSuggestion && (
+                <div
+                  className="pharmacy-typo-suggestion food-typo-suggestion"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <span>
+                    Spelling suggestion: did you mean <strong>{typoSuggestion}</strong>?
+                  </span>
+                  <button type="button" onClick={() => handleTypoSuggestion(typoSuggestion)}>
+                    Use {typoSuggestion}
+                  </button>
+                </div>
+              )}
+
+              {wrongCategorySuggestion && (
+                <aside className="safety-route-suggestion" aria-live="polite">
+                  <span>{wrongCategorySuggestion.message}</span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      goToPage(
+                        wrongCategorySuggestion.page,
+                        normalizeSearchTerm(submittedQuery),
+                      )
+                    }
+                  >
+                    Open {wrongCategorySuggestion.label}
+                  </button>
+                </aside>
+              )}
+            </div>
+          )}
+
           <div className="pharmacy-example-row" aria-label="Example food safety searches">
             <span>Try</span>
             {foodExamples.map((example) => (
@@ -382,21 +420,6 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
               </button>
             ))}
           </div>
-
-          {typoSuggestion && !loading && (
-            <div
-              className="pharmacy-typo-suggestion food-typo-suggestion"
-              role="status"
-              aria-live="polite"
-            >
-              <span>
-                Spelling suggestion: did you mean <strong>{typoSuggestion}</strong>?
-              </span>
-              <button type="button" onClick={() => handleTypoSuggestion(typoSuggestion)}>
-                Use {typoSuggestion}
-              </button>
-            </div>
-          )}
 
           <p className="pharmacy-source-line food-source-line">
             <span aria-hidden="true" />
@@ -425,21 +448,7 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
         </p>
       )}
 
-      {wrongCategorySuggestion && !loading && (
-        <aside className="safety-route-suggestion" aria-live="polite">
-          <span>{wrongCategorySuggestion.message}</span>
-          <button
-            type="button"
-            onClick={() =>
-              goToPage(wrongCategorySuggestion.page, normalizeSearchTerm(submittedQuery))
-            }
-          >
-            Open {wrongCategorySuggestion.label}
-          </button>
-        </aside>
-      )}
-
-      {data?.count === 0 && !loading && (
+      {hasZeroResults && !hasWrongCategoryOnly && (
         <aside className="safety-search-guidance" aria-live="polite">
           <span>
             No public records returned for this exact search. Check spelling or try a
@@ -503,6 +512,7 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
               <button
                 type="button"
                 className={sort === 'score' ? 'active' : ''}
+                aria-pressed={sort === 'score'}
                 onClick={() => handleSortChange('score')}
                 disabled={loading}
               >
@@ -511,6 +521,7 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
               <button
                 type="button"
                 className={sort === 'latest' ? 'active' : ''}
+                aria-pressed={sort === 'latest'}
                 onClick={() => handleSortChange('latest')}
                 disabled={loading}
               >
@@ -538,10 +549,15 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
             </div>
           ) : data ? (
             <div className="pharmacy-empty-card food-empty-card">
-              <h3>No matching food or supplement records returned.</h3>
+              <h3>
+                {hasWrongCategoryOnly
+                  ? `This looks better suited for ${wrongCategorySuggestion?.label}.`
+                  : 'No matching food or supplement records returned.'}
+              </h3>
               <p>
-                Check spelling or try a simpler product, brand, ingredient, UPC, lot, or code
-                term. No result does not prove a food or supplement is safe.
+                {hasWrongCategoryOnly
+                  ? `Open ${wrongCategorySuggestion?.label} to review the more relevant public records for this search.`
+                  : 'Check spelling or try a simpler product, brand, ingredient, UPC, lot, or code term. No result does not prove a food or supplement is safe.'}
               </p>
             </div>
           ) : (

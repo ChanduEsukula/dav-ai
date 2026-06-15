@@ -275,6 +275,10 @@ test('Latest sort reloads the submitted query with latest ordering', async () =>
   const user = userEvent.setup()
   renderFoodPage()
 
+  expect(screen.getByRole('button', { name: 'Priority' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
   await screen.findByRole('heading', { name: /Safety review for Chicken/i })
   await user.click(screen.getByRole('button', { name: 'Latest' }))
 
@@ -286,19 +290,34 @@ test('Latest sort reloads the submitted query with latest ordering', async () =>
       'latest',
     )
   })
+  expect(screen.getByRole('button', { name: 'Latest' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
 })
 
 test('a Xanax Food search suggests Pharmacy Safety', async () => {
   const user = userEvent.setup()
+  mockSearchEverydaySafety.mockResolvedValue(emptyFoodResponse)
   window.history.replaceState(null, '', '?page=food-safety')
   renderFoodPage('')
 
   await user.type(screen.getByLabelText(/Search food safety records/i), 'Xanax')
   await user.click(screen.getByRole('button', { name: 'Search' }))
 
+  const suggestion = await screen.findByText(
+    /This looks more like a Pharmacy Safety search/i,
+  )
+  const suggestionBox = suggestion.closest('.safety-route-suggestion')
+  const examples = screen.getByLabelText('Example food safety searches')
+  expect(suggestion.closest('.food-overview')).toBeInTheDocument()
   expect(
-    await screen.findByText(/This looks more like a Pharmacy Safety search/i),
-  ).toBeInTheDocument()
+    suggestionBox!.compareDocumentPosition(examples) & Node.DOCUMENT_POSITION_FOLLOWING,
+  ).not.toBe(0)
+  expect(screen.getByText(/This looks better suited for Pharmacy Safety/i)).toBeInTheDocument()
+  expect(
+    screen.queryByText(/No public records returned for this exact search/i),
+  ).not.toBeInTheDocument()
   await user.click(screen.getByRole('button', { name: 'Open Pharmacy Safety' }))
   expect(mockGoToPage).toHaveBeenCalledWith('pharmacy-safety', 'Xanax')
 })
@@ -337,7 +356,12 @@ test('a typo suggestion appears beside the Food search area', async () => {
   renderFoodPage('protien powder')
 
   const suggestion = await screen.findByText(/Spelling suggestion: did you mean/i)
+  const suggestionBox = suggestion.closest('.food-typo-suggestion')
+  const examples = screen.getByLabelText('Example food safety searches')
   expect(suggestion.closest('.food-overview')).toBeInTheDocument()
+  expect(
+    suggestionBox!.compareDocumentPosition(examples) & Node.DOCUMENT_POSITION_FOLLOWING,
+  ).not.toBe(0)
   expect(screen.getByRole('button', { name: 'Use Protein powder' })).toBeInTheDocument()
 })
 
