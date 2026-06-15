@@ -1,7 +1,7 @@
 # Dav AI Progress Report — Student Project, Engineering Review, Product Use Case, and UX Risk Audit
 
-**Review date:** June 14, 2026  
-**Reviewed branch:** `feature/universal-safety-search` at `20bcbb5`  
+**Review date:** June 15, 2026
+**Reviewed branch:** `feature/universal-safety-search` at `226d499`
 **Review mode:** Read-only repository audit. No application code was changed.  
 **Overall portfolio grade:** **B+ (87/100)**  
 **Realistic signal:** **Entry-level-ready full-stack engineer; AI-adjacent entry-level candidate; not yet mid-level or production-ready.**
@@ -303,7 +303,7 @@ Avoid repeating long warnings in every card. Repetition makes users stop reading
 - **Gaps:** No audit panel, assistant context, report action, saved-monitor action, or semantic evidence in the routed page.
 - **Risks:** "FDA CAERS-style" and signal scores can sound more authoritative than incomplete voluntary reporting supports.
 - **Best next improvement:** Restore audit and report links and explain exactly what the score counts.
-- **Demo-ready:** **Conditional**, especially because current worktree changes are not yet represented by a passing E2E path.
+- **Demo-ready:** **Conditional.** Component coverage is now strong, but the current E2E suite does not exercise this workflow.
 
 ### RecallRadar
 
@@ -523,7 +523,7 @@ The visual system is close enough for a recruiter demo, but only after:
 23. **RecallRadar and DrugSignal nav buttons open the same Pharmacy Safety page without explaining the merge.** Why it matters: navigation feels broken. **Fix:** rename the nav item to Pharmacy Safety or restore separate views.
 24. **FoodRadar nav opens Food Safety, while old FoodRadar features are absent.** Why it matters: the branded promise and page capability differ. **Fix:** use one canonical name and feature set.
 25. **CosmeticSignal nav opens Cosmetic Safety, while monitor/report parity is incomplete.** Why it matters: users assume parity from the label. **Fix:** align all integrations or mark beta limitations.
-26. **Wrong-category suggestions appear only after zero records.** Why it matters: source calls are wasted and users wait for a predictable route hint. **Fix:** show a low-confidence route suggestion before submission.
+26. **Wrong-category suggestions rely on a small keyword vocabulary and can appear alongside valid records.** Why it matters: users may read the suggestion as invalidating evidence that was actually returned. **Fix:** label classifier confidence and explain that the alternate workflow may contain additional, not necessarily better, evidence.
 27. **Changing categories can preserve a stale `audit_id` URL parameter.** Why it matters: a later Audit visit may open unrelated evidence. **Fix:** clear route-specific parameters on every page transition.
 
 ### No-Result Issues
@@ -712,15 +712,14 @@ The visual system is close enough for a recruiter demo, but only after:
 
 | Command | Result |
 |---|---|
-| Backend `pytest` with bytecode/cache disabled | **276 passed** |
+| Backend `pytest` | **276 passed** |
 | Frontend Vitest | **17 files, 146 tests passed** |
-| Frontend ESLint | **Passed on final run** |
-| TypeScript app no-emit | **Passed** |
-| TypeScript Vite config no-emit | **Passed** |
+| Frontend ESLint | **Passed** |
+| TypeScript and production Vite build | **Passed; 126 modules transformed** |
 | Playwright E2E smoke | **Failed** on expected old RecallRadar heading after navigation |
 | `git diff --check` | **Passed** |
 
-The first concurrent lint attempt encountered an `ENOENT` while Playwright was creating/removing `frontend/test-results`; the clean rerun passed. This is a tooling-race observation, not a source lint failure.
+The production build generated the expected `frontend/dist` output, which is ignored by Git. The working tree remained clean after test, lint, build, and E2E execution.
 
 ### Strong Existing Tests
 
@@ -754,7 +753,7 @@ The first concurrent lint attempt encountered an `ENOENT` while Playwright was c
 - Ask and Report overlays at 200% zoom and mobile landscape.
 - Generated PDFs with long names, long reasons, no results, and non-ASCII product names.
 
-Fresh in-app visual inspection was not possible in this audit because the local in-app browser surface was unavailable. Source/CSS review and the local Chromium E2E run were completed instead.
+Fresh in-app visual inspection was not possible because the in-app browser reported that its browser surface was unavailable. Source/CSS review and the local Chromium E2E run were completed instead; Playwright stopped at the first stale heading assertion.
 
 ### Recommended QA Checklist
 
@@ -919,17 +918,17 @@ Fresh in-app visual inspection was not possible in this audit because the local 
 ## Final Checklist
 
 - [x] Whole-repository architecture, frontend, backend, tests, styles, docs, configuration, migrations, and history reviewed.
-- [x] Current worktree changes inspected without modifying them.
+- [x] Clean current branch inspected at `226d499`.
 - [x] Backend suite run: 276 passed.
 - [x] Frontend suite run: 146 passed.
-- [x] Frontend lint and TypeScript no-emit checks passed.
+- [x] Frontend lint and production build passed.
 - [x] Playwright smoke test run and current route mismatch documented.
 - [x] More than 150 user issues and edge cases documented.
 - [x] Product, UX, trust, safety, interview, resume, and roadmap reviews included.
 - [x] No application code changed.
 - [x] No commit created.
 - [ ] Fresh manual screenshot review remains outstanding because the in-app visual browser was unavailable.
-- [ ] Production build was not run during this audit to avoid changing generated `dist` artifacts; TypeScript no-emit and the CI build configuration were inspected instead.
+- [x] Production build passed; generated `dist` artifacts are ignored by Git.
 - [ ] No live FDA/USDA, deployed-environment, or real-database smoke test was performed.
 
 ## Review Evidence
@@ -943,23 +942,25 @@ Fresh in-app visual inspection was not possible in this audit because the local 
 
 ### Commands Run
 
+- `cat /Users/chanduesukula/.codex/attachments/a686aaa4-8ce6-4305-b3cf-30f974f474a3/pasted-text.txt`
 - `git status --short`
+- `git branch --show-current`
+- `git rev-parse --short HEAD`
 - `git log --oneline` variants
 - `git diff --stat`, `git diff --check`, and targeted diff inspection
-- `find`, `rg`, `sed`, `wc`, `file`, and targeted configuration/source reads
+- `find`, `rg`, `sed`, `nl`, `wc`, `file`, and targeted configuration/source reads
 - `npm run lint`
 - `npm test -- --run`
-- `npx tsc -p tsconfig.app.json --noEmit`
-- `npx tsc -p tsconfig.node.json --noEmit`
-- `PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -p no:cacheprovider`
+- `npm run build`
+- `../.venv/bin/python -m pytest`
 - `npm run test:e2e -- --reporter=line`
-- Local Vite server startup for browser review attempt
+- In-app browser setup attempt
 
 ### Review Limitations
 
-- Fresh in-app screenshot inspection was unavailable.
+- Fresh in-app screenshot inspection was unavailable because the browser surface could not be started.
 - The Playwright test exercised local Chromium but stopped at the first failing assertion.
-- No production build was run to preserve the requested report-only workspace outcome.
+- The production build passed locally, but no deployed-environment smoke test was performed.
 - No network-dependent live source or deployed-site verification was performed.
 - No real database migration or persistence test was run; automated tests deliberately isolate `DATABASE_URL`.
-- Uncommitted user changes were reviewed as part of the current worktree and were not altered.
+- Runtime secret values were not inspected; review was limited to examples, configuration shape, and source usage.

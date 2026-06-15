@@ -1,7 +1,7 @@
 from typing import Literal, TypedDict
 
+from app.scoring import DRUG_SIGNAL_SCORE_VERSION
 
-DRUG_SIGNAL_SCORE_VERSION = "drug-signal-intelligence-v0.1"
 FAERS_CAUSATION_LIMITATION = (
     "FAERS adverse-event reports are safety signals only and do not prove causation."
 )
@@ -83,6 +83,20 @@ def calculate_drug_signal_intelligence_score(
     record_count: int,
     top_reactions: list[dict[str, int | str]],
 ) -> DrugSignalIntelligenceScore:
+    if record_count <= 0:
+        return {
+            "score": 0,
+            "label": "Low",
+            "data_confidence": "Limited",
+            "top_reaction_concentration": 0.0,
+            "review_priority": "Low",
+            "score_version": DRUG_SIGNAL_SCORE_VERSION,
+            "limitations": [
+                FAERS_CAUSATION_LIMITATION,
+                "No score or confidence assessment should be displayed when no public records are returned.",
+            ],
+        }
+
     total_reaction_mentions = sum(int(item.get("count", 0)) for item in top_reactions)
     top_reaction_count = int(top_reactions[0].get("count", 0)) if top_reactions else 0
 

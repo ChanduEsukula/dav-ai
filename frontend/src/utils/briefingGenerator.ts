@@ -161,8 +161,7 @@ export function generateDrugEventBriefing(
       : [
           'No FAERS drug-event records matched the current search.',
           'No-results output does not prove that a drug is safe or unsafe.',
-          `DrugSignal Intelligence score: ${intelligence.score}/100 ${intelligence.label}.`,
-          `Data confidence: ${intelligence.data_confidence}. Review priority: ${intelligence.review_priority}.`,
+          'A numeric DrugSignal Intelligence score and data-confidence assessment are not available without returned records.',
         ]
 
   const whatToVerify =

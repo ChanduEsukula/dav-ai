@@ -4,6 +4,7 @@ from typing import Any
 from app.audit.audit_event import build_audit_event
 from app.db.audit_repository import save_audit_event
 from app.db.source_pull_repository import save_source_pull_with_snapshot
+from app.scoring import RECALL_REVIEW_SCORE_VERSION
 from app.scoring.recall_score import calculate_recall_risk_score
 from app.services.foodradar_query_normalization import normalize_foodradar_query
 from app.services.foodradar_search_intent import FoodRadarSearchIntent, classify_foodradar_search_intent
@@ -63,7 +64,7 @@ def _persist_food_error_audit(
         upstream_status="error",
         record_count=0,
         transform_version="everyday-safety-food-transform-v0.2",
-        score_version="recall-risk-v0.1",
+        score_version=RECALL_REVIEW_SCORE_VERSION,
         error_message=error_message,
     )
 
@@ -486,7 +487,7 @@ async def execute_everyday_safety_search(
             upstream_status=upstream_status,
             record_count=len(normalized_results),
             transform_version="everyday-safety-food-transform-v0.2",
-            score_version="recall-risk-v0.1",
+            score_version=RECALL_REVIEW_SCORE_VERSION,
         )
 
         _save_audit_event_with_request_id(audit_event, request_id=request_id)
@@ -513,7 +514,7 @@ async def execute_everyday_safety_search(
             "source_name": "FoodRadar multi-source search",
             "endpoint": "openFDA Food Enforcement + USDA FSIS Recall API",
             "retrieval_timestamp": retrieval_timestamp,
-            "score_version": "recall-risk-v0.1",
+            "score_version": RECALL_REVIEW_SCORE_VERSION,
             "search_strategy_used": search_strategy_used,
             "sources_checked": sources_checked,
             "public_data_disclaimer": (

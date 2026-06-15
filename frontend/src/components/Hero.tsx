@@ -2,47 +2,39 @@ import type { RecallSearchResponse } from '../api/recalls'
 
 type HeroProps = {
   data: RecallSearchResponse | null
-  goToRecallRadar: () => void
-  goToDrugSignal: () => void
-  goToFoodRadar: () => void
-  goToCosmeticSignal: () => void
+  goToPharmacySafety: () => void
+  goToFoodSafety: () => void
+  goToCosmeticSafety: () => void
   goToAbout: () => void
 }
 
 type HeroModule = {
   title: string
   subtitle: string
-  key: 'recallradar' | 'drugsignal' | 'foodradar' | 'cosmeticsignal'
+  key: 'pharmacy' | 'food' | 'cosmetic'
   className: string
   icon: 'recall' | 'drug' | 'health' | 'cosmetic'
 }
 
 const heroModules: HeroModule[] = [
   {
-    title: 'RecallRadar',
-    subtitle: 'Find recall records',
-    key: 'recallradar',
+    title: 'Pharmacy Safety',
+    subtitle: 'Recalls + adverse-event patterns',
+    key: 'pharmacy',
     className: 'hero-module-recall',
     icon: 'recall',
   },
   {
-    title: 'DrugSignal',
-    subtitle: 'Side-effect patterns',
-    key: 'drugsignal',
-    className: 'hero-module-drug',
-    icon: 'drug',
-  },
-  {
-    title: 'FoodRadar',
+    title: 'Food Safety',
     subtitle: 'Food & supplement recalls',
-    key: 'foodradar',
+    key: 'food',
     className: 'hero-module-health',
     icon: 'health',
   },
   {
-    title: 'CosmeticSignal',
-    subtitle: 'Cosmetic safety records',
-    key: 'cosmeticsignal',
+    title: 'Cosmetic Safety',
+    subtitle: 'Public cosmetic-event reports',
+    key: 'cosmetic',
     className: 'hero-module-cosmetic',
     icon: 'cosmetic',
   },
@@ -110,19 +102,17 @@ function HeroModuleIcon({ icon }: { icon: HeroModule['icon'] }) {
 
 function Hero({
   data,
-  goToRecallRadar,
-  goToDrugSignal,
-  goToFoodRadar,
-  goToCosmeticSignal,
+  goToPharmacySafety,
+  goToFoodSafety,
+  goToCosmeticSafety,
   goToAbout,
 }: HeroProps) {
   const topResult = data?.results?.[0]
 
   const moduleActions = {
-    recallradar: goToRecallRadar,
-    drugsignal: goToDrugSignal,
-    foodradar: goToFoodRadar,
-    cosmeticsignal: goToCosmeticSignal,
+    pharmacy: goToPharmacySafety,
+    food: goToFoodSafety,
+    cosmetic: goToCosmeticSafety,
   }
 
   return (
@@ -183,8 +173,8 @@ function Hero({
 
           <div className="signal-score">
             <div>
-              <p>{topResult ? 'Review priority from latest search' : 'Sample review priority'}</p>
-              <h2>{topResult ? topResult.risk_score.score : 82}</h2>
+              <p>{topResult ? 'Review priority from latest search' : 'Run a public-record search'}</p>
+              <h2>{topResult ? topResult.risk_score.score : '—'}</h2>
             </div>
             <div className="score-ring" aria-hidden="true"></div>
           </div>
@@ -201,7 +191,7 @@ function Hero({
 
         <div className="floating-card card-one">
           <small>Review signal</small>
-          <strong>{topResult ? topResult.risk_score.label : 'Source-backed'}</strong>
+          <strong>{topResult ? topResult.risk_score.label : 'Awaiting records'}</strong>
         </div>
 
         <div className="floating-card card-two">

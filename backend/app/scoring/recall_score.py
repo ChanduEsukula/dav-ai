@@ -1,5 +1,7 @@
 from datetime import datetime, timezone
 
+from app.scoring import RECALL_REVIEW_SCORE_VERSION
+
 
 CLASSIFICATION_WEIGHTS = {
     "Class I": 40,
@@ -44,7 +46,7 @@ def calculate_recall_risk_score(record: dict) -> dict:
             "recency_score": recency_score,
             "scope_score": scope_score,
         },
-        "score_version": "recall-review-priority-v0.2",
+        "score_version": RECALL_REVIEW_SCORE_VERSION,
     }
 
 

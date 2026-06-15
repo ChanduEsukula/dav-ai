@@ -62,9 +62,9 @@ test('shows quiet guidance for an empty universal search', async () => {
 
   await user.click(screen.getByRole('button', { name: 'Analyze' }))
 
-  expect(
-    screen.getByText(/Enter a product, drug, food, cosmetic, UPC, NDC, or lot term/i),
-  ).toBeInTheDocument()
+  expect(screen.getByRole('status')).toHaveTextContent(
+    /Enter a product, drug, brand, food, supplement, cosmetic, or ingredient/i,
+  )
   expect(mockSearchRecalls).not.toHaveBeenCalled()
 })
 
@@ -139,12 +139,18 @@ test('example chips clear previous universal search guidance', async () => {
   render(<UniversalSafetySearch goToPage={mockGoToPage} />)
 
   await user.click(screen.getByRole('button', { name: 'Analyze' }))
-  expect(screen.getByText(/Enter a product, drug, food/i)).toBeInTheDocument()
+  expect(screen.getByRole('status')).toHaveTextContent(
+    /Enter a product, drug, brand, food, supplement, cosmetic, or ingredient/i,
+  )
 
   await user.click(screen.getByRole('button', { name: 'Chicken' }))
 
   expect(
     await screen.findByText(/Chicken looks like a food or supplement search/i),
   ).toBeInTheDocument()
-  expect(screen.queryByText(/Enter a product, drug, food/i)).not.toBeInTheDocument()
+  expect(
+    screen.queryByText(
+      /Enter a product, drug, brand, food, supplement, cosmetic, or ingredient to search public records/i,
+    ),
+  ).not.toBeInTheDocument()
 })

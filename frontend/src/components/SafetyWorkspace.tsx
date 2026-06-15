@@ -1,8 +1,7 @@
 type SafetyWorkspaceProps = {
-  goToRecallRadar: () => void
-  goToDrugSignal: () => void
-  goToFoodRadar: () => void
-  goToCosmeticSignal: () => void
+  goToPharmacySafety: () => void
+  goToFoodSafety: () => void
+  goToCosmeticSafety: () => void
 }
 
 type SafetyModule = {
@@ -17,38 +16,29 @@ type SafetyModule = {
 
 const modules: SafetyModule[] = [
   {
-    title: 'RecallRadar',
-    eyebrow: 'Official recall lens',
-    description: 'Search recall records with review priority, status, and source trail.',
-    chips: ['Review priority', 'FDA class'],
-    actionLabel: 'Open RecallRadar',
+    title: 'Pharmacy Safety',
+    eyebrow: 'Drug safety workspace',
+    description: 'Review official recall records alongside public FAERS reporting patterns.',
+    chips: ['Drug recalls', 'FAERS patterns'],
+    actionLabel: 'Open Pharmacy Safety',
     variant: 'recall',
     onClick: () => {},
   },
   {
-    title: 'DrugSignal',
-    eyebrow: 'Adverse-event lens',
-    description: 'Compare public FAERS reporting patterns without treating reports as proof.',
-    chips: ['Review signal', 'Top reactions'],
-    actionLabel: 'Open DrugSignal',
-    variant: 'drug',
-    onClick: () => {},
-  },
-  {
-    title: 'FoodRadar',
-    eyebrow: 'Food and supplement lens',
+    title: 'Food Safety',
+    eyebrow: 'Food and supplement workspace',
     description: 'Check food, supplement, meat, poultry, and egg-product recall records.',
     chips: ['FDA food', 'USDA FSIS'],
-    actionLabel: 'Open FoodRadar',
+    actionLabel: 'Open Food Safety',
     variant: 'health',
     onClick: () => {},
   },
   {
-    title: 'CosmeticSignal',
-    eyebrow: 'Cosmetic source lens',
+    title: 'Cosmetic Safety',
+    eyebrow: 'Cosmetic event workspace',
     description: 'Review cosmetic-event public records with source context and careful limitations.',
     chips: ['Cosmetics', 'Source trail'],
-    actionLabel: 'Open CosmeticSignal',
+    actionLabel: 'Open Cosmetic Safety',
     variant: 'cosmetic',
     onClick: () => {},
   },
@@ -183,20 +173,20 @@ function SafetyDashboardCore() {
           <strong>Live public data overview</strong>
         </div>
 
-        <div className="safety-dashboard-card__metrics" aria-label="Public data metrics">
+        <div className="safety-dashboard-card__metrics" aria-label="Public data boundaries">
           <div className="safety-dashboard-metric safety-dashboard-metric--records">
-            <strong>24.6K</strong>
-            <span>Records scanned</span>
+            <strong>Official</strong>
+            <span>Public source records</span>
           </div>
 
           <div className="safety-dashboard-metric safety-dashboard-metric--weekly">
-            <strong>1.2K</strong>
-            <span>New this week</span>
+            <strong>Traceable</strong>
+            <span>Source + retrieval context</span>
           </div>
 
           <div className="safety-dashboard-metric safety-dashboard-metric--traceable">
-            <strong>98%</strong>
-            <span>Traceable</span>
+            <strong>Bounded</strong>
+            <span>Not medical advice</span>
           </div>
         </div>
 
@@ -218,22 +208,19 @@ function SafetyDashboardCore() {
 }
 
 function SafetyWorkspace({
-  goToRecallRadar,
-  goToDrugSignal,
-  goToFoodRadar,
-  goToCosmeticSignal,
+  goToPharmacySafety,
+  goToFoodSafety,
+  goToCosmeticSafety,
 }: SafetyWorkspaceProps) {
   const wiredModules: SafetyModule[] = [
-    { ...modules[0], onClick: goToRecallRadar },
-    { ...modules[1], onClick: goToDrugSignal },
-    { ...modules[2], onClick: goToFoodRadar },
-    { ...modules[3], onClick: goToCosmeticSignal },
+    { ...modules[0], onClick: goToPharmacySafety },
+    { ...modules[1], onClick: goToFoodSafety },
+    { ...modules[2], onClick: goToCosmeticSafety },
   ]
 
-  const recallModule = wiredModules[0]
-  const drugModule = wiredModules[1]
-  const foodModule = wiredModules[2]
-  const cosmeticModule = wiredModules[3]
+  const pharmacyModule = wiredModules[0]
+  const foodModule = wiredModules[1]
+  const cosmeticModule = wiredModules[2]
 
   return (
     <section className="safety-workspace" aria-label="Safety intelligence workspace">
@@ -244,21 +231,20 @@ function SafetyWorkspace({
         </div>
 
         <p>
-          Four public-data lenses connect to one source-aware intelligence dashboard for faster
+          Three public-data workspaces connect to one source-aware intelligence dashboard for faster
           search, comparison, and source verification.
         </p>
       </div>
 
       <div className="safety-workspace__dashboard-layout">
         <div className="safety-workspace__module-stack">
-          <SafetyLensCard module={recallModule} />
+          <SafetyLensCard module={pharmacyModule} />
           <SafetyLensCard module={foodModule} />
         </div>
 
         <SafetyDashboardCore />
 
         <div className="safety-workspace__module-stack">
-          <SafetyLensCard module={drugModule} />
           <SafetyLensCard module={cosmeticModule} />
         </div>
       </div>
@@ -266,8 +252,8 @@ function SafetyWorkspace({
       <div className="safety-workspace__bridge">
         <strong>Recommended workflow:</strong>
         <span>
-          Start with RecallRadar, compare with DrugSignal, then verify FoodRadar or CosmeticSignal
-          source records.
+          Choose the product area, review returned records, then verify the source and audit
+          context before acting.
         </span>
       </div>
     </section>

@@ -167,7 +167,7 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
       setError('')
       setNotice('')
       setHelper(
-        'Enter a product, drug, food, cosmetic, UPC, NDC, or lot term to search public records.',
+        'Enter a product, drug, brand, food, supplement, cosmetic, or ingredient to search public records.',
       )
       return
     }
@@ -275,8 +275,8 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
         <p className="eyebrow">Universal safety search</p>
         <h2>Search across Dav AI records.</h2>
         <p>
-          Enter a product, drug, brand, food, supplement, cosmetic, UPC, NDC, or lot number. Dav AI
-          checks the most relevant public-data workflow first.
+          Enter a product, drug, brand, food, supplement, cosmetic, or ingredient. Dav AI checks
+          the most relevant public-data workflow first using keyword-based public-record searches.
         </p>
       </div>
 

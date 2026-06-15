@@ -5,6 +5,7 @@ from typing import Any
 from app.audit.audit_event import build_audit_event
 from app.db.audit_repository import get_latest_audit_event_for_query, save_audit_event
 from app.db.source_pull_repository import save_source_pull_with_snapshot
+from app.scoring import DRUG_SIGNAL_SCORE_VERSION
 from app.scoring.drug_signal_score import calculate_drug_signal_intelligence_score
 from app.scoring.reaction_classifier import (
     REACTION_CLASSIFIER_VERSION,
@@ -103,7 +104,7 @@ def _persist_drug_event_error_audit(
         upstream_status="error",
         record_count=0,
         transform_version="drug-event-transform-v0.1",
-        score_version="drug-signal-score-v0.1",
+        score_version=DRUG_SIGNAL_SCORE_VERSION,
         error_message=error_message,
     )
 
@@ -184,7 +185,7 @@ async def execute_drug_signal_search(
             upstream_status=upstream_status,
             record_count=len(raw_results),
             transform_version="drug-event-transform-v0.1",
-            score_version="drug-signal-score-v0.1",
+            score_version=DRUG_SIGNAL_SCORE_VERSION,
         )
 
         _save_audit_event_with_request_id(audit_event, request_id=request_id)

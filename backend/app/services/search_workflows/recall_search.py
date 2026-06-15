@@ -4,6 +4,7 @@ from typing import Any
 from app.audit.audit_event import build_audit_event
 from app.db.audit_repository import save_audit_event
 from app.db.source_pull_repository import save_source_pull_with_snapshot
+from app.scoring import RECALL_REVIEW_SCORE_VERSION
 from app.scoring.recall_score import calculate_recall_risk_score
 from app.services.openfda_client import OpenFDAClient
 from app.services.recall_semantic_candidates import build_recall_semantic_candidates
@@ -78,7 +79,7 @@ def _persist_recall_error_audit(
         upstream_status="error",
         record_count=0,
         transform_version="recall-transform-v0.1",
-        score_version="recall-risk-v0.1",
+        score_version=RECALL_REVIEW_SCORE_VERSION,
         error_message=error_message,
     )
 
@@ -180,7 +181,7 @@ async def execute_recall_search(
             upstream_status=upstream_status,
             record_count=len(normalized_results),
             transform_version="recall-transform-v0.1",
-            score_version="recall-risk-v0.1",
+            score_version=RECALL_REVIEW_SCORE_VERSION,
         )
 
         _save_audit_event_with_request_id(audit_event, request_id=request_id)
@@ -204,7 +205,7 @@ async def execute_recall_search(
             "source_name": payload["source_name"],
             "endpoint": payload["endpoint"],
             "retrieval_timestamp": payload["retrieval_timestamp"],
-            "score_version": "recall-risk-v0.1",
+            "score_version": RECALL_REVIEW_SCORE_VERSION,
             "sort": sort,
             "medical_disclaimer": "Dav AI provides public-data safety intelligence only. It is not medical advice, diagnostic output, or care guidance.",
             "audit": {

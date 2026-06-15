@@ -380,6 +380,23 @@ describe('SavedMonitorsPage', () => {
     })
   })
 
+  it('hides CosmeticSignal from monitor creation until backend parity exists', async () => {
+    vi.mocked(listSavedMonitors).mockResolvedValue([])
+
+    render(<SavedMonitorsPage />)
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          'No saved monitors yet. Create one above to start the monitoring workflow.',
+        ),
+      ).toBeInTheDocument()
+    })
+
+    expect(screen.queryByRole('option', { name: 'CosmeticSignal' })).not.toBeInTheDocument()
+    expect(screen.getByText(/Cosmetic monitor creation/i)).toBeInTheDocument()
+  })
+
   it('creates a Regional Health Pulse saved monitor with query guidance', async () => {
     vi.mocked(listSavedMonitors).mockResolvedValue([])
     vi.mocked(createSavedMonitor).mockResolvedValue({

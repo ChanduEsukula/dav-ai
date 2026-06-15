@@ -19,7 +19,6 @@ vi.mock('../api/cosmeticEvents', async () => {
 
 const mockSearchCosmeticEvents = vi.mocked(searchCosmeticEvents)
 const mockGoToPage = vi.fn()
-const mockGoToCosmeticSignal = vi.fn()
 
 const sunscreenProduct = 'Solstice Daily Mineral Sunscreen SPF 50'
 
@@ -121,7 +120,6 @@ function renderCosmeticPage(initialQuery = 'Sunscreen') {
   return render(
     <CosmeticSafetyPage
       initialQuery={initialQuery}
-      goToCosmeticSignal={mockGoToCosmeticSignal}
       goToPage={mockGoToPage}
     />,
   )
@@ -129,7 +127,6 @@ function renderCosmeticPage(initialQuery = 'Sunscreen') {
 
 beforeEach(() => {
   mockGoToPage.mockReset()
-  mockGoToCosmeticSignal.mockReset()
   mockSearchCosmeticEvents.mockReset()
   mockSearchCosmeticEvents.mockResolvedValue(cosmeticResponse)
   window.history.replaceState(null, '', '?page=cosmetic-safety&q=Sunscreen')
@@ -276,6 +273,8 @@ test('zero reports show calm guidance without claiming the cosmetic is safe', as
   expect(screen.queryByText(/This cosmetic is safe/i)).not.toBeInTheDocument()
   expect(screen.queryByText(/0\s*\/\s*100/i)).not.toBeInTheDocument()
   expect(screen.getAllByText(/No returned reports/i)).not.toHaveLength(0)
+  expect(screen.getAllByText('Not assessable')).not.toHaveLength(0)
+  expect(screen.queryByText('Limited')).not.toBeInTheDocument()
 })
 
 test('a typo suggestion appears beside the Cosmetic search area', async () => {
@@ -348,7 +347,6 @@ test('a changed route initialQuery reloads the normalized Cosmetic query', async
   rerender(
     <CosmeticSafetyPage
       initialQuery="  Hair   dye "
-      goToCosmeticSignal={mockGoToCosmeticSignal}
       goToPage={mockGoToPage}
     />,
   )

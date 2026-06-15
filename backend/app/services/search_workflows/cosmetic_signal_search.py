@@ -5,6 +5,7 @@ from typing import Any
 from app.audit.audit_event import build_audit_event
 from app.db.audit_repository import save_audit_event
 from app.db.source_pull_repository import save_source_pull_with_snapshot
+from app.scoring import COSMETIC_SIGNAL_SCORE_VERSION
 from app.services.openfda_cosmetic_event_client import OpenFDACosmeticEventClient
 from app.sources.registry import OPENFDA_COSMETIC_EVENT
 
@@ -59,7 +60,7 @@ def _persist_cosmetic_error_audit(
         upstream_status="error",
         record_count=0,
         transform_version="cosmetic-event-transform-v0.1",
-        score_version="cosmetic-signal-score-v0.1",
+        score_version=COSMETIC_SIGNAL_SCORE_VERSION,
         error_message=error_message,
     )
 
@@ -188,7 +189,7 @@ def _calculate_cosmetic_signal_score(
         "data_confidence": data_confidence,
         "top_reaction_concentration": concentration,
         "review_priority": priority,
-        "score_version": "cosmetic-signal-score-v0.1",
+        "score_version": COSMETIC_SIGNAL_SCORE_VERSION,
         "limitations": [
             "Cosmetic adverse-event reports do not prove that a product caused a reaction.",
             "Reports may be incomplete, duplicated, delayed, or influenced by reporting behavior.",
@@ -247,7 +248,7 @@ async def execute_cosmetic_signal_search(
             upstream_status=upstream_status,
             record_count=len(raw_results),
             transform_version="cosmetic-event-transform-v0.1",
-            score_version="cosmetic-signal-score-v0.1",
+            score_version=COSMETIC_SIGNAL_SCORE_VERSION,
         )
 
         _save_audit_event_with_request_id(audit_event, request_id=request_id)

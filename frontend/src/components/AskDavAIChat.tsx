@@ -116,6 +116,10 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
     }
   }
 
+  if (!context) {
+    return null
+  }
+
   return (
     <section className="ask-dav-ai-chat" aria-label="Ask DAV AI chatbot">
       <button
@@ -149,49 +153,39 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
             <p>{contextLabel(context)}</p>
           </div>
 
-          {!context && (
-            <div className="ask-dav-ai-chat__empty" role="status">
-              Search RecallRadar, DrugSignal, FoodRadar, or CosmeticSignal first, then ask about the current public-source result.
-            </div>
-          )}
-
-          {context && (
-            <>
-              <div className="ask-dav-ai-chat__prompts" aria-label="Suggested questions">
-                {prompts.map((prompt) => (
-                  <button
-                    type="button"
-                    key={prompt.label}
-                    onClick={() => submitQuestion(prompt.question)}
-                    disabled={loading}
-                  >
-                    {prompt.label}
-                  </button>
-                ))}
-              </div>
-
-              <form
-                className="ask-dav-ai-chat__form"
-                onSubmit={(event) => {
-                  event.preventDefault()
-                  submitQuestion(question)
-                }}
+          <div className="ask-dav-ai-chat__prompts" aria-label="Suggested questions">
+            {prompts.map((prompt) => (
+              <button
+                type="button"
+                key={prompt.label}
+                onClick={() => submitQuestion(prompt.question)}
+                disabled={loading}
               >
-                <label htmlFor="ask-dav-ai-question">Ask about the current public-data result</label>
-                <div>
-                  <input
-                    id="ask-dav-ai-question"
-                    value={question}
-                    onChange={(event) => setQuestion(event.target.value)}
-                    placeholder="Example: What should I verify?"
-                  />
-                  <button type="submit" disabled={loading || !question.trim()}>
-                    {loading ? 'Asking...' : 'Ask'}
-                  </button>
-                </div>
-              </form>
-            </>
-          )}
+                {prompt.label}
+              </button>
+            ))}
+          </div>
+
+          <form
+            className="ask-dav-ai-chat__form"
+            onSubmit={(event) => {
+              event.preventDefault()
+              submitQuestion(question)
+            }}
+          >
+            <label htmlFor="ask-dav-ai-question">Ask about the current public-data result</label>
+            <div>
+              <input
+                id="ask-dav-ai-question"
+                value={question}
+                onChange={(event) => setQuestion(event.target.value)}
+                placeholder="Example: What should I verify?"
+              />
+              <button type="submit" disabled={loading || !question.trim()}>
+                {loading ? 'Asking...' : 'Ask'}
+              </button>
+            </div>
+          </form>
 
           {error && (
             <p className="ask-dav-ai-chat__error" role="alert">

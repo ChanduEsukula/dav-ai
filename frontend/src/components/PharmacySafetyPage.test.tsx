@@ -223,7 +223,9 @@ test('empty input falls back to the submitted Pharmacy query', async () => {
   })
 
   expect(mockSearchRecalls).toHaveBeenLastCalledWith('Xanax', 8, 'score')
-  expect(screen.queryByText(/Enter a product, drug, food/i)).not.toBeInTheDocument()
+  expect(
+    screen.queryByText(/Enter a drug, brand, active ingredient, or product wording/i),
+  ).not.toBeInTheDocument()
 })
 
 test('spaces-only input falls back to the submitted Pharmacy query', async () => {
@@ -256,7 +258,7 @@ test.each(['', '   '])(
 
     expect(
       screen.getByText(
-        /Enter a product, drug, food, cosmetic, UPC, NDC, or lot term/i,
+        /Enter a drug, brand, active ingredient, or product wording/i,
       ),
     ).toBeInTheDocument()
     expect(mockSearchRecalls).not.toHaveBeenCalled()
@@ -283,14 +285,18 @@ test('example search clears previous empty-search guidance', async () => {
   renderPharmacyPage('')
 
   await user.click(screen.getByRole('button', { name: 'Search' }))
-  expect(screen.getByText(/Enter a product, drug, food/i)).toBeInTheDocument()
+  expect(screen.getByRole('status')).toHaveTextContent(
+    /Enter a drug, brand, active ingredient, or product wording/i,
+  )
 
   await user.click(screen.getByRole('button', { name: 'Metformin' }))
 
   await waitFor(() => {
     expect(mockSearchRecalls).toHaveBeenCalledWith('Metformin', 8, 'score')
   })
-  expect(screen.queryByText(/Enter a product, drug, food/i)).not.toBeInTheDocument()
+  expect(
+    screen.queryByText(/Enter a drug, brand, active ingredient, or product wording/i),
+  ).not.toBeInTheDocument()
 })
 
 test.each([
@@ -342,6 +348,7 @@ test('shows zero-result spelling guidance and runs the hardcoded typo correction
   ).not.toBe(0)
   expect(screen.queryByText('52/100')).not.toBeInTheDocument()
   expect(screen.getAllByText('No returned reports')).not.toHaveLength(0)
+  expect(screen.getByText('Not assessable')).toBeInTheDocument()
   expect(screen.queryByText('Moderate')).not.toBeInTheDocument()
 
   await user.click(screen.getByRole('button', { name: /Use Metformin/i }))

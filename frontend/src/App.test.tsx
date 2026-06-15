@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { searchDrugEvents } from './api/drugEvents'
 import { searchRecalls } from './api/recalls'
 import App from './App'
@@ -90,25 +90,19 @@ test('renders Dav AI landing page', () => {
 
   expect(
     screen.getByRole('button', {
-      name: /RecallRadar.*Find recall records/i,
+      name: /Pharmacy Safety.*Recalls \+ adverse-event patterns/i,
     }),
   ).toBeInTheDocument()
 
   expect(
     screen.getByRole('button', {
-      name: /DrugSignal.*Side-effect patterns/i,
+      name: /Food Safety.*Food & supplement recalls/i,
     }),
   ).toBeInTheDocument()
 
   expect(
     screen.getByRole('button', {
-      name: /FoodRadar.*Food & supplement recalls/i,
-    }),
-  ).toBeInTheDocument()
-
-  expect(
-    screen.getByRole('button', {
-      name: /CosmeticSignal.*Cosmetic safety records/i,
+      name: /Cosmetic Safety.*Public cosmetic-event reports/i,
     }),
   ).toBeInTheDocument()
 
@@ -135,6 +129,13 @@ test('renders Dav AI landing page', () => {
       name: /Explore public FAERS adverse-event reporting patterns/i,
     }),
   ).not.toBeInTheDocument()
+
+  expect(screen.queryByText('24.6K')).not.toBeInTheDocument()
+  expect(screen.queryByText('1.2K')).not.toBeInTheDocument()
+  expect(screen.queryByText('98%')).not.toBeInTheDocument()
+  expect(screen.getByText('Public source records')).toBeInTheDocument()
+  expect(screen.getByText('Source + retrieval context')).toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: /Ask DAV AI/i })).not.toBeInTheDocument()
 })
 
 test('does not expose placeholder account pages in the main demo navigation', () => {
@@ -172,4 +173,30 @@ test('updates a detail page when browser history changes only the query', async 
     await screen.findByRole('heading', { name: /Safety review for Metformin/i }),
   ).toBeInTheDocument()
   expect(mockSearchRecalls).toHaveBeenLastCalledWith('Metformin', 8, 'score')
+})
+
+test('uses canonical active navigation and clears stale audit parameters', async () => {
+  window.history.replaceState(
+    null,
+    '',
+    '/?page=pharmacy-safety&q=Xanax&audit_id=stale-audit',
+  )
+  render(<App />)
+
+  expect(
+    await screen.findByRole('heading', { name: /Safety review for Xanax/i }),
+  ).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Pharmacy Safety' })).toHaveAttribute(
+    'aria-current',
+    'page',
+  )
+
+  fireEvent.click(screen.getByRole('button', { name: 'Food Safety' }))
+
+  expect(
+    await screen.findByRole('heading', {
+      name: /Search food and supplement safety records/i,
+    }),
+  ).toBeInTheDocument()
+  expect(new URLSearchParams(window.location.search).get('audit_id')).toBeNull()
 })

@@ -78,7 +78,7 @@ def test_search_recalls_returns_normalized_results():
     assert body["count"] == 1
     assert body["source_name"] == "openFDA Drug Enforcement API"
     assert body["endpoint"] == "https://api.fda.gov/drug/enforcement.json"
-    assert body["score_version"] == "recall-risk-v0.1"
+    assert body["score_version"] == "recall-review-priority-v0.2"
     assert body["medical_disclaimer"]
 
     assert body["audit"]["source_id"] == "openfda_drug_enforcement"
@@ -114,7 +114,7 @@ def test_search_recalls_returns_empty_results_for_no_matches():
     assert body["results"] == []
     assert body["source_name"] == "openFDA Drug Enforcement API"
     assert body["endpoint"] == "https://api.fda.gov/drug/enforcement.json"
-    assert body["score_version"] == "recall-risk-v0.1"
+    assert body["score_version"] == "recall-review-priority-v0.2"
     assert body["medical_disclaimer"]
 
     assert body["audit"]["source_id"] == "openfda_drug_enforcement"
@@ -165,7 +165,7 @@ def test_search_recalls_returns_502_and_persists_error_audit(monkeypatch):
     assert audit_event["upstream_status"] == "error"
     assert audit_event["record_count"] == 0
     assert audit_event["transform_version"] == "recall-transform-v0.1"
-    assert audit_event["score_version"] == "recall-risk-v0.1"
+    assert audit_event["score_version"] == "recall-review-priority-v0.2"
     assert "openFDA unavailable" in audit_event["error_message"]
     assert audit_event["audit_id"]
     assert audit_event["retrieval_timestamp"]
