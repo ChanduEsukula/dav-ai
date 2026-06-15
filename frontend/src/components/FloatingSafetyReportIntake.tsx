@@ -269,12 +269,14 @@ export default function FloatingSafetyReportIntake() {
         <div className="floating-safety-report-overlay" role="presentation">
           <section
             className="floating-safety-report-drawer"
-            aria-label="Generate a public safety report"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="floating-safety-report-title"
           >
             <header className="floating-safety-report-header">
               <div>
                 <p className="floating-safety-report-kicker">Public-data safety intelligence</p>
-                <h2>Generate a Safety Report</h2>
+                <h2 id="floating-safety-report-title">Generate a Safety Report</h2>
                 <p>
                   Search FDA/openFDA and public recall data for recalls and safety-signal patterns.
                   This is not medical advice.
@@ -291,9 +293,24 @@ export default function FloatingSafetyReportIntake() {
             </header>
 
             <div className="floating-safety-report-steps" aria-label="Report intake progress">
-              <span className={step === "intake" ? "is-active" : ""}>1. Details</span>
-              <span className={step === "review" ? "is-active" : ""}>2. Review</span>
-              <span className={step === "preview" ? "is-active" : ""}>3. Preview</span>
+              <span
+                className={step === "intake" ? "is-active" : ""}
+                aria-current={step === "intake" ? "step" : undefined}
+              >
+                1. Details
+              </span>
+              <span
+                className={step === "review" ? "is-active" : ""}
+                aria-current={step === "review" ? "step" : undefined}
+              >
+                2. Review
+              </span>
+              <span
+                className={step === "preview" ? "is-active" : ""}
+                aria-current={step === "preview" ? "step" : undefined}
+              >
+                3. Preview
+              </span>
             </div>
 
             {step === "intake" && (

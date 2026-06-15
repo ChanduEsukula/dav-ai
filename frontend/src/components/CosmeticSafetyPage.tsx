@@ -1,0 +1,704 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  searchCosmeticEvents,
+  type CosmeticEventRecord,
+  type CosmeticEventSearchResponse,
+  type CosmeticProduct,
+} from '../api/cosmeticEvents'
+import type { ActivePage } from '../types/navigation'
+import { formatDate, formatTimestamp } from '../utils/recallFormatters'
+import {
+  getSearchComparisonKey,
+  getTypoSuggestion,
+  getWrongCategorySuggestion,
+  normalizeSearchTerm,
+} from '../utils/safetyRouteClassifier'
+
+type CosmeticSafetyPageProps = {
+  initialQuery: string
+  goToCosmeticSignal: () => void
+  goToPage: (page: ActivePage, query?: string) => void
+}
+
+type CosmeticSearchOptions = {
+  updateUrl?: boolean
+  skipIfCompleted?: boolean
+}
+
+const cosmeticExamples = ['Sunscreen', 'Shampoo', 'Lipstick', 'Moisturizer', 'Hair dye']
+
+function getCosmeticReportTitle(record: CosmeticEventRecord) {
+  const product = record.products[0]
+
+  return (
+    product?.brand_name ||
+    product?.name_brand ||
+    product?.industry_name ||
+    (record.report_number ? `Cosmetic report ${record.report_number}` : null) ||
+    'Cosmetic event report'
+  )
+}
+
+function productDetails(product: CosmeticProduct, index: number) {
+  return {
+    label:
+      product.brand_name ||
+      product.name_brand ||
+      product.industry_name ||
+      `Product ${index + 1}`,
+    brand: product.brand_name || product.name_brand || 'Not listed',
+    industry: product.industry_name || 'Not listed',
+    industryCode: product.industry_code || 'Not listed',
+  }
+}
+
+function compactList(values: string[], emptyLabel = 'Not listed') {
+  if (values.length === 0) return emptyLabel
+  return values.slice(0, 3).join(', ')
+}
+
+function CosmeticReportRow({
+  record,
+  index,
+  sourceName,
+  sourceEndpoint,
+  retrievalTimestamp,
+}: {
+  record: CosmeticEventRecord
+  index: number
+  sourceName: string
+  sourceEndpoint: string
+  retrievalTimestamp: string
+}) {
+  const reportTitle = getCosmeticReportTitle(record)
+
+  return (
+    <details
+      className="pharmacy-record-row cosmetic-record-row"
+      key={`${record.report_number ?? 'cosmetic-report'}-${index}`}
+    >
+      <summary>
+        <span className="pharmacy-record-row__product">
+          <span className="pharmacy-record-row__badges">
+            <small>{record.serious ? `Serious: ${record.serious}` : 'Serious not listed'}</small>
+            <small>
+              {record.reactions.length} reaction{record.reactions.length === 1 ? '' : 's'}
+            </small>
+          </span>
+          <strong title={reportTitle}>{reportTitle}</strong>
+          <span>{record.report_number || 'Report number not listed'}</span>
+        </span>
+
+        <span className="pharmacy-record-row__firm">
+          <strong>{compactList(record.reactions)}</strong>
+          <span>Top reported reactions</span>
+        </span>
+
+        <span className="pharmacy-record-row__date">
+          <strong>{formatDate(record.report_date)}</strong>
+          <span>{record.outcomes.length ? compactList(record.outcomes) : 'Outcome not listed'}</span>
+        </span>
+
+        <span className="pharmacy-record-row__arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </span>
+      </summary>
+
+      <div className="pharmacy-record-details cosmetic-record-details">
+        <div className="pharmacy-record-details__wide">
+          <span>Reported reactions</span>
+          <strong>{record.reactions.length ? record.reactions.join(', ') : 'Not listed'}</strong>
+        </div>
+
+        <div className="pharmacy-record-details__wide">
+          <span>Reported outcomes</span>
+          <strong>{record.outcomes.length ? record.outcomes.join(', ') : 'Not listed'}</strong>
+        </div>
+
+        <div>
+          <span>Report number</span>
+          <strong>{record.report_number || 'Not listed'}</strong>
+        </div>
+
+        <div>
+          <span>Report date</span>
+          <strong>{formatDate(record.report_date)}</strong>
+        </div>
+
+        <div>
+          <span>Serious</span>
+          <strong>{record.serious || 'Not listed'}</strong>
+        </div>
+
+        <div>
+          <span>Products listed</span>
+          <strong>{record.products.length}</strong>
+        </div>
+
+        <div className="pharmacy-record-details__wide cosmetic-product-details">
+          <span>Product, brand, and industry details</span>
+          {record.products.length > 0 ? (
+            <div className="cosmetic-product-list">
+              {record.products.map((product, productIndex) => {
+                const details = productDetails(product, productIndex)
+
+                return (
+                  <article key={`${details.label}-${productIndex}`}>
+                    <strong>{details.label}</strong>
+                    <p>Brand: {details.brand}</p>
+                    <p>Industry: {details.industry}</p>
+                    <p>Industry code: {details.industryCode}</p>
+                  </article>
+                )
+              })}
+            </div>
+          ) : (
+            <strong>Not listed</strong>
+          )}
+        </div>
+
+        <div>
+          <span>Source</span>
+          <strong>{sourceName}</strong>
+        </div>
+
+        <div>
+          <span>Retrieved</span>
+          <strong>{formatTimestamp(retrievalTimestamp)}</strong>
+        </div>
+
+        <div className="pharmacy-record-details__wide">
+          <span>Source endpoint</span>
+          <strong>{sourceEndpoint}</strong>
+        </div>
+      </div>
+    </details>
+  )
+}
+
+function updateCosmeticQueryInUrl(query: string, mode: 'push' | 'replace') {
+  const url = new URL(window.location.href)
+  const currentPage = url.searchParams.get('page')
+  const currentQuery = url.searchParams.get('q') ?? ''
+
+  if (currentPage === 'cosmetic-safety' && currentQuery === query) return
+
+  url.searchParams.set('page', 'cosmetic-safety')
+  url.searchParams.set('q', query)
+
+  if (mode === 'push') {
+    window.history.pushState(null, '', url.toString())
+  } else {
+    window.history.replaceState(null, '', url.toString())
+  }
+}
+
+function CosmeticSafetyPage({ initialQuery, goToPage }: CosmeticSafetyPageProps) {
+  const normalizedInitialQuery = normalizeSearchTerm(initialQuery)
+  const [query, setQuery] = useState(normalizedInitialQuery)
+  const [submittedQuery, setSubmittedQuery] = useState(normalizedInitialQuery)
+  const [data, setData] = useState<CosmeticEventSearchResponse | null>(null)
+  const [loading, setLoading] = useState(Boolean(normalizedInitialQuery))
+  const [error, setError] = useState('')
+  const [helper, setHelper] = useState('')
+  const requestIdRef = useRef(0)
+  const inFlightKeyRef = useRef('')
+  const completedKeyRef = useRef('')
+  const isMountedRef = useRef(true)
+
+  useEffect(() => {
+    isMountedRef.current = true
+
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
+
+  const loadCosmeticReports = useCallback(
+    async (nextQuery: string, options: CosmeticSearchOptions = {}) => {
+      const cleanQuery = normalizeSearchTerm(nextQuery)
+      if (!cleanQuery) return
+
+      const requestKey = getSearchComparisonKey(cleanQuery)
+      if (inFlightKeyRef.current === requestKey) return
+
+      if (options.skipIfCompleted && completedKeyRef.current === requestKey) {
+        setQuery(cleanQuery)
+        setSubmittedQuery(cleanQuery)
+        setError('')
+        setHelper('')
+        return
+      }
+
+      const requestId = requestIdRef.current + 1
+      requestIdRef.current = requestId
+      inFlightKeyRef.current = requestKey
+      completedKeyRef.current = ''
+
+      setQuery(cleanQuery)
+      setSubmittedQuery(cleanQuery)
+      setData(null)
+      setLoading(true)
+      setError('')
+      setHelper('')
+
+      if (options.updateUrl) {
+        updateCosmeticQueryInUrl(cleanQuery, 'push')
+      }
+
+      try {
+        const response = await searchCosmeticEvents(cleanQuery, 8)
+
+        if (!isMountedRef.current || requestId !== requestIdRef.current) return
+
+        setData(response)
+        completedKeyRef.current = requestKey
+      } catch {
+        if (isMountedRef.current && requestId === requestIdRef.current) {
+          setError('Unable to load public records. Check backend/source availability.')
+        }
+      } finally {
+        if (isMountedRef.current && requestId === requestIdRef.current) {
+          inFlightKeyRef.current = ''
+          setLoading(false)
+        }
+      }
+    },
+    [],
+  )
+
+  useEffect(() => {
+    const cleanQuery = normalizeSearchTerm(initialQuery)
+    let isCurrentEffect = true
+
+    async function syncInitialQuery() {
+      if (!cleanQuery) {
+        await Promise.resolve()
+        if (!isCurrentEffect) return
+
+        requestIdRef.current += 1
+        inFlightKeyRef.current = ''
+        completedKeyRef.current = ''
+        setQuery('')
+        setSubmittedQuery('')
+        setData(null)
+        setLoading(false)
+        setError('')
+        setHelper('')
+        return
+      }
+
+      const urlQuery = new URLSearchParams(window.location.search).get('q') ?? ''
+      if (urlQuery !== cleanQuery) {
+        updateCosmeticQueryInUrl(cleanQuery, 'replace')
+      }
+
+      await loadCosmeticReports(cleanQuery, { skipIfCompleted: true })
+    }
+
+    void syncInitialQuery()
+
+    return () => {
+      isCurrentEffect = false
+    }
+  }, [initialQuery, loadCosmeticReports])
+
+  function handleSearch() {
+    const cleanInput = normalizeSearchTerm(query)
+    const cleanSubmittedQuery = normalizeSearchTerm(submittedQuery)
+
+    if (!cleanInput && !cleanSubmittedQuery) {
+      setError('')
+      setHelper(
+        'Enter a cosmetic, brand, ingredient, or personal-care product to search public reports.',
+      )
+      return
+    }
+
+    if (!cleanInput) {
+      void loadCosmeticReports(cleanSubmittedQuery)
+      return
+    }
+
+    void loadCosmeticReports(cleanInput, {
+      updateUrl: true,
+      skipIfCompleted: true,
+    })
+  }
+
+  function handleExampleClick(example: string) {
+    setQuery(example)
+    setError('')
+    setHelper('')
+    void loadCosmeticReports(example, {
+      updateUrl: true,
+      skipIfCompleted: true,
+    })
+  }
+
+  function handleTypoSuggestion(correctedQuery: string) {
+    setQuery(correctedQuery)
+    void loadCosmeticReports(correctedQuery, { updateUrl: true })
+  }
+
+  const records = data?.records ?? []
+  const displayQuery = submittedQuery || 'a cosmetic or personal-care product'
+  const topReaction = data?.top_reactions[0] ?? null
+  const topReactions = data?.top_reactions.slice(0, 5) ?? []
+  const topReactionCount = Math.max(topReaction?.count ?? 0, 1)
+  const wrongCategorySuggestion = useMemo(
+    () => getWrongCategorySuggestion('cosmetic', submittedQuery),
+    [submittedQuery],
+  )
+  const typoSuggestion = data?.count === 0 ? getTypoSuggestion(submittedQuery) : null
+  const routeSuggestionLabel = wrongCategorySuggestion?.label
+  const hasZeroReports = data?.count === 0 && !loading
+  const hasWrongCategoryOnly = Boolean(wrongCategorySuggestion && hasZeroReports)
+
+  return (
+    <section className="safety-area-page safety-area-page--cosmetic pharmacy-detail-page cosmetic-detail-page">
+      <header className="pharmacy-overview cosmetic-overview">
+        <div className="pharmacy-overview__main">
+          <p className="eyebrow">Cosmetic Safety</p>
+
+          <h1>
+            {submittedQuery ? (
+              <>
+                Safety review for <span>{submittedQuery}</span>
+              </>
+            ) : (
+              'Search cosmetic-event reports'
+            )}
+          </h1>
+
+          <p className="pharmacy-overview__description">
+            Review public cosmetic-event reports, reactions, product context, and source
+            limitations.
+          </p>
+
+          <form
+            className="pharmacy-page-search cosmetic-page-search"
+            onSubmit={(event) => {
+              event.preventDefault()
+              handleSearch()
+            }}
+          >
+            <label htmlFor="cosmetic-page-search">Search cosmetic-event reports</label>
+            <div>
+              <input
+                id="cosmetic-page-search"
+                value={query}
+                onChange={(event) => {
+                  setQuery(event.target.value)
+                  if (helper) setHelper('')
+                }}
+                placeholder="Search another cosmetic, brand, ingredient, or personal-care product"
+              />
+              <button type="submit" disabled={loading}>
+                {loading ? 'Checking...' : 'Search'}
+              </button>
+            </div>
+          </form>
+
+          {(typoSuggestion || wrongCategorySuggestion) && !loading && (
+            <div className="pharmacy-query-guidance">
+              {typoSuggestion && (
+                <div
+                  className="pharmacy-typo-suggestion cosmetic-typo-suggestion"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <span>
+                    Spelling suggestion: did you mean <strong>{typoSuggestion}</strong>?
+                  </span>
+                  <button type="button" onClick={() => handleTypoSuggestion(typoSuggestion)}>
+                    Use {typoSuggestion}
+                  </button>
+                </div>
+              )}
+
+              {wrongCategorySuggestion && (
+                <aside className="safety-route-suggestion" aria-live="polite">
+                  <span>
+                    This looks more like a {routeSuggestionLabel} search. Open{' '}
+                    {routeSuggestionLabel} for better results?
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      goToPage(
+                        wrongCategorySuggestion.page,
+                        normalizeSearchTerm(submittedQuery),
+                      )
+                    }
+                  >
+                    Open {routeSuggestionLabel}
+                  </button>
+                </aside>
+              )}
+            </div>
+          )}
+
+          <div className="pharmacy-example-row" aria-label="Example cosmetic searches">
+            <span>Try</span>
+            {cosmeticExamples.map((example) => (
+              <button
+                key={example}
+                type="button"
+                onClick={() => handleExampleClick(example)}
+              >
+                {example}
+              </button>
+            ))}
+          </div>
+
+          <p className="pharmacy-source-line cosmetic-source-line">
+            <span aria-hidden="true" />
+            <strong>Public cosmetic reports</strong>
+            <span>FDA CAERS-style event records</span>
+            <span>Signal, not proof</span>
+          </p>
+        </div>
+      </header>
+
+      {loading && (
+        <p className="safety-area-status" role="status" aria-live="polite">
+          Checking cosmetic-event public reports...
+        </p>
+      )}
+
+      {error && (
+        <p className="error-message pharmacy-page-error" role="alert">
+          {error}
+        </p>
+      )}
+
+      {helper && (
+        <p className="safety-search-guidance" role="status">
+          {helper}
+        </p>
+      )}
+
+      {hasZeroReports && !hasWrongCategoryOnly && (
+        <aside className="safety-search-guidance" aria-live="polite">
+          <span>
+            No public reports returned for this exact search. Check spelling or try a simpler
+            brand/product term.
+          </span>
+        </aside>
+      )}
+
+      {data && (
+        <section
+          className="pharmacy-summary-strip cosmetic-summary-strip"
+          aria-label={`Summary for ${displayQuery}`}
+        >
+          <div className="pharmacy-summary-strip__query">
+            <small>Current query</small>
+            <strong>{displayQuery}</strong>
+            <span>Public event reports, not a product safety determination</span>
+          </div>
+
+          <dl className="pharmacy-summary-metrics">
+            <div>
+              <dt>Public reports</dt>
+              <dd>{data.count}</dd>
+            </div>
+            <div>
+              <dt>Top reaction</dt>
+              <dd title={topReaction?.reaction}>{topReaction?.reaction ?? 'None returned'}</dd>
+            </div>
+            <div>
+              <dt>Review signal</dt>
+              <dd>{data.count > 0 ? data.signal_score.label : 'No returned reports'}</dd>
+            </div>
+            <div>
+              <dt>Confidence</dt>
+              <dd>{data.signal_score.data_confidence}</dd>
+            </div>
+          </dl>
+        </section>
+      )}
+
+      <div className="pharmacy-workspace cosmetic-workspace">
+        <section
+          className="pharmacy-recall-panel cosmetic-record-panel"
+          id="cosmetic-event-reports"
+        >
+          <div className="pharmacy-panel-header">
+            <div>
+              <p className="eyebrow">Event reports</p>
+              <h2>Matched cosmetic reports</h2>
+              <span>
+                {data
+                  ? `Showing ${records.length} of ${data.count} returned report${
+                      data.count === 1 ? '' : 's'
+                    }`
+                  : 'Search to load cosmetic-event reports'}
+              </span>
+            </div>
+          </div>
+
+          {records.length > 0 && data ? (
+            <div className="pharmacy-record-table" aria-label="Cosmetic event search results">
+              <div className="pharmacy-record-table__head" aria-hidden="true">
+                <span>Product and report</span>
+                <span>Reactions</span>
+                <span>Date and outcome</span>
+                <span />
+              </div>
+
+              {records.map((record, index) => (
+                <CosmeticReportRow
+                  key={`${record.report_number ?? 'cosmetic-report'}-${index}`}
+                  record={record}
+                  index={index}
+                  sourceName={data.source_name}
+                  sourceEndpoint={data.endpoint}
+                  retrievalTimestamp={data.retrieval_timestamp}
+                />
+              ))}
+            </div>
+          ) : data ? (
+            <div className="pharmacy-empty-card cosmetic-empty-card">
+              <h3>
+                {hasWrongCategoryOnly
+                  ? `This looks better suited for ${routeSuggestionLabel}.`
+                  : 'No matching cosmetic-event reports returned.'}
+              </h3>
+              <p>
+                {hasWrongCategoryOnly
+                  ? `Open ${routeSuggestionLabel} to review the more relevant public records for this search.`
+                  : 'Try a simpler brand, product, ingredient, or personal-care category. No result does not prove a cosmetic is safe.'}
+              </p>
+            </div>
+          ) : (
+            <div className="pharmacy-empty-card pharmacy-empty-card--quiet">
+              <h3>Cosmetic-event reports will appear here.</h3>
+              <p>Search above to review public reports, reactions, outcomes, and product context.</p>
+            </div>
+          )}
+        </section>
+
+        <aside className="pharmacy-insight-rail">
+          <section className="pharmacy-insight-card cosmetic-signal-card">
+            <div className="pharmacy-insight-card__header">
+              <div>
+                <p className="eyebrow">Signal summary</p>
+                <h2>{hasZeroReports ? 'No returned-report signal' : 'Public reporting pattern'}</h2>
+              </div>
+              {data && (
+                <span className="cosmetic-signal-badge">
+                  {data.count > 0 ? `${data.signal_score.score}/100` : 'No reports'}
+                </span>
+              )}
+            </div>
+
+            {data ? (
+              <>
+                <dl className="pharmacy-event-metrics cosmetic-signal-metrics">
+                  <div>
+                    <dt>Signal</dt>
+                    <dd>{data.count > 0 ? data.signal_score.label : 'No returned reports'}</dd>
+                  </div>
+                  <div>
+                    <dt>Priority</dt>
+                    <dd>
+                      {data.count > 0
+                        ? data.signal_score.review_priority
+                        : 'Verify other sources'}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Confidence</dt>
+                    <dd>{data.signal_score.data_confidence}</dd>
+                  </div>
+                  <div>
+                    <dt>Top concentration</dt>
+                    <dd>
+                      {data.count > 0
+                        ? `${data.signal_score.top_reaction_concentration}%`
+                        : 'N/A'}
+                    </dd>
+                  </div>
+                </dl>
+
+                <div className="pharmacy-reaction-summary">
+                  <div className="pharmacy-subsection-heading">
+                    <strong>Top reported reactions</strong>
+                    <span>Count in returned reports</span>
+                  </div>
+
+                  {topReactions.length > 0 ? (
+                    <div className="pharmacy-reaction-list cosmetic-reaction-list">
+                      {topReactions.map((reaction) => (
+                        <div key={reaction.reaction}>
+                          <span>
+                            <strong>{reaction.reaction}</strong>
+                            <i
+                              aria-hidden="true"
+                              style={{
+                                width: `${Math.max(
+                                  8,
+                                  Math.round((reaction.count / topReactionCount) * 100),
+                                )}%`,
+                              }}
+                            />
+                          </span>
+                          <b>{reaction.count}</b>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="pharmacy-insight-card__empty">
+                      No top reactions returned for this search.
+                    </p>
+                  )}
+                </div>
+
+                <div className="cosmetic-limitations">
+                  <strong>Signal limitations</strong>
+                  {data.signal_score.limitations.length > 0 ? (
+                    <ul>
+                      {data.signal_score.limitations.map((limitation) => (
+                        <li key={limitation}>{limitation}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No additional limitations were returned.</p>
+                  )}
+                </div>
+              </>
+            ) : (
+              <p className="pharmacy-insight-card__empty">
+                Search above to load signal context and leading reactions.
+              </p>
+            )}
+          </section>
+
+          <section className="pharmacy-safety-card cosmetic-boundary-card">
+            <div>
+              <p className="eyebrow">Source boundary</p>
+              <h2>Interpret reports as signals, not proof.</h2>
+            </div>
+            <ul>
+              <li>Reports may be incomplete, delayed, duplicated, or influenced by reporting.</li>
+              <li>Reported reactions do not prove product causation.</li>
+              <li>Review product, report date, reactions, outcomes, and source context.</li>
+            </ul>
+            <p className="pharmacy-safety-card__source">
+              Public reports only. Reported reactions do not prove product causation. This is not
+              medical advice, diagnosis, or official safety guidance.
+              {data &&
+                ` Retrieved ${formatTimestamp(data.retrieval_timestamp)} from ${data.source_name}.`}
+            </p>
+          </section>
+        </aside>
+      </div>
+    </section>
+  )
+}
+
+export default CosmeticSafetyPage

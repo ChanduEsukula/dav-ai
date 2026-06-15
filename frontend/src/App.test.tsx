@@ -1,7 +1,83 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
+import { searchDrugEvents } from './api/drugEvents'
+import { searchRecalls } from './api/recalls'
 import App from './App'
 
+vi.mock('./api/recalls', async () => {
+  const actual = await vi.importActual<typeof import('./api/recalls')>('./api/recalls')
+  return { ...actual, searchRecalls: vi.fn() }
+})
+
+vi.mock('./api/drugEvents', async () => {
+  const actual = await vi.importActual<typeof import('./api/drugEvents')>('./api/drugEvents')
+  return { ...actual, searchDrugEvents: vi.fn() }
+})
+
+const mockSearchRecalls = vi.mocked(searchRecalls)
+const mockSearchDrugEvents = vi.mocked(searchDrugEvents)
+
 beforeEach(() => {
+  mockSearchRecalls.mockReset()
+  mockSearchDrugEvents.mockReset()
+  mockSearchRecalls.mockResolvedValue({
+    query: '',
+    count: 0,
+    limit: 8,
+    results: [],
+    source_name: 'openFDA Drug Enforcement API',
+    endpoint: '/drug/enforcement.json',
+    retrieval_timestamp: '2026-06-12T12:00:00Z',
+    score_version: 'test',
+    medical_disclaimer: 'Test disclaimer',
+    audit: {
+      audit_id: 'recall-test',
+      source_id: 'openfda-recalls',
+      module: 'recalls',
+      upstream_status: 'ok',
+      record_count: 0,
+      transform_version: 'test',
+    },
+  } as Awaited<ReturnType<typeof searchRecalls>>)
+  mockSearchDrugEvents.mockResolvedValue({
+    query: '',
+    count: 0,
+    limit: 8,
+    top_reactions: [],
+    source_name: 'openFDA Drug Event API',
+    endpoint: '/drug/event.json',
+    retrieval_timestamp: '2026-06-12T12:00:00Z',
+    medical_disclaimer: 'Test disclaimer',
+    faers_disclaimer: 'Test FAERS disclaimer',
+    audit: {
+      audit_id: 'drug-test',
+      source_id: 'openfda-faers',
+      module: 'drug-events',
+      upstream_status: 'ok',
+      record_count: 0,
+      transform_version: 'test',
+    },
+    intelligence_score: {
+      score: 0,
+      label: 'Limited signal',
+      data_confidence: 'Limited',
+      top_reaction_concentration: 0,
+      review_priority: 'Review source records',
+      score_version: 'test',
+      limitations: [],
+    },
+    reaction_categories: [],
+    reaction_classifier_version: 'test',
+    trend_snapshot: {
+      label: 'No comparison available',
+      current_record_count: 0,
+      previous_record_count: null,
+      previous_audit_id: null,
+      previous_created_at: null,
+      explanation: 'No prior snapshot in test data.',
+      limitation: 'Test data only.',
+      trend_version: 'test',
+    },
+  } as Awaited<ReturnType<typeof searchDrugEvents>>)
   window.history.replaceState(null, '', '/')
 })
 
@@ -30,17 +106,35 @@ test('renders Dav AI landing page', () => {
     }),
   ).toBeInTheDocument()
 
+  expect(
+    screen.getByRole('button', {
+      name: /CosmeticSignal.*Cosmetic safety records/i,
+    }),
+  ).toBeInTheDocument()
+
   expect(screen.getByRole('button', { name: /How it works/i })).toBeInTheDocument()
 
   expect(
-    screen.getByRole('heading', { name: /Search public FDA recall signals/i }),
+    screen.getByRole('heading', { name: /Choose a safety lens/i }),
   ).toBeInTheDocument()
 
   expect(
-    screen.getByRole('heading', {
+    screen.getByRole('heading', { name: /Search across Dav AI records/i }),
+  ).toBeInTheDocument()
+
+  expect(
+    screen.getByRole('heading', { name: /Public-data intelligence at a glance/i }),
+  ).toBeInTheDocument()
+
+  expect(
+    screen.queryByRole('heading', { name: /Search public FDA recall signals/i }),
+  ).not.toBeInTheDocument()
+
+  expect(
+    screen.queryByRole('heading', {
       name: /Explore public FAERS adverse-event reporting patterns/i,
     }),
-  ).toBeInTheDocument()
+  ).not.toBeInTheDocument()
 })
 
 test('does not expose placeholder account pages in the main demo navigation', () => {
@@ -59,4 +153,23 @@ test('ignores old placeholder account page URLs', () => {
   expect(screen.getByRole('heading', { name: /Public safety/i })).toBeInTheDocument()
 
   expect(screen.queryByText(/Early access placeholder/i)).not.toBeInTheDocument()
+})
+
+test('updates a detail page when browser history changes only the query', async () => {
+  window.history.replaceState(null, '', '/?page=pharmacy-safety&q=Xanax')
+  render(<App />)
+
+  expect(
+    await screen.findByRole('heading', { name: /Safety review for Xanax/i }),
+  ).toBeInTheDocument()
+
+  act(() => {
+    window.history.pushState(null, '', '/?page=pharmacy-safety&q=Metformin')
+    window.dispatchEvent(new PopStateEvent('popstate'))
+  })
+
+  expect(
+    await screen.findByRole('heading', { name: /Safety review for Metformin/i }),
+  ).toBeInTheDocument()
+  expect(mockSearchRecalls).toHaveBeenLastCalledWith('Metformin', 8, 'score')
 })

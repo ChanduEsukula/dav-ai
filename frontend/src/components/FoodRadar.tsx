@@ -17,6 +17,14 @@ function sourceLabel(sourceType: EverydaySafetyRecord['source_type']) {
   return 'FDA Food'
 }
 
+function recordTitle(record: EverydaySafetyRecord) {
+  return (
+    record.product_description ||
+    (record.recall_number ? `Recall ${record.recall_number}` : null) ||
+    (record.record_id ? `Public record ${record.record_id}` : 'Public recall record')
+  )
+}
+
 type FoodRadarProps = {
   onAssistantContextChange?: (context: AssistantChatContext | null) => void
 }
@@ -116,7 +124,7 @@ function FoodRadar({ onAssistantContextChange }: FoodRadarProps) {
     <section className="foodradar" id="foodradar">
       <div className="section-heading">
         <p className="eyebrow">FoodRadar module</p>
-        <h2>Check everyday food and supplement recall signals.</h2>
+        <h2>Check everyday food and supplement recall records.</h2>
         <p>
           Search foods, supplements, protein powders, packaged groceries, meat, poultry, or egg
           products. DAV AI checks public FDA/openFDA and USDA FSIS sources and shows source-backed
@@ -214,7 +222,7 @@ function FoodRadar({ onAssistantContextChange }: FoodRadarProps) {
         )}
 
         {topResult && (
-          <section className="consumer-summary" aria-label="FoodRadar safety summary">
+          <section className="consumer-summary" aria-label="FoodRadar review summary">
             <div className="consumer-summary__content">
               <h3>
                 DAV AI found {data?.count ?? 0} public food/supplement recall record
@@ -256,14 +264,16 @@ function FoodRadar({ onAssistantContextChange }: FoodRadarProps) {
                 <button
                   type="button"
                   className={sortMode === 'score' ? 'active' : ''}
+                  aria-pressed={sortMode === 'score'}
                   onClick={() => handleSortChange('score')}
                 >
-                  Highest score
+                  Highest review priority
                 </button>
 
                 <button
                   type="button"
                   className={sortMode === 'latest' ? 'active' : ''}
+                  aria-pressed={sortMode === 'latest'}
                   onClick={() => handleSortChange('latest')}
                 >
                   Latest recall
@@ -279,13 +289,13 @@ function FoodRadar({ onAssistantContextChange }: FoodRadarProps) {
                 >
                   <summary className="recall-card-summary">
                     <span className={`risk-pill risk-${result.risk_score.label.toLowerCase()}`}>
-                      {result.risk_score.label} signal
+                      {result.risk_score.label} review signal
                     </span>
 
                     <span className="foodradar-source-pill">{sourceLabel(result.source_type)}</span>
 
-                    <h3 className="recall-card-title">
-                      {result.product_description || 'Unnamed recalled product'}
+                    <h3 className="recall-card-title" title={recordTitle(result)}>
+                      {recordTitle(result)}
                     </h3>
 
                     <span className="recall-score-inline">

@@ -149,7 +149,15 @@ describe('AuditHistoryPage', () => {
     expect(screen.getAllByText('eye drops').length).toBeGreaterThan(0)
     expect(screen.getAllByText('openFDA Drug Enforcement API').length).toBeGreaterThan(0)
 
-    fireEvent.click(screen.getByText('Technical view'))
+    const basicViewButton = screen.getByRole('button', { name: 'Basic view' })
+    const technicalViewButton = screen.getByRole('button', { name: 'Technical view' })
+    expect(basicViewButton).toHaveAttribute('aria-pressed', 'true')
+    expect(technicalViewButton).toHaveAttribute('aria-pressed', 'false')
+
+    fireEvent.click(technicalViewButton)
+
+    expect(basicViewButton).toHaveAttribute('aria-pressed', 'false')
+    expect(technicalViewButton).toHaveAttribute('aria-pressed', 'true')
 
     expect(screen.getByText('11111111-1111-4111-8111-111111111111')).toBeInTheDocument()
     expect(screen.getByText('https://api.fda.gov/drug/enforcement.json')).toBeInTheDocument()

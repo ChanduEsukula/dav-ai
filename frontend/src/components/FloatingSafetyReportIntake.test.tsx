@@ -31,9 +31,9 @@ test('opens the floating safety report intake drawer', async () => {
     screen.getByRole('button', { name: /Open safety report intake/i })
   )
 
-  expect(
-    screen.getByRole('heading', { name: /Generate a Safety Report/i })
-  ).toBeInTheDocument()
+  const dialog = screen.getByRole('dialog', { name: /Generate a Safety Report/i })
+  expect(dialog).toHaveAttribute('aria-modal', 'true')
+  expect(screen.getByText('1. Details')).toHaveAttribute('aria-current', 'step')
 
   expect(screen.getByLabelText(/What do you want to check/i)).toBeInTheDocument()
   expect(screen.getByLabelText(/Search topic/i)).toBeInTheDocument()

@@ -7,6 +7,9 @@ export type ActiveSection =
 
 export type ActivePage =
   | 'home'
+  | 'pharmacy-safety'
+  | 'food-safety'
+  | 'cosmetic-safety'
   | 'sources'
   | 'audit'
   | 'system'
