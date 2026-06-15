@@ -347,38 +347,26 @@ test('zero records show calm guidance without claiming the product is safe', asy
   expect(screen.queryByText(/This product is safe/i)).not.toBeInTheDocument()
 })
 
-test('a typo suggestion appears beside the Food search area', async () => {
-  mockSearchEverydaySafety.mockResolvedValue(emptyFoodResponse)
-  window.history.replaceState(null, '', '?page=food-safety&q=protien%20powder')
-  renderFoodPage('protien powder')
-
-  const suggestion = await screen.findByText(/Spelling suggestion: did you mean/i)
-  const suggestionBox = suggestion.closest('.food-typo-suggestion')
-  const examples = screen.getByLabelText('Example food safety searches')
-  expect(suggestion.closest('.food-overview')).toBeInTheDocument()
-  expect(
-    suggestionBox!.compareDocumentPosition(examples) & Node.DOCUMENT_POSITION_FOLLOWING,
-  ).not.toBe(0)
-  expect(screen.getByRole('button', { name: 'Use Protein powder' })).toBeInTheDocument()
-})
-
-test('clicking a Food typo suggestion runs the corrected search', async () => {
-  const user = userEvent.setup()
-  mockSearchEverydaySafety.mockResolvedValue(emptyFoodResponse)
-  window.history.replaceState(null, '', '?page=food-safety&q=protien%20powder')
-  renderFoodPage('protien powder')
-
-  await user.click(await screen.findByRole('button', { name: 'Use Protein powder' }))
+test('normalizes strawberries and preserves the original Food query', async () => {
+  window.history.replaceState(null, '', '?page=food-safety&q=strawberries')
+  renderFoodPage('strawberries')
 
   await waitFor(() => {
-    expect(mockSearchEverydaySafety).toHaveBeenLastCalledWith(
-      'Protein powder',
+    expect(mockSearchEverydaySafety).toHaveBeenCalledWith(
+      'strawberry',
       8,
       'food_supplement',
       'score',
     )
   })
-  expect(new URLSearchParams(window.location.search).get('q')).toBe('Protein powder')
+  expect(
+    screen.getByText(
+      /Showing results for 'strawberry' based on your search 'strawberries'/i,
+    ),
+  ).toBeInTheDocument()
+  expect(screen.getByLabelText(/Search food safety records/i)).toHaveValue('strawberries')
+  expect(new URLSearchParams(window.location.search).get('q')).toBe('strawberry')
+  expect(new URLSearchParams(window.location.search).get('raw_q')).toBe('strawberries')
 })
 
 test('an API failure shows the public source availability error', async () => {

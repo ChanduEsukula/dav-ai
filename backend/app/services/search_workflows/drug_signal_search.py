@@ -13,6 +13,7 @@ from app.scoring.reaction_classifier import (
 )
 from app.services.drug_signal_semantic_candidates import build_drug_signal_semantic_candidates
 from app.services.openfda_drug_event_client import OpenFDADrugEventClient
+from app.services.query_normalization import normalize_safety_query
 from app.services.semantic_similarity_service import run_semantic_similarity_preview
 from app.sources.registry import OPENFDA_DRUG_EVENT
 from app.trends.drug_signal_trend import build_drug_signal_trend_snapshot
@@ -89,17 +90,28 @@ def _get_latest_audit_event_for_query_with_request_id(
 def _persist_drug_event_error_audit(
     *,
     query: str,
+    raw_query: str,
     limit: int,
     error_message: str,
     request_id: str | None,
 ):
+    query_params = {"q": query, "limit": limit}
+    if raw_query.strip().lower() != query.lower():
+        query_params.update(
+            {
+                "raw_query": raw_query,
+                "normalized_query": query,
+                "correction_applied": True,
+            }
+        )
+
     audit_event = build_audit_event(
         module="DrugSignal",
         source_id=OPENFDA_DRUG_EVENT["source_id"],
         source_name=OPENFDA_DRUG_EVENT["source_name"],
         endpoint=OPENFDA_DRUG_EVENT["endpoint"],
         query=query,
-        query_params={"q": query, "limit": limit},
+        query_params=query_params,
         retrieval_timestamp=datetime.now(timezone.utc).isoformat(),
         upstream_status="error",
         record_count=0,
@@ -132,9 +144,12 @@ async def execute_drug_signal_search(
     to store a reproducible public-source pull snapshot.
     """
 
+    query_normalization = normalize_safety_query(query, "pharmacy")
+    search_query = query_normalization.normalized_query
+
     try:
         payload = await _search_drug_events_with_request_id(
-            query=query,
+            query=search_query,
             limit=limit,
             request_id=request_id,
         )
@@ -179,8 +194,15 @@ async def execute_drug_signal_search(
             source_id=payload["source_id"],
             source_name=payload["source_name"],
             endpoint=payload["endpoint"],
-            query=query,
-            query_params={"q": query, "limit": limit, "sort": sort},
+            query=search_query,
+            query_params={
+                "q": search_query,
+                "raw_query": query_normalization.raw_query,
+                "normalized_query": query_normalization.normalized_query,
+                "correction_applied": query_normalization.correction_applied,
+                "limit": limit,
+                "sort": sort,
+            },
             retrieval_timestamp=payload["retrieval_timestamp"],
             upstream_status=upstream_status,
             record_count=len(raw_results),
@@ -198,7 +220,7 @@ async def execute_drug_signal_search(
 
         _, previous_audit_event = _get_latest_audit_event_for_query_with_request_id(
             module="DrugSignal",
-            query=query,
+            query=search_query,
             exclude_audit_id=audit_event["audit_id"],
             request_id=request_id,
         )
@@ -208,19 +230,23 @@ async def execute_drug_signal_search(
         )
 
         semantic_candidates = build_drug_signal_semantic_candidates(
-            query=query,
+            query=search_query,
             top_reactions=top_reactions,
             reaction_categories=reaction_categories,
             source_name=payload["source_name"],
         )
         semantic_result = run_semantic_similarity_preview(
-            query_text=query,
+            query_text=search_query,
             records=semantic_candidates,
             max_matches=5,
         )
 
         return {
-            "query": query,
+            "query": search_query,
+            "raw_query": query_normalization.raw_query,
+            "normalized_query": query_normalization.normalized_query,
+            "correction_applied": query_normalization.correction_applied,
+            "suggestion_message": query_normalization.suggestion_message,
             "count": len(raw_results),
             "limit": limit,
             "source_name": payload["source_name"],
@@ -264,7 +290,8 @@ async def execute_drug_signal_search(
 
     except Exception as exc:
         _persist_drug_event_error_audit(
-            query=query,
+            query=search_query,
+            raw_query=query_normalization.raw_query,
             limit=limit,
             error_message=str(exc),
             request_id=request_id,

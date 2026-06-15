@@ -200,3 +200,21 @@ test('uses canonical active navigation and clears stale audit parameters', async
   ).toBeInTheDocument()
   expect(new URLSearchParams(window.location.search).get('audit_id')).toBeNull()
 })
+
+test('restores normalized and original queries from a deep link', async () => {
+  window.history.replaceState(
+    null,
+    '',
+    '/?page=pharmacy-safety&q=xanax&raw_q=xanex',
+  )
+  render(<App />)
+
+  expect(
+    await screen.findByRole('heading', { name: /Safety review for xanax/i }),
+  ).toBeInTheDocument()
+  expect(screen.getByLabelText(/Search pharmacy records/i)).toHaveValue('xanex')
+  expect(
+    screen.getByText(/Showing results for 'xanax' based on your search 'xanex'/i),
+  ).toBeInTheDocument()
+  expect(mockSearchRecalls).toHaveBeenCalledWith('xanax', 8, 'score')
+})

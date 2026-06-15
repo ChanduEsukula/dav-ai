@@ -277,21 +277,6 @@ test('zero reports show calm guidance without claiming the cosmetic is safe', as
   expect(screen.queryByText('Limited')).not.toBeInTheDocument()
 })
 
-test('a typo suggestion appears beside the Cosmetic search area', async () => {
-  mockSearchCosmeticEvents.mockResolvedValue(emptyCosmeticResponse)
-  window.history.replaceState(null, '', '?page=cosmetic-safety&q=sunscrean')
-  renderCosmeticPage('sunscrean')
-
-  const suggestion = await screen.findByText(/Spelling suggestion: did you mean/i)
-  const suggestionBox = suggestion.closest('.cosmetic-typo-suggestion')
-  const examples = screen.getByLabelText('Example cosmetic searches')
-  expect(suggestion.closest('.cosmetic-overview')).toBeInTheDocument()
-  expect(
-    suggestionBox!.compareDocumentPosition(examples) & Node.DOCUMENT_POSITION_FOLLOWING,
-  ).not.toBe(0)
-  expect(screen.getByRole('button', { name: 'Use Sunscreen' })).toBeInTheDocument()
-})
-
 test('uses the report number when a Cosmetic report has no product title fields', async () => {
   mockSearchCosmeticEvents.mockResolvedValue({
     ...cosmeticResponse,
@@ -314,18 +299,19 @@ test('uses the report number when a Cosmetic report has no product title fields'
   expect(await screen.findByTitle('Cosmetic report CAERS-FALLBACK-001')).toBeInTheDocument()
 })
 
-test('clicking a Cosmetic typo suggestion runs the corrected search', async () => {
-  const user = userEvent.setup()
-  mockSearchCosmeticEvents.mockResolvedValue(emptyCosmeticResponse)
-  window.history.replaceState(null, '', '?page=cosmetic-safety&q=sunscrean')
-  renderCosmeticPage('sunscrean')
-
-  await user.click(await screen.findByRole('button', { name: 'Use Sunscreen' }))
+test('normalizes hairdye and preserves the original Cosmetic query', async () => {
+  window.history.replaceState(null, '', '?page=cosmetic-safety&q=hairdye')
+  renderCosmeticPage('hairdye')
 
   await waitFor(() => {
-    expect(mockSearchCosmeticEvents).toHaveBeenLastCalledWith('Sunscreen', 8)
+    expect(mockSearchCosmeticEvents).toHaveBeenCalledWith('hair dye', 8)
   })
-  expect(new URLSearchParams(window.location.search).get('q')).toBe('Sunscreen')
+  expect(
+    screen.getByText(/Showing results for 'hair dye' based on your search 'hairdye'/i),
+  ).toBeInTheDocument()
+  expect(screen.getByLabelText(/Search cosmetic-event reports/i)).toHaveValue('hairdye')
+  expect(new URLSearchParams(window.location.search).get('q')).toBe('hair dye')
+  expect(new URLSearchParams(window.location.search).get('raw_q')).toBe('hairdye')
 })
 
 test('an API failure shows the public source availability error', async () => {

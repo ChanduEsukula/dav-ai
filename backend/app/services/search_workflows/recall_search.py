@@ -7,6 +7,7 @@ from app.db.source_pull_repository import save_source_pull_with_snapshot
 from app.scoring import RECALL_REVIEW_SCORE_VERSION
 from app.scoring.recall_score import calculate_recall_risk_score
 from app.services.openfda_client import OpenFDAClient
+from app.services.query_normalization import normalize_safety_query
 from app.services.recall_semantic_candidates import build_recall_semantic_candidates
 from app.services.semantic_similarity_service import run_semantic_similarity_preview
 from app.sources.registry import OPENFDA_DRUG_ENFORCEMENT
@@ -64,17 +65,28 @@ def _save_source_pull_with_request_id(
 def _persist_recall_error_audit(
     *,
     query: str,
+    raw_query: str,
     limit: int,
     error_message: str,
     request_id: str | None,
 ):
+    query_params = {"q": query, "limit": limit}
+    if raw_query.strip().lower() != query.lower():
+        query_params.update(
+            {
+                "raw_query": raw_query,
+                "normalized_query": query,
+                "correction_applied": True,
+            }
+        )
+
     audit_event = build_audit_event(
         module="RecallRadar",
         source_id=OPENFDA_DRUG_ENFORCEMENT["source_id"],
         source_name=OPENFDA_DRUG_ENFORCEMENT["source_name"],
         endpoint=OPENFDA_DRUG_ENFORCEMENT["endpoint"],
         query=query,
-        query_params={"q": query, "limit": limit},
+        query_params=query_params,
         retrieval_timestamp=datetime.now(timezone.utc).isoformat(),
         upstream_status="error",
         record_count=0,
@@ -130,9 +142,12 @@ async def execute_recall_search(
     attempts to store a reproducible public-source pull snapshot.
     """
 
+    query_normalization = normalize_safety_query(query, "pharmacy")
+    search_query = query_normalization.normalized_query
+
     try:
         payload = await _search_drug_recalls_with_request_id(
-            query=query,
+            query=search_query,
             limit=limit,
             request_id=request_id,
         )
@@ -175,8 +190,16 @@ async def execute_recall_search(
             source_id=payload["source_id"],
             source_name=payload["source_name"],
             endpoint=payload["endpoint"],
-            query=query,
-            query_params={"q": query, "limit": limit, "sort": sort, "source_limit": 25},
+            query=search_query,
+            query_params={
+                "q": search_query,
+                "raw_query": query_normalization.raw_query,
+                "normalized_query": query_normalization.normalized_query,
+                "correction_applied": query_normalization.correction_applied,
+                "limit": limit,
+                "sort": sort,
+                "source_limit": 25,
+            },
             retrieval_timestamp=payload["retrieval_timestamp"],
             upstream_status=upstream_status,
             record_count=len(normalized_results),
@@ -193,13 +216,17 @@ async def execute_recall_search(
         )
 
         semantic_result = run_semantic_similarity_preview(
-            query_text=query,
+            query_text=search_query,
             records=build_recall_semantic_candidates(normalized_results),
             max_matches=min(limit, 5),
         )
 
         return {
-            "query": query,
+            "query": search_query,
+            "raw_query": query_normalization.raw_query,
+            "normalized_query": query_normalization.normalized_query,
+            "correction_applied": query_normalization.correction_applied,
+            "suggestion_message": query_normalization.suggestion_message,
             "count": len(normalized_results),
             "limit": limit,
             "source_name": payload["source_name"],
@@ -240,7 +267,8 @@ async def execute_recall_search(
 
     except Exception as exc:
         _persist_recall_error_audit(
-            query=query,
+            query=search_query,
+            raw_query=query_normalization.raw_query,
             limit=limit,
             error_message=str(exc),
             request_id=request_id,

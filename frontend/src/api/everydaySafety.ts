@@ -69,6 +69,10 @@ export type EverydaySafetyAudit = {
 
 export type EverydaySafetySearchResponse = {
   query: string
+  raw_query?: string
+  normalized_query?: string
+  correction_applied?: boolean
+  suggestion_message?: string | null
   category: EverydaySafetyCategory
   category_label: string
   count: number

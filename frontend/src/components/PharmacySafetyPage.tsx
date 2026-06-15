@@ -10,14 +10,18 @@ import type { ActivePage } from '../types/navigation'
 import { formatDate, formatTimestamp } from '../utils/recallFormatters'
 import {
   getSearchComparisonKey,
-  getTypoSuggestion,
   getWrongCategorySuggestion,
   normalizeSearchTerm,
 } from '../utils/safetyRouteClassifier'
+import { normalizeSafetyQuery } from '../utils/queryNormalization'
+import { writeSafetyQueryToUrl } from '../utils/safetyQueryUrl'
+import QueryNormalizationNotice from './QueryNormalizationNotice'
+import QueryTypeahead from './QueryTypeahead'
 
 type PharmacySafetyPageProps = {
   initialQuery: string
-  goToPage: (page: ActivePage, query?: string) => void
+  initialRawQuery?: string
+  goToPage: (page: ActivePage, query?: string, rawQuery?: string) => void
 }
 
 type PharmacySource = 'recall' | 'drug'
@@ -106,27 +110,21 @@ function PharmacyRecallRow({ record, index }: { record: RecallResult; index: num
   )
 }
 
-function updatePharmacyQueryInUrl(query: string, mode: 'push' | 'replace') {
-  const url = new URL(window.location.href)
-  const currentPage = url.searchParams.get('page')
-  const currentQuery = url.searchParams.get('q') ?? ''
-
-  if (currentPage === 'pharmacy-safety' && currentQuery === query) return
-
-  url.searchParams.set('page', 'pharmacy-safety')
-  url.searchParams.set('q', query)
-
-  if (mode === 'push') {
-    window.history.pushState(null, '', url.toString())
-  } else {
-    window.history.replaceState(null, '', url.toString())
-  }
-}
-
-function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps) {
-  const normalizedInitialQuery = normalizeSearchTerm(initialQuery)
-  const [query, setQuery] = useState(normalizedInitialQuery)
+function PharmacySafetyPage({
+  initialQuery,
+  initialRawQuery,
+  goToPage,
+}: PharmacySafetyPageProps) {
+  const initialNormalization = normalizeSafetyQuery(
+    initialRawQuery || initialQuery,
+    'pharmacy',
+  )
+  const normalizedInitialQuery = initialNormalization.normalizedQuery
+  const [query, setQuery] = useState(initialNormalization.rawQuery)
   const [submittedQuery, setSubmittedQuery] = useState(normalizedInitialQuery)
+  const [submittedRawQuery, setSubmittedRawQuery] = useState(
+    initialNormalization.rawQuery,
+  )
   const [recallData, setRecallData] = useState<RecallSearchResponse | null>(null)
   const [drugData, setDrugData] = useState<DrugEventSearchResponse | null>(null)
   const [recallSort, setRecallSort] = useState<RecallSort>('score')
@@ -154,15 +152,17 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
       nextSort: RecallSort,
       options: PharmacySearchOptions = {},
     ) => {
-      const cleanQuery = normalizeSearchTerm(nextQuery)
+      const normalization = normalizeSafetyQuery(nextQuery, 'pharmacy')
+      const cleanQuery = normalization.normalizedQuery
       if (!cleanQuery) return
 
       const requestKey = `${getSearchComparisonKey(cleanQuery)}::${nextSort}`
 
       if (inFlightKeyRef.current === requestKey) return
       if (options.skipIfCompleted && completedKeyRef.current === requestKey) {
-        setQuery(cleanQuery)
+        setQuery(normalization.rawQuery)
         setSubmittedQuery(cleanQuery)
+        setSubmittedRawQuery(normalization.rawQuery)
         setError('')
         setHelper('')
         setNotice('')
@@ -174,8 +174,9 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
       inFlightKeyRef.current = requestKey
       completedKeyRef.current = ''
 
-      setQuery(cleanQuery)
+      setQuery(normalization.rawQuery)
       setSubmittedQuery(cleanQuery)
+      setSubmittedRawQuery(normalization.rawQuery)
       setRecallData(null)
       setDrugData(null)
       setFailedSources([])
@@ -185,7 +186,12 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
       setNotice('')
 
       if (options.updateUrl) {
-        updatePharmacyQueryInUrl(cleanQuery, 'push')
+        writeSafetyQueryToUrl(
+          'pharmacy-safety',
+          cleanQuery,
+          normalization.rawQuery,
+          'push',
+        )
       }
 
       const [recallResult, drugResult] = await Promise.allSettled([
@@ -223,7 +229,11 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
   )
 
   useEffect(() => {
-    const cleanQuery = normalizeSearchTerm(initialQuery)
+    const normalization = normalizeSafetyQuery(
+      initialRawQuery || initialQuery,
+      'pharmacy',
+    )
+    const cleanQuery = normalization.normalizedQuery
     let isCurrentEffect = true
 
     async function syncInitialQuery() {
@@ -236,6 +246,7 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
         completedKeyRef.current = ''
         setQuery('')
         setSubmittedQuery('')
+        setSubmittedRawQuery('')
         setRecallData(null)
         setDrugData(null)
         setRecallSort('score')
@@ -247,13 +258,17 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
         return
       }
 
-      const urlQuery = new URLSearchParams(window.location.search).get('q') ?? ''
-      if (urlQuery !== cleanQuery) {
-        updatePharmacyQueryInUrl(cleanQuery, 'replace')
-      }
+      writeSafetyQueryToUrl(
+        'pharmacy-safety',
+        cleanQuery,
+        normalization.rawQuery,
+        'replace',
+      )
 
       setRecallSort('score')
-      await loadPharmacyPreview(cleanQuery, 'score', { skipIfCompleted: true })
+      await loadPharmacyPreview(normalization.rawQuery, 'score', {
+        skipIfCompleted: true,
+      })
     }
 
     void syncInitialQuery()
@@ -261,7 +276,7 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
     return () => {
       isCurrentEffect = false
     }
-  }, [initialQuery, loadPharmacyPreview])
+  }, [initialQuery, initialRawQuery, loadPharmacyPreview])
 
   function handleSearch() {
     const cleanInput = normalizeSearchTerm(query)
@@ -277,7 +292,7 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
     }
 
     if (!cleanInput) {
-      void loadPharmacyPreview(cleanSubmittedQuery, recallSort)
+      void loadPharmacyPreview(submittedRawQuery || cleanSubmittedQuery, recallSort)
       return
     }
 
@@ -292,7 +307,7 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
     if (nextSort === recallSort || !cleanSubmittedQuery || recallResults.length === 0) return
 
     setRecallSort(nextSort)
-    void loadPharmacyPreview(cleanSubmittedQuery, nextSort)
+    void loadPharmacyPreview(submittedRawQuery || cleanSubmittedQuery, nextSort)
   }
 
   function handleExampleClick(example: string) {
@@ -306,11 +321,6 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
     })
   }
 
-  function handleTypoSuggestion(correctedQuery: string) {
-    setQuery(correctedQuery)
-    void loadPharmacyPreview(correctedQuery, recallSort, { updateUrl: true })
-  }
-
   const recallResults = recallData?.results ?? []
   const topReactions = drugData?.top_reactions.slice(0, 5) ?? []
   const topReactionCount = Math.max(topReactions[0]?.count ?? 0, 1)
@@ -322,7 +332,6 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
     () => getWrongCategorySuggestion('pharmacy', submittedQuery),
     [submittedQuery],
   )
-  const typoSuggestion = hasZeroResults ? getTypoSuggestion(submittedQuery) : null
   const hasWrongCategoryOnly = Boolean(wrongCategorySuggestion && hasZeroResults)
   const loadedSourceNames = [recallData?.source_name, drugData?.source_name].filter(
     (sourceName): sourceName is string => Boolean(sourceName),
@@ -363,13 +372,14 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
           >
             <label htmlFor="pharmacy-page-search">Search pharmacy records</label>
             <div>
-              <input
+              <QueryTypeahead
                 id="pharmacy-page-search"
                 value={query}
-                onChange={(event) => {
-                  setQuery(event.target.value)
+                onChange={(nextQuery) => {
+                  setQuery(nextQuery)
                   if (helper) setHelper('')
                 }}
+                area="pharmacy"
                 placeholder="Search another drug, brand, ingredient, or product"
               />
               <button type="submit" disabled={loading}>
@@ -378,35 +388,37 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
             </div>
           </form>
 
-          {(typoSuggestion || wrongCategorySuggestion) && !loading && (
-            <div className="pharmacy-query-guidance">
-              {typoSuggestion && hasZeroResults && (
-                <div className="pharmacy-typo-suggestion" role="status" aria-live="polite">
-                  <span>
-                    Spelling suggestion: did you mean <strong>{typoSuggestion}</strong>?
-                  </span>
-                  <button type="button" onClick={() => handleTypoSuggestion(typoSuggestion)}>
-                    Use {typoSuggestion}
-                  </button>
-                </div>
-              )}
+          <QueryNormalizationNotice
+            rawQuery={submittedRawQuery}
+            normalizedQuery={submittedQuery}
+          />
 
-              {wrongCategorySuggestion && (
-                <aside className="safety-route-suggestion" aria-live="polite">
-                  <span>{wrongCategorySuggestion.message}</span>
-                  <button
-                    type="button"
-                    onClick={() =>
+          {wrongCategorySuggestion && !loading && (
+            <div className="pharmacy-query-guidance">
+              <aside className="safety-route-suggestion" aria-live="polite">
+                <span>{wrongCategorySuggestion.message}</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const routeQuery = normalizeSearchTerm(submittedQuery)
+                    if (
+                      getSearchComparisonKey(routeQuery) !==
+                      getSearchComparisonKey(submittedRawQuery)
+                    ) {
                       goToPage(
                         wrongCategorySuggestion.page,
-                        normalizeSearchTerm(submittedQuery),
+                        routeQuery,
+                        submittedRawQuery,
                       )
+                      return
                     }
-                  >
-                    Open {wrongCategorySuggestion.label}
-                  </button>
-                </aside>
-              )}
+
+                    goToPage(wrongCategorySuggestion.page, routeQuery)
+                  }}
+                >
+                  Open {wrongCategorySuggestion.label}
+                </button>
+              </aside>
             </div>
           )}
 

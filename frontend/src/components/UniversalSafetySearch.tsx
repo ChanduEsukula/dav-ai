@@ -9,14 +9,15 @@ import { searchRecalls, type RecallSearchResponse } from '../api/recalls'
 import {
   classifySafetyQuery,
   getSearchComparisonKey,
-  getTypoSuggestion,
-  normalizeSearchTerm,
   type SafetyRouteSuggestion,
 } from '../utils/safetyRouteClassifier'
+import { normalizeSafetyQuery } from '../utils/queryNormalization'
 import type { ActivePage } from '../types/navigation'
+import QueryNormalizationNotice from './QueryNormalizationNotice'
+import QueryTypeahead from './QueryTypeahead'
 
 type UniversalSafetySearchProps = {
-  goToPage: (page: ActivePage, query?: string) => void
+  goToPage: (page: ActivePage, query?: string, rawQuery?: string) => void
 }
 
 type UniversalPreview = {
@@ -134,6 +135,7 @@ function buildPreview(
 function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
   const [query, setQuery] = useState('')
   const [submittedQuery, setSubmittedQuery] = useState('')
+  const [submittedRawQuery, setSubmittedRawQuery] = useState('')
   const [searchData, setSearchData] = useState<UniversalSearchData>({})
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -150,18 +152,10 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
   const preview = hasSubmittedQuery
     ? buildPreview(submittedQuery, classification, searchData)
     : null
-  const previewRecordCount =
-    (searchData.recall?.count ?? 0) +
-    (searchData.drug?.count ?? 0) +
-    (searchData.food?.count ?? 0) +
-    (searchData.cosmetic?.count ?? 0)
-  const typoSuggestion =
-    hasSubmittedQuery && !loading && !error && previewRecordCount === 0
-      ? getTypoSuggestion(submittedQuery)
-      : null
 
   async function runPreviewSearch(nextQuery: string) {
-    const cleanQuery = normalizeSearchTerm(nextQuery)
+    const normalization = normalizeSafetyQuery(nextQuery)
+    const cleanQuery = normalization.normalizedQuery
 
     if (!cleanQuery) {
       setError('')
@@ -175,8 +169,9 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
     const requestKey = getSearchComparisonKey(cleanQuery)
     if (inFlightKeyRef.current === requestKey) return
     if (completedKeyRef.current === requestKey) {
-      setQuery(cleanQuery)
+      setQuery(normalization.rawQuery)
       setSubmittedQuery(cleanQuery)
+      setSubmittedRawQuery(normalization.rawQuery)
       setError('')
       setHelper('')
       setNotice('')
@@ -189,8 +184,9 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
     inFlightKeyRef.current = requestKey
     completedKeyRef.current = ''
 
-    setQuery(cleanQuery)
+    setQuery(normalization.rawQuery)
     setSubmittedQuery(cleanQuery)
+    setSubmittedRawQuery(normalization.rawQuery)
     setSearchData({})
     setError('')
     setHelper('')
@@ -259,13 +255,15 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
     void runPreviewSearch(example)
   }
 
-  function handleTypoSuggestion(correctedQuery: string) {
-    setQuery(correctedQuery)
-    completedKeyRef.current = ''
-    void runPreviewSearch(correctedQuery)
-  }
-
   function openSuggestion(suggestion: SafetyRouteSuggestion) {
+    if (
+      getSearchComparisonKey(classification.query) !==
+      getSearchComparisonKey(submittedRawQuery)
+    ) {
+      goToPage(suggestion.page, classification.query, submittedRawQuery)
+      return
+    }
+
     goToPage(suggestion.page, classification.query)
   }
 
@@ -281,26 +279,28 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
       </div>
 
       <div className="search-panel">
-        <div className="search-box">
+        <form
+          className="search-box"
+          onSubmit={(event) => {
+            event.preventDefault()
+            handleAnalyze()
+          }}
+        >
           <div className="search-field">
             <label className="field-label" htmlFor="universal-safety-query">
               Safety search
             </label>
 
-            <input
+            <QueryTypeahead
               id="universal-safety-query"
               value={query}
-              onChange={(event) => {
-                setQuery(event.target.value)
+              onChange={(nextQuery) => {
+                setQuery(nextQuery)
                 if (helper) setHelper('')
               }}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') {
-                  handleAnalyze()
-                }
-              }}
               placeholder="Search: Xanax, chicken, sunscreen, protein powder, shampoo"
-              aria-describedby="universal-safety-helper"
+              ariaDescribedBy="universal-safety-helper"
+              showWorkflow
             />
 
             <p className="field-helper" id="universal-safety-helper">
@@ -308,10 +308,15 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
             </p>
           </div>
 
-          <button type="button" onClick={handleAnalyze} disabled={loading}>
+          <button type="submit" disabled={loading}>
             {loading ? 'Checking...' : 'Analyze'}
           </button>
-        </div>
+        </form>
+
+        <QueryNormalizationNotice
+          rawQuery={submittedRawQuery}
+          normalizedQuery={submittedQuery}
+        />
 
         <div className="universal-safety-search__examples" aria-label="Example searches">
           {examples.map((example) => (
@@ -342,14 +347,6 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
         {notice && (
           <p className="safety-search-guidance" role="status">
             {notice}
-          </p>
-        )}
-
-        {typoSuggestion && (
-          <p className="safety-search-guidance" aria-live="polite">
-            <button type="button" onClick={() => handleTypoSuggestion(typoSuggestion)}>
-              Did you mean {typoSuggestion}?
-            </button>
           </p>
         )}
 

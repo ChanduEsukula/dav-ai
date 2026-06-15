@@ -21,6 +21,7 @@ import './styles/universal-safety-search.css'
 import './styles/safety-area-pages.css'
 import './styles/ask-dav-ai.css'
 import './styles/search-glass.css'
+import './styles/query-typeahead.css'
 import type { AssistantChatContext } from './api/assistant'
 import Navbar from './components/Navbar'
 import UniversalSafetySearch from './components/UniversalSafetySearch'
@@ -43,7 +44,11 @@ import AskDavAIChat from './components/AskDavAIChat'
 import FloatingSafetyReportIntake from './components/FloatingSafetyReportIntake'
 import type { ActivePage } from './types/navigation'
 import { infoPages } from './data/infoPages'
-import { normalizeSearchTerm } from './utils/safetyRouteClassifier'
+import {
+  getSearchComparisonKey,
+  normalizeSearchTerm,
+} from './utils/safetyRouteClassifier'
+import { readSafetyQueryFromUrl } from './utils/safetyQueryUrl'
 
 function getInitialPage(): ActivePage {
   const params = new URLSearchParams(window.location.search)
@@ -73,25 +78,37 @@ function getInitialPage(): ActivePage {
 }
 
 function getInitialSafetyQuery() {
-  return normalizeSearchTerm(new URLSearchParams(window.location.search).get('q') ?? '')
+  return readSafetyQueryFromUrl()
 }
 
-function updatePageInUrl(page: ActivePage, safetyQuery?: string) {
+function updatePageInUrl(page: ActivePage, safetyQuery?: string, rawSafetyQuery?: string) {
   const url = new URL(window.location.href)
   url.searchParams.delete('audit_id')
 
   if (page === 'home') {
     url.searchParams.delete('page')
     url.searchParams.delete('q')
+    url.searchParams.delete('raw_q')
   } else {
     url.searchParams.set('page', page)
 
     const normalizedQuery = normalizeSearchTerm(safetyQuery ?? '')
+    const normalizedRawQuery = normalizeSearchTerm(rawSafetyQuery ?? normalizedQuery)
 
     if (normalizedQuery) {
       url.searchParams.set('q', normalizedQuery)
     } else {
       url.searchParams.delete('q')
+    }
+
+    if (
+      normalizedRawQuery &&
+      getSearchComparisonKey(normalizedRawQuery) !==
+        getSearchComparisonKey(normalizedQuery)
+    ) {
+      url.searchParams.set('raw_q', normalizedRawQuery)
+    } else {
+      url.searchParams.delete('raw_q')
     }
   }
 
@@ -102,13 +119,18 @@ function updatePageInUrl(page: ActivePage, safetyQuery?: string) {
 
 function App() {
   const [activePage, setActivePage] = useState<ActivePage>(() => getInitialPage())
-  const [safetyQuery, setSafetyQuery] = useState(() => getInitialSafetyQuery())
+  const [safetyQuery, setSafetyQuery] = useState(() => getInitialSafetyQuery().query)
+  const [rawSafetyQuery, setRawSafetyQuery] = useState(
+    () => getInitialSafetyQuery().rawQuery,
+  )
   const assistantContext: AssistantChatContext | null = null
 
   useEffect(() => {
     function handlePopState() {
       setActivePage(getInitialPage())
-      setSafetyQuery(getInitialSafetyQuery())
+      const nextQuery = getInitialSafetyQuery()
+      setSafetyQuery(nextQuery.query)
+      setRawSafetyQuery(nextQuery.rawQuery)
     }
 
     window.addEventListener('popstate', handlePopState)
@@ -121,6 +143,7 @@ function App() {
   function goHome() {
     setActivePage('home')
     setSafetyQuery('')
+    setRawSafetyQuery('')
     updatePageInUrl('home')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -128,6 +151,7 @@ function App() {
   function goToPharmacySafety() {
     setActivePage('pharmacy-safety')
     setSafetyQuery('')
+    setRawSafetyQuery('')
     updatePageInUrl('pharmacy-safety')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -135,6 +159,7 @@ function App() {
   function goToFoodSafety() {
     setActivePage('food-safety')
     setSafetyQuery('')
+    setRawSafetyQuery('')
     updatePageInUrl('food-safety')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -142,15 +167,18 @@ function App() {
   function goToCosmeticSafety() {
     setActivePage('cosmetic-safety')
     setSafetyQuery('')
+    setRawSafetyQuery('')
     updatePageInUrl('cosmetic-safety')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  function goToPage(page: ActivePage, safetyQuery?: string) {
+  function goToPage(page: ActivePage, safetyQuery?: string, rawQuery?: string) {
     const normalizedQuery = normalizeSearchTerm(safetyQuery ?? '')
+    const normalizedRawQuery = normalizeSearchTerm(rawQuery ?? normalizedQuery)
     setActivePage(page)
     setSafetyQuery(normalizedQuery)
-    updatePageInUrl(page, normalizedQuery)
+    setRawSafetyQuery(normalizedRawQuery)
+    updatePageInUrl(page, normalizedQuery, normalizedRawQuery)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -187,15 +215,27 @@ function App() {
       )}
 
       {activePage === 'pharmacy-safety' && (
-        <PharmacySafetyPage initialQuery={safetyQuery} goToPage={goToPage} />
+        <PharmacySafetyPage
+          initialQuery={safetyQuery}
+          initialRawQuery={rawSafetyQuery}
+          goToPage={goToPage}
+        />
       )}
 
       {activePage === 'food-safety' && (
-        <FoodSafetyPage initialQuery={safetyQuery} goToPage={goToPage} />
+        <FoodSafetyPage
+          initialQuery={safetyQuery}
+          initialRawQuery={rawSafetyQuery}
+          goToPage={goToPage}
+        />
       )}
 
       {activePage === 'cosmetic-safety' && (
-        <CosmeticSafetyPage initialQuery={safetyQuery} goToPage={goToPage} />
+        <CosmeticSafetyPage
+          initialQuery={safetyQuery}
+          initialRawQuery={rawSafetyQuery}
+          goToPage={goToPage}
+        />
       )}
 
       {activePage === 'sources' && <DataSourcesPage />}

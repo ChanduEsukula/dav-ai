@@ -409,7 +409,10 @@ def test_everyday_safety_food_search_uses_normalized_query_upstream(monkeypatch)
     assert body["raw_query"] == "  protien    powder  "
     assert body["normalized_query"] == "protein powder"
     assert body["correction_applied"] is True
-    assert body["suggestion_message"] == "Showing results for protein powder."
+    assert body["suggestion_message"] == (
+        "Showing results for 'protein powder' based on your search "
+        "'protien powder'."
+    )
     assert body["search_strategy_used"] == "intent_supplement_v1"
     assert seen_queries == [("fda", "protein powder"), ("fsis", "protein powder")]
 

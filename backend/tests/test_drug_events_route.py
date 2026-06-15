@@ -144,6 +144,35 @@ def test_search_drug_events_returns_empty_results_for_no_matches():
     assert body["faers_disclaimer"]
 
 
+def test_search_drug_events_normalizes_xanex_before_upstream_search():
+    seen_queries = []
+
+    class CapturingDrugEventClient(MockDrugEventClientEmpty):
+        async def search_drug_events(
+            self,
+            query: str,
+            limit: int = 10,
+            request_id: str | None = None,
+        ):
+            seen_queries.append(query)
+            return await super().search_drug_events(query, limit, request_id)
+
+    drug_signal_search.client = CapturingDrugEventClient()
+
+    test_client = TestClient(app)
+    response = test_client.get(
+        "/api/v1/drug-events/search",
+        params={"q": "xanex", "limit": 5},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert seen_queries == ["xanax"]
+    assert body["query"] == "xanax"
+    assert body["raw_query"] == "xanex"
+    assert body["correction_applied"] is True
+
+
 def test_search_drug_events_returns_502_and_persists_error_audit(monkeypatch):
     drug_signal_search.client = MockDrugEventClientFailure()
     saved_audits = []

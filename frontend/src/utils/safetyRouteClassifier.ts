@@ -1,3 +1,8 @@
+import {
+  getSearchComparisonKey,
+  normalizeSafetyQuery,
+} from './queryNormalization'
+
 export type SafetyArea = 'pharmacy' | 'food' | 'cosmetic' | 'ambiguous'
 export type SafetyDetailArea = Exclude<SafetyArea, 'ambiguous'>
 
@@ -19,6 +24,12 @@ export type SafetyRouteClassification = {
 export type WrongCategorySuggestion = SafetyRouteSuggestion & {
   message: string
 }
+
+export {
+  areSearchTermsEquivalent,
+  getSearchComparisonKey,
+  normalizeSearchTerm,
+} from './queryNormalization'
 
 const pharmacyTerms = [
   'drug',
@@ -65,6 +76,11 @@ const foodTerms = [
   'snack',
   'vitamin',
   'multivitamin',
+  'strawberry',
+  'berry',
+  'cookie',
+  'tomato',
+  'potato',
   'upc',
 ]
 
@@ -88,16 +104,6 @@ const cosmeticTerms = [
   'fragrance',
   'hair dye',
 ]
-
-const typoSuggestions: Record<string, string> = {
-  metforimn: 'Metformin',
-  metfromin: 'Metformin',
-  ibruprofen: 'Ibuprofen',
-  ibuprofin: 'Ibuprofen',
-  xanex: 'Xanax',
-  sunscrean: 'Sunscreen',
-  'protien powder': 'Protein powder',
-}
 
 const pharmacySuggestion: SafetyRouteSuggestion = {
   area: 'pharmacy',
@@ -126,18 +132,6 @@ const suggestionsByArea: Record<SafetyDetailArea, SafetyRouteSuggestion> = {
   cosmetic: cosmeticSuggestion,
 }
 
-export function normalizeSearchTerm(rawQuery: string) {
-  return rawQuery.trim().replace(/\s+/g, ' ')
-}
-
-export function getSearchComparisonKey(rawQuery: string) {
-  return normalizeSearchTerm(rawQuery).toLocaleLowerCase('en-US')
-}
-
-export function areSearchTermsEquivalent(firstQuery: string, secondQuery: string) {
-  return getSearchComparisonKey(firstQuery) === getSearchComparisonKey(secondQuery)
-}
-
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
@@ -152,7 +146,7 @@ function includesAnyTerm(normalizedQuery: string, terms: string[]) {
 }
 
 export function classifySafetyQuery(rawQuery: string): SafetyRouteClassification {
-  const query = normalizeSearchTerm(rawQuery)
+  const query = normalizeSafetyQuery(rawQuery).normalizedQuery
   const normalizedQuery = getSearchComparisonKey(query)
 
   if (!query) {
@@ -245,5 +239,6 @@ export function getWrongCategorySuggestion(
 }
 
 export function getTypoSuggestion(rawQuery: string) {
-  return typoSuggestions[getSearchComparisonKey(rawQuery)] ?? null
+  const normalization = normalizeSafetyQuery(rawQuery)
+  return normalization.correctionApplied ? normalization.normalizedQuery : null
 }

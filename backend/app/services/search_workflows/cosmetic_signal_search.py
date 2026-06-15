@@ -7,6 +7,7 @@ from app.db.audit_repository import save_audit_event
 from app.db.source_pull_repository import save_source_pull_with_snapshot
 from app.scoring import COSMETIC_SIGNAL_SCORE_VERSION
 from app.services.openfda_cosmetic_event_client import OpenFDACosmeticEventClient
+from app.services.query_normalization import normalize_safety_query
 from app.sources.registry import OPENFDA_COSMETIC_EVENT
 
 client = OpenFDACosmeticEventClient()
@@ -45,17 +46,28 @@ def _save_source_pull_with_request_id(
 def _persist_cosmetic_error_audit(
     *,
     query: str,
+    raw_query: str,
     limit: int,
     error_message: str,
     request_id: str | None,
 ):
+    query_params = {"q": query, "limit": limit}
+    if raw_query.strip().lower() != query.lower():
+        query_params.update(
+            {
+                "raw_query": raw_query,
+                "normalized_query": query,
+                "correction_applied": True,
+            }
+        )
+
     audit_event = build_audit_event(
         module="CosmeticSignal",
         source_id=OPENFDA_COSMETIC_EVENT["source_id"],
         source_name=OPENFDA_COSMETIC_EVENT["source_name"],
         endpoint=OPENFDA_COSMETIC_EVENT["endpoint"],
         query=query,
-        query_params={"q": query, "limit": limit},
+        query_params=query_params,
         retrieval_timestamp=datetime.now(timezone.utc).isoformat(),
         upstream_status="error",
         record_count=0,
@@ -204,9 +216,12 @@ async def execute_cosmetic_signal_search(
     limit: int,
     request_id: str | None,
 ) -> dict[str, Any]:
+    query_normalization = normalize_safety_query(query, "cosmetic")
+    search_query = query_normalization.normalized_query
+
     try:
         payload = await client.search_cosmetic_events(
-            query=query,
+            query=search_query,
             limit=25,
             request_id=request_id,
         )
@@ -242,8 +257,14 @@ async def execute_cosmetic_signal_search(
             source_id=payload["source_id"],
             source_name=payload["source_name"],
             endpoint=payload["endpoint"],
-            query=query,
-            query_params={"q": query, "limit": limit},
+            query=search_query,
+            query_params={
+                "q": search_query,
+                "raw_query": query_normalization.raw_query,
+                "normalized_query": query_normalization.normalized_query,
+                "correction_applied": query_normalization.correction_applied,
+                "limit": limit,
+            },
             retrieval_timestamp=payload["retrieval_timestamp"],
             upstream_status=upstream_status,
             record_count=len(raw_results),
@@ -260,7 +281,11 @@ async def execute_cosmetic_signal_search(
         )
 
         return {
-            "query": query,
+            "query": search_query,
+            "raw_query": query_normalization.raw_query,
+            "normalized_query": query_normalization.normalized_query,
+            "correction_applied": query_normalization.correction_applied,
+            "suggestion_message": query_normalization.suggestion_message,
             "count": len(raw_results),
             "limit": limit,
             "source_name": payload["source_name"],
@@ -286,7 +311,8 @@ async def execute_cosmetic_signal_search(
 
     except Exception as exc:
         _persist_cosmetic_error_audit(
-            query=query,
+            query=search_query,
+            raw_query=query_normalization.raw_query,
             limit=limit,
             error_message=str(exc),
             request_id=request_id,

@@ -54,6 +54,10 @@ class RecallSemanticPreview(BaseModel):
 
 class RecallSearchResponse(BaseModel):
     query: str
+    raw_query: str
+    normalized_query: str
+    correction_applied: bool
+    suggestion_message: str | None = None
     count: int
     limit: int
     source_name: str

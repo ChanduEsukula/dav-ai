@@ -9,14 +9,18 @@ import type { ActivePage } from '../types/navigation'
 import { formatDate, formatTimestamp } from '../utils/recallFormatters'
 import {
   getSearchComparisonKey,
-  getTypoSuggestion,
   getWrongCategorySuggestion,
   normalizeSearchTerm,
 } from '../utils/safetyRouteClassifier'
+import { normalizeSafetyQuery } from '../utils/queryNormalization'
+import { writeSafetyQueryToUrl } from '../utils/safetyQueryUrl'
+import QueryNormalizationNotice from './QueryNormalizationNotice'
+import QueryTypeahead from './QueryTypeahead'
 
 type FoodSafetyPageProps = {
   initialQuery: string
-  goToPage: (page: ActivePage, query?: string) => void
+  initialRawQuery?: string
+  goToPage: (page: ActivePage, query?: string, rawQuery?: string) => void
 }
 
 type FoodSearchOptions = {
@@ -125,27 +129,21 @@ function FoodRecordRow({ record, index }: { record: EverydaySafetyRecord; index:
   )
 }
 
-function updateFoodQueryInUrl(query: string, mode: 'push' | 'replace') {
-  const url = new URL(window.location.href)
-  const currentPage = url.searchParams.get('page')
-  const currentQuery = url.searchParams.get('q') ?? ''
-
-  if (currentPage === 'food-safety' && currentQuery === query) return
-
-  url.searchParams.set('page', 'food-safety')
-  url.searchParams.set('q', query)
-
-  if (mode === 'push') {
-    window.history.pushState(null, '', url.toString())
-  } else {
-    window.history.replaceState(null, '', url.toString())
-  }
-}
-
-function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
-  const normalizedInitialQuery = normalizeSearchTerm(initialQuery)
-  const [query, setQuery] = useState(normalizedInitialQuery)
+function FoodSafetyPage({
+  initialQuery,
+  initialRawQuery,
+  goToPage,
+}: FoodSafetyPageProps) {
+  const initialNormalization = normalizeSafetyQuery(
+    initialRawQuery || initialQuery,
+    'food',
+  )
+  const normalizedInitialQuery = initialNormalization.normalizedQuery
+  const [query, setQuery] = useState(initialNormalization.rawQuery)
   const [submittedQuery, setSubmittedQuery] = useState(normalizedInitialQuery)
+  const [submittedRawQuery, setSubmittedRawQuery] = useState(
+    initialNormalization.rawQuery,
+  )
   const [data, setData] = useState<EverydaySafetySearchResponse | null>(null)
   const [sort, setSort] = useState<EverydaySafetySort>('score')
   const [loading, setLoading] = useState(Boolean(normalizedInitialQuery))
@@ -170,15 +168,17 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
       nextSort: EverydaySafetySort,
       options: FoodSearchOptions = {},
     ) => {
-      const cleanQuery = normalizeSearchTerm(nextQuery)
+      const normalization = normalizeSafetyQuery(nextQuery, 'food')
+      const cleanQuery = normalization.normalizedQuery
       if (!cleanQuery) return
 
       const requestKey = `${getSearchComparisonKey(cleanQuery)}::${nextSort}`
       if (inFlightKeyRef.current === requestKey) return
 
       if (options.skipIfCompleted && completedKeyRef.current === requestKey) {
-        setQuery(cleanQuery)
+        setQuery(normalization.rawQuery)
         setSubmittedQuery(cleanQuery)
+        setSubmittedRawQuery(normalization.rawQuery)
         setError('')
         setHelper('')
         return
@@ -189,15 +189,16 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
       inFlightKeyRef.current = requestKey
       completedKeyRef.current = ''
 
-      setQuery(cleanQuery)
+      setQuery(normalization.rawQuery)
       setSubmittedQuery(cleanQuery)
+      setSubmittedRawQuery(normalization.rawQuery)
       setData(null)
       setLoading(true)
       setError('')
       setHelper('')
 
       if (options.updateUrl) {
-        updateFoodQueryInUrl(cleanQuery, 'push')
+        writeSafetyQueryToUrl('food-safety', cleanQuery, normalization.rawQuery, 'push')
       }
 
       try {
@@ -227,7 +228,11 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
   )
 
   useEffect(() => {
-    const cleanQuery = normalizeSearchTerm(initialQuery)
+    const normalization = normalizeSafetyQuery(
+      initialRawQuery || initialQuery,
+      'food',
+    )
+    const cleanQuery = normalization.normalizedQuery
     let isCurrentEffect = true
 
     async function syncInitialQuery() {
@@ -240,6 +245,7 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
         completedKeyRef.current = ''
         setQuery('')
         setSubmittedQuery('')
+        setSubmittedRawQuery('')
         setData(null)
         setSort('score')
         setLoading(false)
@@ -248,13 +254,17 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
         return
       }
 
-      const urlQuery = new URLSearchParams(window.location.search).get('q') ?? ''
-      if (urlQuery !== cleanQuery) {
-        updateFoodQueryInUrl(cleanQuery, 'replace')
-      }
+      writeSafetyQueryToUrl(
+        'food-safety',
+        cleanQuery,
+        normalization.rawQuery,
+        'replace',
+      )
 
       setSort('score')
-      await loadFoodRecords(cleanQuery, 'score', { skipIfCompleted: true })
+      await loadFoodRecords(normalization.rawQuery, 'score', {
+        skipIfCompleted: true,
+      })
     }
 
     void syncInitialQuery()
@@ -262,7 +272,7 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
     return () => {
       isCurrentEffect = false
     }
-  }, [initialQuery, loadFoodRecords])
+  }, [initialQuery, initialRawQuery, loadFoodRecords])
 
   function handleSearch() {
     const cleanInput = normalizeSearchTerm(query)
@@ -277,7 +287,7 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
     }
 
     if (!cleanInput) {
-      void loadFoodRecords(cleanSubmittedQuery, sort)
+      void loadFoodRecords(submittedRawQuery || cleanSubmittedQuery, sort)
       return
     }
 
@@ -292,7 +302,7 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
     if (nextSort === sort || !cleanSubmittedQuery) return
 
     setSort(nextSort)
-    void loadFoodRecords(cleanSubmittedQuery, nextSort)
+    void loadFoodRecords(submittedRawQuery || cleanSubmittedQuery, nextSort)
   }
 
   function handleExampleClick(example: string) {
@@ -305,11 +315,6 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
     })
   }
 
-  function handleTypoSuggestion(correctedQuery: string) {
-    setQuery(correctedQuery)
-    void loadFoodRecords(correctedQuery, sort, { updateUrl: true })
-  }
-
   const records = data?.results ?? []
   const displayQuery = submittedQuery || 'a food or supplement product'
   const topResult = records[0] ?? null
@@ -317,8 +322,6 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
     () => getWrongCategorySuggestion('food', submittedQuery),
     [submittedQuery],
   )
-  const typoSuggestion =
-    data?.count === 0 ? getTypoSuggestion(submittedQuery) : null
   const hasZeroResults = data?.count === 0 && !loading
   const hasWrongCategoryOnly = Boolean(wrongCategorySuggestion && hasZeroResults)
   const sourceNames = data?.sources_checked.map((source) => source.source_name) ?? []
@@ -356,13 +359,14 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
           >
             <label htmlFor="food-page-search">Search food safety records</label>
             <div>
-              <input
+              <QueryTypeahead
                 id="food-page-search"
                 value={query}
-                onChange={(event) => {
-                  setQuery(event.target.value)
+                onChange={(nextQuery) => {
+                  setQuery(nextQuery)
                   if (helper) setHelper('')
                 }}
+                area="food"
                 placeholder="Search another food, supplement, brand, or ingredient"
               />
               <button type="submit" disabled={loading}>
@@ -371,39 +375,37 @@ function FoodSafetyPage({ initialQuery, goToPage }: FoodSafetyPageProps) {
             </div>
           </form>
 
-          {(typoSuggestion || wrongCategorySuggestion) && !loading && (
-            <div className="pharmacy-query-guidance">
-              {typoSuggestion && (
-                <div
-                  className="pharmacy-typo-suggestion food-typo-suggestion"
-                  role="status"
-                  aria-live="polite"
-                >
-                  <span>
-                    Spelling suggestion: did you mean <strong>{typoSuggestion}</strong>?
-                  </span>
-                  <button type="button" onClick={() => handleTypoSuggestion(typoSuggestion)}>
-                    Use {typoSuggestion}
-                  </button>
-                </div>
-              )}
+          <QueryNormalizationNotice
+            rawQuery={submittedRawQuery}
+            normalizedQuery={submittedQuery}
+          />
 
-              {wrongCategorySuggestion && (
-                <aside className="safety-route-suggestion" aria-live="polite">
-                  <span>{wrongCategorySuggestion.message}</span>
-                  <button
-                    type="button"
-                    onClick={() =>
+          {wrongCategorySuggestion && !loading && (
+            <div className="pharmacy-query-guidance">
+              <aside className="safety-route-suggestion" aria-live="polite">
+                <span>{wrongCategorySuggestion.message}</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const routeQuery = normalizeSearchTerm(submittedQuery)
+                    if (
+                      getSearchComparisonKey(routeQuery) !==
+                      getSearchComparisonKey(submittedRawQuery)
+                    ) {
                       goToPage(
                         wrongCategorySuggestion.page,
-                        normalizeSearchTerm(submittedQuery),
+                        routeQuery,
+                        submittedRawQuery,
                       )
+                      return
                     }
-                  >
-                    Open {wrongCategorySuggestion.label}
-                  </button>
-                </aside>
-              )}
+
+                    goToPage(wrongCategorySuggestion.page, routeQuery)
+                  }}
+                >
+                  Open {wrongCategorySuggestion.label}
+                </button>
+              </aside>
             </div>
           )}
 
