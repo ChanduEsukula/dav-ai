@@ -135,6 +135,35 @@ def test_search_cosmetic_events_returns_empty_results():
     assert body["audit"]["upstream_status"] == "empty"
 
 
+def test_search_cosmetic_events_normalizes_hairdye_before_upstream_search():
+    seen_queries = []
+
+    class CapturingCosmeticClient(MockCosmeticEventClientEmpty):
+        async def search_cosmetic_events(
+            self,
+            query: str,
+            limit: int = 10,
+            request_id: str | None = None,
+        ):
+            seen_queries.append(query)
+            return await super().search_cosmetic_events(query, limit, request_id)
+
+    cosmetic_signal_search.client = CapturingCosmeticClient()
+
+    test_client = TestClient(app)
+    response = test_client.get(
+        "/api/v1/cosmetic-events/search",
+        params={"q": "hairdye", "limit": 5},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert seen_queries == ["hair dye"]
+    assert body["query"] == "hair dye"
+    assert body["raw_query"] == "hairdye"
+    assert body["correction_applied"] is True
+
+
 def test_search_cosmetic_events_returns_502_and_persists_error_audit(monkeypatch):
     cosmetic_signal_search.client = MockCosmeticEventClientFailure()
     saved_audits = []

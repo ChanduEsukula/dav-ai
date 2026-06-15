@@ -154,3 +154,43 @@ test('example chips clear previous universal search guidance', async () => {
     ),
   ).not.toBeInTheDocument()
 })
+
+test('normalizes an approved homepage alias and preserves the original route query', async () => {
+  const user = userEvent.setup()
+  render(<UniversalSafetySearch goToPage={mockGoToPage} />)
+
+  const input = screen.getByLabelText(/Safety search/i)
+  await user.type(input, 'strawberries')
+  await user.click(screen.getByRole('button', { name: 'Analyze' }))
+
+  await waitFor(() => {
+    expect(mockSearchEverydaySafety).toHaveBeenCalledWith('strawberry', 5)
+  })
+  expect(
+    screen.getByText(
+      /Showing results for 'strawberry' based on your search 'strawberries'/i,
+    ),
+  ).toBeInTheDocument()
+
+  await user.click(screen.getByRole('button', { name: 'Open Food & Supplement Safety' }))
+  expect(mockGoToPage).toHaveBeenCalledWith(
+    'food-safety',
+    'strawberry',
+    'strawberries',
+  )
+})
+
+test('homepage typeahead exposes workflow labels and supports keyboard selection', async () => {
+  const user = userEvent.setup()
+  render(<UniversalSafetySearch goToPage={mockGoToPage} />)
+
+  const input = screen.getByLabelText(/Safety search/i)
+  await user.type(input, 'xan')
+
+  expect(
+    screen.getByRole('option', { name: /xanax.*Pharmacy Safety/i }),
+  ).toBeInTheDocument()
+
+  await user.keyboard('{ArrowDown}{Enter}')
+  expect(input).toHaveValue('xanax')
+})

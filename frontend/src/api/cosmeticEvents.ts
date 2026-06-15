@@ -45,6 +45,10 @@ export type CosmeticAudit = {
 
 export type CosmeticEventSearchResponse = {
   query: string
+  raw_query?: string
+  normalized_query?: string
+  correction_applied?: boolean
+  suggestion_message?: string | null
   count: number
   limit: number
   source_name: string

@@ -49,17 +49,32 @@ def _save_source_pull_with_request_id(
 def _persist_food_error_audit(
     *,
     query: str,
+    raw_query: str,
     limit: int,
     error_message: str,
     request_id: str | None,
 ):
+    query_params = {
+        "category": "food_supplement",
+        "q": query,
+        "limit": limit,
+    }
+    if raw_query.strip().lower() != query.lower():
+        query_params.update(
+            {
+                "raw_query": raw_query,
+                "normalized_query": query,
+                "correction_applied": True,
+            }
+        )
+
     audit_event = build_audit_event(
         module="FoodRadar",
         source_id="foodradar_multi_source",
         source_name="FoodRadar multi-source search",
         endpoint="openFDA Food Enforcement + USDA FSIS Recall API",
         query=query,
-        query_params={"category": "food_supplement", "q": query, "limit": limit},
+        query_params=query_params,
         retrieval_timestamp=datetime.now(timezone.utc).isoformat(),
         upstream_status="error",
         record_count=0,
@@ -546,7 +561,8 @@ async def execute_everyday_safety_search(
 
     except Exception as exc:
         _persist_food_error_audit(
-            query=query,
+            query=search_query,
+            raw_query=query_normalization.raw_query,
             limit=limit,
             error_message=str(exc),
             request_id=request_id,

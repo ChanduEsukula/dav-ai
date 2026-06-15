@@ -24,6 +24,14 @@ test('demo navigation follows the canonical safety workspaces and evidence pages
 
   await expect(page.getByRole('button', { name: 'Ask DAV AI', exact: true })).toHaveCount(0)
 
+  const guidedSearch = page.getByRole('combobox', { name: 'Safety search' })
+  await guidedSearch.fill('stra')
+  await expect(page.getByRole('option', { name: /strawberry.*Food & Supplement Safety/i }))
+    .toBeVisible()
+  await guidedSearch.press('ArrowDown')
+  await guidedSearch.press('Enter')
+  await expect(guidedSearch).toHaveValue('strawberry')
+
   await page.getByRole('button', { name: 'Pharmacy Safety', exact: true }).click()
   await expect(
     page.getByRole('heading', { name: 'Search pharmacy safety records' }),

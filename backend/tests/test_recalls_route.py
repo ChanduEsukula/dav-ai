@@ -125,6 +125,39 @@ def test_search_recalls_returns_empty_results_for_no_matches():
     assert body["audit"]["audit_id"]
 
 
+def test_search_recalls_normalizes_xanex_before_upstream_search():
+    seen_queries = []
+
+    class CapturingRecallClient(MockOpenFDAClientEmpty):
+        async def search_drug_recalls(
+            self,
+            query: str,
+            limit: int = 10,
+            request_id: str | None = None,
+        ):
+            seen_queries.append(query)
+            return await super().search_drug_recalls(query, limit, request_id)
+
+    recall_search.client = CapturingRecallClient()
+
+    test_client = TestClient(app)
+    response = test_client.get(
+        "/api/v1/recalls/search",
+        params={"q": "xanex", "limit": 5},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert seen_queries == ["xanax"]
+    assert body["query"] == "xanax"
+    assert body["raw_query"] == "xanex"
+    assert body["normalized_query"] == "xanax"
+    assert body["correction_applied"] is True
+    assert body["suggestion_message"] == (
+        "Showing results for 'xanax' based on your search 'xanex'."
+    )
+
+
 def test_search_recalls_returns_502_and_persists_error_audit(monkeypatch):
     recall_search.client = MockOpenFDAClientFailure()
     saved_audits = []

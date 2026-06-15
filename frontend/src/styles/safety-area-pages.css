@@ -396,6 +396,11 @@
   opacity: 0.58;
 }
 
+.pharmacy-overview__main > .query-normalization-notice,
+.pharmacy-query-guidance {
+  grid-area: typo;
+}
+
 .pharmacy-example-row {
   grid-area: examples;
   display: flex;

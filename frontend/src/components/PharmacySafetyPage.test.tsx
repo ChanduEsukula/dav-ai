@@ -327,36 +327,21 @@ test.each([
   },
 )
 
-test('shows zero-result spelling guidance and runs the hardcoded typo correction', async () => {
-  const user = userEvent.setup()
-  mockSearchRecalls.mockResolvedValue(emptyRecallResponse)
-  mockSearchDrugEvents.mockResolvedValue(emptyDrugResponse)
-  window.history.replaceState(null, '', '?page=pharmacy-safety&q=metforimn')
+test('normalizes xanex while preserving the original Pharmacy query', async () => {
+  window.history.replaceState(null, '', '?page=pharmacy-safety&q=xanex')
 
-  renderPharmacyPage('metforimn')
-
-  expect(
-    await screen.findByText(/No public records returned for this exact search/i),
-  ).toBeInTheDocument()
-
-  const suggestion = screen.getByText(/Spelling suggestion: did you mean/i)
-  const suggestionBox = suggestion.closest('.pharmacy-typo-suggestion')
-  const examples = screen.getByLabelText('Example pharmacy searches')
-  expect(suggestionBox).toBeInTheDocument()
-  expect(
-    suggestionBox!.compareDocumentPosition(examples) & Node.DOCUMENT_POSITION_FOLLOWING,
-  ).not.toBe(0)
-  expect(screen.queryByText('52/100')).not.toBeInTheDocument()
-  expect(screen.getAllByText('No returned reports')).not.toHaveLength(0)
-  expect(screen.getByText('Not assessable')).toBeInTheDocument()
-  expect(screen.queryByText('Moderate')).not.toBeInTheDocument()
-
-  await user.click(screen.getByRole('button', { name: /Use Metformin/i }))
+  renderPharmacyPage('xanex')
 
   await waitFor(() => {
-    expect(mockSearchRecalls).toHaveBeenLastCalledWith('Metformin', 8, 'score')
+    expect(mockSearchRecalls).toHaveBeenCalledWith('xanax', 8, 'score')
   })
-  expect(new URLSearchParams(window.location.search).get('q')).toBe('Metformin')
+  expect(mockSearchDrugEvents).toHaveBeenCalledWith('xanax', 8)
+  expect(
+    screen.getByText(/Showing results for 'xanax' based on your search 'xanex'/i),
+  ).toBeInTheDocument()
+  expect(screen.getByLabelText(/Search pharmacy records/i)).toHaveValue('xanex')
+  expect(new URLSearchParams(window.location.search).get('q')).toBe('xanax')
+  expect(new URLSearchParams(window.location.search).get('raw_q')).toBe('xanex')
 })
 
 test('wrong-category zero results show one focused route suggestion', async () => {

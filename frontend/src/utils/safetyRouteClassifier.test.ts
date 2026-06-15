@@ -40,9 +40,17 @@ test.each([
   ['IBUPROFIN', 'Ibuprofen'],
   ['  protien   powder ', 'Protein powder'],
 ] as const)('returns the approved typo suggestion for %s', (query, correction) => {
-  expect(getTypoSuggestion(query)).toBe(correction)
+  expect(getTypoSuggestion(query)).toBe(correction.toLocaleLowerCase())
 })
 
 test('does not invent typo corrections outside the approved list', () => {
   expect(getTypoSuggestion('metforman')).toBeNull()
+})
+
+test.each([
+  ['xanex', 'pharmacy'],
+  ['strawberries', 'food'],
+  ['hairdye', 'cosmetic'],
+] as const)('classifies approved aliases such as %s after normalization', (query, area) => {
+  expect(classifySafetyQuery(query).primaryArea).toBe(area)
 })
