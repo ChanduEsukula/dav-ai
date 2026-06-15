@@ -1462,3 +1462,28 @@
     flex-direction: column;
   }
 }
+
+.recall-sort-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+}
+
+.sort-helper-text {
+  display: block;
+  color: rgba(71, 85, 105, 0.78);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  text-align: right;
+}
+
+@media (max-width: 720px) {
+  .recall-sort-wrapper {
+    align-items: flex-start;
+  }
+
+  .sort-helper-text {
+    text-align: left;
+  }
+}

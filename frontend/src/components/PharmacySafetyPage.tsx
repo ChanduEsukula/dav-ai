@@ -289,7 +289,7 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
 
   function handleSortChange(nextSort: RecallSort) {
     const cleanSubmittedQuery = normalizeSearchTerm(submittedQuery)
-    if (nextSort === recallSort || !cleanSubmittedQuery) return
+    if (nextSort === recallSort || !cleanSubmittedQuery || recallResults.length === 0) return
 
     setRecallSort(nextSort)
     void loadPharmacyPreview(cleanSubmittedQuery, nextSort)
@@ -323,6 +323,7 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
     [submittedQuery],
   )
   const typoSuggestion = hasZeroResults ? getTypoSuggestion(submittedQuery) : null
+  const hasWrongCategoryOnly = Boolean(wrongCategorySuggestion && hasZeroResults)
   const loadedSourceNames = [recallData?.source_name, drugData?.source_name].filter(
     (sourceName): sourceName is string => Boolean(sourceName),
   )
@@ -330,6 +331,7 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
     loadedSourceNames.length > 0
       ? loadedSourceNames.join(' + ')
       : 'openFDA enforcement + openFDA FAERS'
+  const recallSortDisabled = loading || recallResults.length === 0
 
   return (
     <section className="safety-area-page safety-area-page--pharmacy pharmacy-detail-page">
@@ -376,6 +378,38 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
             </div>
           </form>
 
+          {(typoSuggestion || wrongCategorySuggestion) && !loading && (
+            <div className="pharmacy-query-guidance">
+              {typoSuggestion && hasZeroResults && (
+                <div className="pharmacy-typo-suggestion" role="status" aria-live="polite">
+                  <span>
+                    Spelling suggestion: did you mean <strong>{typoSuggestion}</strong>?
+                  </span>
+                  <button type="button" onClick={() => handleTypoSuggestion(typoSuggestion)}>
+                    Use {typoSuggestion}
+                  </button>
+                </div>
+              )}
+
+              {wrongCategorySuggestion && (
+                <aside className="safety-route-suggestion" aria-live="polite">
+                  <span>{wrongCategorySuggestion.message}</span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      goToPage(
+                        wrongCategorySuggestion.page,
+                        normalizeSearchTerm(submittedQuery),
+                      )
+                    }
+                  >
+                    Open {wrongCategorySuggestion.label}
+                  </button>
+                </aside>
+              )}
+            </div>
+          )}
+
           <div className="pharmacy-example-row" aria-label="Example pharmacy searches">
             <span>Try</span>
             {['Xanax', 'Metformin', 'Ibuprofen', 'Amoxicillin'].map((example) => (
@@ -388,17 +422,6 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
               </button>
             ))}
           </div>
-
-          {typoSuggestion && hasZeroResults && !loading && (
-            <div className="pharmacy-typo-suggestion" role="status" aria-live="polite">
-              <span>
-                Spelling suggestion: did you mean <strong>{typoSuggestion}</strong>?
-              </span>
-              <button type="button" onClick={() => handleTypoSuggestion(typoSuggestion)}>
-                Use {typoSuggestion}
-              </button>
-            </div>
-          )}
 
           <p className="pharmacy-source-line">
             <span aria-hidden="true" />
@@ -433,21 +456,7 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
         </p>
       )}
 
-      {wrongCategorySuggestion && !loading && (
-        <aside className="safety-route-suggestion" aria-live="polite">
-          <span>{wrongCategorySuggestion.message}</span>
-          <button
-            type="button"
-            onClick={() =>
-              goToPage(wrongCategorySuggestion.page, normalizeSearchTerm(submittedQuery))
-            }
-          >
-            Open {wrongCategorySuggestion.label}
-          </button>
-        </aside>
-      )}
-
-      {hasZeroResults && !loading && (
+      {hasZeroResults && !hasWrongCategoryOnly && !loading && (
         <aside className="safety-search-guidance" aria-live="polite">
           <span>
             No public records returned for this exact search. Check spelling or try a
@@ -475,11 +484,23 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
             </div>
             <div>
               <dt>Reporting signal</dt>
-              <dd>{drugData?.intelligence_score.label ?? 'Not available'}</dd>
+              <dd>
+                {drugData
+                  ? drugData.count > 0
+                    ? drugData.intelligence_score.label
+                    : 'No returned reports'
+                  : 'Not available'}
+              </dd>
             </div>
             <div>
               <dt>Review priority</dt>
-              <dd>{drugData?.intelligence_score.review_priority ?? 'Not available'}</dd>
+              <dd>
+                {drugData
+                  ? drugData.count > 0
+                    ? drugData.intelligence_score.review_priority
+                    : 'Verify other sources'
+                  : 'Not available'}
+              </dd>
             </div>
           </dl>
         </section>
@@ -500,27 +521,38 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
               </span>
             </div>
 
-            <div
-              className="recall-sort-control"
-              role="group"
-              aria-label="Sort pharmacy recall records"
-            >
-              <button
-                type="button"
-                className={recallSort === 'score' ? 'active' : ''}
-                onClick={() => void handleSortChange('score')}
-                disabled={loading}
+            <div className="recall-sort-wrapper">
+              <div
+                className="recall-sort-control"
+                role="group"
+                aria-label="Sort pharmacy recall records"
               >
-                Priority
-              </button>
-              <button
-                type="button"
-                className={recallSort === 'latest' ? 'active' : ''}
-                onClick={() => void handleSortChange('latest')}
-                disabled={loading}
-              >
-                Latest
-              </button>
+                <button
+                  type="button"
+                  className={recallSort === 'score' ? 'active' : ''}
+                  aria-pressed={recallSort === 'score'}
+                  onClick={() => void handleSortChange('score')}
+                  disabled={recallSortDisabled}
+                >
+                  Priority
+                </button>
+
+                <button
+                  type="button"
+                  className={recallSort === 'latest' ? 'active' : ''}
+                  aria-pressed={recallSort === 'latest'}
+                  onClick={() => void handleSortChange('latest')}
+                  disabled={recallSortDisabled}
+                >
+                  Latest
+                </button>
+              </div>
+
+              {!loading && recallResults.length === 0 && (
+                <small className="sort-helper-text">
+                  Search first to sort matching records.
+                </small>
+              )}
             </div>
           </div>
 
@@ -543,10 +575,15 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
             </div>
           ) : recallData ? (
             <div className="pharmacy-empty-card">
-              <h3>No matching recall records returned.</h3>
+              <h3>
+                {hasWrongCategoryOnly
+                  ? `This looks better suited for ${wrongCategorySuggestion?.label}.`
+                  : 'No matching recall records returned.'}
+              </h3>
               <p>
-                Try a generic name, brand, strength, product wording, or NDC. No match does not
-                prove a medication is safe.
+                {hasWrongCategoryOnly
+                  ? `Open ${wrongCategorySuggestion?.label} to review the more relevant public records for this search.`
+                  : 'Try a generic name, brand, strength, product wording, or NDC. No match does not prove a medication is safe.'}
               </p>
             </div>
           ) : (
@@ -564,7 +601,7 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
                 <p className="eyebrow">Event patterns</p>
                 <h2>FAERS reporting summary</h2>
               </div>
-              {drugData && (
+              {drugData && drugData.count > 0 && (
                 <span className="pharmacy-signal-badge">
                   {drugData.intelligence_score.score}/100
                 </span>
@@ -576,7 +613,11 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
                 <dl className="pharmacy-event-metrics">
                   <div>
                     <dt>Signal</dt>
-                    <dd>{drugData.intelligence_score.label}</dd>
+                    <dd>
+                      {drugData.count > 0
+                        ? drugData.intelligence_score.label
+                        : 'No returned reports'}
+                    </dd>
                   </div>
                   <div>
                     <dt>Confidence</dt>
@@ -601,7 +642,7 @@ function PharmacySafetyPage({ initialQuery, goToPage }: PharmacySafetyPageProps)
                               style={{
                                 width: `${Math.max(
                                   8,
-                                  Math.round((reaction.count / topReactionCount) * 100)
+                                  Math.round((reaction.count / topReactionCount) * 100),
                                 )}%`,
                               }}
                             />
