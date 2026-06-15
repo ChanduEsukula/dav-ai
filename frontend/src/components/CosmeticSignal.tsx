@@ -6,17 +6,16 @@ import {
 import { buildCosmeticAssistantContext, type AssistantChatContext } from '../api/assistant'
 import SafeInsightCards, { type SafeInsightCard } from './SafeInsightCards'
 import { formatDate, formatTimestamp } from '../utils/recallFormatters'
+import { normalizeSearchTerm } from '../utils/safetyRouteClassifier'
 
 function productLabel(record: CosmeticEventSearchResponse['records'][number]) {
   const firstProduct = record.products[0]
 
-  if (!firstProduct) return 'Cosmetic product not specified'
-
   return (
-    firstProduct.brand_name ||
-    firstProduct.name_brand ||
-    firstProduct.industry_name ||
-    'Cosmetic product not specified'
+    firstProduct?.brand_name ||
+    firstProduct?.name_brand ||
+    firstProduct?.industry_name ||
+    (record.report_number ? `Cosmetic report ${record.report_number}` : 'Cosmetic event report')
   )
 }
 
@@ -31,18 +30,19 @@ function CosmeticSignal({ onAssistantContextChange }: CosmeticSignalProps) {
   const [error, setError] = useState('')
 
   async function handleSearch() {
-    const trimmedQuery = query.trim()
+    const cleanQuery = normalizeSearchTerm(query)
 
-    if (!trimmedQuery) {
+    if (!cleanQuery) {
       setError('Enter a cosmetic brand, product, reaction, or outcome keyword.')
       return
     }
 
+    setQuery(cleanQuery)
     setLoading(true)
     setError('')
 
     try {
-      const response = await searchCosmeticEvents(trimmedQuery, 10)
+      const response = await searchCosmeticEvents(cleanQuery, 10)
       setData(response)
       onAssistantContextChange?.(buildCosmeticAssistantContext(response))
     } catch {
@@ -74,8 +74,14 @@ function CosmeticSignal({ onAssistantContextChange }: CosmeticSignalProps) {
       },
       {
         label: 'Review signal',
-        title: `${data.signal_score.label} cosmetic reporting signal.`,
-        detail: `CosmeticSignal score: ${data.signal_score.score}/100. Treat this as a public reporting pattern, not proof of product harm.`,
+        title:
+          data.count > 0
+            ? `${data.signal_score.label} cosmetic reporting signal.`
+            : 'No returned cosmetic reports.',
+        detail:
+          data.count > 0
+            ? `CosmeticSignal score: ${data.signal_score.score}/100. Treat this as a public reporting pattern, not proof of product harm.`
+            : 'No numeric reporting signal is shown when no reports are returned. A no-match result does not prove safety or harm.',
         tone: 'review',
       },
       {
@@ -157,15 +163,22 @@ function CosmeticSignal({ onAssistantContextChange }: CosmeticSignalProps) {
           <section className="drug-intelligence-card" aria-label="CosmeticSignal summary">
             <div className="drug-intelligence-score">
               <p className="eyebrow">CosmeticSignal</p>
-              <h3>{data.signal_score.score} / 100</h3>
-              <span>{data.signal_score.label}</span>
+              <h3>{data.count > 0 ? `${data.signal_score.score} / 100` : 'No reports'}</h3>
+              <span>
+                {data.count > 0 ? data.signal_score.label : 'No returned-report signal'}
+              </span>
             </div>
 
             <div className="drug-intelligence-copy">
-              <h4>{data.signal_score.label} public cosmetic reporting signal</h4>
+              <h4>
+                {data.count > 0
+                  ? `${data.signal_score.label} public cosmetic reporting signal`
+                  : 'No numeric cosmetic reporting signal'}
+              </h4>
               <p>
-                Transparent signal score based on returned public cosmetic-event report volume,
-                reaction concentration, and reaction diversity.
+                {data.count > 0
+                  ? 'Transparent signal score based on returned public cosmetic-event report volume, reaction concentration, and reaction diversity.'
+                  : 'No public cosmetic-event reports were returned, so a numeric score is not shown. Verify other official sources and broader search terms.'}
               </p>
               <p className="drug-score-boundary">
                 Public reports only. This does not prove causation or provide medical advice.
@@ -175,7 +188,9 @@ function CosmeticSignal({ onAssistantContextChange }: CosmeticSignalProps) {
             <div className="drug-intelligence-grid">
               <div>
                 <small>Review priority</small>
-                <span>{data.signal_score.review_priority}</span>
+                <span>
+                  {data.count > 0 ? data.signal_score.review_priority : 'Verify other sources'}
+                </span>
               </div>
 
               <div>
@@ -185,7 +200,9 @@ function CosmeticSignal({ onAssistantContextChange }: CosmeticSignalProps) {
 
               <div>
                 <small>Top reaction concentration</small>
-                <span>{data.signal_score.top_reaction_concentration}%</span>
+                <span>
+                  {data.count > 0 ? `${data.signal_score.top_reaction_concentration}%` : 'N/A'}
+                </span>
               </div>
 
               <div>
@@ -261,7 +278,9 @@ function CosmeticSignal({ onAssistantContextChange }: CosmeticSignalProps) {
                     {data.signal_score.label} signal
                   </span>
 
-                  <h3 className="recall-card-title">{productLabel(record)}</h3>
+                  <h3 className="recall-card-title" title={productLabel(record)}>
+                    {productLabel(record)}
+                  </h3>
 
                   <span className="recall-date-inline">
                     <strong>{formatDate(record.report_date)}</strong>
@@ -312,7 +331,9 @@ function CosmeticSignal({ onAssistantContextChange }: CosmeticSignalProps) {
                                 product.brand_name ||
                                 product.name_brand ||
                                 product.industry_name ||
-                                'Unnamed product'
+                                (record.report_number
+                                  ? `Cosmetic report ${record.report_number}`
+                                  : 'Cosmetic event report')
                             )
                             .join(', ')
                         : 'Not provided'}
