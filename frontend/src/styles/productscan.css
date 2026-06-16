@@ -1,0 +1,359 @@
+.productscan-teaser,
+.productscan-page {
+  position: relative;
+  z-index: 1;
+  max-width: 1180px;
+  margin: 64px auto 0;
+}
+
+.productscan-teaser {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.4rem;
+  align-items: center;
+  padding: 1.3rem 0;
+  border-top: 1px solid rgba(11, 79, 113, 0.12);
+  border-bottom: 1px solid rgba(11, 79, 113, 0.12);
+}
+
+.productscan-teaser h2,
+.productscan-header h1 {
+  margin: 0;
+  color: var(--deep-ink);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  font-weight: 850;
+}
+
+.productscan-teaser h2 {
+  font-size: clamp(1.45rem, 2.8vw, 2.05rem);
+}
+
+.productscan-teaser p:last-child,
+.productscan-header p {
+  max-width: 760px;
+  margin: 0.65rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.productscan-teaser button,
+.productscan-submit {
+  min-height: 46px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 1.25rem;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--clinical-blue), var(--deep-teal));
+  box-shadow: 0 14px 28px rgba(0, 123, 135, 0.18);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.productscan-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.productscan-header h1 {
+  max-width: 880px;
+  font-size: clamp(2.1rem, 4.8vw, 4.2rem);
+}
+
+.productscan-shell {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.1fr);
+  gap: 1rem;
+  margin-top: 1.5rem;
+  align-items: start;
+}
+
+.productscan-panel,
+.productscan-limitations {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 18px 46px rgba(15, 23, 42, 0.07);
+  backdrop-filter: blur(18px);
+}
+
+.productscan-panel {
+  display: grid;
+  gap: 1rem;
+  padding: 1.1rem;
+}
+
+.productscan-panel__heading h2,
+.productscan-candidates h3,
+.productscan-limitations h2 {
+  margin: 0;
+  color: var(--deep-ink);
+  font-size: 1.12rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.productscan-panel__heading p:last-child {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.productscan-file-drop,
+.productscan-text-field,
+.productscan-confirm-field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.productscan-file-drop {
+  min-height: 124px;
+  place-items: center;
+  padding: 1rem;
+  border: 1px dashed rgba(11, 79, 113, 0.24);
+  border-radius: 18px;
+  color: var(--clinical-blue);
+  background: rgba(238, 248, 250, 0.64);
+  text-align: center;
+  cursor: pointer;
+}
+
+.productscan-file-drop input {
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.productscan-file-drop span,
+.productscan-text-field span,
+.productscan-confirm-field span,
+.productscan-workflows legend {
+  color: var(--deep-ink);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.productscan-file-drop small {
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.productscan-preview,
+.productscan-preview-empty {
+  margin: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #f8fbfc;
+  border: 1px solid rgba(11, 79, 113, 0.08);
+}
+
+.productscan-preview img {
+  width: 100%;
+  max-height: 360px;
+  display: block;
+  object-fit: contain;
+  background: #ffffff;
+}
+
+.productscan-preview figcaption {
+  padding: 0.75rem 0.85rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.productscan-preview-empty {
+  min-height: 160px;
+  display: grid;
+  place-items: center;
+  gap: 0.35rem;
+  padding: 1rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.productscan-preview-empty strong {
+  color: var(--deep-ink);
+}
+
+.productscan-text-field textarea,
+.productscan-confirm-field input {
+  width: 100%;
+  border: 1px solid rgba(16, 32, 51, 0.14);
+  border-radius: 16px;
+  padding: 0.85rem 0.95rem;
+  color: var(--deep-ink);
+  background: #ffffff;
+  font: inherit;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.productscan-text-field textarea:focus,
+.productscan-confirm-field input:focus {
+  outline: 3px solid rgba(0, 123, 135, 0.16);
+  outline-offset: 2px;
+  border-color: rgba(0, 123, 135, 0.38);
+}
+
+.productscan-candidates {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.productscan-candidates__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.productscan-candidates__heading span {
+  border-radius: 999px;
+  padding: 0.35rem 0.55rem;
+  color: var(--clinical-blue);
+  background: rgba(238, 248, 250, 0.9);
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.productscan-candidate-grid {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.productscan-candidate {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.8rem;
+  border: 1px solid rgba(11, 79, 113, 0.09);
+  border-radius: 16px;
+  background: rgba(248, 251, 252, 0.9);
+}
+
+.productscan-candidate.is-selected {
+  border-color: rgba(0, 123, 135, 0.42);
+  box-shadow: 0 0 0 3px rgba(0, 123, 135, 0.1);
+}
+
+.productscan-candidate span {
+  color: var(--deep-teal);
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.productscan-candidate strong {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--deep-ink);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.productscan-candidate p,
+.productscan-empty-candidates {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.productscan-candidate button {
+  min-height: 38px;
+  border: 1px solid rgba(0, 123, 135, 0.16);
+  border-radius: 999px;
+  padding: 0 0.8rem;
+  color: var(--clinical-blue);
+  background: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.productscan-candidate button[aria-pressed="true"] {
+  color: #ffffff;
+  background: var(--deep-teal);
+}
+
+.productscan-workflows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.productscan-workflows legend {
+  width: 100%;
+  margin-bottom: 0.1rem;
+}
+
+.productscan-workflows label {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid rgba(11, 79, 113, 0.11);
+  border-radius: 999px;
+  padding: 0 0.8rem;
+  color: var(--deep-ink);
+  background: rgba(238, 248, 250, 0.66);
+  cursor: pointer;
+  font-size: 0.86rem;
+  font-weight: 850;
+}
+
+.productscan-limitations {
+  margin-top: 1rem;
+  padding: 1rem 1.1rem;
+}
+
+.productscan-limitations ul {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.75rem 0 0;
+  padding-left: 1.15rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.productscan-limitations li::marker {
+  color: var(--deep-teal);
+}
+
+@media (max-width: 840px) {
+  .productscan-teaser,
+  .productscan-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .productscan-teaser button,
+  .productscan-submit {
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .productscan-candidate {
+    grid-template-columns: 1fr;
+  }
+
+  .productscan-candidate button {
+    width: 100%;
+  }
+}

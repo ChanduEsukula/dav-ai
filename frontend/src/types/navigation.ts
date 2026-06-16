@@ -3,6 +3,7 @@ export type ActivePage =
   | 'pharmacy-safety'
   | 'food-safety'
   | 'cosmetic-safety'
+  | 'productscan'
   | 'sources'
   | 'audit'
   | 'system'

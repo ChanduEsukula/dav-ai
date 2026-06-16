@@ -22,12 +22,15 @@ import './styles/safety-area-pages.css'
 import './styles/ask-dav-ai.css'
 import './styles/search-glass.css'
 import './styles/query-typeahead.css'
+import './styles/productscan.css'
 import type { AssistantChatContext } from './api/assistant'
 import Navbar from './components/Navbar'
 import UniversalSafetySearch from './components/UniversalSafetySearch'
 import PharmacySafetyPage from './components/PharmacySafetyPage'
 import FoodSafetyPage from './components/FoodSafetyPage'
 import CosmeticSafetyPage from './components/CosmeticSafetyPage'
+import ProductScanPage from './components/ProductScanPage'
+import ProductScanTeaser from './components/ProductScanTeaser'
 import Hero from './components/Hero'
 import SafetyWorkspace from './components/SafetyWorkspace'
 import OperationalOverview from './components/OperationalOverview'
@@ -58,6 +61,7 @@ function getInitialPage(): ActivePage {
     page === 'pharmacy-safety' ||
     page === 'food-safety' ||
     page === 'cosmetic-safety' ||
+    page === 'productscan' ||
     page === 'sources' ||
     page === 'audit' ||
     page === 'system' ||
@@ -206,6 +210,8 @@ function App() {
             goToCosmeticSafety={goToCosmeticSafety}
           />
 
+          <ProductScanTeaser openProductScan={() => goToPage('productscan')} />
+
           <UniversalSafetySearch goToPage={goToPage} />
 
           <OperationalOverview goToPharmacySafety={goToPharmacySafety} />
@@ -237,6 +243,8 @@ function App() {
           goToPage={goToPage}
         />
       )}
+
+      {activePage === 'productscan' && <ProductScanPage goToPage={goToPage} />}
 
       {activePage === 'sources' && <DataSourcesPage />}
 
