@@ -4,6 +4,10 @@ import {
   extractProductScanCandidates,
   type ProductScanCandidate,
 } from '../utils/productScanExtraction'
+import {
+  analyzeProductScanImageQuality,
+  type ProductScanImageQualityResult,
+} from '../utils/productScanImageQuality'
 import { runProductScanOcr } from '../utils/productScanOcr'
 import { normalizeSearchTerm } from '../utils/queryNormalization'
 
@@ -13,6 +17,9 @@ type ProductScanPageProps = {
 
 type ProductScanWorkflow = 'pharmacy' | 'food' | 'cosmetic'
 type ProductScanOcrStatus = 'idle' | 'running' | 'completed' | 'failed'
+type ProductScanImageQualityStatus = 'idle' | 'checking' | 'checked' | 'failed'
+
+const OCR_REVIEW_WARNING = 'OCR can misread labels. Review extracted text before continuing.'
 
 const workflowOptions: Array<{
   id: ProductScanWorkflow
@@ -65,8 +72,13 @@ function ProductScanPage({ goToPage }: ProductScanPageProps) {
   const [ocrMessage, setOcrMessage] = useState(
     'OCR not started. Upload a label image to enable browser-side text extraction.',
   )
+  const [imageQualityStatus, setImageQualityStatus] =
+    useState<ProductScanImageQualityStatus>('idle')
+  const [imageQualityResult, setImageQualityResult] =
+    useState<ProductScanImageQualityResult | null>(null)
   const candidates = useMemo(() => extractProductScanCandidates(labelText), [labelText])
   const cleanConfirmedQuery = normalizeSearchTerm(confirmedQuery)
+  const imageQualityWarnings = imageQualityResult?.warnings ?? []
 
   useEffect(() => {
     return () => {
@@ -75,6 +87,34 @@ function ProductScanPage({ goToPage }: ProductScanPageProps) {
       }
     }
   }, [imagePreviewUrl])
+
+  useEffect(() => {
+    if (!imageFile) {
+      return
+    }
+
+    let isCurrentImage = true
+
+    analyzeProductScanImageQuality(imageFile)
+      .then((result) => {
+        if (!isCurrentImage) return
+
+        setImageQualityResult(result)
+        setImageQualityStatus('checked')
+      })
+      .catch(() => {
+        if (!isCurrentImage) return
+
+        setImageQualityResult(null)
+        setImageQualityStatus('failed')
+        setOcrStatus('failed')
+        setOcrMessage('Image could not be loaded for OCR. You can still paste or type label text manually.')
+      })
+
+    return () => {
+      isCurrentImage = false
+    }
+  }, [imageFile])
 
   function handleImageUpload(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
@@ -85,6 +125,8 @@ function ProductScanPage({ goToPage }: ProductScanPageProps) {
     setImagePreviewUrl(URL.createObjectURL(file))
     setOcrStatus('idle')
     setOcrMessage('OCR not started. Select Extract text from image when you are ready.')
+    setImageQualityStatus('checking')
+    setImageQualityResult(null)
   }
 
   async function handleExtractText() {
@@ -174,10 +216,43 @@ function ProductScanPage({ goToPage }: ProductScanPageProps) {
           )}
 
           {imageFile && (
+            <section
+              className="productscan-image-quality"
+              aria-labelledby="productscan-image-quality-title"
+            >
+              <div className="productscan-image-quality__heading">
+                <h3 id="productscan-image-quality-title">Image OCR readiness</h3>
+                {imageQualityStatus === 'checking' && <span>Checking image...</span>}
+                {imageQualityStatus === 'checked' && imageQualityWarnings.length === 0 && (
+                  <span>No quality warnings</span>
+                )}
+                {imageQualityStatus === 'checked' && imageQualityWarnings.length > 0 && (
+                  <span>{imageQualityWarnings.length} warning(s)</span>
+                )}
+                {imageQualityStatus === 'failed' && <span>Image load failed</span>}
+              </div>
+
+              {imageQualityStatus === 'failed' ? (
+                <p className="productscan-image-quality__error" role="alert">
+                  Image could not be loaded for OCR. Choose another image or paste label text
+                  manually.
+                </p>
+              ) : (
+                <ul>
+                  {imageQualityWarnings.map((warning) => (
+                    <li key={warning.code}>{warning.message}</li>
+                  ))}
+                  <li>{OCR_REVIEW_WARNING}</li>
+                </ul>
+              )}
+            </section>
+          )}
+
+          {imageFile && (
             <button
               className="productscan-ocr-button"
               type="button"
-              disabled={ocrStatus === 'running'}
+              disabled={ocrStatus === 'running' || imageQualityStatus === 'failed'}
               onClick={handleExtractText}
             >
               {ocrStatus === 'running' ? 'Extracting text...' : 'Extract text from image'}

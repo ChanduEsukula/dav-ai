@@ -1,22 +1,38 @@
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { analyzeProductScanImageQuality } from '../utils/productScanImageQuality'
 import { runProductScanOcr } from '../utils/productScanOcr'
 import ProductScanPage from './ProductScanPage'
+
+vi.mock('../utils/productScanImageQuality', () => ({
+  analyzeProductScanImageQuality: vi.fn(),
+}))
 
 vi.mock('../utils/productScanOcr', () => ({
   runProductScanOcr: vi.fn(),
 }))
 
 const mockGoToPage = vi.fn()
+const mockAnalyzeProductScanImageQuality = vi.mocked(analyzeProductScanImageQuality)
 const mockRunProductScanOcr = vi.mocked(runProductScanOcr)
 const createObjectURLMock = vi.fn(() => 'blob:product-label-preview')
 const revokeObjectURLMock = vi.fn()
 
 beforeEach(() => {
   mockGoToPage.mockReset()
+  mockAnalyzeProductScanImageQuality.mockReset()
   mockRunProductScanOcr.mockReset()
   createObjectURLMock.mockClear()
   revokeObjectURLMock.mockClear()
+
+  mockAnalyzeProductScanImageQuality.mockResolvedValue({
+    width: 1200,
+    height: 900,
+    fileSizeBytes: 120_000,
+    brightness: 136,
+    contrast: 54,
+    warnings: [],
+  })
 
   Object.defineProperty(URL, 'createObjectURL', {
     configurable: true,
@@ -60,14 +76,69 @@ test('shows OCR button and not-started state after image upload', async () => {
     screen.queryByRole('button', { name: /Extract text from image/i }),
   ).not.toBeInTheDocument()
 
-  await uploadLabelImage(user)
+  const file = await uploadLabelImage(user)
 
   expect(
     screen.getByRole('button', { name: /Extract text from image/i }),
   ).toBeInTheDocument()
+  expect(mockAnalyzeProductScanImageQuality).toHaveBeenCalledWith(file)
+  expect(
+    await screen.findByText(/OCR can misread labels. Review extracted text before continuing/i),
+  ).toBeInTheDocument()
   expect(screen.getByRole('status')).toHaveTextContent(
     /OCR not started. Select Extract text from image/i,
   )
+})
+
+test('shows local image quality warnings without blocking OCR', async () => {
+  const user = userEvent.setup()
+  mockAnalyzeProductScanImageQuality.mockResolvedValue({
+    width: 320,
+    height: 240,
+    fileSizeBytes: 120_000,
+    brightness: 42,
+    contrast: 18,
+    warnings: [
+      {
+        code: 'too-small',
+        message: 'Image may be too small; try a closer label photo.',
+      },
+      {
+        code: 'too-dark',
+        message: 'Image may be too dark for reliable OCR.',
+      },
+    ],
+  })
+  renderProductScanPage()
+
+  await uploadLabelImage(user)
+
+  expect(
+    await screen.findByText('Image may be too small; try a closer label photo.'),
+  ).toBeInTheDocument()
+  expect(screen.getByText('Image may be too dark for reliable OCR.')).toBeInTheDocument()
+  expect(
+    screen.getByText(/OCR can misread labels. Review extracted text before continuing/i),
+  ).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: /Extract text from image/i })).toBeEnabled()
+})
+
+test('disables OCR when the uploaded image cannot be loaded and keeps manual fallback', async () => {
+  const user = userEvent.setup()
+  mockAnalyzeProductScanImageQuality.mockRejectedValue(new Error('image load failed'))
+  renderProductScanPage()
+
+  await uploadLabelImage(user)
+
+  expect(await screen.findByRole('alert')).toHaveTextContent(/Image could not be loaded for OCR/i)
+  expect(screen.getByRole('button', { name: /Extract text from image/i })).toBeDisabled()
+
+  await user.type(
+    screen.getByLabelText(/Paste or review extracted label text/i),
+    'Product Name: Sunscreen SPF 50',
+  )
+
+  expect(screen.getByText('Sunscreen SPF 50')).toBeInTheDocument()
 })
 
 test('shows OCR running state while extraction is pending', async () => {
