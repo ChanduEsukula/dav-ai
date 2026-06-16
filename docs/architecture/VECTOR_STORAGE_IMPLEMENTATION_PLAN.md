@@ -154,6 +154,12 @@ The exact vector index type should be selected after corpus size and retrieval l
 
 Add a backend command only after the schema exists and feature flag behavior is settled.
 
+Initial ingestion note: the first ingestion foundation is idempotent metadata
+storage only. It writes deterministic documentation chunks and deterministic
+fake/local `embedding_preview` metadata into `documentation_chunks`. It does
+not call external embedding APIs, add pgvector, run semantic retrieval, generate
+answers, or affect safety workflows.
+
 Command responsibilities:
 
 - read the same allowlisted docs used by static docs retrieval
