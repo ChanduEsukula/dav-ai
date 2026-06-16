@@ -93,6 +93,12 @@ This stage should not add embeddings or retrieval behavior by itself. It only pr
 
 ### Stage 3: `documentation_chunks` Table Design
 
+Initial implementation note: the first storage schema intentionally starts with
+metadata columns plus `embedding_preview` JSONB for deterministic preview metadata.
+It does not create a pgvector extension, vector column, vector index, ingestion job,
+or retrieval path. Full vector storage should wait until the database extension
+strategy and feature flag behavior are confirmed.
+
 Future table proposal:
 
 ```text
