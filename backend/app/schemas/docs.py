@@ -34,3 +34,27 @@ class StaticDocsChunkPreviewResponse(BaseModel):
     count: int
     chunks: list[StaticDocsChunkPreview]
     limitations: list[str]
+
+
+class DocsEmbeddingProviderMetadata(BaseModel):
+    provider_name: str
+    dimension: int
+    model_name: str | None = None
+    is_test_provider: bool
+    deterministic: bool
+
+
+class StaticDocsEmbeddingPreview(BaseModel):
+    chunk_id: str
+    source_path: str
+    section_heading: str | None = None
+    embedding_dimension: int
+    embedding_preview: list[float]
+    content_hash: str
+    provider: DocsEmbeddingProviderMetadata
+
+
+class StaticDocsEmbeddingPreviewResponse(BaseModel):
+    count: int
+    embeddings: list[StaticDocsEmbeddingPreview]
+    limitations: list[str]

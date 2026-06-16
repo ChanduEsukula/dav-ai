@@ -1,9 +1,17 @@
 from fastapi import APIRouter, HTTPException, Query
 
-from app.schemas.docs import StaticDocsChunkPreviewResponse, StaticDocsSearchResponse
+from app.schemas.docs import (
+    StaticDocsChunkPreviewResponse,
+    StaticDocsEmbeddingPreviewResponse,
+    StaticDocsSearchResponse,
+)
 from app.services.static_docs_chunking import (
     DOCS_CHUNK_LIMITATIONS,
     preview_static_docs_chunks,
+)
+from app.services.static_docs_embeddings import (
+    DOCS_EMBEDDING_PREVIEW_LIMITATIONS,
+    preview_static_docs_embeddings,
 )
 from app.services.static_docs_retrieval import (
     DOCS_SEARCH_LIMITATIONS,
@@ -63,4 +71,22 @@ async def preview_docs_chunks(
         "count": len(chunks),
         "chunks": chunks,
         "limitations": DOCS_CHUNK_LIMITATIONS,
+    }
+
+
+@router.get("/embedding-preview", response_model=StaticDocsEmbeddingPreviewResponse)
+async def preview_docs_embeddings(
+    max_results: int = Query(
+        20,
+        ge=1,
+        le=100,
+        description="Maximum number of deterministic documentation embedding previews to return.",
+    ),
+):
+    embeddings = preview_static_docs_embeddings(max_results=max_results)
+
+    return {
+        "count": len(embeddings),
+        "embeddings": embeddings,
+        "limitations": DOCS_EMBEDDING_PREVIEW_LIMITATIONS,
     }
