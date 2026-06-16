@@ -5,6 +5,7 @@
 - Recommended tag: `demo-polished-query-june-2026`
 - Current main checkpoint: `7fe23d3`
 - ProductScan planning checkpoint: `productscan-ocr-v2-plan-june-2026`
+- ProductScan experimental intake checkpoint: browser-side OCR scaffold
 
 ## One-line description
 
@@ -21,7 +22,7 @@ The demo focuses on:
 5. Query normalization and suggestions
 6. Audit and source provenance
 7. Saved Monitors
-8. ProductScan OCR v2 as a documented future extension
+8. Experimental ProductScan browser-side OCR intake
 
 ## What Dav AI is not
 
@@ -48,7 +49,7 @@ The demo focuses on:
 5. Search `hairdye` and show Cosmetic Safety normalization.
 6. Open Audit and Sources to show provenance.
 7. Mention Saved Monitors as repeatable checks.
-8. Mention ProductScan OCR v2 as planned OCR-assisted label extraction, not safety prediction.
+8. Mention ProductScan as experimental browser-side OCR-assisted label extraction, not safety prediction.
 
 ## Strongest engineering points
 
@@ -69,7 +70,7 @@ The demo focuses on:
 - No clinical advice
 - No safety guarantee
 - No complete UPC/NDC/lot matching
-- No deployed OCR yet
+- ProductScan browser-side OCR is experimental and user-reviewed; no backend OCR, provider OCR, image storage, or production OCR pipeline yet
 - No production ML pipeline
 - Source data may be incomplete, delayed, duplicated, or difficult to interpret
 
@@ -84,7 +85,7 @@ The demo focuses on:
 - Sources page
 - Saved Monitors
 - System status
-- ProductScan OCR plan page or README mention
+- Experimental ProductScan intake page and limitations
 
 ## Interview framing
 

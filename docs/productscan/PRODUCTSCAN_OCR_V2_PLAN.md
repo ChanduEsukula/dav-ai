@@ -1,8 +1,14 @@
 # ProductScan OCR v2 Experimental Plan
 
-**Status:** Planning only  
-**Implementation status:** Not implemented  
+**Status:** Planning partially progressed into experimental frontend intake
+**Implementation status:** Experimental browser-side OCR intake scaffold exists
 **Scope:** Experimental OCR intake for the existing Dav AI safety workflows
+
+## Current Status Note
+
+Planning has partially progressed into an experimental browser-side OCR intake scaffold for ProductScan. The current scaffold is frontend-only: it supports local image preview, optional browser-side OCR, editable OCR text, deterministic candidate extraction, and user-confirmed routing into the existing Pharmacy, Food, or Cosmetic Safety workflows.
+
+Backend OCR, provider OCR, vector DB, RAG, LLM analysis, and safety decisioning remain not implemented. Uploaded images are not stored by Dav AI in this scaffold. ProductScan remains experimental, user-reviewed, not production-ready, not medical advice, and not a safety guarantee.
 
 ProductScan OCR v2 is a proposed input-assistance layer for Dav AI. This
 document does not describe a production-ready feature, medical device, product

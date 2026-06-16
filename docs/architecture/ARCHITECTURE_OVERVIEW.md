@@ -171,19 +171,19 @@ The report system is useful for demonstrating how search results, source metadat
 
 ## ProductScan OCR v2 Plan
 
-ProductScan OCR v2 is documented as a planned future extension only. Production OCR is not currently implemented.
+ProductScan OCR v2 has partially progressed from planning into an experimental frontend-only intake scaffold. Production OCR is not currently implemented.
 
-Planned scope:
+Current experimental scope:
 
 ```text
-Label image upload
-  -> OCR text extraction
-  -> candidate identifiers
-  -> user confirmation
+Local label image upload preview
+  -> optional browser-side OCR with editable text
+  -> deterministic candidate identifiers
+  -> user confirmation and workflow choice
   -> route to Pharmacy Safety, Food Safety, or Cosmetic Safety
 ```
 
-ProductScan will not determine whether a product is safe or unsafe. OCR will only assist with label-text extraction and routing. Deep learning experiments should remain offline until evaluation, safety boundaries, and monitoring are defined.
+ProductScan does not determine whether a product is safe or unsafe. OCR only assists with label-text extraction and routing. Dav AI does not store uploaded ProductScan images, does not run backend/provider OCR, and does not use vector DB, RAG, LLM analysis, or OCR output for safety decisioning. Deep learning experiments should remain offline until evaluation, safety boundaries, and monitoring are defined.
 
 ## Testing Strategy
 
@@ -234,7 +234,7 @@ Key decisions:
 1. Use deterministic review signals instead of production ML for safety-sensitive public data.
 2. Preserve source provenance instead of hiding uncertainty.
 3. Use bounded query normalization instead of uncontrolled fuzzy matching.
-4. Keep OCR and deep learning as planned extensions, not mixed into the stable demo.
+4. Keep ProductScan OCR experimental and user-reviewed; keep backend/provider OCR and deep learning out of the stable safety workflows.
 5. Present limitations directly in the UI and reports.
 6. Stabilize canonical workflows before adding more modules.
 

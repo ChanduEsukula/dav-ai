@@ -88,7 +88,7 @@ Relevant stable tags:
 - [Current Executable Status](docs/current_dav_ai_status_june_2026.md)
 - [Operations Runbook](docs/operations_runbook.md)
 
-ProductScan OCR v2 is a **planning document only**. No OCR route, provider, dependency, upload UI, or deployed OCR workflow exists in the current application.
+ProductScan has partially progressed from the OCR v2 plan into an **experimental frontend-only intake scaffold**. It supports local image preview, optional browser-side OCR, editable label text, deterministic candidate extraction, and user-confirmed routing into the existing Pharmacy, Food, or Cosmetic Safety workflows. Dav AI does not store uploaded images, run backend/provider OCR, or use ProductScan to make safety decisions.
 
 ## Product Boundaries
 
@@ -103,7 +103,7 @@ Dav AI does not:
 - calculate clinical incidence or patient-specific risk
 - guarantee that an empty search means no safety issue exists
 - provide complete or guaranteed UPC, NDC, or lot-level matching
-- use production ML, RAG, an LLM, or OCR in routed product behavior
+- use production ML, RAG, an LLM, or OCR to make routed product-safety decisions
 - provide production alert delivery or an enabled production scheduler
 - include authentication, user ownership, RBAC, or tenant isolation
 - store PHI, private patient records, insurance data, or prescription history
@@ -435,7 +435,7 @@ See [Deployment Verification](docs/deployment_verification.md), [Deployment Chec
 - Portfolio-grade prototype, not production-ready for uncontrolled public use
 - No authentication, authorization, user ownership, or tenant isolation
 - No production alert delivery or enabled production scheduler
-- No deployed OCR; ProductScan OCR v2 is planning only
+- ProductScan browser-side OCR is experimental, user-reviewed, and not production-ready; no backend OCR, provider OCR, or Dav AI image storage is implemented
 - No production ML, RAG, LLM, embedding, or vector-search pipeline
 - No complete identifier-resolution system for UPC, NDC, lot, or package matching
 - No guarantee that public-source data is complete, current, unique, or correctly linked to a user’s product
