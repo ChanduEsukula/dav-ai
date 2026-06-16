@@ -4,6 +4,7 @@ import {
   extractProductScanCandidates,
   type ProductScanCandidate,
 } from '../utils/productScanExtraction'
+import { runProductScanOcr } from '../utils/productScanOcr'
 import { normalizeSearchTerm } from '../utils/queryNormalization'
 
 type ProductScanPageProps = {
@@ -11,6 +12,7 @@ type ProductScanPageProps = {
 }
 
 type ProductScanWorkflow = 'pharmacy' | 'food' | 'cosmetic'
+type ProductScanOcrStatus = 'idle' | 'running' | 'completed' | 'failed'
 
 const workflowOptions: Array<{
   id: ProductScanWorkflow
@@ -56,8 +58,13 @@ function ProductScanPage({ goToPage }: ProductScanPageProps) {
   const [confirmedQuery, setConfirmedQuery] = useState('')
   const [selectedCandidateId, setSelectedCandidateId] = useState('')
   const [workflow, setWorkflow] = useState<ProductScanWorkflow | ''>('')
+  const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreviewUrl, setImagePreviewUrl] = useState('')
   const [imageName, setImageName] = useState('')
+  const [ocrStatus, setOcrStatus] = useState<ProductScanOcrStatus>('idle')
+  const [ocrMessage, setOcrMessage] = useState(
+    'OCR not started. Upload a label image to enable browser-side text extraction.',
+  )
   const candidates = useMemo(() => extractProductScanCandidates(labelText), [labelText])
   const cleanConfirmedQuery = normalizeSearchTerm(confirmedQuery)
 
@@ -74,7 +81,35 @@ function ProductScanPage({ goToPage }: ProductScanPageProps) {
     if (!file) return
 
     setImageName(file.name)
+    setImageFile(file)
     setImagePreviewUrl(URL.createObjectURL(file))
+    setOcrStatus('idle')
+    setOcrMessage('OCR not started. Select Extract text from image when you are ready.')
+  }
+
+  async function handleExtractText() {
+    if (!imageFile) return
+
+    setOcrStatus('running')
+    setOcrMessage('OCR running. Extracting visible label text in your browser...')
+
+    try {
+      const extractedText = await runProductScanOcr(imageFile)
+      const cleanExtractedText = normalizeSearchTerm(extractedText)
+
+      if (!cleanExtractedText) {
+        throw new Error('No OCR text returned.')
+      }
+
+      setLabelText(extractedText)
+      setSelectedCandidateId('')
+      setConfirmedQuery('')
+      setOcrStatus('completed')
+      setOcrMessage('OCR completed. Review and edit the extracted text before continuing.')
+    } catch {
+      setOcrStatus('failed')
+      setOcrMessage('OCR failed. You can still paste or type label text manually.')
+    }
   }
 
   function handleCandidateSelect(candidate: ProductScanCandidate) {
@@ -137,6 +172,24 @@ function ProductScanPage({ goToPage }: ProductScanPageProps) {
               <span>Upload is optional. You can paste visible label text below.</span>
             </div>
           )}
+
+          {imageFile && (
+            <button
+              className="productscan-ocr-button"
+              type="button"
+              disabled={ocrStatus === 'running'}
+              onClick={handleExtractText}
+            >
+              {ocrStatus === 'running' ? 'Extracting text...' : 'Extract text from image'}
+            </button>
+          )}
+
+          <p
+            className={`productscan-ocr-status productscan-ocr-status--${ocrStatus}`}
+            role="status"
+          >
+            {ocrMessage}
+          </p>
         </section>
 
         <form className="productscan-panel productscan-review-panel" onSubmit={handleSubmit}>
@@ -144,8 +197,8 @@ function ProductScanPage({ goToPage }: ProductScanPageProps) {
             <p className="eyebrow">Text review</p>
             <h2>Paste or review extracted label text</h2>
             <p>
-              Stage 1 does not run production OCR. Paste text from a local OCR tool or type what
-              you can read from the package.
+              Browser-side OCR can populate this field from the uploaded image. OCR can misread
+              labels. Review and edit the extracted text before continuing.
             </p>
           </div>
 
@@ -228,9 +281,10 @@ function ProductScanPage({ goToPage }: ProductScanPageProps) {
         <h2 id="productscan-limitations">ProductScan limitations</h2>
         <ul>
           <li>OCR or pasted text can be wrong. Review the exact label before searching.</li>
+          <li>OCR can misread labels. Review and edit the extracted text before continuing.</li>
           <li>Verify product name, package, lot, date, and official source records yourself.</li>
           <li>ProductScan does not determine whether a product is safe or unsafe.</li>
-          <li>No image is stored in this Stage 1 scaffold.</li>
+          <li>No image is stored by Dav AI; OCR runs in the browser for this scaffold.</li>
         </ul>
       </aside>
     </section>
