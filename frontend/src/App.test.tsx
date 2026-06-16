@@ -171,6 +171,46 @@ test('renders information navigation in the pill nav group', () => {
   }
 })
 
+test('shows Help Docs Search on the Help page', () => {
+  window.history.replaceState(null, '', '/?page=help')
+
+  render(<App />)
+
+  expect(
+    screen.getByRole('heading', { name: /Use it as a review tool, not medical advice/i }),
+  ).toBeInTheDocument()
+  expect(screen.getByLabelText(/Search Dav AI docs/i)).toBeInTheDocument()
+  expect(
+    screen.getByRole('heading', { name: /Find cited snippets from Dav AI docs/i }),
+  ).toBeInTheDocument()
+})
+
+test('does not show Help Docs Search on the About page', () => {
+  window.history.replaceState(null, '', '/?page=about')
+
+  render(<App />)
+
+  expect(screen.getByRole('heading', { name: /Healthcare safety intelligence/i })).toBeInTheDocument()
+  expect(screen.queryByLabelText(/Search Dav AI docs/i)).not.toBeInTheDocument()
+  expect(
+    screen.queryByRole('heading', { name: /Find cited snippets from Dav AI docs/i }),
+  ).not.toBeInTheDocument()
+})
+
+test('does not show Help Docs Search on the FAQ page', () => {
+  window.history.replaceState(null, '', '/?page=faq')
+
+  render(<App />)
+
+  expect(
+    screen.getByRole('heading', { name: /Clear answers without crowding the page/i }),
+  ).toBeInTheDocument()
+  expect(screen.queryByLabelText(/Search Dav AI docs/i)).not.toBeInTheDocument()
+  expect(
+    screen.queryByRole('heading', { name: /Find cited snippets from Dav AI docs/i }),
+  ).not.toBeInTheDocument()
+})
+
 test('ignores old placeholder account page URLs', () => {
   window.history.replaceState(null, '', '/?page=signup')
 
