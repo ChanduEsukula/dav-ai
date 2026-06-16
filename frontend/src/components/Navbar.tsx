@@ -124,7 +124,7 @@ function Navbar({
         {operationsNavItems.map(renderNavItem)}
       </div>
 
-      <div className="nav-actions" aria-label="Information pages">
+      <div className="nav-links nav-actions" aria-label="Information pages">
         {secondaryNavItems.map(renderNavItem)}
       </div>
     </nav>
