@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { searchDrugEvents } from './api/drugEvents'
 import { searchRecalls } from './api/recalls'
 import App from './App'
@@ -144,6 +144,20 @@ test('does not expose placeholder account pages in the main demo navigation', ()
   expect(screen.queryByRole('button', { name: /Profile/i })).not.toBeInTheDocument()
 
   expect(screen.queryByRole('button', { name: /Sign Up/i })).not.toBeInTheDocument()
+})
+
+test('opens ProductScan from the homepage experiment entry without adding primary nav', () => {
+  render(<App />)
+
+  const mainNav = screen.getByRole('navigation', { name: /Main navigation/i })
+  expect(within(mainNav).queryByRole('button', { name: /ProductScan/i })).not.toBeInTheDocument()
+
+  fireEvent.click(screen.getByRole('button', { name: /Open ProductScan/i }))
+
+  expect(
+    screen.getByRole('heading', { name: /Review label text before searching public records/i }),
+  ).toBeInTheDocument()
+  expect(new URLSearchParams(window.location.search).get('page')).toBe('productscan')
 })
 
 test('renders information navigation in the pill nav group', () => {
