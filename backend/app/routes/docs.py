@@ -1,6 +1,10 @@
 from fastapi import APIRouter, HTTPException, Query
 
-from app.schemas.docs import StaticDocsSearchResponse
+from app.schemas.docs import StaticDocsChunkPreviewResponse, StaticDocsSearchResponse
+from app.services.static_docs_chunking import (
+    DOCS_CHUNK_LIMITATIONS,
+    preview_static_docs_chunks,
+)
 from app.services.static_docs_retrieval import (
     DOCS_SEARCH_LIMITATIONS,
     search_static_docs,
@@ -41,4 +45,22 @@ async def search_docs(
         "count": len(results),
         "results": results,
         "limitations": DOCS_SEARCH_LIMITATIONS,
+    }
+
+
+@router.get("/chunks", response_model=StaticDocsChunkPreviewResponse)
+async def preview_docs_chunks(
+    max_results: int = Query(
+        20,
+        ge=1,
+        le=100,
+        description="Maximum number of deterministic documentation chunks to preview.",
+    ),
+):
+    chunks = preview_static_docs_chunks(max_results=max_results)
+
+    return {
+        "count": len(chunks),
+        "chunks": chunks,
+        "limitations": DOCS_CHUNK_LIMITATIONS,
     }
