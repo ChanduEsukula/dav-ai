@@ -40,6 +40,22 @@ class DocumentationChunkWriteResult:
     reason: str | None = None
 
 
+@dataclass(frozen=True)
+class DocumentationChunkSemanticCandidate:
+    chunk_id: str
+    source_path: str
+    title: str
+    section_heading: str | None
+    text: str
+    line_start: int
+    line_end: int
+    content_hash: str
+    embedding_provider: str | None
+    embedding_model: str | None
+    embedding_dimension: int | None
+    embedding_preview: list[float]
+
+
 class DocumentationChunksRepository:
     """Persist deterministic Dav AI documentation chunks.
 
@@ -70,6 +86,71 @@ class DocumentationChunksRepository:
         with psycopg.connect(database_url, row_factory=dict_row) as connection:
             with connection.cursor() as cursor:
                 return [self._save_chunk(cursor, record) for record in records]
+
+    def list_semantic_preview_candidates(
+        self,
+        *,
+        limit: int = 200,
+    ) -> list[DocumentationChunkSemanticCandidate]:
+        database_url = self._database_url()
+        bounded_limit = max(1, min(limit, 500))
+
+        if not database_url:
+            return []
+
+        try:
+            with psycopg.connect(database_url, row_factory=dict_row) as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        select
+                            chunk_id,
+                            source_path,
+                            title,
+                            section_heading,
+                            text,
+                            line_start,
+                            line_end,
+                            content_hash,
+                            embedding_provider,
+                            embedding_model,
+                            embedding_dimension,
+                            embedding_preview
+                        from documentation_chunks
+                        where embedding_status = 'preview'
+                          and embedding_preview is not null
+                        order by source_path, line_start, chunk_id
+                        limit %(limit)s
+                        """,
+                        {"limit": bounded_limit},
+                    )
+                    rows = cursor.fetchall()
+
+            return [
+                DocumentationChunkSemanticCandidate(
+                    chunk_id=row["chunk_id"],
+                    source_path=row["source_path"],
+                    title=row["title"],
+                    section_heading=row["section_heading"],
+                    text=row["text"],
+                    line_start=row["line_start"],
+                    line_end=row["line_end"],
+                    content_hash=row["content_hash"],
+                    embedding_provider=row["embedding_provider"],
+                    embedding_model=row["embedding_model"],
+                    embedding_dimension=row["embedding_dimension"],
+                    embedding_preview=list(row["embedding_preview"]),
+                )
+                for row in rows
+                if row["embedding_preview"]
+            ]
+
+        except Exception:
+            logger.exception(
+                "documentation_chunk_semantic_preview_read_failed",
+                extra={"event": "documentation_chunk_semantic_preview_read_failed"},
+            )
+            return []
 
     def _save_chunk(
         self,
