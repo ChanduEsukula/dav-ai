@@ -4,9 +4,15 @@ type InfoPageProps = {
   eyebrow: string
   title: string
   text: string
+  showHelpDocsSearch?: boolean
 }
 
-function InfoPage({ eyebrow, title, text }: InfoPageProps) {
+function InfoPage({
+  eyebrow,
+  title,
+  text,
+  showHelpDocsSearch = false,
+}: InfoPageProps) {
   return (
     <>
       <section className="trust reveal">
@@ -14,7 +20,7 @@ function InfoPage({ eyebrow, title, text }: InfoPageProps) {
         <h2>{title}</h2>
         <p>{text}</p>
       </section>
-      <HelpDocsSearch />
+      {showHelpDocsSearch && <HelpDocsSearch />}
     </>
   )
 }

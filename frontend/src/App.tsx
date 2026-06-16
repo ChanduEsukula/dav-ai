@@ -260,7 +260,9 @@ function App() {
 
       {activePage === 'faq' && <FaqPage />}
 
-      {activePage === 'help' && <InfoPage {...infoPages.help} />}
+      {activePage === 'help' && (
+        <InfoPage {...infoPages.help} showHelpDocsSearch />
+      )}
 
       {assistantContext && <AskDavAIChat context={assistantContext} />}
       <FloatingSafetyReportIntake />
