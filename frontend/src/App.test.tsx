@@ -146,6 +146,17 @@ test('does not expose placeholder account pages in the main demo navigation', ()
   expect(screen.queryByRole('button', { name: /Sign Up/i })).not.toBeInTheDocument()
 })
 
+test('renders information navigation in the pill nav group', () => {
+  render(<App />)
+
+  for (const label of ['About', 'FAQ', 'Help']) {
+    const navButton = screen.getByRole('button', { name: label })
+
+    expect(navButton.closest('.nav-actions')).toBeInTheDocument()
+    expect(navButton.closest('.nav-links')).toBeInTheDocument()
+  }
+})
+
 test('ignores old placeholder account page URLs', () => {
   window.history.replaceState(null, '', '/?page=signup')
 

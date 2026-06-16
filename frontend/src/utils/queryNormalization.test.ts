@@ -70,3 +70,30 @@ test('suggests approved canonical queries after two characters', () => {
   expect(getQuerySuggestions('x', 'pharmacy')).toEqual([])
 })
 
+test('includes expanded curated workflow suggestions', () => {
+  expect(getQuerySuggestions('gua', 'food')).toEqual([
+    expect.objectContaining({ query: 'guava', area: 'food' }),
+  ])
+  expect(getQuerySuggestions('man', 'food')).toEqual([
+    expect.objectContaining({ query: 'mango', area: 'food' }),
+  ])
+  expect(getQuerySuggestions('sun', 'cosmetic')).toEqual([
+    expect.objectContaining({ query: 'sunscreen', area: 'cosmetic' }),
+  ])
+  expect(getQuerySuggestions('ibu', 'pharmacy')).toEqual([
+    expect.objectContaining({ query: 'ibuprofen', area: 'pharmacy' }),
+  ])
+})
+
+test('ranks prefix matches above contains matches', () => {
+  const suggestions = getQuerySuggestions('but', 'food')
+
+  expect(suggestions[0]).toMatchObject({ query: 'butter', area: 'food' })
+  expect(
+    suggestions.findIndex((suggestion) => suggestion.query === 'peanut butter'),
+  ).toBeGreaterThan(0)
+})
+
+test('caps visible suggestions by default', () => {
+  expect(getQuerySuggestions('er')).toHaveLength(8)
+})

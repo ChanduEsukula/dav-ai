@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import {
   getQuerySuggestions,
+  normalizeSearchTerm,
   type QuerySuggestion,
   type SafetyQueryArea,
 } from '../utils/queryNormalization'
@@ -31,7 +32,10 @@ function QueryTypeahead({
   const wrapperRef = useRef<HTMLDivElement>(null)
   const suggestions = useMemo(() => getQuerySuggestions(value, area), [area, value])
   const listboxId = `${id}-suggestions`
+  const hasSearchText = normalizeSearchTerm(value).length >= 2
   const isOpen = open && suggestions.length > 0
+  const showEmptyMessage = open && hasSearchText && suggestions.length === 0
+  const isExpanded = isOpen || showEmptyMessage
 
   function selectSuggestion(suggestion: QuerySuggestion) {
     onChange(suggestion.query)
@@ -57,8 +61,8 @@ function QueryTypeahead({
         placeholder={placeholder}
         role="combobox"
         aria-autocomplete="list"
-        aria-expanded={isOpen}
-        aria-controls={isOpen ? listboxId : undefined}
+        aria-expanded={isExpanded}
+        aria-controls={isExpanded ? listboxId : undefined}
         aria-activedescendant={
           isOpen && activeIndex >= 0 ? `${listboxId}-${activeIndex}` : undefined
         }
@@ -128,6 +132,12 @@ function QueryTypeahead({
               {showWorkflow && <small>{suggestion.workflowLabel}</small>}
             </button>
           ))}
+        </div>
+      )}
+
+      {showEmptyMessage && (
+        <div className="query-typeahead__empty" id={listboxId} role="status">
+          No saved suggestion yet. You can still search this public-record term.
         </div>
       )}
     </div>

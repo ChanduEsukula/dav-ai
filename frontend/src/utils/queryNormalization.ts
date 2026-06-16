@@ -12,6 +12,8 @@ export type QuerySuggestion = {
   workflowLabel: string
 }
 
+const suggestionAreas = ['pharmacy', 'food', 'cosmetic'] as const
+
 const workflowLabels: Record<SafetyQueryArea, string> = {
   pharmacy: 'Pharmacy Safety',
   food: 'Food & Supplement Safety',
@@ -69,26 +71,162 @@ const aliasesByArea: Record<SafetyQueryArea, Record<string, string>> = {
 }
 
 const extraSuggestionsByArea: Record<SafetyQueryArea, string[]> = {
-  pharmacy: ['xanax', 'metformin', 'ibuprofen', 'amoxicillin', 'acetaminophen', 'aspirin'],
+  pharmacy: [
+    'ibuprofen',
+    'acetaminophen',
+    'aspirin',
+    'naproxen',
+    'diphenhydramine',
+    'cetirizine',
+    'loratadine',
+    'amoxicillin',
+    'azithromycin',
+    'doxycycline',
+    'penicillin',
+    'metformin',
+    'insulin',
+    'ozempic',
+    'wegovy',
+    'mounjaro',
+    'xanax',
+    'alprazolam',
+    'adderall',
+    'lisinopril',
+    'atorvastatin',
+    'losartan',
+    'omeprazole',
+    'levothyroxine',
+    'prednisone',
+    'gabapentin',
+    'sertraline',
+    'fluoxetine',
+    'cough syrup',
+    'eye drops',
+    'nasal spray',
+    'antacid',
+  ],
   food: [
+    'apple',
+    'banana',
+    'orange',
+    'mango',
+    'guava',
     'strawberry',
-    'berry',
-    'egg',
-    'vitamin',
-    'cookie',
+    'strawberries',
+    'blueberry',
+    'blueberries',
+    'raspberry',
+    'grapes',
+    'watermelon',
+    'pineapple',
+    'peach',
+    'pear',
+    'plum',
+    'cherry',
+    'kiwi',
+    'lemon',
+    'lime',
+    'avocado',
+    'lettuce',
+    'spinach',
+    'kale',
     'tomato',
+    'onion',
     'potato',
+    'carrot',
+    'broccoli',
+    'cauliflower',
+    'cucumber',
+    'cabbage',
+    'celery',
+    'mushroom',
+    'bell pepper',
+    'jalapeno',
+    'garlic',
+    'ginger',
+    'chicken',
+    'beef',
+    'ground beef',
+    'pork',
+    'turkey',
+    'fish',
+    'salmon',
+    'tuna',
+    'shrimp',
+    'eggs',
+    'tofu',
+    'milk',
+    'cheese',
+    'yogurt',
+    'butter',
+    'cream',
+    'ice cream',
+    'rice',
+    'pasta',
+    'noodles',
+    'bread',
+    'cereal',
+    'flour',
+    'sugar',
     'protein powder',
+    'whey protein',
+    'creatine',
+    'collagen',
+    'pre workout',
+    'electrolyte powder',
     'peanut butter',
-    'chicken breast',
+    'almond butter',
+    'jam',
+    'honey',
+    'oats',
+    'granola',
+    'frozen fruit',
+    'frozen vegetables',
+    'sprouts',
+    'juice',
+    'soda',
+    'coffee',
+    'tea',
+    'energy drink',
+    'coconut water',
   ],
   cosmetic: [
-    'hair dye',
-    'sunscreen',
-    'moisturizer',
-    'lipstick',
     'shampoo',
     'conditioner',
+    'hair dye',
+    'hair color',
+    'hair gel',
+    'hair spray',
+    'sunscreen',
+    'lotion',
+    'moisturizer',
+    'face cream',
+    'serum',
+    'cleanser',
+    'toner',
+    'lipstick',
+    'lip gloss',
+    'mascara',
+    'eyeliner',
+    'eyeshadow',
+    'foundation',
+    'concealer',
+    'blush',
+    'powder',
+    'deodorant',
+    'perfume',
+    'cologne',
+    'body wash',
+    'soap',
+    'toothpaste',
+    'nail polish',
+    'nail glue',
+    'acrylic nails',
+    'baby powder',
+    'talc',
+    'retinol',
+    'salicylic acid',
+    'benzoyl peroxide',
   ],
 }
 
@@ -142,14 +280,19 @@ export function normalizeSafetyQuery(
 export function getQuerySuggestions(
   rawQuery: string,
   area?: SafetyQueryArea,
-  limit = 5,
+  limit = 8,
 ): QuerySuggestion[] {
   const lookupKey = getSearchComparisonKey(rawQuery)
   if (lookupKey.length < 2) return []
 
-  const areas = area ? [area] : (['pharmacy', 'food', 'cosmetic'] as const)
-  const suggestions: QuerySuggestion[] = []
+  const areas = area ? [area] : suggestionAreas
+  const matches: Array<{
+    suggestion: QuerySuggestion
+    rank: number
+    order: number
+  }> = []
   const seen = new Set<string>()
+  let order = 0
 
   for (const candidateArea of areas) {
     const candidates = [
@@ -164,25 +307,40 @@ export function getQuerySuggestions(
     ]
 
     for (const candidate of candidates) {
-      if (
-        !candidate.matchValue.startsWith(lookupKey) &&
-        !candidate.query.startsWith(lookupKey)
-      ) {
+      const matchValueKey = getSearchComparisonKey(candidate.matchValue)
+      const queryKey = getSearchComparisonKey(candidate.query)
+      const isPrefixMatch =
+        matchValueKey.startsWith(lookupKey) || queryKey.startsWith(lookupKey)
+      const isContainsMatch =
+        matchValueKey.includes(lookupKey) || queryKey.includes(lookupKey)
+
+      if (!isPrefixMatch && !isContainsMatch) {
+        order += 1
         continue
       }
 
       const suggestionKey = `${candidateArea}:${candidate.query}`
-      if (seen.has(suggestionKey)) continue
+      if (seen.has(suggestionKey)) {
+        order += 1
+        continue
+      }
 
       seen.add(suggestionKey)
-      suggestions.push({
-        query: candidate.query,
-        area: candidateArea,
-        workflowLabel: workflowLabels[candidateArea],
+      matches.push({
+        suggestion: {
+          query: candidate.query,
+          area: candidateArea,
+          workflowLabel: workflowLabels[candidateArea],
+        },
+        rank: isPrefixMatch ? 0 : 1,
+        order,
       })
+      order += 1
     }
   }
 
-  return suggestions.slice(0, limit)
+  return matches
+    .sort((first, second) => first.rank - second.rank || first.order - second.order)
+    .slice(0, limit)
+    .map((match) => match.suggestion)
 }
-
