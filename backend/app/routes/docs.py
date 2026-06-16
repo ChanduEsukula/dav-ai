@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, Query
 from app.schemas.docs import (
     StaticDocsChunkPreviewResponse,
     StaticDocsEmbeddingPreviewResponse,
+    StaticDocsSemanticPreviewResponse,
     StaticDocsSearchResponse,
 )
 from app.services.static_docs_chunking import (
@@ -16,6 +17,10 @@ from app.services.static_docs_embeddings import (
 from app.services.static_docs_retrieval import (
     DOCS_SEARCH_LIMITATIONS,
     search_static_docs,
+)
+from app.services.static_docs_semantic_preview import (
+    DOCS_SEMANTIC_PREVIEW_LIMITATIONS,
+    semantic_preview_search,
 )
 
 router = APIRouter()
@@ -89,4 +94,39 @@ async def preview_docs_embeddings(
         "count": len(embeddings),
         "embeddings": embeddings,
         "limitations": DOCS_EMBEDDING_PREVIEW_LIMITATIONS,
+    }
+
+
+@router.get("/semantic-preview", response_model=StaticDocsSemanticPreviewResponse)
+async def preview_docs_semantic_retrieval(
+    q: str = Query(
+        ...,
+        min_length=2,
+        max_length=120,
+        description="Deterministic preview query over stored documentation chunk preview embeddings.",
+    ),
+    max_results: int = Query(
+        8,
+        ge=1,
+        le=20,
+        description="Maximum number of deterministic semantic preview matches to return.",
+    ),
+):
+    clean_query = q.strip()
+    if len(clean_query) < 2:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "message": "Semantic preview query must contain at least two non-whitespace characters.",
+                "code": "DOCS_SEMANTIC_PREVIEW_QUERY_TOO_SHORT",
+            },
+        )
+
+    results = semantic_preview_search(clean_query, max_results=max_results)
+
+    return {
+        "query": clean_query,
+        "count": len(results),
+        "results": results,
+        "limitations": DOCS_SEMANTIC_PREVIEW_LIMITATIONS,
     }

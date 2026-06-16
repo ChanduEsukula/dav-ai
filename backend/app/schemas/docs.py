@@ -58,3 +58,24 @@ class StaticDocsEmbeddingPreviewResponse(BaseModel):
     count: int
     embeddings: list[StaticDocsEmbeddingPreview]
     limitations: list[str]
+
+
+class StaticDocsSemanticPreviewResult(BaseModel):
+    chunk_id: str
+    source_path: str
+    title: str
+    section_heading: str | None = None
+    snippet: str
+    line_start: int
+    line_end: int
+    content_hash: str
+    similarity_score: float
+    embedding_provider: str | None = None
+    embedding_model: str | None = None
+
+
+class StaticDocsSemanticPreviewResponse(BaseModel):
+    query: str
+    count: int
+    results: list[StaticDocsSemanticPreviewResult]
+    limitations: list[str]
