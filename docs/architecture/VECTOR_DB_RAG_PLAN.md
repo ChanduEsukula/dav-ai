@@ -75,6 +75,9 @@ Candidate sources should exclude:
 
 ## Architecture Options
 
+For the next storage-specific planning step, see
+[`VECTOR_STORAGE_IMPLEMENTATION_PLAN.md`](./VECTOR_STORAGE_IMPLEMENTATION_PLAN.md).
+
 ### Option A: Postgres pgvector / Supabase Vector
 
 Use Postgres with `pgvector`, or Supabase vector support if available in the deployed environment.
