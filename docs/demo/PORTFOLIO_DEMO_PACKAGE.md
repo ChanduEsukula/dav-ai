@@ -116,3 +116,27 @@ Notes:
 - Backend tests must be run with `PYTHONPATH=backend` from the repository root so imports such as `app.main` and `ml_experiments` resolve correctly.
 - ProductScan OCR, docs semantic preview, saved monitors, reports, audit history, and source-backed safety workflows are demo-ready prototype features.
 - Dav AI remains a public-record review workspace, not medical advice, clinical decision support, or a product-safety verdict system.
+
+## Deployed Smoke Check - June 17, 2026
+
+After PR #123 was merged, the deployment was checked for portfolio demo readiness.
+
+Manual smoke areas:
+
+- Home page
+- Guided safety search
+- Pharmacy Safety
+- Food Safety
+- Cosmetic Safety
+- Sources
+- System Status
+- Saved Monitors
+- Help Docs Search
+- ProductScan intake
+
+Result: deployment smoke-ready for portfolio demo.
+
+Notes:
+
+- This smoke check verifies portfolio/demo readiness, not production healthcare readiness.
+- Dav AI remains a public-record review workspace and does not provide medical advice, clinical decision support, or product-safety verdicts.
