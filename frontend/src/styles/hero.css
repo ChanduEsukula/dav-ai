@@ -54,7 +54,9 @@
 .hero-module-grid {
   margin-top: 1.65rem;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
+  grid-auto-rows: minmax(92px, auto);
+  width: min(100%, 340px);
   align-items: stretch;
   gap: 0.9rem;
 }
@@ -153,7 +155,7 @@
   font-weight: 950;
   line-height: 1.08;
   letter-spacing: -0.025em;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .hero-module-copy small {
