@@ -14,6 +14,7 @@
   padding: 1.3rem 0;
   border-top: 1px solid rgba(11, 79, 113, 0.12);
   border-bottom: 1px solid rgba(11, 79, 113, 0.12);
+  scroll-margin-bottom: var(--floating-cta-mobile-clearance);
 }
 
 .productscan-teaser h2,
@@ -443,8 +444,13 @@
     grid-template-columns: 1fr;
   }
 
+  .productscan-teaser {
+    padding-bottom: calc(1.3rem + 0.75rem);
+  }
+
   .productscan-teaser button,
   .productscan-submit {
+    scroll-margin-bottom: var(--floating-cta-mobile-clearance);
     width: 100%;
   }
 }

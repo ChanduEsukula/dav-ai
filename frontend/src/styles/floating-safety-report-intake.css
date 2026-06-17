@@ -305,10 +305,22 @@
 
 @media (max-width: 700px) {
   .floating-safety-report-button {
-    right: 1rem;
-    left: 1rem;
-    bottom: 1rem;
+    right: max(1rem, calc(var(--safe-area-right) + 1rem));
+    bottom: calc(var(--safe-area-bottom) + 1rem);
+    left: auto;
+    min-height: var(--floating-cta-mobile-height);
+    max-width: min(
+      18rem,
+      calc(100vw - 2rem - var(--safe-area-left) - var(--safe-area-right))
+    );
+    padding: 0.75rem 1rem;
     justify-content: center;
+    white-space: nowrap;
+  }
+
+  .floating-safety-report-button > span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .floating-safety-report-overlay {
@@ -317,9 +329,10 @@
 
   .floating-safety-report-drawer {
     width: 100%;
-    min-height: min(92vh, 760px);
-    max-height: 92vh;
+    min-height: min(calc(92dvh - var(--safe-area-top)), 760px);
+    max-height: calc(92dvh - var(--safe-area-top));
     border-radius: 1.35rem 1.35rem 0 0;
+    padding-bottom: var(--safe-area-bottom);
   }
 
   .floating-safety-report-grid,
