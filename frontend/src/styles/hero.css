@@ -53,21 +53,21 @@
 /* Template 1-style module buttons */
 .hero-module-grid {
   margin-top: 1.65rem;
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
   gap: 0.9rem;
-  flex-wrap: wrap;
 }
 
 .hero-module-card {
-  min-width: 148px;
-  min-height: 76px;
+  width: 100%;
+  min-height: 88px;
   display: inline-flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.85rem;
   border: 0;
-  border-radius: 20px;
-  padding: 0.95rem 1.05rem;
+  border-radius: 22px;
+  padding: 1rem;
   color: #ffffff;
   cursor: pointer;
   box-shadow:
@@ -142,8 +142,9 @@
 .hero-module-copy {
   min-width: 0;
   display: grid;
-  gap: 0.24rem;
+  gap: 0.28rem;
   text-align: left;
+  align-content: center;
 }
 
 .hero-module-copy strong {
@@ -152,6 +153,7 @@
   font-weight: 950;
   line-height: 1.08;
   letter-spacing: -0.025em;
+  white-space: nowrap;
 }
 
 .hero-module-copy small {
@@ -486,11 +488,12 @@
 .floating-card {
   position: absolute;
   z-index: 5;
-  width: 195px;
+  width: 205px;
+  min-height: 84px;
   padding: 16px;
   border-radius: 20px;
   text-align: left;
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(11, 79, 113, 0.08);
   backdrop-filter: blur(16px);
   box-shadow: 0 16px 42px rgba(16, 32, 51, 0.09);
@@ -526,8 +529,8 @@
   display: block;
   margin-top: 8px;
   color: var(--ink);
-  font-size: 17px;
-  line-height: 1.15;
+  font-size: 16px;
+  line-height: 1.18;
   letter-spacing: -0.03em;
 }
 
@@ -610,7 +613,7 @@
   }
 
   .hero-module-card {
-    min-height: 76px;
+    min-height: 84px;
   }
 }
 
@@ -663,12 +666,18 @@
 
   .hero-module-grid {
     width: 100%;
+    grid-template-columns: 1fr;
     align-items: stretch;
   }
 
   .hero-module-card {
     width: 100%;
+    min-height: 82px;
     justify-content: flex-start;
+  }
+
+  .hero-module-copy strong {
+    white-space: normal;
   }
 
   .actions {
