@@ -90,3 +90,29 @@ The demo focuses on:
 ## Interview framing
 
 Dav AI is valuable because it makes fragmented public safety records easier to search, interpret cautiously, and trace back to source evidence. The project intentionally uses deterministic logic and explicit limitations instead of pretending to make clinical or product-safety decisions.
+
+## Validation Checkpoint - June 17, 2026
+
+This checkpoint was verified on branch `chore/demo-hardening-june-2026`.
+
+Validation commands run:
+
+    PYTHONPATH=backend pytest backend/tests
+    cd frontend
+    npm test
+    npm run lint
+    npm run build
+
+Results:
+
+- Backend tests: 345 passed
+- Frontend tests: 224 passed
+- Total automated tests: 569 passed
+- Frontend lint: passed
+- Frontend production build: passed
+
+Notes:
+
+- Backend tests must be run with `PYTHONPATH=backend` from the repository root so imports such as `app.main` and `ml_experiments` resolve correctly.
+- ProductScan OCR, docs semantic preview, saved monitors, reports, audit history, and source-backed safety workflows are demo-ready prototype features.
+- Dav AI remains a public-record review workspace, not medical advice, clinical decision support, or a product-safety verdict system.
