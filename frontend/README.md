@@ -229,3 +229,15 @@ The frontend expects the FastAPI backend to run locally at:
 
 ```text
 http://127.0.0.1:8000
+```
+
+## Local Checks
+
+Run the frontend unit, lint, build, and Playwright demo smoke checks from this directory:
+
+```bash
+npm test
+npm run lint
+npm run build
+npx playwright test
+```
