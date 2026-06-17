@@ -5,7 +5,7 @@ import {
   type EverydaySafetySearchResponse,
   type EverydaySafetySort,
 } from '../api/everydaySafety'
-import type { ActivePage } from '../types/navigation'
+import { PAGE_IDS, type ActivePage } from '../types/navigation'
 import { formatDate, formatTimestamp } from '../utils/recallFormatters'
 import {
   getSearchComparisonKey,
@@ -198,7 +198,12 @@ function FoodSafetyPage({
       setHelper('')
 
       if (options.updateUrl) {
-        writeSafetyQueryToUrl('food-safety', cleanQuery, normalization.rawQuery, 'push')
+        writeSafetyQueryToUrl(
+          PAGE_IDS.FOOD_SAFETY,
+          cleanQuery,
+          normalization.rawQuery,
+          'push',
+        )
       }
 
       try {
@@ -255,7 +260,7 @@ function FoodSafetyPage({
       }
 
       writeSafetyQueryToUrl(
-        'food-safety',
+        PAGE_IDS.FOOD_SAFETY,
         cleanQuery,
         normalization.rawQuery,
         'replace',

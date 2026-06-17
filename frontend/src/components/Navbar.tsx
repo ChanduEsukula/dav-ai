@@ -1,4 +1,11 @@
-import type { ActivePage } from '../types/navigation'
+import {
+  INFORMATION_NAV_PAGE_IDS,
+  OPERATIONS_NAV_PAGE_IDS,
+  PAGE_IDS,
+  PAGE_METADATA,
+  PRIMARY_NAV_PAGE_IDS,
+  type ActivePage,
+} from '../types/navigation'
 
 type NavbarProps = {
   activePage: ActivePage
@@ -7,7 +14,7 @@ type NavbarProps = {
 }
 
 type NavItem = {
-  id: string
+  id: ActivePage
   label: string
   isActive: boolean
   onClick: () => void
@@ -18,80 +25,17 @@ function Navbar({
   goHome,
   goToPage,
 }: NavbarProps) {
-  const primaryNavItems: NavItem[] = [
-    {
-      id: 'home',
-      label: 'Home',
-      isActive: activePage === 'home',
-      onClick: goHome,
-    },
-    {
-      id: 'pharmacy-safety',
-      label: 'Pharmacy Safety',
-      isActive: activePage === 'pharmacy-safety',
-      onClick: () => goToPage('pharmacy-safety'),
-    },
-    {
-      id: 'food-safety',
-      label: 'Food Safety',
-      isActive: activePage === 'food-safety',
-      onClick: () => goToPage('food-safety'),
-    },
-    {
-      id: 'cosmetic-safety',
-      label: 'Cosmetic Safety',
-      isActive: activePage === 'cosmetic-safety',
-      onClick: () => goToPage('cosmetic-safety'),
-    },
-    {
-      id: 'saved-monitors',
-      label: 'Monitors',
-      isActive: activePage === 'saved-monitors',
-      onClick: () => goToPage('saved-monitors'),
-    },
-  ]
+  const createNavItems = (pageIds: readonly ActivePage[]): NavItem[] =>
+    pageIds.map((pageId) => ({
+      id: pageId,
+      label: PAGE_METADATA[pageId].label,
+      isActive: activePage === pageId,
+      onClick: pageId === PAGE_IDS.HOME ? goHome : () => goToPage(pageId),
+    }))
 
-  const operationsNavItems: NavItem[] = [
-    {
-      id: 'audit',
-      label: 'Audit',
-      isActive: activePage === 'audit',
-      onClick: () => goToPage('audit'),
-    },
-    {
-      id: 'sources',
-      label: 'Sources',
-      isActive: activePage === 'sources',
-      onClick: () => goToPage('sources'),
-    },
-    {
-      id: 'system',
-      label: 'System',
-      isActive: activePage === 'system',
-      onClick: () => goToPage('system'),
-    },
-  ]
-
-  const secondaryNavItems: NavItem[] = [
-    {
-      id: 'about',
-      label: 'About',
-      isActive: activePage === 'about',
-      onClick: () => goToPage('about'),
-    },
-    {
-      id: 'faq',
-      label: 'FAQ',
-      isActive: activePage === 'faq',
-      onClick: () => goToPage('faq'),
-    },
-    {
-      id: 'help',
-      label: 'Help',
-      isActive: activePage === 'help',
-      onClick: () => goToPage('help'),
-    },
-  ]
+  const primaryNavItems = createNavItems(PRIMARY_NAV_PAGE_IDS)
+  const operationsNavItems = createNavItems(OPERATIONS_NAV_PAGE_IDS)
+  const secondaryNavItems = createNavItems(INFORMATION_NAV_PAGE_IDS)
 
   const renderNavItem = (item: NavItem) => (
     <button

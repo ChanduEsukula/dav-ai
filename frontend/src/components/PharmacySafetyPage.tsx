@@ -6,7 +6,7 @@ import {
   type RecallSearchResponse,
   type RecallSort,
 } from '../api/recalls'
-import type { ActivePage } from '../types/navigation'
+import { PAGE_IDS, type ActivePage } from '../types/navigation'
 import { formatDate, formatTimestamp } from '../utils/recallFormatters'
 import {
   getSearchComparisonKey,
@@ -187,7 +187,7 @@ function PharmacySafetyPage({
 
       if (options.updateUrl) {
         writeSafetyQueryToUrl(
-          'pharmacy-safety',
+          PAGE_IDS.PHARMACY_SAFETY,
           cleanQuery,
           normalization.rawQuery,
           'push',
@@ -259,7 +259,7 @@ function PharmacySafetyPage({
       }
 
       writeSafetyQueryToUrl(
-        'pharmacy-safety',
+        PAGE_IDS.PHARMACY_SAFETY,
         cleanQuery,
         normalization.rawQuery,
         'replace',

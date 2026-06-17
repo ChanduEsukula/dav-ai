@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { searchDrugEvents } from './api/drugEvents'
 import { searchRecalls } from './api/recalls'
 import App from './App'
+import { PAGE_IDS } from './types/navigation'
 
 vi.mock('./api/recalls', async () => {
   const actual = await vi.importActual<typeof import('./api/recalls')>('./api/recalls')
@@ -146,6 +147,28 @@ test('does not expose placeholder account pages in the main demo navigation', ()
   expect(screen.queryByRole('button', { name: /Sign Up/i })).not.toBeInTheDocument()
 })
 
+test('renders the current main navigation labels', () => {
+  render(<App />)
+
+  const mainNav = screen.getByRole('navigation', { name: /Main navigation/i })
+
+  for (const label of [
+    'Home',
+    'Pharmacy Safety',
+    'Food Safety',
+    'Cosmetic Safety',
+    'Monitors',
+    'Audit',
+    'Sources',
+    'System',
+    'About',
+    'FAQ',
+    'Help',
+  ]) {
+    expect(within(mainNav).getByRole('button', { name: label })).toBeInTheDocument()
+  }
+})
+
 test('opens ProductScan from the homepage experiment entry without adding primary nav', () => {
   render(<App />)
 
@@ -157,7 +180,7 @@ test('opens ProductScan from the homepage experiment entry without adding primar
   expect(
     screen.getByRole('heading', { name: /Review label text before searching public records/i }),
   ).toBeInTheDocument()
-  expect(new URLSearchParams(window.location.search).get('page')).toBe('productscan')
+  expect(new URLSearchParams(window.location.search).get('page')).toBe(PAGE_IDS.PRODUCT_SCAN)
 })
 
 test('renders information navigation in the pill nav group', () => {
@@ -219,6 +242,20 @@ test('ignores old placeholder account page URLs', () => {
   expect(screen.getByRole('heading', { name: /Public safety/i })).toBeInTheDocument()
 
   expect(screen.queryByText(/Early access placeholder/i)).not.toBeInTheDocument()
+})
+
+test('falls back to the home page for unknown page query values', () => {
+  window.history.replaceState(null, '', '/?page=unknown-demo-page&q=Xanax')
+
+  render(<App />)
+
+  expect(screen.getByRole('heading', { name: /Public safety/i })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute(
+    'aria-current',
+    'page',
+  )
+  expect(mockSearchRecalls).not.toHaveBeenCalled()
+  expect(mockSearchDrugEvents).not.toHaveBeenCalled()
 })
 
 test('updates a detail page when browser history changes only the query', async () => {

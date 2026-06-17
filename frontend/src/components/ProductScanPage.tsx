@@ -1,5 +1,10 @@
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react'
-import type { ActivePage } from '../types/navigation'
+import {
+  PAGE_IDS,
+  PAGE_METADATA,
+  type ActivePage,
+  type SafetyDetailPage,
+} from '../types/navigation'
 import {
   extractProductScanCandidates,
   type ProductScanCandidate,
@@ -24,11 +29,23 @@ const OCR_REVIEW_WARNING = 'OCR can misread labels. Review extracted text before
 const workflowOptions: Array<{
   id: ProductScanWorkflow
   label: string
-  page: Extract<ActivePage, 'pharmacy-safety' | 'food-safety' | 'cosmetic-safety'>
+  page: SafetyDetailPage
 }> = [
-  { id: 'pharmacy', label: 'Pharmacy Safety', page: 'pharmacy-safety' },
-  { id: 'food', label: 'Food Safety', page: 'food-safety' },
-  { id: 'cosmetic', label: 'Cosmetic Safety', page: 'cosmetic-safety' },
+  {
+    id: 'pharmacy',
+    label: PAGE_METADATA[PAGE_IDS.PHARMACY_SAFETY].label,
+    page: PAGE_IDS.PHARMACY_SAFETY,
+  },
+  {
+    id: 'food',
+    label: PAGE_METADATA[PAGE_IDS.FOOD_SAFETY].label,
+    page: PAGE_IDS.FOOD_SAFETY,
+  },
+  {
+    id: 'cosmetic',
+    label: PAGE_METADATA[PAGE_IDS.COSMETIC_SAFETY].label,
+    page: PAGE_IDS.COSMETIC_SAFETY,
+  },
 ]
 
 function ProductScanCandidateCard({

@@ -2,6 +2,7 @@ import {
   getSearchComparisonKey,
   normalizeSafetyQuery,
 } from './queryNormalization'
+import { PAGE_IDS, type SafetyDetailPage } from '../types/navigation'
 
 export type SafetyArea = 'pharmacy' | 'food' | 'cosmetic' | 'ambiguous'
 export type SafetyDetailArea = Exclude<SafetyArea, 'ambiguous'>
@@ -10,7 +11,7 @@ export type SafetyRouteSuggestion = {
   area: SafetyDetailArea
   label: string
   description: string
-  page: 'pharmacy-safety' | 'food-safety' | 'cosmetic-safety'
+  page: SafetyDetailPage
 }
 
 export type SafetyRouteClassification = {
@@ -109,21 +110,21 @@ const pharmacySuggestion: SafetyRouteSuggestion = {
   area: 'pharmacy',
   label: 'Pharmacy Safety',
   description: 'Check drug recall records and adverse event reporting patterns.',
-  page: 'pharmacy-safety',
+  page: PAGE_IDS.PHARMACY_SAFETY,
 }
 
 const foodSuggestion: SafetyRouteSuggestion = {
   area: 'food',
   label: 'Food & Supplement Safety',
   description: 'Check food, supplement, meat, poultry, and egg-product safety records.',
-  page: 'food-safety',
+  page: PAGE_IDS.FOOD_SAFETY,
 }
 
 const cosmeticSuggestion: SafetyRouteSuggestion = {
   area: 'cosmetic',
   label: 'Cosmetic Safety',
   description: 'Check cosmetic and personal-care product safety reports.',
-  page: 'cosmetic-safety',
+  page: PAGE_IDS.COSMETIC_SAFETY,
 }
 
 const suggestionsByArea: Record<SafetyDetailArea, SafetyRouteSuggestion> = {

@@ -45,7 +45,7 @@ import AboutPage from './components/AboutPage'
 import InfoPage from './components/InfoPage'
 import AskDavAIChat from './components/AskDavAIChat'
 import FloatingSafetyReportIntake from './components/FloatingSafetyReportIntake'
-import type { ActivePage } from './types/navigation'
+import { PAGE_IDS, isUrlPage, type ActivePage } from './types/navigation'
 import { infoPages } from './data/infoPages'
 import {
   getSearchComparisonKey,
@@ -57,28 +57,15 @@ function getInitialPage(): ActivePage {
   const params = new URLSearchParams(window.location.search)
   const page = params.get('page')
 
-  if (
-    page === 'pharmacy-safety' ||
-    page === 'food-safety' ||
-    page === 'cosmetic-safety' ||
-    page === 'productscan' ||
-    page === 'sources' ||
-    page === 'audit' ||
-    page === 'system' ||
-    page === 'saved-monitors' ||
-    page === 'regional-health' ||
-    page === 'about' ||
-    page === 'faq' ||
-    page === 'help'
-  ) {
+  if (isUrlPage(page)) {
     return page
   }
 
   if (params.has('audit_id')) {
-    return 'audit'
+    return PAGE_IDS.AUDIT
   }
 
-  return 'home'
+  return PAGE_IDS.HOME
 }
 
 function getInitialSafetyQuery() {
@@ -89,7 +76,7 @@ function updatePageInUrl(page: ActivePage, safetyQuery?: string, rawSafetyQuery?
   const url = new URL(window.location.href)
   url.searchParams.delete('audit_id')
 
-  if (page === 'home') {
+  if (page === PAGE_IDS.HOME) {
     url.searchParams.delete('page')
     url.searchParams.delete('q')
     url.searchParams.delete('raw_q')
@@ -145,34 +132,34 @@ function App() {
   }, [])
 
   function goHome() {
-    setActivePage('home')
+    setActivePage(PAGE_IDS.HOME)
     setSafetyQuery('')
     setRawSafetyQuery('')
-    updatePageInUrl('home')
+    updatePageInUrl(PAGE_IDS.HOME)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   function goToPharmacySafety() {
-    setActivePage('pharmacy-safety')
+    setActivePage(PAGE_IDS.PHARMACY_SAFETY)
     setSafetyQuery('')
     setRawSafetyQuery('')
-    updatePageInUrl('pharmacy-safety')
+    updatePageInUrl(PAGE_IDS.PHARMACY_SAFETY)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   function goToFoodSafety() {
-    setActivePage('food-safety')
+    setActivePage(PAGE_IDS.FOOD_SAFETY)
     setSafetyQuery('')
     setRawSafetyQuery('')
-    updatePageInUrl('food-safety')
+    updatePageInUrl(PAGE_IDS.FOOD_SAFETY)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   function goToCosmeticSafety() {
-    setActivePage('cosmetic-safety')
+    setActivePage(PAGE_IDS.COSMETIC_SAFETY)
     setSafetyQuery('')
     setRawSafetyQuery('')
-    updatePageInUrl('cosmetic-safety')
+    updatePageInUrl(PAGE_IDS.COSMETIC_SAFETY)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -194,14 +181,14 @@ function App() {
         goToPage={goToPage}
       />
 
-      {activePage === 'home' && (
+      {activePage === PAGE_IDS.HOME && (
         <>
           <Hero
             data={null}
             goToPharmacySafety={goToPharmacySafety}
             goToFoodSafety={goToFoodSafety}
             goToCosmeticSafety={goToCosmeticSafety}
-            goToAbout={() => goToPage('about')}
+            goToAbout={() => goToPage(PAGE_IDS.ABOUT)}
           />
 
           <SafetyWorkspace
@@ -210,7 +197,7 @@ function App() {
             goToCosmeticSafety={goToCosmeticSafety}
           />
 
-          <ProductScanTeaser openProductScan={() => goToPage('productscan')} />
+          <ProductScanTeaser openProductScan={() => goToPage(PAGE_IDS.PRODUCT_SCAN)} />
 
           <UniversalSafetySearch goToPage={goToPage} />
 
@@ -220,7 +207,7 @@ function App() {
         </>
       )}
 
-      {activePage === 'pharmacy-safety' && (
+      {activePage === PAGE_IDS.PHARMACY_SAFETY && (
         <PharmacySafetyPage
           initialQuery={safetyQuery}
           initialRawQuery={rawSafetyQuery}
@@ -228,7 +215,7 @@ function App() {
         />
       )}
 
-      {activePage === 'food-safety' && (
+      {activePage === PAGE_IDS.FOOD_SAFETY && (
         <FoodSafetyPage
           initialQuery={safetyQuery}
           initialRawQuery={rawSafetyQuery}
@@ -236,7 +223,7 @@ function App() {
         />
       )}
 
-      {activePage === 'cosmetic-safety' && (
+      {activePage === PAGE_IDS.COSMETIC_SAFETY && (
         <CosmeticSafetyPage
           initialQuery={safetyQuery}
           initialRawQuery={rawSafetyQuery}
@@ -244,23 +231,23 @@ function App() {
         />
       )}
 
-      {activePage === 'productscan' && <ProductScanPage goToPage={goToPage} />}
+      {activePage === PAGE_IDS.PRODUCT_SCAN && <ProductScanPage goToPage={goToPage} />}
 
-      {activePage === 'sources' && <DataSourcesPage />}
+      {activePage === PAGE_IDS.SOURCES && <DataSourcesPage />}
 
-      {activePage === 'audit' && <AuditHistoryPage />}
+      {activePage === PAGE_IDS.AUDIT && <AuditHistoryPage />}
 
-      {activePage === 'system' && <SystemStatusPage />}
+      {activePage === PAGE_IDS.SYSTEM && <SystemStatusPage />}
 
-      {activePage === 'saved-monitors' && <SavedMonitorsPage />}
+      {activePage === PAGE_IDS.SAVED_MONITORS && <SavedMonitorsPage />}
 
-      {activePage === 'regional-health' && <RegionalHealthPulse />}
+      {activePage === PAGE_IDS.REGIONAL_HEALTH && <RegionalHealthPulse />}
 
-      {activePage === 'about' && <AboutPage />}
+      {activePage === PAGE_IDS.ABOUT && <AboutPage />}
 
-      {activePage === 'faq' && <FaqPage />}
+      {activePage === PAGE_IDS.FAQ && <FaqPage />}
 
-      {activePage === 'help' && (
+      {activePage === PAGE_IDS.HELP && (
         <InfoPage {...infoPages.help} showHelpDocsSearch />
       )}
 

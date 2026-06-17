@@ -5,6 +5,7 @@ import {
   type AuditHistoryItem,
   type SourcePullProvenanceItem,
 } from '../api/auditEvents'
+import { PAGE_IDS } from '../types/navigation'
 
 type ModuleFilter = 'all' | 'RecallRadar' | 'DrugSignal' | 'FoodRadar' | 'RegionalHealthPulse'
 type StatusFilter = 'all' | 'success' | 'empty' | 'error'
@@ -146,7 +147,7 @@ function getAuditIdFromUrl() {
 function setAuditIdInUrl(auditId: string | null) {
   const url = new URL(window.location.href)
 
-  url.searchParams.set('page', 'audit')
+  url.searchParams.set('page', PAGE_IDS.AUDIT)
 
   if (auditId) {
     url.searchParams.set('audit_id', auditId)
@@ -355,7 +356,7 @@ export default function AuditHistoryPage() {
 
   async function copyAuditLink(item: AuditHistoryItem) {
     const url = new URL(window.location.href)
-    url.searchParams.set('page', 'audit')
+    url.searchParams.set('page', PAGE_IDS.AUDIT)
     url.searchParams.set('audit_id', item.audit_id)
 
     await navigator.clipboard.writeText(url.toString())
