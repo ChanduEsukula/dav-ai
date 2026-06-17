@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
 
+from app.db.database import MEMORY_FALLBACK_WARNING
 from app.main import app
 
 
@@ -72,6 +73,46 @@ def test_list_sources_includes_helper_backed_freshness_fields():
         assert "freshness_safety_note" in source
         assert "operational review signal" in source["freshness_safety_note"]
         assert "clinical urgency" in source["freshness_safety_note"]
+
+
+def test_list_sources_reports_memory_fallback_persistence(monkeypatch):
+    monkeypatch.setattr("app.routes.sources.is_database_configured", lambda: False)
+    monkeypatch.setattr(
+        "app.routes.sources.get_latest_audit_event_for_source",
+        lambda source_id, request_id=None: ("skipped", None),
+    )
+
+    test_client = TestClient(app)
+
+    response = test_client.get("/api/v1/sources")
+
+    assert response.status_code == 200
+
+    body = response.json()
+
+    assert body["persistence_mode"] == "memory_fallback"
+    assert body["durable_persistence"] is False
+    assert body["warning"] == MEMORY_FALLBACK_WARNING
+
+
+def test_list_sources_reports_database_persistence_when_configured(monkeypatch):
+    monkeypatch.setattr("app.routes.sources.is_database_configured", lambda: True)
+    monkeypatch.setattr(
+        "app.routes.sources.get_latest_audit_event_for_source",
+        lambda source_id, request_id=None: ("saved", None),
+    )
+
+    test_client = TestClient(app)
+
+    response = test_client.get("/api/v1/sources")
+
+    assert response.status_code == 200
+
+    body = response.json()
+
+    assert body["persistence_mode"] == "database"
+    assert body["durable_persistence"] is True
+    assert body["warning"] is None
 
 
 def test_list_sources_reports_unknown_freshness_when_audit_history_unavailable(monkeypatch):

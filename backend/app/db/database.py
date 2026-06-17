@@ -1,10 +1,20 @@
 import os
 from pathlib import Path
+from typing import Literal, TypedDict
 
 from dotenv import load_dotenv
 
 BACKEND_ROOT = Path(__file__).resolve().parents[2]
 ENV_PATH = BACKEND_ROOT / ".env"
+MEMORY_FALLBACK_WARNING = "Memory fallback is demo-only and not durable."
+PersistenceMode = Literal["database", "memory_fallback"]
+
+
+class PersistenceVisibility(TypedDict):
+    persistence_mode: PersistenceMode
+    durable_persistence: bool
+    warning: str | None
+
 
 load_dotenv(ENV_PATH)
 
@@ -20,3 +30,20 @@ def get_database_url() -> str | None:
 
 def is_database_configured() -> bool:
     return get_database_url() is not None
+
+
+def get_persistence_visibility(database_configured: bool | None = None) -> PersistenceVisibility:
+    configured = is_database_configured() if database_configured is None else database_configured
+
+    if configured:
+        return {
+            "persistence_mode": "database",
+            "durable_persistence": True,
+            "warning": None,
+        }
+
+    return {
+        "persistence_mode": "memory_fallback",
+        "durable_persistence": False,
+        "warning": MEMORY_FALLBACK_WARNING,
+    }

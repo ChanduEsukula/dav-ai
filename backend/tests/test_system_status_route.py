@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
 
+from app.db.database import MEMORY_FALLBACK_WARNING
 from app.main import app
 from app.sources.registry import REGISTERED_SOURCES
 
@@ -21,6 +22,9 @@ def test_system_status_returns_core_operational_fields(monkeypatch):
     assert data["version"] == "0.1.0"
     assert data["database"]["configured"] is False
     assert data["database"]["audit_readable"] is False
+    assert data["database"]["persistence_mode"] == "memory_fallback"
+    assert data["database"]["durable_persistence"] is False
+    assert data["database"]["warning"] == MEMORY_FALLBACK_WARNING
     assert data["sources"]["registered_count"] == len(REGISTERED_SOURCES)
     assert data["sources"]["available"] is True
     assert "RecallRadar" in data["modules"]
@@ -45,6 +49,9 @@ def test_system_status_reports_audit_readable_when_database_read_succeeds(monkey
 
     assert data["database"]["configured"] is True
     assert data["database"]["audit_readable"] is True
+    assert data["database"]["persistence_mode"] == "database"
+    assert data["database"]["durable_persistence"] is True
+    assert data["database"]["warning"] is None
 
 
 def test_system_status_reports_audit_not_readable_when_database_read_fails(monkeypatch):
@@ -59,6 +66,9 @@ def test_system_status_reports_audit_not_readable_when_database_read_fails(monke
 
     assert data["database"]["configured"] is True
     assert data["database"]["audit_readable"] is False
+    assert data["database"]["persistence_mode"] == "database"
+    assert data["database"]["durable_persistence"] is True
+    assert data["database"]["warning"] is None
 
 
 def test_data_quality_returns_skipped_when_database_not_configured(monkeypatch):
@@ -73,6 +83,9 @@ def test_data_quality_returns_skipped_when_database_not_configured(monkeypatch):
     assert data["status"] == "skipped"
     assert data["database_configured"] is False
     assert data["audit_readable"] is False
+    assert data["persistence_mode"] == "memory_fallback"
+    assert data["durable_persistence"] is False
+    assert data["warning"] == MEMORY_FALLBACK_WARNING
     assert data["source_registry_count"] == len(REGISTERED_SOURCES)
     assert data["recent_audit_count"] == 0
     assert data["latest_audit_event"]["exists"] is False
@@ -122,6 +135,9 @@ def test_data_quality_returns_recent_audit_summary(monkeypatch):
     assert data["status"] == "ok"
     assert data["database_configured"] is True
     assert data["audit_readable"] is True
+    assert data["persistence_mode"] == "database"
+    assert data["durable_persistence"] is True
+    assert data["warning"] is None
     assert data["source_registry_count"] == len(REGISTERED_SOURCES)
     assert data["recent_audit_count"] == 3
     assert data["upstream_status_counts"]["success"] == 1
@@ -146,5 +162,8 @@ def test_data_quality_reports_error_when_audit_read_fails(monkeypatch):
     assert data["status"] == "error"
     assert data["database_configured"] is True
     assert data["audit_readable"] is False
+    assert data["persistence_mode"] == "database"
+    assert data["durable_persistence"] is True
+    assert data["warning"] is None
     assert data["recent_audit_count"] == 0
     assert data["latest_audit_event"]["exists"] is False

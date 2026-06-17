@@ -1,4 +1,8 @@
+from typing import Literal
+
 from pydantic import BaseModel
+
+PersistenceMode = Literal["database", "memory_fallback"]
 
 
 class SourceRecord(BaseModel):
@@ -25,4 +29,7 @@ class SourceRecord(BaseModel):
 
 class SourceRegistryResponse(BaseModel):
     count: int
+    persistence_mode: PersistenceMode
+    durable_persistence: bool
+    warning: str | None = None
     sources: list[SourceRecord]
