@@ -1,6 +1,7 @@
 .universal-safety-search {
   max-width: 1180px;
   margin: 108px auto 0;
+  scroll-margin-bottom: var(--floating-cta-mobile-clearance);
 }
 
 .universal-safety-search__examples,
@@ -130,6 +131,7 @@
 @media (max-width: 720px) {
   .universal-safety-search {
     margin-top: 78px;
+    padding-bottom: 0.75rem;
   }
 
   .universal-safety-search__result {
@@ -138,6 +140,7 @@
 
   .universal-safety-search__know-more,
   .universal-safety-search__choices button {
+    scroll-margin-bottom: var(--floating-cta-mobile-clearance);
     width: 100%;
   }
 

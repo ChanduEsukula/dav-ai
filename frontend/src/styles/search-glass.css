@@ -163,3 +163,12 @@
     animation: none !important;
   }
 }
+
+@media (max-width: 720px) {
+  .search-panel,
+  .search-box,
+  .search-field input,
+  .search-box > button {
+    scroll-margin-bottom: var(--floating-cta-mobile-clearance);
+  }
+}
