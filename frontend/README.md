@@ -241,3 +241,19 @@ npm run lint
 npm run build
 npx playwright test
 ```
+
+## PWA Installability
+
+Dav AI includes a basic web app manifest and production-only service worker so the
+deployed HTTPS frontend can be installed from supported mobile browsers.
+
+To test on mobile:
+
+1. Open the deployed Dav AI HTTPS URL on the device.
+2. On Chrome/Android, use the browser menu and choose "Install app" when offered.
+3. On Safari/iOS, use Share, then "Add to Home Screen".
+4. Launch Dav AI from the home screen and confirm it opens in a standalone browser shell.
+
+The service worker only caches the app shell and same-origin static assets. It does not
+cache FDA, USDA, or Dav AI backend API responses, and it does not add push notifications,
+background sync, native app-store packaging, or offline safety-data behavior.

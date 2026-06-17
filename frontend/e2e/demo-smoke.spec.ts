@@ -71,3 +71,31 @@ test('demo-critical pages render without crashing', async ({ page }) => {
     })
   }
 })
+
+test('pwa installability metadata is served', async ({ page, request }) => {
+  await page.goto('/')
+
+  await expect(page.locator('link[rel="manifest"]')).toHaveAttribute(
+    'href',
+    '/manifest.webmanifest',
+  )
+  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
+    'content',
+    '#0b4f71',
+  )
+
+  const manifestResponse = await request.get('/manifest.webmanifest')
+  expect(manifestResponse.ok()).toBeTruthy()
+
+  const manifest = await manifestResponse.json()
+  expect(manifest).toMatchObject({
+    name: 'Dav AI',
+    short_name: 'Dav AI',
+    start_url: '/',
+    display: 'standalone',
+  })
+
+  const serviceWorkerResponse = await request.get('/sw.js')
+  expect(serviceWorkerResponse.ok()).toBeTruthy()
+  expect(await serviceWorkerResponse.text()).toContain("url.pathname.startsWith('/api/')")
+})
