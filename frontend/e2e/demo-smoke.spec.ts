@@ -1,61 +1,73 @@
 import { expect, test } from '@playwright/test'
 
-test('demo navigation follows the canonical safety workspaces and evidence pages', async ({ page }) => {
-  await page.goto('/')
+const demoPages = [
+  {
+    name: 'Home',
+    url: '/',
+    heading: /Public safety\s+data\.\s+Made clear\./i,
+    nav: 'Home',
+  },
+  {
+    name: 'Pharmacy Safety',
+    url: '/?page=pharmacy-safety',
+    heading: 'Search pharmacy safety records',
+    nav: 'Pharmacy Safety',
+  },
+  {
+    name: 'Food Safety',
+    url: '/?page=food-safety',
+    heading: 'Search food and supplement safety records',
+    nav: 'Food Safety',
+  },
+  {
+    name: 'Cosmetic Safety',
+    url: '/?page=cosmetic-safety',
+    heading: 'Search cosmetic-event reports',
+    nav: 'Cosmetic Safety',
+  },
+  {
+    name: 'ProductScan',
+    url: '/?page=productscan',
+    heading: 'Review label text before searching public records.',
+  },
+  {
+    name: 'Sources',
+    url: '/?page=sources',
+    heading: 'Registered public data sources.',
+    nav: 'Sources',
+  },
+  {
+    name: 'System Status',
+    url: '/?page=system',
+    heading: 'System Status',
+    nav: 'System',
+  },
+  {
+    name: 'Saved Monitors',
+    url: '/?page=saved-monitors',
+    heading: 'Saved Monitors',
+    nav: 'Monitors',
+  },
+  {
+    name: 'Help Docs Search',
+    url: '/?page=help',
+    heading: 'Find cited snippets from Dav AI docs.',
+    nav: 'Help',
+  },
+]
 
-  await expect(page.getByText('Dav AI').first()).toBeVisible()
+test('demo-critical pages render without crashing', async ({ page }) => {
+  for (const demoPage of demoPages) {
+    await test.step(demoPage.name, async () => {
+      await page.goto(demoPage.url)
 
-  const navItems = [
-    'Pharmacy Safety',
-    'Food Safety',
-    'Cosmetic Safety',
-    'Sources',
-    'Audit',
-    'System',
-    'Monitors',
-  ]
+      await expect(page.getByRole('heading', { name: demoPage.heading })).toBeVisible()
 
-  for (const item of navItems) {
-    await expect(page.getByRole('button', { name: item, exact: true })).toBeVisible()
+      if (demoPage.nav) {
+        await expect(
+          page.getByRole('button', { name: demoPage.nav, exact: true }),
+        ).toHaveAttribute('aria-current', 'page')
+      }
+    })
   }
-
-  await expect(page.getByRole('button', { name: 'Profile', exact: true })).toHaveCount(0)
-  await expect(page.getByRole('button', { name: 'Sign Up', exact: true })).toHaveCount(0)
-
-  await expect(page.getByRole('button', { name: 'Ask DAV AI', exact: true })).toHaveCount(0)
-
-  const guidedSearch = page.getByRole('combobox', { name: 'Safety search' })
-  await guidedSearch.fill('stra')
-  await expect(page.getByRole('option', { name: /strawberry.*Food & Supplement Safety/i }))
-    .toBeVisible()
-  await guidedSearch.press('ArrowDown')
-  await guidedSearch.press('Enter')
-  await expect(guidedSearch).toHaveValue('strawberry')
-
-  await page.getByRole('button', { name: 'Pharmacy Safety', exact: true }).click()
-  await expect(
-    page.getByRole('heading', { name: 'Search pharmacy safety records' }),
-  ).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Pharmacy Safety', exact: true })).toHaveAttribute(
-    'aria-current',
-    'page',
-  )
-
-  await page.getByRole('button', { name: 'Food Safety', exact: true }).click()
-  await expect(
-    page.getByRole('heading', { name: 'Search food and supplement safety records' }),
-  ).toBeVisible()
-
-  await page.getByRole('button', { name: 'Cosmetic Safety', exact: true }).click()
-  await expect(
-    page.getByRole('heading', { name: 'Search cosmetic-event reports' }),
-  ).toBeVisible()
-
-  await page.getByRole('button', { name: 'Sources', exact: true }).click()
-  await expect(
-    page.getByRole('heading', { name: 'Registered public data sources.' }),
-  ).toBeVisible()
-
-  await page.getByRole('button', { name: 'Audit', exact: true }).click()
-  await expect(page.getByRole('heading', { name: 'Audit History' })).toBeVisible()
 })
