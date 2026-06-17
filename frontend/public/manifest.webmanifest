@@ -1,0 +1,25 @@
+{
+  "name": "Dav AI",
+  "short_name": "Dav AI",
+  "description": "Source-aware public safety intelligence for drugs, food, supplements, and cosmetics.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f4fbfb",
+  "theme_color": "#0b4f71",
+  "icons": [
+    {
+      "src": "/pwa-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
