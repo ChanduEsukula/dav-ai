@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Request
 
 from app.db.audit_repository import get_latest_audit_event_for_source
+from app.db.database import get_persistence_visibility, is_database_configured
 from app.schemas.sources import SourceRegistryResponse
 from app.scoring.source_freshness import (
     FreshnessLabel,
@@ -147,6 +148,8 @@ def _build_freshness(source: dict, latest_event: dict | None, repository_status:
 @router.get("", response_model=SourceRegistryResponse)
 async def list_sources(request: Request):
     request_id = getattr(request.state, "request_id", None)
+    database_configured = is_database_configured()
+    persistence_visibility = get_persistence_visibility(database_configured)
 
     sources = []
 
@@ -159,5 +162,6 @@ async def list_sources(request: Request):
 
     return {
         "count": len(sources),
+        **persistence_visibility,
         "sources": sources,
     }

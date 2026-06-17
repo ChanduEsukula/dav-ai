@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from app.db.audit_repository import list_audit_events
-from app.db.database import is_database_configured
+from app.db.database import get_persistence_visibility, is_database_configured
 from app.schemas.system import DataQualityResponse, SystemStatusResponse
 from app.sources.registry import REGISTERED_SOURCES
 
@@ -17,6 +17,7 @@ def get_system_status() -> SystemStatusResponse:
     sources = get_registered_sources()
 
     database_configured = is_database_configured()
+    persistence_visibility = get_persistence_visibility(database_configured)
     audit_readable = False
 
     if database_configured:
@@ -30,6 +31,7 @@ def get_system_status() -> SystemStatusResponse:
         database={
             "configured": database_configured,
             "audit_readable": audit_readable,
+            **persistence_visibility,
         },
         sources={
             "registered_count": len(sources),
@@ -52,12 +54,14 @@ def get_system_status() -> SystemStatusResponse:
 def get_data_quality() -> DataQualityResponse:
     sources = get_registered_sources()
     database_configured = is_database_configured()
+    persistence_visibility = get_persistence_visibility(database_configured)
 
     if not database_configured:
         return DataQualityResponse(
             status="skipped",
             database_configured=False,
             audit_readable=False,
+            **persistence_visibility,
             source_registry_count=len(sources),
             recent_audit_count=0,
             upstream_status_counts={
@@ -78,6 +82,7 @@ def get_data_quality() -> DataQualityResponse:
             status=persistence_status,
             database_configured=True,
             audit_readable=False,
+            **persistence_visibility,
             source_registry_count=len(sources),
             recent_audit_count=0,
             upstream_status_counts={
@@ -123,6 +128,7 @@ def get_data_quality() -> DataQualityResponse:
         status="ok",
         database_configured=True,
         audit_readable=True,
+        **persistence_visibility,
         source_registry_count=len(sources),
         recent_audit_count=len(rows),
         upstream_status_counts=status_counts,

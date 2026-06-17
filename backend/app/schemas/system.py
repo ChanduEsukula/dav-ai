@@ -1,9 +1,16 @@
+from typing import Literal
+
 from pydantic import BaseModel
+
+PersistenceMode = Literal["database", "memory_fallback"]
 
 
 class DatabaseStatus(BaseModel):
     configured: bool
     audit_readable: bool
+    persistence_mode: PersistenceMode
+    durable_persistence: bool
+    warning: str | None = None
 
 
 class SourceStatus(BaseModel):
@@ -40,6 +47,9 @@ class DataQualityResponse(BaseModel):
     status: str
     database_configured: bool
     audit_readable: bool
+    persistence_mode: PersistenceMode
+    durable_persistence: bool
+    warning: str | None = None
     source_registry_count: int
     recent_audit_count: int
     upstream_status_counts: AuditStatusCounts
