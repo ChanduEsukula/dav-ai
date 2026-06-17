@@ -5,7 +5,7 @@ import {
   type CosmeticEventSearchResponse,
   type CosmeticProduct,
 } from '../api/cosmeticEvents'
-import type { ActivePage } from '../types/navigation'
+import { PAGE_IDS, type ActivePage } from '../types/navigation'
 import { formatDate, formatTimestamp } from '../utils/recallFormatters'
 import {
   getSearchComparisonKey,
@@ -246,7 +246,7 @@ function CosmeticSafetyPage({
 
       if (options.updateUrl) {
         writeSafetyQueryToUrl(
-          'cosmetic-safety',
+          PAGE_IDS.COSMETIC_SAFETY,
           cleanQuery,
           normalization.rawQuery,
           'push',
@@ -301,7 +301,7 @@ function CosmeticSafetyPage({
       }
 
       writeSafetyQueryToUrl(
-        'cosmetic-safety',
+        PAGE_IDS.COSMETIC_SAFETY,
         cleanQuery,
         normalization.rawQuery,
         'replace',
