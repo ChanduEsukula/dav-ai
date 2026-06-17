@@ -191,17 +191,17 @@ function Hero({
 
         <div className="floating-card card-one">
           <small>Review signal</small>
-          <strong>{topResult ? topResult.risk_score.label : 'Awaiting records'}</strong>
+          <strong>{topResult ? topResult.risk_score.label : 'Public-record review'}</strong>
         </div>
 
         <div className="floating-card card-two">
           <small>Source trail</small>
-          <strong>{data ? `${data.count} FDA records` : 'openFDA ready'}</strong>
+          <strong>{data ? `${data.count} FDA records` : 'Source data ready'}</strong>
         </div>
 
         <div className="floating-card card-three">
           <small>Audit context</small>
-          <strong>{data ? 'Timestamp verified' : 'Traceable results'}</strong>
+          <strong>{data ? 'Timestamp verified' : 'Audit trail visible'}</strong>
         </div>
       </div>
     </section>

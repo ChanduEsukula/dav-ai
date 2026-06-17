@@ -1,11 +1,12 @@
 .nav {
   max-width: 1180px;
   margin: 0 auto;
-  padding: 14px 18px;
+  padding: 12px 14px;
   border-radius: 999px;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
-  justify-content: space-between;
+  gap: 1rem;
   background: rgba(255, 255, 255, 0.74);
   border: 1px solid rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(22px);
@@ -22,6 +23,7 @@
   font-size: 15px;
   font-weight: 900;
   letter-spacing: -0.035em;
+  white-space: nowrap;
 }
 
 .brand-mark {
@@ -37,9 +39,17 @@
   box-shadow: 0 13px 30px rgba(0, 123, 135, 0.28);
 }
 
+.brand-button {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
 .nav-links {
+  min-height: 42px;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   padding: 5px;
   border-radius: 999px;
@@ -66,21 +76,18 @@
   transform: translateY(-1px);
 }
 
-.brand-button {
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-}
-
 .nav-links button {
+  min-height: 32px;
   border: 0;
   cursor: pointer;
-  padding: 8px 12px;
+  padding: 8px 13px;
   border-radius: 999px;
   color: var(--muted);
   background: transparent;
   font-size: 13px;
   font-weight: 850;
+  line-height: 1;
+  white-space: nowrap;
   transition:
     color 180ms ease,
     background 180ms ease,
@@ -95,10 +102,32 @@
   transform: translateY(-1px);
 }
 
+.nav-links-secondary,
+.nav-actions {
+  justify-self: end;
+}
+
+@media (max-width: 1120px) {
+  .nav {
+    gap: 0.65rem;
+    padding: 12px;
+  }
+
+  .nav-links {
+    gap: 4px;
+  }
+
+  .nav-links button {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}
+
 @media (max-width: 960px) {
   .nav {
     margin: 0 auto;
     border-radius: 28px;
+    display: flex;
     align-items: flex-start;
     gap: 14px;
     flex-direction: column;
@@ -141,53 +170,5 @@
     width: 100%;
     padding: 9px 10px;
     font-size: 12px;
-  }
-}
-
-.nav-groups {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.nav-group {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.nav-group-operations,
-.nav-group-secondary {
-  padding-left: 0.75rem;
-  border-left: 1px solid rgba(15, 23, 42, 0.12);
-}
-
-.nav-group-secondary {
-  opacity: 0.86;
-}
-
-.nav-link[aria-current="page"],
-.nav-button[aria-current="page"] {
-  font-weight: 800;
-}
-
-@media (max-width: 760px) {
-  .nav-groups {
-    align-items: stretch;
-    gap: 0.65rem;
-  }
-
-  .nav-group {
-    width: 100%;
-    flex-wrap: wrap;
-  }
-
-  .nav-group-operations,
-  .nav-group-secondary {
-    padding-left: 0;
-    padding-top: 0.65rem;
-    border-left: 0;
-    border-top: 1px solid rgba(15, 23, 42, 0.12);
   }
 }
