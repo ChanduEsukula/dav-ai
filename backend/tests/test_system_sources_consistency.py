@@ -40,6 +40,7 @@ def test_sources_route_count_and_ids_match_shared_registry():
         "openfda_drug_enforcement",
         "openfda_drug_event",
             "rxnorm_rxnav_api",
+            "dailymed_spl_api",
         "openfda_cosmetic_event",
         "openfda_food_enforcement",
         "usda_fsis_recall",

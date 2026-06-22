@@ -32,6 +32,15 @@ RXNORM_RXNAV_API = {
     "update_cadence": "NLM RxNorm releases and RxNav API updates",
 }
 
+DAILYMED_SPL_API = {
+    "source_id": "dailymed_spl_api",
+    "source_name": "DailyMed SPL API",
+    "endpoint": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json",
+    "module": "RealWorldSafety",
+    "description": "U.S. National Library of Medicine DailyMed Structured Product Label source for official drug label references.",
+    "update_cadence": "DailyMed SPL label updates",
+}
+
 OPENFDA_COSMETIC_EVENT = {
     "source_id": "openfda_cosmetic_event",
     "source_name": "openFDA Cosmetic Event API",
@@ -123,6 +132,7 @@ REGISTERED_SOURCES = [
     OPENFDA_DRUG_ENFORCEMENT,
     OPENFDA_DRUG_EVENT,
     RXNORM_RXNAV_API,
+    DAILYMED_SPL_API,
     OPENFDA_COSMETIC_EVENT,
     OPENFDA_FOOD_ENFORCEMENT,
     USDA_FSIS_RECALL,

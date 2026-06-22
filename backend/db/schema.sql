@@ -83,6 +83,14 @@ values
         'NLM RxNorm releases and RxNav API updates'
     ),
     (
+        'dailymed_spl_api',
+        'DailyMed SPL API',
+        'https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json',
+        'RealWorldSafety',
+        'U.S. National Library of Medicine DailyMed Structured Product Label source for official drug label references.',
+        'DailyMed SPL label updates'
+    ),
+    (
         'openfda_cosmetic_event',
         'openFDA Cosmetic Event API',
         'https://api.fda.gov/cosmetic/event.json',
