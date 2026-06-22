@@ -180,6 +180,69 @@ def test_real_world_safety_curated_official_openfda_sources(
     }
 
 
+
+@pytest.mark.parametrize(
+    ("query", "expected_source", "expected_text"),
+    [
+        ("Tylenol", "RxNorm/RxNav API", "RXCUI"),
+        ("acetaminophen", "DailyMed SPL API", "DailyMed official label"),
+        ("glucose meter", "openFDA Device Enforcement API", "Blood Glucose"),
+        ("insulin pump", "openFDA Device Enforcement API", "Insulin pump"),
+        ("CPAP", "openFDA Device Enforcement API", "CPAP"),
+    ],
+)
+def test_real_world_safety_drug_reference_and_device_sources(
+    monkeypatch,
+    query,
+    expected_source,
+    expected_text,
+):
+    _patch_persistence(monkeypatch)
+    _patch_public_source_http(monkeypatch)
+
+    response = client.get("/api/v1/real-world-safety/search", params={"q": query, "limit": 5})
+
+    assert response.status_code == 200
+    body = response.json()
+
+    checked_sources = {source["source_name"] for source in body["sources_checked"]}
+    assert expected_source in checked_sources
+    assert body["sources_failed"] == []
+    assert body["structured_api_matches"] >= 1
+    assert body["total_matches"] >= 1
+
+    source_entry = next(source for source in body["sources_checked"] if source["source_name"] == expected_source)
+    assert source_entry["source_kind"] == "structured_api"
+    assert source_entry["source_type"] == "local curated official snapshot"
+    assert source_entry["record_count"] >= 1
+
+    matching_results = [
+        record
+        for record in body["results"]
+        if record["source_name"] == expected_source
+    ]
+    assert matching_results
+
+    searchable = " ".join(
+        str(value)
+        for record in matching_results
+        for value in (
+            record["product_name"],
+            record["company_name"],
+            record["title"],
+            record["reason"],
+            record["recall_number"],
+            record["hazard_type"],
+        )
+        if value
+    )
+
+    assert expected_text.lower() in searchable.lower()
+    assert all(record["source_kind"] == "structured_api" for record in matching_results)
+    assert all(record["source_type"] == "local curated official snapshot" for record in matching_results)
+
+
+
 def test_real_world_safety_vehicle_query_uses_nhtsa_recalls(monkeypatch):
     _patch_persistence(monkeypatch)
     _patch_public_source_http(monkeypatch)
