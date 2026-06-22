@@ -99,6 +99,14 @@ values
         'Source-dependent FDA device enforcement updates'
     ),
     (
+        'openfda_device_event',
+        'openFDA Device Event API',
+        'https://api.fda.gov/device/event.json',
+        'RealWorldSafety',
+        'FDA medical device adverse-event reports from openFDA. These are signal reports, not recalls or proof of causation.',
+        'Source-dependent FDA device event updates'
+    ),
+    (
         'openfda_cosmetic_event',
         'openFDA Cosmetic Event API',
         'https://api.fda.gov/cosmetic/event.json',

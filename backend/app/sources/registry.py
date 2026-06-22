@@ -50,6 +50,15 @@ OPENFDA_DEVICE_ENFORCEMENT = {
     "update_cadence": "Source-dependent FDA device enforcement updates",
 }
 
+OPENFDA_DEVICE_EVENT = {
+    "source_id": "openfda_device_event",
+    "source_name": "openFDA Device Event API",
+    "endpoint": "https://api.fda.gov/device/event.json",
+    "module": "RealWorldSafety",
+    "description": "FDA medical device adverse-event reports from openFDA. These are signal reports, not recalls or proof of causation.",
+    "update_cadence": "Source-dependent FDA device event updates",
+}
+
 OPENFDA_COSMETIC_EVENT = {
     "source_id": "openfda_cosmetic_event",
     "source_name": "openFDA Cosmetic Event API",
@@ -143,6 +152,7 @@ REGISTERED_SOURCES = [
     RXNORM_RXNAV_API,
     DAILYMED_SPL_API,
     OPENFDA_DEVICE_ENFORCEMENT,
+    OPENFDA_DEVICE_EVENT,
     OPENFDA_COSMETIC_EVENT,
     OPENFDA_FOOD_ENFORCEMENT,
     USDA_FSIS_RECALL,
