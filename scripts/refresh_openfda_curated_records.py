@@ -10,9 +10,11 @@ ROOT = Path(__file__).resolve().parents[1]
 
 OPENFDA_FOOD_ENDPOINT = "https://api.fda.gov/food/enforcement.json"
 OPENFDA_DRUG_ENDPOINT = "https://api.fda.gov/drug/enforcement.json"
+OPENFDA_DEVICE_ENDPOINT = "https://api.fda.gov/device/enforcement.json"
 
 OPENFDA_FOOD_OUT = ROOT / "data" / "safety_sources" / "food" / "openfda_food_curated_records.json"
 OPENFDA_DRUG_OUT = ROOT / "data" / "safety_sources" / "drug" / "openfda_drug_curated_records.json"
+OPENFDA_DEVICE_OUT = ROOT / "data" / "safety_sources" / "device" / "openfda_device_enforcement_curated_records.json"
 
 
 def fetch_json(url: str) -> dict[str, Any]:
@@ -97,6 +99,16 @@ def main() -> None:
         'reason_for_recall:"NDMA"',
     ]
 
+    device_queries = [
+        'product_description:"glucose meter"',
+        'product_description:"insulin pump"',
+        'product_description:"CPAP"',
+        'product_description:"syringe"',
+        'product_description:"contact lens"',
+        'reason_for_recall:"software"',
+        'reason_for_recall:"battery"',
+    ]
+
     food_records = fetch_openfda_records(
         OPENFDA_FOOD_ENDPOINT,
         food_queries,
@@ -107,9 +119,15 @@ def main() -> None:
         drug_queries,
         max_records=12,
     )
+    device_records = fetch_openfda_records(
+        OPENFDA_DEVICE_ENDPOINT,
+        device_queries,
+        max_records=15,
+    )
 
     write_records(OPENFDA_FOOD_OUT, food_records)
     write_records(OPENFDA_DRUG_OUT, drug_records)
+    write_records(OPENFDA_DEVICE_OUT, device_records)
 
 
 if __name__ == "__main__":
