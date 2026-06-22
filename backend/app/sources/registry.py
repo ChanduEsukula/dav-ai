@@ -41,6 +41,15 @@ DAILYMED_SPL_API = {
     "update_cadence": "DailyMed SPL label updates",
 }
 
+OPENFDA_DEVICE_ENFORCEMENT = {
+    "source_id": "openfda_device_enforcement",
+    "source_name": "openFDA Device Enforcement API",
+    "endpoint": "https://api.fda.gov/device/enforcement.json",
+    "module": "RealWorldSafety",
+    "description": "FDA medical device recall enforcement records from openFDA.",
+    "update_cadence": "Source-dependent FDA device enforcement updates",
+}
+
 OPENFDA_COSMETIC_EVENT = {
     "source_id": "openfda_cosmetic_event",
     "source_name": "openFDA Cosmetic Event API",
@@ -133,6 +142,7 @@ REGISTERED_SOURCES = [
     OPENFDA_DRUG_EVENT,
     RXNORM_RXNAV_API,
     DAILYMED_SPL_API,
+    OPENFDA_DEVICE_ENFORCEMENT,
     OPENFDA_COSMETIC_EVENT,
     OPENFDA_FOOD_ENFORCEMENT,
     USDA_FSIS_RECALL,

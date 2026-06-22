@@ -91,6 +91,14 @@ values
         'DailyMed SPL label updates'
     ),
     (
+        'openfda_device_enforcement',
+        'openFDA Device Enforcement API',
+        'https://api.fda.gov/device/enforcement.json',
+        'RealWorldSafety',
+        'FDA medical device recall enforcement records from openFDA.',
+        'Source-dependent FDA device enforcement updates'
+    ),
+    (
         'openfda_cosmetic_event',
         'openFDA Cosmetic Event API',
         'https://api.fda.gov/cosmetic/event.json',
