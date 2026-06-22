@@ -1,0 +1,86 @@
+[
+  {
+    "RecallNumber": "23-001",
+    "RecallDate": "20231101",
+    "Title": "Samsung recalls electric dryers due to fire hazard",
+    "Description": "Samsung electric dryer models can overheat and pose a fire hazard.",
+    "Products": [
+      {
+        "Name": "Samsung electric dryer",
+        "Model": "DV45K6500EV"
+      }
+    ],
+    "Hazards": [
+      {
+        "Name": "Fire hazard"
+      }
+    ],
+    "Remedies": [
+      {
+        "Name": "Repair"
+      }
+    ],
+    "Manufacturers": [
+      {
+        "Name": "Samsung Electronics America"
+      }
+    ],
+    "URL": "https://www.cpsc.gov/Recalls/2023/samsung-electric-dryers"
+  },
+  {
+    "RecallNumber": "23-002",
+    "RecallDate": "20230420",
+    "Title": "Best Buy recalls Insignia air fryers due to fire and burn hazards",
+    "Description": "Insignia air fryers and air fryer ovens can overheat, posing fire and burn hazards.",
+    "Products": [
+      {
+        "Name": "Insignia air fryer",
+        "Model": "NS-AF53DSS0"
+      }
+    ],
+    "Hazards": [
+      {
+        "Name": "Fire and burn hazards"
+      }
+    ],
+    "Remedies": [
+      {
+        "Name": "Refund"
+      }
+    ],
+    "Importers": [
+      {
+        "Name": "Best Buy Purchasing LLC"
+      }
+    ],
+    "URL": "https://www.cpsc.gov/Recalls/2023/insignia-air-fryers"
+  },
+  {
+    "RecallNumber": "23-003",
+    "RecallDate": "20230518",
+    "Title": "Segway recalls Ninebot KickScooters due to fall hazard",
+    "Description": "Segway Ninebot scooters can lose braking power, posing crash and fall hazards.",
+    "Products": [
+      {
+        "Name": "Segway Ninebot scooter",
+        "Model": "ES2"
+      }
+    ],
+    "Hazards": [
+      {
+        "Name": "Crash and fall hazards"
+      }
+    ],
+    "Remedies": [
+      {
+        "Name": "Repair"
+      }
+    ],
+    "Manufacturers": [
+      {
+        "Name": "Segway Inc."
+      }
+    ],
+    "URL": "https://www.cpsc.gov/Recalls/2023/segway-ninebot-scooters"
+  }
+]

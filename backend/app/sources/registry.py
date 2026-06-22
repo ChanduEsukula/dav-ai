@@ -59,6 +59,48 @@ FOODRADAR_MULTI_SOURCE = {
     "update_cadence": "Source-dependent FDA updates plus FSIS recall/public-health-alert updates",
 }
 
+FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS = {
+    "source_id": "fda_recalls_market_withdrawals_safety_alerts",
+    "source_name": "FDA Recalls, Market Withdrawals & Safety Alerts",
+    "endpoint": "https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts",
+    "module": "RealWorldSafety",
+    "description": (
+        "Public FDA recall, market withdrawal, and safety alert notices visible on FDA.gov, "
+        "including notices that may not appear in openFDA enforcement APIs."
+    ),
+    "update_cadence": "FDA public notice page updates as recalls, market withdrawals, and safety alerts are posted",
+}
+
+CPSC_RECALLS_API = {
+    "source_id": "cpsc_recalls_api",
+    "source_name": "CPSC Recalls API",
+    "endpoint": "https://www.saferproducts.gov/RestWebServices/Recall",
+    "module": "RealWorldSafety",
+    "description": (
+        "Consumer Product Safety Commission recall records for home goods, electronics, "
+        "batteries, scooters, toys, baby products, furniture, appliances, and other consumer products."
+    ),
+    "update_cadence": "CPSC recall API updates as public recalls are published",
+}
+
+NHTSA_VPIC_VIN_DECODER_API = {
+    "source_id": "nhtsa_vpic_vin_decoder_api",
+    "source_name": "NHTSA vPIC VIN Decoder API",
+    "endpoint": "https://vpic.nhtsa.dot.gov/api/",
+    "module": "RealWorldSafety",
+    "description": "NHTSA vPIC vehicle decoder used to turn VIN input into make, model, and model year before recall lookup.",
+    "update_cadence": "NHTSA vPIC public API updates as vehicle product information is refreshed",
+}
+
+NHTSA_RECALLS_API_DATASETS = {
+    "source_id": "nhtsa_recalls_api_datasets",
+    "source_name": "NHTSA Recalls API / datasets",
+    "endpoint": "https://api.nhtsa.gov/recalls/recallsByVehicle",
+    "module": "RealWorldSafety",
+    "description": "NHTSA vehicle recall records by make, model, and model year for vehicle safety checks.",
+    "update_cadence": "NHTSA recall data updates as campaigns and safety notices are published",
+}
+
 REGIONAL_HEALTH_PULSE_DEMO = {
     "source_id": "regional_health_pulse_demo",
     "source_name": "Regional Health Pulse MVP scaffold",
@@ -75,5 +117,9 @@ REGISTERED_SOURCES = [
     OPENFDA_FOOD_ENFORCEMENT,
     USDA_FSIS_RECALL,
     FOODRADAR_MULTI_SOURCE,
+    FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
+    CPSC_RECALLS_API,
+    NHTSA_VPIC_VIN_DECODER_API,
+    NHTSA_RECALLS_API_DATASETS,
     REGIONAL_HEALTH_PULSE_DEMO,
 ]

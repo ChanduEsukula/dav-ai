@@ -43,5 +43,9 @@ def test_sources_route_count_and_ids_match_shared_registry():
         "openfda_food_enforcement",
         "usda_fsis_recall",
         "foodradar_multi_source",
+        "fda_recalls_market_withdrawals_safety_alerts",
+        "cpsc_recalls_api",
+        "nhtsa_vpic_vin_decoder_api",
+        "nhtsa_recalls_api_datasets",
         "regional_health_pulse_demo",
     }

@@ -107,6 +107,38 @@ values
         'Source-dependent FDA updates plus FSIS recall/public-health-alert updates'
     ),
     (
+        'fda_recalls_market_withdrawals_safety_alerts',
+        'FDA Recalls, Market Withdrawals & Safety Alerts',
+        'https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts',
+        'RealWorldSafety',
+        'Public FDA recall, market withdrawal, and safety alert notices visible on FDA.gov, including notices that may not appear in openFDA enforcement APIs.',
+        'FDA public notice page updates as recalls, market withdrawals, and safety alerts are posted'
+    ),
+    (
+        'cpsc_recalls_api',
+        'CPSC Recalls API',
+        'https://www.saferproducts.gov/RestWebServices/Recall',
+        'RealWorldSafety',
+        'Consumer Product Safety Commission recall records for home goods, electronics, batteries, scooters, toys, baby products, furniture, appliances, and other consumer products.',
+        'CPSC recall API updates as public recalls are published'
+    ),
+    (
+        'nhtsa_vpic_vin_decoder_api',
+        'NHTSA vPIC VIN Decoder API',
+        'https://vpic.nhtsa.dot.gov/api/',
+        'RealWorldSafety',
+        'NHTSA vPIC vehicle decoder used to turn VIN input into make, model, and model year before recall lookup.',
+        'NHTSA vPIC public API updates as vehicle product information is refreshed'
+    ),
+    (
+        'nhtsa_recalls_api_datasets',
+        'NHTSA Recalls API / datasets',
+        'https://api.nhtsa.gov/recalls/recallsByVehicle',
+        'RealWorldSafety',
+        'NHTSA vehicle recall records by make, model, and model year for vehicle safety checks.',
+        'NHTSA recall data updates as campaigns and safety notices are published'
+    ),
+    (
         'regional_health_pulse_demo',
         'Regional Health Pulse MVP scaffold',
         'https://healthdata.gov/',

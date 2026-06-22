@@ -1,0 +1,1256 @@
+[
+  {
+    "id": "cpsc-26532",
+    "category": "consumer_product",
+    "source_name": "CPSC Recalls API snapshot",
+    "source_type": "local_official_snapshot",
+    "source_url": "https://www.cpsc.gov/Recalls/2026/Vornado-Air-Recalls-SRTH-Small-Room-Tower-Heaters-Due-to-Fire-Hazard",
+    "title": "Vornado Air Recalls SRTH Small Room Tower Heaters Due to Fire Hazard",
+    "product_name": null,
+    "brand_name": null,
+    "company_name": null,
+    "recall_number": "26532",
+    "published_date": "2026-06-04T00:00:00",
+    "hazard_type": null,
+    "reason": "The recalled Vornado SRTH small room tower heaters were sold in black and white and measure about 12.5 inches high by 6 inches in diameter. The recalled heaters have two heat settings (low and high) and a fan only/no heat setting. The word \"Vornado\" with a \"V\" behind it is printed on the front of the unit. The model \"TYPE SRTH\" is printed on the silver rating label located on the bottom of the product.",
+    "remedy": null,
+    "consumer_action": "Vornado toll-free at 844-205-7978 from 8 a.m. to 5 p.m. CT Monday through Friday, or online at recalls.vornado.com and click on \"SRTH Small Room Tower Heater Recall\" or www.vornado.com and click on \"Product Recalls\" in the upper right corner of the webpage for more information.",
+    "affected_models": null,
+    "affected_lots": null,
+    "raw_record": {
+      "RecallID": 10805,
+      "RecallNumber": "26532",
+      "RecallDate": "2026-06-04T00:00:00",
+      "Description": "The recalled Vornado SRTH small room tower heaters were sold in black and white and measure about 12.5 inches high by 6 inches in diameter. The recalled heaters have two heat settings (low and high) and a fan only/no heat setting. The word \"Vornado\" with a \"V\" behind it is printed on the front of the unit. The model \"TYPE SRTH\" is printed on the silver rating label located on the bottom of the product.",
+      "URL": "https://www.cpsc.gov/Recalls/2026/Vornado-Air-Recalls-SRTH-Small-Room-Tower-Heaters-Due-to-Fire-Hazard",
+      "Title": "Vornado Air Recalls SRTH Small Room Tower Heaters Due to Fire Hazard",
+      "ConsumerContact": "Vornado toll-free at 844-205-7978 from 8 a.m. to 5 p.m. CT Monday through Friday, or online at recalls.vornado.com and click on \"SRTH Small Room Tower Heater Recall\" or www.vornado.com and click on \"Product Recalls\" in the upper right corner of the webpage for more information.",
+      "LastPublishDate": "2026-06-05T00:00:00",
+      "Products": [
+        {
+          "Name": "SRTH Small Room Tower Heaters",
+          "Description": "",
+          "Model": "",
+          "Type": "",
+          "CategoryID": "",
+          "NumberOfUnits": "About 255,000 (In addition, about eight were sold in Canada)"
+        }
+      ],
+      "Inconjunctions": [
+        {
+          "URL": "https://recalls-rappels.canada.ca/en/alert-recall/vornado-srth-small-room-tower-heater-recalled-due-fire-hazard"
+        }
+      ],
+      "Images": [
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/Picture1_169.png",
+          "Caption": "Recalled SRTH Small Room Tower Heater"
+        }
+      ],
+      "Injuries": [
+        {
+          "Name": "Vornado has received 32 reports of overheating from fan displacement, including eight reports of fire and one report of smoke inhalation."
+        }
+      ],
+      "Manufacturers": [],
+      "Retailers": [
+        {
+          "Name": "Stores nationwide, including Kohl's, Bed Bath & Beyond and ACE Hardware, and online at Vornado.com and Amazon.com from August 2013 through May 2026 for between $40 and $50.",
+          "CompanyID": ""
+        }
+      ],
+      "Importers": [
+        {
+          "Name": "Vornado Air, LLC, of Andover, Kansas",
+          "CompanyID": ""
+        }
+      ],
+      "Distributors": [],
+      "SoldAtLabel": null,
+      "ManufacturerCountries": [
+        {
+          "Country": "China"
+        }
+      ],
+      "ProductUPCs": [],
+      "Hazards": [
+        {
+          "Name": "The recalled heater's fan blade can detach from the motor shaft, which can cause the fan to slow or stop, leading to overheating and melting of the enclosure and internal parts. Melted internal parts can ignite and breach the enclosure if the thermal cut off or fuse does not timely activate, posing a fire hazard.",
+          "HazardType": "",
+          "HazardTypeID": ""
+        }
+      ],
+      "Remedies": [
+        {
+          "Name": "Consumers should stop using the recalled heaters immediately and contact Vornado for instructions on how to submit photos of the product and proof of destruction to receive a full refund."
+        }
+      ],
+      "RemedyOptions": [
+        {
+          "Option": "Refund"
+        }
+      ]
+    },
+    "keywords": [],
+    "notes": "Curated from official CPSC recall JSON snapshot for Dav AI demo/search development."
+  },
+  {
+    "id": "cpsc-26191",
+    "category": "consumer_product",
+    "source_name": "CPSC Recalls API snapshot",
+    "source_type": "local_official_snapshot",
+    "source_url": "https://www.cpsc.gov/Recalls/2026/Yixing-Trading-Recalls-KEAWIS-Crib-Mattresses-Due-to-Risk-of-Serious-Injury-or-Death-from-Entrapment-and-Suffocation-Violates-Mandatory-Standard-for-Crib-Mattresses",
+    "title": "Yixing Trading Recalls KEAWIS Crib Mattresses Due to Risk of Serious Injury or Death from Entrapment and Suffocation; Violates Mandatory Standard for Crib Mattresses",
+    "product_name": null,
+    "brand_name": null,
+    "company_name": null,
+    "recall_number": "26191",
+    "published_date": "2026-01-15T00:00:00",
+    "hazard_type": null,
+    "reason": "This recall involves KEAWIS crib mattresses. KEAWIS crib mattresses were sold in white and measure about 38 inches by 24 inches. Model number \"XX-BM-01\" is printed on a label sewn on the side of the mattress.",
+    "remedy": null,
+    "consumer_action": "Yixing Trading via email at support@keawis.com.",
+    "affected_models": null,
+    "affected_lots": null,
+    "raw_record": {
+      "RecallID": 10560,
+      "RecallNumber": "26191",
+      "RecallDate": "2026-01-15T00:00:00",
+      "Description": "This recall involves KEAWIS crib mattresses. KEAWIS crib mattresses were sold in white and measure about 38 inches by 24 inches. Model number \"XX-BM-01\" is printed on a label sewn on the side of the mattress.",
+      "URL": "https://www.cpsc.gov/Recalls/2026/Yixing-Trading-Recalls-KEAWIS-Crib-Mattresses-Due-to-Risk-of-Serious-Injury-or-Death-from-Entrapment-and-Suffocation-Violates-Mandatory-Standard-for-Crib-Mattresses",
+      "Title": "Yixing Trading Recalls KEAWIS Crib Mattresses Due to Risk of Serious Injury or Death from Entrapment and Suffocation; Violates Mandatory Standard for Crib Mattresses",
+      "ConsumerContact": "Yixing Trading via email at support@keawis.com.",
+      "LastPublishDate": "2026-01-16T00:00:00",
+      "Products": [
+        {
+          "Name": "KEAWIS Crib Mattress",
+          "Description": "",
+          "Model": "",
+          "Type": "",
+          "CategoryID": "",
+          "NumberOfUnits": "About 1,500"
+        }
+      ],
+      "Inconjunctions": [],
+      "Images": [
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/keawis-1.png",
+          "Caption": "Recalled KEAWIS Crib Mattress"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/keawis-2.png",
+          "Caption": "Model number printed on tracking label of recalled crib mattress. The importer printed on the tracking label may be an entity other than \"Yixing Trading\""
+        }
+      ],
+      "Injuries": [
+        {
+          "Name": "None reported"
+        }
+      ],
+      "Manufacturers": [],
+      "Retailers": [
+        {
+          "Name": "Online at Amazon.com from August 2024 through July 2025 for between $50 and $6.",
+          "CompanyID": ""
+        }
+      ],
+      "Importers": [
+        {
+          "Name": "Yixing Trading of Richmond, Kentucky",
+          "CompanyID": ""
+        }
+      ],
+      "Distributors": [],
+      "SoldAtLabel": null,
+      "ManufacturerCountries": [
+        {
+          "Country": "China"
+        }
+      ],
+      "ProductUPCs": [],
+      "Hazards": [
+        {
+          "Name": "The aftermarket mattresses violate the mandatory standard for crib mattresses, as the mattresses may not adequately fit certain play yards or non-full-sized cribs, which could create gaps posing a deadly entrapment hazard. Babies can face a risk of suffocation in gaps between an undersized mattress, or extra padding, and side walls of a product, especially when the infant's face becomes trapped against the side and the mattress, preventing the infant from breathing.",
+          "HazardType": "",
+          "HazardTypeID": ""
+        }
+      ],
+      "Remedies": [
+        {
+          "Name": "Consumers should stop using the crib mattresses immediately and contact Yixing Trading for a full refund. Consumers should cut a large \"X\" across the main surface of the mattress, write the consumer's name and date directly on the mattress surface, take a photo and email the photo of the destroyed mattress to Yixing Trading at support@keawis.com to receive a full refund."
+        }
+      ],
+      "RemedyOptions": [
+        {
+          "Option": "Refund"
+        }
+      ]
+    },
+    "keywords": [],
+    "notes": "Curated from official CPSC recall JSON snapshot for Dav AI demo/search development."
+  },
+  {
+    "id": "cpsc-25338",
+    "category": "consumer_product",
+    "source_name": "CPSC Recalls API snapshot",
+    "source_type": "local_official_snapshot",
+    "source_url": "https://www.cpsc.gov/Recalls/2025/More-than-One-Million-Anker-Power-Banks-Recalled-Due-to-Fire-and-Burn-Hazards-Manufactured-by-Anker-Innovations",
+    "title": "More than One Million Anker Power Banks Recalled Due to Fire and Burn Hazards; Manufactured by Anker Innovations",
+    "product_name": null,
+    "brand_name": null,
+    "company_name": null,
+    "recall_number": "25338",
+    "published_date": "2025-06-12T00:00:00",
+    "hazard_type": null,
+    "reason": "This recall involves Anker PowerCore 10000 power banks with model number A1263. The brand name \"Anker\" is engraved on the front of the product. The model number \"A1263\" and serial number \"SN\" are printed on the bottom. Only model number A1263 power banks sold in the U.S. with qualifying serial numbers are included in the recall. Consumers should check their serial number at https://www.anker.com/product-recalls to determine whether their power bank is included in the recall. Note: Do not throw this recalled lithium-ion battery or device in the trash, in the general recycling stream (e.g., street-level or curbside recycling bins), or in used battery recycling boxes found at various retail and home improvement stores. Recalled lithium-ion batteries must be disposed of differently than other batteries, because they present a greater risk of fire. Your municipal household hazardous waste (HHW) collection center may accept this recalled lithium-ion battery or device for disposal. Before taking your battery or device to a HHW collection center, contact it ahead of time and ask whether it accepts recalled lithium-ion batteries. If it does not, contact your municipality for further guidance.",
+    "remedy": null,
+    "consumer_action": "Anker toll-free at 800-988-7973 from 6 a.m. to 5 p.m. PT Monday through Friday, email at support@anker.com, or online at https://support.anker.com/s/emailcontactus. A Live Chat function is also available at https://support.anker.com/s/contact-us, or go to https://www.anker.com/product-recalls or www.anker.com and click on \"Product Recalls\" at the top of the page for more information.",
+    "affected_models": null,
+    "affected_lots": null,
+    "raw_record": {
+      "RecallID": 10311,
+      "RecallNumber": "25338",
+      "RecallDate": "2025-06-12T00:00:00",
+      "Description": "This recall involves Anker PowerCore 10000 power banks with model number A1263. The brand name \"Anker\" is engraved on the front of the product. The model number \"A1263\" and serial number \"SN\" are printed on the bottom. Only model number A1263 power banks sold in the U.S. with qualifying serial numbers are included in the recall. Consumers should check their serial number at https://www.anker.com/product-recalls to determine whether their power bank is included in the recall. Note: Do not throw this recalled lithium-ion battery or device in the trash, in the general recycling stream (e.g., street-level or curbside recycling bins), or in used battery recycling boxes found at various retail and home improvement stores. Recalled lithium-ion batteries must be disposed of differently than other batteries, because they present a greater risk of fire. Your municipal household hazardous waste (HHW) collection center may accept this recalled lithium-ion battery or device for disposal. Before taking your battery or device to a HHW collection center, contact it ahead of time and ask whether it accepts recalled lithium-ion batteries. If it does not, contact your municipality for further guidance.",
+      "URL": "https://www.cpsc.gov/Recalls/2025/More-than-One-Million-Anker-Power-Banks-Recalled-Due-to-Fire-and-Burn-Hazards-Manufactured-by-Anker-Innovations",
+      "Title": "More than One Million Anker Power Banks Recalled Due to Fire and Burn Hazards; Manufactured by Anker Innovations",
+      "ConsumerContact": "Anker toll-free at 800-988-7973 from 6 a.m. to 5 p.m. PT Monday through Friday, email at support@anker.com, or online at https://support.anker.com/s/emailcontactus. A Live Chat function is also available at https://support.anker.com/s/contact-us, or go to https://www.anker.com/product-recalls or www.anker.com and click on \"Product Recalls\" at the top of the page for more information.",
+      "LastPublishDate": "2025-06-12T00:00:00",
+      "Products": [
+        {
+          "Name": "Anker PowerCore 10000 power banks (model A1263 only)",
+          "Description": "",
+          "Model": "",
+          "Type": "",
+          "CategoryID": "",
+          "NumberOfUnits": "About 1,158,000"
+        }
+      ],
+      "Inconjunctions": [],
+      "Images": [
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/A1263-1.jpg",
+          "Caption": "Recalled Anker A1263 power bank"
+        }
+      ],
+      "Injuries": [
+        {
+          "Name": "Anker has received 19 reports of fires and explosions. This includes two reports of minor burn injuries not requiring medical attention and 11 reports of property damage totaling over $60,700."
+        }
+      ],
+      "Manufacturers": [
+        {
+          "Name": "Anker Innovations Limited, of China",
+          "CompanyID": ""
+        }
+      ],
+      "Retailers": [
+        {
+          "Name": "Online at Anker, Amazon, Newegg and Ebay from June 2016 through December 2022 for about $27.",
+          "CompanyID": ""
+        }
+      ],
+      "Importers": [],
+      "Distributors": [],
+      "SoldAtLabel": null,
+      "ManufacturerCountries": [
+        {
+          "Country": "China"
+        }
+      ],
+      "ProductUPCs": [],
+      "Hazards": [
+        {
+          "Name": "The lithium-ion battery in the power bank can overheat, posing fire and burn hazards to consumers.",
+          "HazardType": "",
+          "HazardTypeID": ""
+        }
+      ],
+      "Remedies": [
+        {
+          "Name": "Consumers should immediately stop using the recalled power banks and contact Anker Innovations for instructions on receiving a free replacement power bank. Visit https://www.anker.com/product-recalls to register for the recall. To receive a replacement, consumers will be required to submit a photo of their recalled power bank showing the model number, serial number, their name, the date of the photograph, and the word \"recalled\" written on the power bank in permanent marker. A purchase receipt will be requested but will not be required to participate in the recall. Consumers will also be required to confirm disposal of the power bank in accordance with applicable laws and regulations before receiving a replacement."
+        }
+      ],
+      "RemedyOptions": [
+        {
+          "Option": "Replace"
+        }
+      ]
+    },
+    "keywords": [],
+    "notes": "Curated from official CPSC recall JSON snapshot for Dav AI demo/search development."
+  },
+  {
+    "id": "cpsc-25215",
+    "category": "consumer_product",
+    "source_name": "CPSC Recalls API snapshot",
+    "source_type": "local_official_snapshot",
+    "source_url": "https://www.cpsc.gov/Recalls/2025/Fisher-Price-Recalls-Brunch-Go-Stroller-Toys-Due-to-Choking-Hazard",
+    "title": "Fisher-Price Recalls Brunch & Go Stroller Toys Due to Choking Hazard",
+    "product_name": null,
+    "brand_name": null,
+    "company_name": null,
+    "recall_number": "25215",
+    "published_date": "2025-04-10T00:00:00",
+    "hazard_type": null,
+    "reason": "This recall involves the Brunch & Go Stroller Toy. The model number (HGB85) is located on the tag attached to the toast. The toy features a pretend avocado toast and three attachments: a mirror tomato, a crinkle bacon and an egg teether.",
+    "remedy": null,
+    "consumer_action": "Fisher-Price toll-free at 855-853-6224 from 9 a.m. to 6 p.m. ET Monday through Friday, or online at https://service.mattel.com/us/recall.aspx or www.service.mattel.com by clicking on \"Recalls & Safety Alerts\" located at the top of the page for more information.",
+    "affected_models": null,
+    "affected_lots": null,
+    "raw_record": {
+      "RecallID": 10231,
+      "RecallNumber": "25215",
+      "RecallDate": "2025-04-10T00:00:00",
+      "Description": "This recall involves the Brunch & Go Stroller Toy. The model number (HGB85) is located on the tag attached to the toast. The toy features a pretend avocado toast and three attachments: a mirror tomato, a crinkle bacon and an egg teether.",
+      "URL": "https://www.cpsc.gov/Recalls/2025/Fisher-Price-Recalls-Brunch-Go-Stroller-Toys-Due-to-Choking-Hazard",
+      "Title": "Fisher-Price Recalls Brunch & Go Stroller Toys Due to Choking Hazard",
+      "ConsumerContact": "Fisher-Price toll-free at 855-853-6224 from 9 a.m. to 6 p.m. ET Monday through Friday, or online at https://service.mattel.com/us/recall.aspx or www.service.mattel.com by clicking on \"Recalls & Safety Alerts\" located at the top of the page for more information.",
+      "LastPublishDate": "2025-04-10T00:00:00",
+      "Products": [
+        {
+          "Name": "Brunch & Go Stroller Toys",
+          "Description": "",
+          "Model": "",
+          "Type": "",
+          "CategoryID": "",
+          "NumberOfUnits": "About 253,000 (In addition, about 4,500 were sold in Canada)"
+        }
+      ],
+      "Inconjunctions": [
+        {
+          "URL": "https://recalls-rappels.canada.ca/en/alert-recall/fisher-price-brunch-and-go-stroller-toy-recalled-due-choking-hazard"
+        }
+      ],
+      "Images": [
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/stroller-toy-1.png",
+          "Caption": "Recalled Brunch & Go Stroller Toy"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/stroller-toy-2.png",
+          "Caption": "Recalled Brunch & Go Stroller Toy"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/stroller-toy-3.png",
+          "Caption": "Recalled Brunch & Go Stroller Toy Tag with model number"
+        }
+      ],
+      "Injuries": [
+        {
+          "Name": "Fisher-Price has received five reports of the yolk of the toy egg cracking and breaking. In two reports, an infant had a small piece in their mouth. No injuries have been reported."
+        }
+      ],
+      "Manufacturers": [],
+      "Retailers": [
+        {
+          "Name": "Hobby Lobby, Kohl's, Macy's, Marshalls, Nordstrom, Ross, TJMaxx and Walmart stores nationwide and online at Amazon.com from February 2022 through March 2025 for about $13 for the stroller toy.",
+          "CompanyID": ""
+        }
+      ],
+      "Importers": [],
+      "Distributors": [
+        {
+          "Name": "Fisher-Price Inc., of East Aurora, New York",
+          "CompanyID": ""
+        }
+      ],
+      "SoldAtLabel": null,
+      "ManufacturerCountries": [
+        {
+          "Country": "China"
+        },
+        {
+          "Country": "Vietnam"
+        }
+      ],
+      "ProductUPCs": [],
+      "Hazards": [
+        {
+          "Name": "The yolk of the toy egg can crack and create small parts, posing a choking hazard to young children.",
+          "HazardType": "",
+          "HazardTypeID": ""
+        }
+      ],
+      "Remedies": [
+        {
+          "Name": "Consumers should immediately stop using the recalled stroller toys, keep them away from children, and contact Fisher-Price to receive a free replacement stroller toy. Consumers will be asked to permanently mark the egg component of the stroller toy with the word \"Recall\" and the unique identifier, and upload a photo of the marked toy at https://service.mattel.com/us/recall.aspx. Upon receipt of the replacement confirmation email, consumers should dispose of the recalled product in the trash. For specific instructions on how to mark the stroller toy and upload the photo, consumers should go to https://service.mattel.com/us/recall.aspx. Fisher-Price is contacting all known purchasers directly."
+        }
+      ],
+      "RemedyOptions": [
+        {
+          "Option": "Replace"
+        }
+      ]
+    },
+    "keywords": [],
+    "notes": "Curated from official CPSC recall JSON snapshot for Dav AI demo/search development."
+  },
+  {
+    "id": "cpsc-25193",
+    "category": "consumer_product",
+    "source_name": "CPSC Recalls API snapshot",
+    "source_type": "local_official_snapshot",
+    "source_url": "https://www.cpsc.gov/Recalls/2025/Segway-Recalls-Segway-Ninebot-Max-G30P-and-Max-G30LP-KickScooters-Due-to-Fall-Hazard-and-Risk-of-Serious-Injury",
+    "title": "Segway Recalls Segway Ninebot Max G30P and Max G30LP KickScooters Due to Fall Hazard and Risk of Serious Injury",
+    "product_name": null,
+    "brand_name": null,
+    "company_name": null,
+    "recall_number": "25193",
+    "published_date": "2025-03-20T00:00:00",
+    "hazard_type": null,
+    "reason": "This recall involves all Segway Ninebot Max G30P and Max G30LP KickScooters. The Max G30LP KickScooter is gray in color with yellow accents and the Max G30P is black in color with yellow accents. The brand name \"ninebot\" appears on the foot platform and the top of the handlebars. The model number is located on a label on the side of the foot deck. The Max G30P model is 46 inches long, 19 inches wide, 47 inches high and weighs 42 pounds. The Max G30LP model is 44 inches long, 19 inches wide, 45 inches high and weighs 39 pounds.",
+    "remedy": null,
+    "consumer_action": "Segway at 800-914-6110 from 9 a.m. to 5 p.m. Monday through Friday, email at recall@segway.com, or online at https://service.segway.com/recall or www.segway.com, and click on \"Recall Center\" at the bottom of the page for more information.",
+    "affected_models": null,
+    "affected_lots": null,
+    "raw_record": {
+      "RecallID": 10211,
+      "RecallNumber": "25193",
+      "RecallDate": "2025-03-20T00:00:00",
+      "Description": "This recall involves all Segway Ninebot Max G30P and Max G30LP KickScooters. The Max G30LP KickScooter is gray in color with yellow accents and the Max G30P is black in color with yellow accents. The brand name \"ninebot\" appears on the foot platform and the top of the handlebars. The model number is located on a label on the side of the foot deck. The Max G30P model is 46 inches long, 19 inches wide, 47 inches high and weighs 42 pounds. The Max G30LP model is 44 inches long, 19 inches wide, 45 inches high and weighs 39 pounds.",
+      "URL": "https://www.cpsc.gov/Recalls/2025/Segway-Recalls-Segway-Ninebot-Max-G30P-and-Max-G30LP-KickScooters-Due-to-Fall-Hazard-and-Risk-of-Serious-Injury",
+      "Title": "Segway Recalls Segway Ninebot Max G30P and Max G30LP KickScooters Due to Fall Hazard and Risk of Serious Injury",
+      "ConsumerContact": "Segway at 800-914-6110 from 9 a.m. to 5 p.m. Monday through Friday, email at recall@segway.com, or online at https://service.segway.com/recall or www.segway.com, and click on \"Recall Center\" at the bottom of the page for more information.",
+      "LastPublishDate": "2025-03-20T00:00:00",
+      "Products": [
+        {
+          "Name": "Segway Ninebot Max G30P and Max G30LP KickScooters",
+          "Description": "",
+          "Model": "",
+          "Type": "",
+          "CategoryID": "",
+          "NumberOfUnits": "About 220,000"
+        }
+      ],
+      "Inconjunctions": [],
+      "Images": [
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/segway-1_0.png",
+          "Caption": "Recalled Segway Max G30P KickScooter"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/segway-2_0.png",
+          "Caption": "Recalled Segway Max G30LP KickScooter"
+        }
+      ],
+      "Injuries": [
+        {
+          "Name": "Segway has received 68 reports of folding mechanism failures, including 20 injuries to include abrasions, bruises, lacerations and broken bones."
+        }
+      ],
+      "Manufacturers": [],
+      "Retailers": [
+        {
+          "Name": "Best Buy, Costco, Walmart, Target and Sam's Club nationwide and online at Segway.com and Amazon.com from January 2020 through February 2025 for between $600 and $1,000.",
+          "CompanyID": ""
+        }
+      ],
+      "Importers": [
+        {
+          "Name": "Segway Inc., of Los Angeles, California",
+          "CompanyID": ""
+        }
+      ],
+      "Distributors": [],
+      "SoldAtLabel": null,
+      "ManufacturerCountries": [
+        {
+          "Country": "China"
+        },
+        {
+          "Country": "Malaysia"
+        }
+      ],
+      "ProductUPCs": [],
+      "Hazards": [
+        {
+          "Name": "The folding mechanism can fail and cause the handlebars or stem to fold while the scooter is in use, posing a fall hazard to consumers.",
+          "HazardType": "",
+          "HazardTypeID": ""
+        }
+      ],
+      "Remedies": [
+        {
+          "Name": "Consumers should immediately stop using the recalled scooters and contact Segway to receive information to determine whether the folding mechanism needs adjustment and to receive a free maintenance kit. The kit includes tools and instructions for checking and tightening the folding mechanism and keeping it properly maintained."
+        }
+      ],
+      "RemedyOptions": [
+        {
+          "Option": "Repair"
+        }
+      ]
+    },
+    "keywords": [],
+    "notes": "Curated from official CPSC recall JSON snapshot for Dav AI demo/search development."
+  },
+  {
+    "id": "cpsc-25052",
+    "category": "consumer_product",
+    "source_name": "CPSC Recalls API snapshot",
+    "source_type": "local_official_snapshot",
+    "source_url": "https://www.cpsc.gov/Recalls/2025/Segway-Recalls-Segway-Ninebot-P100-KickScooters-Due-to-Fall-and-Injury-Hazards",
+    "title": "Segway Recalls Segway Ninebot P100 KickScooters Due to Fall and Injury Hazards",
+    "product_name": null,
+    "brand_name": null,
+    "company_name": null,
+    "recall_number": "25052",
+    "published_date": "2024-11-21T00:00:00",
+    "hazard_type": null,
+    "reason": "This recall involves Segway Ninebot KickScooters with model number P100S and a manufacture date in 2023. The affected units have serial numbers containing the date codes 2308 or greater (e.g., xxxxx2308xxxxx, xxxx2310xxxxx, xxxxx2311xxxxx). The serial number is located on the left side of the KickScooter. The 6th and 7th digits represent the year of manufacture, and the 8th and 9th digits represent the week of manufacture. The product is black and gray with red accents, and the Segway label is on the rear fender. The KickScooter is 46 inches long, 25 inches wide and 50 inches high, and weighs about 72.5 pounds.",
+    "remedy": null,
+    "consumer_action": "Segway toll-free at 866-473-4929 from 5:30 a.m. to 5 p.m. PT Monday through Friday, by email at recall@segway.com, or online at https://service.segway.com/recall, or www.segway.com and click on \"Recall Center\" at the bottom of the page for more information.",
+    "affected_models": null,
+    "affected_lots": null,
+    "raw_record": {
+      "RecallID": 10096,
+      "RecallNumber": "25052",
+      "RecallDate": "2024-11-21T00:00:00",
+      "Description": "This recall involves Segway Ninebot KickScooters with model number P100S and a manufacture date in 2023. The affected units have serial numbers containing the date codes 2308 or greater (e.g., xxxxx2308xxxxx, xxxx2310xxxxx, xxxxx2311xxxxx). The serial number is located on the left side of the KickScooter. The 6th and 7th digits represent the year of manufacture, and the 8th and 9th digits represent the week of manufacture. The product is black and gray with red accents, and the Segway label is on the rear fender. The KickScooter is 46 inches long, 25 inches wide and 50 inches high, and weighs about 72.5 pounds.",
+      "URL": "https://www.cpsc.gov/Recalls/2025/Segway-Recalls-Segway-Ninebot-P100-KickScooters-Due-to-Fall-and-Injury-Hazards",
+      "Title": "Segway Recalls Segway Ninebot P100 KickScooters Due to Fall and Injury Hazards",
+      "ConsumerContact": "Segway toll-free at 866-473-4929 from 5:30 a.m. to 5 p.m. PT Monday through Friday, by email at recall@segway.com, or online at https://service.segway.com/recall, or www.segway.com and click on \"Recall Center\" at the bottom of the page for more information.",
+      "LastPublishDate": "2024-11-21T00:00:00",
+      "Products": [
+        {
+          "Name": "Segway Ninebot P100 KickScooters",
+          "Description": "",
+          "Model": "",
+          "Type": "",
+          "CategoryID": "",
+          "NumberOfUnits": "About 1,400"
+        }
+      ],
+      "Inconjunctions": [],
+      "Images": [
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/segway-1.png",
+          "Caption": "Recalled Segway Ninebot P100 KickScooter"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/segway-2.png",
+          "Caption": "Location of Serial Number"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/segway-3.png",
+          "Caption": "Sample Serial Number"
+        }
+      ],
+      "Injuries": [
+        {
+          "Name": "The firm has received 31 reports of broken front forks, including six reports of injuries, including a fracture, cuts, scrapes, bruises and shoulder pain."
+        }
+      ],
+      "Manufacturers": [],
+      "Retailers": [
+        {
+          "Name": "Broward Motorsport, of Fort Lauderdale, Hollywood, Hobe Sound and West Palm Beach, Florida; Mad Dog Cycles, of Orem, Utah; NYC Bike and Scooter, of New York; Scooter Mutter, of Belmont, Massachusetts; and Urban Motion, of Culver City, California and online at Amazon.com, BestBuy.com, store.segway.com, Indiegogo.com (Longham Tech Co. Limited) and https://www.ebay.com/str/skytechgaming?_trksid=p4429486.m3561.l161211(SupTech) from October 2022 through June 2024 for about $2,000.",
+          "CompanyID": ""
+        }
+      ],
+      "Importers": [
+        {
+          "Name": "Segway Inc., of Los Angeles",
+          "CompanyID": ""
+        }
+      ],
+      "Distributors": [],
+      "SoldAtLabel": null,
+      "ManufacturerCountries": [
+        {
+          "Country": "China"
+        }
+      ],
+      "ProductUPCs": [],
+      "Hazards": [
+        {
+          "Name": "The front fork of the recalled KickScooters can break, posing fall and injury hazards to the rider.",
+          "HazardType": "",
+          "HazardTypeID": ""
+        }
+      ],
+      "Remedies": [
+        {
+          "Name": "Consumers should immediately stop using the recalled KickScooters and contact Segway for a free repair. Segway will direct consumers to a local store for the repair (where available) or provide a pre-paid shipping label to ship the product to a national service center for repair. Segway is contacting all known purchasers directly."
+        }
+      ],
+      "RemedyOptions": [
+        {
+          "Option": "Repair"
+        }
+      ]
+    },
+    "keywords": [],
+    "notes": "Curated from official CPSC recall JSON snapshot for Dav AI demo/search development."
+  },
+  {
+    "id": "cpsc-24335",
+    "category": "consumer_product",
+    "source_name": "CPSC Recalls API snapshot",
+    "source_type": "local_official_snapshot",
+    "source_url": "https://www.cpsc.gov/Recalls/2024/Samsung-Recalls-Slide-In-Electric-Ranges-Due-to-Fire-Hazard",
+    "title": "Samsung Recalls Slide-In Electric Ranges Due to Fire Hazard",
+    "product_name": null,
+    "brand_name": null,
+    "company_name": null,
+    "recall_number": "24335",
+    "published_date": "2024-08-08T00:00:00",
+    "hazard_type": null,
+    "reason": "This recall involves Samsung Electric Slide-In Ranges with the model numbers below. The model number is located on the ranges on the inside upper left corner of the oven door or inside the storage bin located on the bottom of the oven. Recalled Model Numbers NE58K9430SS/AA NE58N9430SG/AA NE58R9431SG/AA NE58R9431SS/AA NE58R9431ST/AA NE58F9500SS/AA NE58K9500SG/AA NE58F9710WS/AA NE58K9850WS/AA NE58K9850WG/AA NE58K9852WG/AA NE58H9950WS/AA NE58R9311SS/AA NE63T8111SG/AA NE63T8111SS/AA NE63T8311SG/AA NE63T8311SS/AA NE63BG8315SSAA NE63CB831512AA NE63BB851112AA NE63T8511SG/AA NE63T8511SS/AA NE63T8511ST/AA NE63A8711QN/AA NE63BB871112AA NE63T8711SG/AA NE63T8711SS/AA NE63T8711ST/AA NE63T8751SG/AA NE63T8751SS/AA",
+    "remedy": null,
+    "consumer_action": "Samsung toll-free at 833-775-0120 from 9 a.m. to 8 p.m. ET Monday through Friday, email at rangesupport@sea.samsung.com, or at samsung.com/us/support/range-knob-kit to request free knob locks.",
+    "affected_models": null,
+    "affected_lots": null,
+    "raw_record": {
+      "RecallID": 10029,
+      "RecallNumber": "24335",
+      "RecallDate": "2024-08-08T00:00:00",
+      "Description": "This recall involves Samsung Electric Slide-In Ranges with the model numbers below. The model number is located on the ranges on the inside upper left corner of the oven door or inside the storage bin located on the bottom of the oven. Recalled Model Numbers NE58K9430SS/AA NE58N9430SG/AA NE58R9431SG/AA NE58R9431SS/AA NE58R9431ST/AA NE58F9500SS/AA NE58K9500SG/AA NE58F9710WS/AA NE58K9850WS/AA NE58K9850WG/AA NE58K9852WG/AA NE58H9950WS/AA NE58R9311SS/AA NE63T8111SG/AA NE63T8111SS/AA NE63T8311SG/AA NE63T8311SS/AA NE63BG8315SSAA NE63CB831512AA NE63BB851112AA NE63T8511SG/AA NE63T8511SS/AA NE63T8511ST/AA NE63A8711QN/AA NE63BB871112AA NE63T8711SG/AA NE63T8711SS/AA NE63T8711ST/AA NE63T8751SG/AA NE63T8751SS/AA",
+      "URL": "https://www.cpsc.gov/Recalls/2024/Samsung-Recalls-Slide-In-Electric-Ranges-Due-to-Fire-Hazard",
+      "Title": "Samsung Recalls Slide-In Electric Ranges Due to Fire Hazard",
+      "ConsumerContact": "Samsung toll-free at 833-775-0120 from 9 a.m. to 8 p.m. ET Monday through Friday, email at rangesupport@sea.samsung.com, or at samsung.com/us/support/range-knob-kit to request free knob locks.",
+      "LastPublishDate": "2024-08-08T00:00:00",
+      "Products": [
+        {
+          "Name": "Slide-in Electric Ranges",
+          "Description": "",
+          "Model": "",
+          "Type": "",
+          "CategoryID": "",
+          "NumberOfUnits": "About 1,120,905"
+        }
+      ],
+      "Inconjunctions": [],
+      "Images": [
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/Samsung-slide-in-1.jpg",
+          "Caption": "Samsung Slide-In Electric Range Model NE58F9500SS/AA"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/Samsung-slide-in-2.JPG",
+          "Caption": "Samsung Slide-In Electric Range Model NE63A8711QN/AA"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/Samsung-slide-in-3.JPG",
+          "Caption": "Samsung Electric Range Model NE58K9850WS/AA"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/Samsung-slide-in-4.JPG",
+          "Caption": "Samsung Electric Range Model NE63T8111SS/AA"
+        }
+      ],
+      "Injuries": [
+        {
+          "Name": "Samsung has received over 300 reports of unintentional activation of the front-mounted knobs by humans or pets since 2013. These ranges have been involved in approximately 250 fires. At least 18 fires caused extensive property damage. Approximately 40 injuries have been reported, eight of which required medical attention, and there have been reports of seven fires involving pet deaths."
+        }
+      ],
+      "Manufacturers": [
+        {
+          "Name": "Samsung Electronics America Inc., of Ridgefield Park, N.J.",
+          "CompanyID": ""
+        }
+      ],
+      "Retailers": [
+        {
+          "Name": "Best Buy, Costco, The Home Depot, Lowe's and other appliance stores nationwide, and online at Samsung.com. Depending upon the model, the ranges were sold from May 2013 through August 2024 for between $1,250 and $3,050.",
+          "CompanyID": ""
+        }
+      ],
+      "Importers": [],
+      "Distributors": [],
+      "SoldAtLabel": null,
+      "ManufacturerCountries": [
+        {
+          "Country": "Thailand"
+        }
+      ],
+      "ProductUPCs": [],
+      "Hazards": [
+        {
+          "Name": "Front-mounted knobs on the ranges can be activated by accidental contact by humans or pets, posing a fire hazard.",
+          "HazardType": "",
+          "HazardTypeID": ""
+        }
+      ],
+      "Remedies": [
+        {
+          "Name": "Consumers should contact Samsung to receive a free set of knob locks or covers compatible with their model of electric slide-in range to install. Consumers using the recalled ranges without knob locks or covers are cautioned to keep children and pets away from the knobs, to check the range knobs to ensure they are off before leaving the home or going to bed, and to not leave objects on the range when the range is not in use. Consumers with Wi-Fi enabled ranges can enable the \"Cooktop On\" notification on the Samsung SmartThings app to receive alerts on their smartphone when a cooktop burner is turned on."
+        }
+      ],
+      "RemedyOptions": [
+        {
+          "Option": "Repair"
+        }
+      ]
+    },
+    "keywords": [],
+    "notes": "Curated from official CPSC recall JSON snapshot for Dav AI demo/search development."
+  },
+  {
+    "id": "cpsc-24159",
+    "category": "consumer_product",
+    "source_name": "CPSC Recalls API snapshot",
+    "source_type": "local_official_snapshot",
+    "source_url": "https://www.cpsc.gov/Recalls/2024/Best-Buy-Recalls-Insignia-Air Fryers-and-Air-Fryer-Ovens-Due-to-Fire-Burn-and-Laceration-Hazards",
+    "title": "Best Buy Recalls Insignia® Air Fryers and Air Fryer Ovens Due to Fire, Burn and Laceration Hazards",
+    "product_name": null,
+    "brand_name": null,
+    "company_name": null,
+    "recall_number": "24159",
+    "published_date": "2024-03-14T00:00:00",
+    "hazard_type": null,
+    "reason": "This recall involves Insignia Air Fryers and Insignia Air Fryer Ovens, model numbers NS-AF34D2, NS-AF5DSS2, NS-AF5MSS2, NS-AF8DBD2, NS-AF10DBK2, and NS-AF10DSS2. The brand name INSIGNIA is on the top or front of each unit. A product rating label on the underside of each unit identifies the brand INSIGNIA and the model number. The air fryers and air fryer ovens have cooking chamber capacities ranging from about 3.4 to 10 quarts, and plastic or plastic and stainless-steel bodies in black and stainless-steel finishes.",
+    "remedy": null,
+    "consumer_action": "Best Buy at 800-566-7498 from 7 a.m. to 6 p.m. CT Monday through Friday or register online at https://www.recallrtr.com/airfryer to receive a refund. Consumers can also go online at http://www.bestbuy.com/product/recalls or www.bestbuy.com and click on \"Product Recalls\" located under the \"Order and Purchase\" column located at the bottom of the page for more information.",
+    "affected_models": null,
+    "affected_lots": null,
+    "raw_record": {
+      "RecallID": 9892,
+      "RecallNumber": "24159",
+      "RecallDate": "2024-03-14T00:00:00",
+      "Description": "This recall involves Insignia Air Fryers and Insignia Air Fryer Ovens, model numbers NS-AF34D2, NS-AF5DSS2, NS-AF5MSS2, NS-AF8DBD2, NS-AF10DBK2, and NS-AF10DSS2. The brand name INSIGNIA is on the top or front of each unit. A product rating label on the underside of each unit identifies the brand INSIGNIA and the model number. The air fryers and air fryer ovens have cooking chamber capacities ranging from about 3.4 to 10 quarts, and plastic or plastic and stainless-steel bodies in black and stainless-steel finishes.",
+      "URL": "https://www.cpsc.gov/Recalls/2024/Best-Buy-Recalls-Insignia-Air Fryers-and-Air-Fryer-Ovens-Due-to-Fire-Burn-and-Laceration-Hazards",
+      "Title": "Best Buy Recalls Insignia® Air Fryers and Air Fryer Ovens Due to Fire, Burn and Laceration Hazards",
+      "ConsumerContact": "Best Buy at 800-566-7498 from 7 a.m. to 6 p.m. CT Monday through Friday or register online at https://www.recallrtr.com/airfryer to receive a refund. Consumers can also go online at http://www.bestbuy.com/product/recalls or www.bestbuy.com and click on \"Product Recalls\" located under the \"Order and Purchase\" column located at the bottom of the page for more information.",
+      "LastPublishDate": "2024-03-14T00:00:00",
+      "Products": [
+        {
+          "Name": "Air Fryers and Air Fryer Ovens",
+          "Description": "",
+          "Model": "",
+          "Type": "",
+          "CategoryID": "",
+          "NumberOfUnits": "About 187,400 (In addition, about 99,900 were sold in Canada)"
+        }
+      ],
+      "Inconjunctions": [
+        {
+          "URL": "https://recalls-rappels.canada.ca/en/alert-recall/insigniatm-digital-air-fryers-insigniatm-analog-air-fryers-and-insigniatm-digital-air"
+        }
+      ],
+      "Images": [
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/Insignia-3-4-qt.png",
+          "Caption": "Recalled Insignia 3.4-qt. Digital Air Fryer model NS-AF34D2"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/Insignia-5-qt.jpg",
+          "Caption": "Recalled Insignia 5-qt. Digital Air Fryer model NS-AF5DSS2"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/Insignia-5qt.jpg",
+          "Caption": "Recalled Insignia 5-qt. Digital Air Fryer model NS-AF5MSS2"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/Insignia-8-qt.png",
+          "Caption": "Recalled Insignia 8-qt. Air Fryer Dual Basket model NS-AF8DBD2"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/Insignia-10-qt.jpg",
+          "Caption": "Recalled Insignia 10-qt. Digital Air Fryer Oven model NS-AF10DBK2 (black)"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/Insignia-10qt.jpg",
+          "Caption": "Recalled Insignia 10-qt. Digital Air Fryer Oven model NS-AF10DSS2 (stainless steel)"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/Insignia-label_0.png",
+          "Caption": "Product rating label on the underside of the unit showing INSIGNIA brand and the model number"
+        }
+      ],
+      "Injuries": [
+        {
+          "Name": "The firm has received 24 reports of overheating/melting or glass shattering, including six reports of air fryers catching on fire. No injuries or property damage have been reported."
+        }
+      ],
+      "Manufacturers": [],
+      "Retailers": [
+        {
+          "Name": "Best Buy stores nationwide and online at www.bestbuy.com, www.eBay.com, and third-party sellers from November 2021 through November 2023 for between $32 and $180.",
+          "CompanyID": ""
+        }
+      ],
+      "Importers": [
+        {
+          "Name": "Best Buy Purchasing LLC, of Richfield, Minnesota",
+          "CompanyID": ""
+        }
+      ],
+      "Distributors": [],
+      "SoldAtLabel": null,
+      "ManufacturerCountries": [
+        {
+          "Country": "China"
+        }
+      ],
+      "ProductUPCs": [],
+      "Hazards": [
+        {
+          "Name": "The air fryers can overheat, causing the handles to melt or break, posing fire and burn hazards. Additionally, the air fryer ovens can overheat and the glass on the door can shatter, posing fire, burn and laceration hazards.",
+          "HazardType": "",
+          "HazardTypeID": ""
+        }
+      ],
+      "Remedies": [
+        {
+          "Name": "Consumers should immediately stop using the recalled Insignia air fryers and air fryer ovens and visit https://www.recallrtr.com/airfryer for instructions on how to submit photos of the recalled unit(s), the model number, purchase receipt, and on the destruction of the unit. Consumers can receive a refund in the form of a refund check or a Best Buy store credit. A consumer will receive the amount on the purchase receipt, or they will receive the average sales price for the model if no receipt is provided. Consumers should not return the recalled air fryers or air fryer ovens to Best Buy stores. Best Buy has contacted all known purchasers directly."
+        }
+      ],
+      "RemedyOptions": [
+        {
+          "Option": "Refund"
+        }
+      ]
+    },
+    "keywords": [],
+    "notes": "Curated from official CPSC recall JSON snapshot for Dav AI demo/search development."
+  },
+  {
+    "id": "cpsc-24051",
+    "category": "consumer_product",
+    "source_name": "CPSC Recalls API snapshot",
+    "source_type": "local_official_snapshot",
+    "source_url": "https://www.cpsc.gov/Recalls/2024/Empower-Brands-Recalls-Power-XL-Dual-Basket-Air-Fryers-Due-to-Burn-Hazard",
+    "title": "Empower Brands Recalls Power XL Dual Basket Air Fryers Due to Burn Hazard",
+    "product_name": null,
+    "brand_name": null,
+    "company_name": null,
+    "recall_number": "24051",
+    "published_date": "2023-12-14T00:00:00",
+    "hazard_type": null,
+    "reason": "This recall involves two models of the PowerXL dual-basket air fryer. The egg-shaped air fryers have two baskets that can be used separately or optionally combined into one large single basket. The recalled air fryers were sold in black or cinnamon colors. The 10-quart DUAF-10 model is about 17 inches long by 16 inches wide by 12 1/2 inches tall, and weighs about 14 1/2 pounds. The 9-quart DUAF-005 model is about 14 inches long by 13 inches wide by 15 inches tall, and weighs about 14 pounds. The product has a silver label on the front that says \"PowerXL\". There is a white label on the bottom of each unit or on the unit's power cord that lists the model number.",
+    "remedy": null,
+    "consumer_action": "Empower Brands toll-free at 866-704-9370 from 8 a.m. and 4:30 p.m. CT Monday through Friday CT, Monday through Friday, or online at www.prodprotect.com/recall/duaf or https://powerxlproducts.com and click on \"Important Safety Recall Notice\" for more information.",
+    "affected_models": null,
+    "affected_lots": null,
+    "raw_record": {
+      "RecallID": 9796,
+      "RecallNumber": "24051",
+      "RecallDate": "2023-12-14T00:00:00",
+      "Description": "This recall involves two models of the PowerXL dual-basket air fryer. The egg-shaped air fryers have two baskets that can be used separately or optionally combined into one large single basket. The recalled air fryers were sold in black or cinnamon colors. The 10-quart DUAF-10 model is about 17 inches long by 16 inches wide by 12 1/2 inches tall, and weighs about 14 1/2 pounds. The 9-quart DUAF-005 model is about 14 inches long by 13 inches wide by 15 inches tall, and weighs about 14 pounds. The product has a silver label on the front that says \"PowerXL\". There is a white label on the bottom of each unit or on the unit's power cord that lists the model number.",
+      "URL": "https://www.cpsc.gov/Recalls/2024/Empower-Brands-Recalls-Power-XL-Dual-Basket-Air-Fryers-Due-to-Burn-Hazard",
+      "Title": "Empower Brands Recalls Power XL Dual Basket Air Fryers Due to Burn Hazard",
+      "ConsumerContact": "Empower Brands toll-free at 866-704-9370 from 8 a.m. and 4:30 p.m. CT Monday through Friday CT, Monday through Friday, or online at www.prodprotect.com/recall/duaf or https://powerxlproducts.com and click on \"Important Safety Recall Notice\" for more information.",
+      "LastPublishDate": "2023-12-14T00:00:00",
+      "Products": [
+        {
+          "Name": "PowerXL™ DUAF-10 and DUAF-005 Vortex Dual-Basket Air Fryers",
+          "Description": "",
+          "Model": "",
+          "Type": "",
+          "CategoryID": "",
+          "NumberOfUnits": "About 319,000"
+        }
+      ],
+      "Inconjunctions": [],
+      "Images": [
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/pwr-xl.png",
+          "Caption": "Recalled PowerXL Air Fryer"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/dualxl.png",
+          "Caption": "Recalled PowerXL Model DUAF-10 Air Fryer"
+        }
+      ],
+      "Injuries": [
+        {
+          "Name": "The firm has received 41 reports of the product breaking during use, including three reports of burns."
+        }
+      ],
+      "Manufacturers": [],
+      "Retailers": [
+        {
+          "Name": "Target, Walmart, Kohls and other stores nationwide and online at www.target.com, www.walmart.com, www.kohls.com and other websites from August 2021 through October 2023 for between $60 and $190, depending on the model.",
+          "CompanyID": ""
+        }
+      ],
+      "Importers": [
+        {
+          "Name": "Empower Brands, LLC of Middleton, Wisconsin",
+          "CompanyID": ""
+        }
+      ],
+      "Distributors": [],
+      "SoldAtLabel": null,
+      "ManufacturerCountries": [
+        {
+          "Country": "China"
+        }
+      ],
+      "ProductUPCs": [],
+      "Hazards": [
+        {
+          "Name": "The plastic U-Channel connector used to optionally combine the two food baskets inside of the air fryers can break during use, posing a burn hazard.",
+          "HazardType": "",
+          "HazardTypeID": ""
+        }
+      ],
+      "Remedies": [
+        {
+          "Name": "Consumers should immediately stop using the recalled dual basket air fryers and contact Empower Brands to receive a full refund."
+        }
+      ],
+      "RemedyOptions": [
+        {
+          "Option": "Refund"
+        }
+      ]
+    },
+    "keywords": [],
+    "notes": "Curated from official CPSC recall JSON snapshot for Dav AI demo/search development."
+  },
+  {
+    "id": "cpsc-23130",
+    "category": "consumer_product",
+    "source_name": "CPSC Recalls API snapshot",
+    "source_type": "local_official_snapshot",
+    "source_url": "https://www.cpsc.gov/Recalls/2023/Two-Million-COSORI-Air-Fryers-Recalled-by-Atekcity-Due-to-Fire-and-Burn-Hazards",
+    "title": "Two Million COSORI® Air Fryers Recalled by Atekcity Due to Fire and Burn Hazards",
+    "product_name": null,
+    "brand_name": null,
+    "company_name": null,
+    "recall_number": "23130",
+    "published_date": "2023-02-23T00:00:00",
+    "hazard_type": null,
+    "reason": "This recall involves Cosori air fryers with model numbers CP158-AF, CP158-AF-R19, CP158-AF-RXW, CP158-AF-RXR, CAF-P581-BUSR, CAF-P581-AUSR, CAF-P581-RUSR, CP137-AF, CP137-AF-RXB, CP137-AF-RXR, CP137-AF-RXW, CS158-AF, CS158-AF-RXB, CS158-AF-R19, CAF-P581S-BUSR, CAF-P581S-RUSR, CAF-P581S-AUSR, CO137-AF, CO158-AF, CO158-AF-RXB, CP258-AF. The brand name Cosori is on the front of each unit. The model number is printed on the bottom label of each unit and on the accompanying user manual. The units are size 3.7 and 5.8 qt. and were sold in black, gray, white, blue or red colors.",
+    "remedy": null,
+    "consumer_action": "Cosori toll-free at 888-216-5974 from 8 a.m. to 5 p.m. ET Monday through Friday, email at CosoriRecall@Sedgwick.com or online at www.recall.cosori.com or www.cosori.com and click on the \"Important Voluntary Safety Recall. Learn More\" banner at the bottom of the page for more information.",
+    "affected_models": null,
+    "affected_lots": null,
+    "raw_record": {
+      "RecallID": 9537,
+      "RecallNumber": "23130",
+      "RecallDate": "2023-02-23T00:00:00",
+      "Description": "This recall involves Cosori air fryers with model numbers CP158-AF, CP158-AF-R19, CP158-AF-RXW, CP158-AF-RXR, CAF-P581-BUSR, CAF-P581-AUSR, CAF-P581-RUSR, CP137-AF, CP137-AF-RXB, CP137-AF-RXR, CP137-AF-RXW, CS158-AF, CS158-AF-RXB, CS158-AF-R19, CAF-P581S-BUSR, CAF-P581S-RUSR, CAF-P581S-AUSR, CO137-AF, CO158-AF, CO158-AF-RXB, CP258-AF. The brand name Cosori is on the front of each unit. The model number is printed on the bottom label of each unit and on the accompanying user manual. The units are size 3.7 and 5.8 qt. and were sold in black, gray, white, blue or red colors.",
+      "URL": "https://www.cpsc.gov/Recalls/2023/Two-Million-COSORI-Air-Fryers-Recalled-by-Atekcity-Due-to-Fire-and-Burn-Hazards",
+      "Title": "Two Million COSORI® Air Fryers Recalled by Atekcity Due to Fire and Burn Hazards",
+      "ConsumerContact": "Cosori toll-free at 888-216-5974 from 8 a.m. to 5 p.m. ET Monday through Friday, email at CosoriRecall@Sedgwick.com or online at www.recall.cosori.com or www.cosori.com and click on the \"Important Voluntary Safety Recall. Learn More\" banner at the bottom of the page for more information.",
+      "LastPublishDate": "2023-02-23T00:00:00",
+      "Products": [
+        {
+          "Name": "Cosori Air Fryers",
+          "Description": "",
+          "Model": "",
+          "Type": "",
+          "CategoryID": "",
+          "NumberOfUnits": "About 2 million (In addition, about 250,000 were sold in Canada and about 21,000 were sold in Mexico)"
+        }
+      ],
+      "Inconjunctions": [
+        {
+          "URL": "https://recalls-rappels.canada.ca/en/alert-recall/certain-models-cosori-branded-air-fryers-recalled-due-potential-fire-hazard"
+        }
+      ],
+      "Images": [
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/RecalledCosoriairfryerModelsCP158AFCS158AFCAFP581AUSRandCAFP581SAUSRLightGray_0.JPG",
+          "Caption": "Recalled Cosori air fryer Models CP158-AF, CS158-AF, CAF-P581-AUSR and CAF-P581S-AUSR (Light Gray)"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/RecalledCosoriairfryerModelsCP158AFCS158AFCAFP581AUSRandCAFP581SAUSRBLUE_0.jpg",
+          "Caption": "Recalled Cosori air fryer Models CP158-AF, CS158-AF, CAF-P581-BUSR and CAF-P581S-BUSR (Blue)"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/RecalledCosoriairfryerModelsCP158AFCS158AFCAFP581AUSRandCAFP581SAUSRWINERED_0.JPG",
+          "Caption": "Recalled Cosori air fryer Models CP158-AF, CS158-AF, CAF-P581-RUSR, and CAF-P581S-RUSR (Wine Red)"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/RecalledCosoriairfryerModelCO137AFCO158AFandCO158AFRXBBlack_0.JPG",
+          "Caption": "Recalled Cosori air fryer Model CO137-AF, CO158-AF and CO158-AF-RXB (Black)"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/RecalledCosoriairfryerModelCP137AFCP137AFRXBCP158AFCP158AFR19CS158AFCS158AFR19andCS158AFRXBBlack_0.JPG",
+          "Caption": "Recalled Cosori air fryer Model CP137-AF, CP137-AF-RXB, CP158-AF, CP158-AF-R19, CS158-AF, CS158-AF-R19 and CS158-AF-RXB (Black)"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/RecalledCosoriairfryerModelCP137AFCP137AFRXRCP158AFandCP158AFRXRRed_0.JPG",
+          "Caption": "Recalled Cosori air fryer Model CP137-AF, CP137-AF-RXR, CP158-AF and CP158-AF-RXR (Red)"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/RecalledCosoriairfryerModelCP137AFCP137AFRXRCP158AFandCP158AFRXWWhite_0.JPG",
+          "Caption": "Recalled Cosori air fryer Models CP137-AF, CP137-AF-RXW, CP158-AF, and CP158-AF-RXW (White)"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/RecalledCosoriairfryerModelCP258AFSilverBlack_0.JPG",
+          "Caption": "Recalled Cosori air fryer Model CP258-AF (Silver Black)"
+        }
+      ],
+      "Injuries": [
+        {
+          "Name": "The firm has received 205 reports of the air fryers catching fire, burning, melting, overheating and smoking. These include 10 reports of minor, superficial burn injuries and 23 reports of minor property damage."
+        }
+      ],
+      "Manufacturers": [],
+      "Retailers": [
+        {
+          "Name": "Best Buy, Target and The Home Depot stores nationwide and online at Amazon.com, Adorama.com, Bedbathandbeyond.com, Cosori.com, eBay.com, Homegoods.com, Kohls.com, Lowes.com, Macys.com, QVC.com, Staples.com, Vesync.com, Walmart.com, Wayfair.com, Wellbots.com and Woot.com from June 2018 through December 2022 for between $70 and $130.",
+          "CompanyID": ""
+        }
+      ],
+      "Importers": [
+        {
+          "Name": "Atekcity Corporation, of Anaheim, Calif.",
+          "CompanyID": ""
+        }
+      ],
+      "Distributors": [],
+      "SoldAtLabel": null,
+      "ManufacturerCountries": [
+        {
+          "Country": "China"
+        }
+      ],
+      "ProductUPCs": [],
+      "Hazards": [
+        {
+          "Name": "A wire connection in the air fryers can overheat, posing fire and burn hazards.",
+          "HazardType": "",
+          "HazardTypeID": ""
+        }
+      ],
+      "Remedies": [
+        {
+          "Name": "Consumers should immediately stop using the recalled air fryers and contact Cosori to receive their choice of a free replacement air fryer or another Cosori product by registering at recall.cosori.com. During registration consumers must provide their contact information and submit photos of the recalled unit with the cord cut off. No receipt is needed to receive a replacement."
+        }
+      ],
+      "RemedyOptions": [
+        {
+          "Option": "Replace"
+        }
+      ]
+    },
+    "keywords": [],
+    "notes": "Curated from official CPSC recall JSON snapshot for Dav AI demo/search development."
+  },
+  {
+    "id": "cpsc-23080",
+    "category": "consumer_product",
+    "source_name": "CPSC Recalls API snapshot",
+    "source_type": "local_official_snapshot",
+    "source_url": "https://www.cpsc.gov/Recalls/2023/Samsung-Recalls-Top-Load-Washing-Machines-Due-to-Fire-Hazard-Software-Repair-Available",
+    "title": "Samsung Recalls Top-Load Washing Machines Due to Fire Hazard; Software Repair Available",
+    "product_name": null,
+    "brand_name": null,
+    "company_name": null,
+    "recall_number": "23080",
+    "published_date": "2022-12-22T00:00:00",
+    "hazard_type": null,
+    "reason": "This recall involves several models of Samsung's top-load washers with super speed wash. The washers were sold in white, black, champagne, and ivory colors and include model series WA49B, WA50B, WA51A, WA52A, WA54A, and WA55A. The model and serial numbers are found on the washer's label attached to the inside of the top lid. An additional label is located on the rear of the washer. The following model and serial number ranges are included in the recall: Model Number Serial Number Range WA49B5105AV/US 01J457BT700001W through 01J457BTB00111H WA49B5105AW/US 01J557BT700001J through 01J557BT700010D WA49B5205AW/US 01HH57BT300006X through 01HH57BTB00932W WA50B5100AV/US 01J257BT70001B through 01J257BTB01232B WA50B5100AW/US 01J357BT770001L through 01J357BT700010F WA51A5505AC/US 01HA57BR700003P through 01HA57BTB00346F WA51A5505AV/US 01H257BR600003R through 01H257BTB02018L WA51A5505AW/US 01GY57BR600026P through 01GY57BTB00269W WA52A5500AC/US 01HB57BR700003Y through 01HB57BTB02968X WA52A5500AV/US 01H357BR600006A through 01H357BTB01820Y WA52A5500AW/US 01H457BR600003X through 01H457BTB01503Y WA54A7305AV/US 01H557BR600003P through 01H557BR800650T WA55A7300AE/US 01H057BR600001H through 01H057BTB05872Z WA55A7700AV/US 01H157BR600151Z through 01H157ZT700005K",
+    "remedy": null,
+    "consumer_action": "Samsung at http://www.samsung.com and http://www.samsung.com/us/support/tlw-sw-update or by phone toll-free at 833-916-4555 from 8 a.m. to 12 a.m. ET daily.",
+    "affected_models": null,
+    "affected_lots": null,
+    "raw_record": {
+      "RecallID": 9486,
+      "RecallNumber": "23080",
+      "RecallDate": "2022-12-22T00:00:00",
+      "Description": "This recall involves several models of Samsung's top-load washers with super speed wash. The washers were sold in white, black, champagne, and ivory colors and include model series WA49B, WA50B, WA51A, WA52A, WA54A, and WA55A. The model and serial numbers are found on the washer's label attached to the inside of the top lid. An additional label is located on the rear of the washer. The following model and serial number ranges are included in the recall: Model Number Serial Number Range WA49B5105AV/US 01J457BT700001W through 01J457BTB00111H WA49B5105AW/US 01J557BT700001J through 01J557BT700010D WA49B5205AW/US 01HH57BT300006X through 01HH57BTB00932W WA50B5100AV/US 01J257BT70001B through 01J257BTB01232B WA50B5100AW/US 01J357BT770001L through 01J357BT700010F WA51A5505AC/US 01HA57BR700003P through 01HA57BTB00346F WA51A5505AV/US 01H257BR600003R through 01H257BTB02018L WA51A5505AW/US 01GY57BR600026P through 01GY57BTB00269W WA52A5500AC/US 01HB57BR700003Y through 01HB57BTB02968X WA52A5500AV/US 01H357BR600006A through 01H357BTB01820Y WA52A5500AW/US 01H457BR600003X through 01H457BTB01503Y WA54A7305AV/US 01H557BR600003P through 01H557BR800650T WA55A7300AE/US 01H057BR600001H through 01H057BTB05872Z WA55A7700AV/US 01H157BR600151Z through 01H157ZT700005K",
+      "URL": "https://www.cpsc.gov/Recalls/2023/Samsung-Recalls-Top-Load-Washing-Machines-Due-to-Fire-Hazard-Software-Repair-Available",
+      "Title": "Samsung Recalls Top-Load Washing Machines Due to Fire Hazard; Software Repair Available",
+      "ConsumerContact": "Samsung at http://www.samsung.com and http://www.samsung.com/us/support/tlw-sw-update or by phone toll-free at 833-916-4555 from 8 a.m. to 12 a.m. ET daily.",
+      "LastPublishDate": "2022-12-22T00:00:00",
+      "Products": [
+        {
+          "Name": "Samsung Top-Load Washing Machines",
+          "Description": "",
+          "Model": "",
+          "Type": "",
+          "CategoryID": "",
+          "NumberOfUnits": "About 663,500"
+        }
+      ],
+      "Inconjunctions": [],
+      "Images": [
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/RecalledSamsungWA49bserieswasher.png",
+          "Caption": "Recalled Samsung WA49B*** series washer"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/RecalledSamsungWA50Bserieswasher.jpg",
+          "Caption": "Recalled Samsung WA50B*** series washer"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/RecalledSamsungWA51Aerieswasher.jpg",
+          "Caption": "Recalled Samsung WA51A*** series washer"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/RecalledSamsungWA52Aserieswasher.jpg",
+          "Caption": "Recalled Samsung WA52A*** series washer"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/RecalledSamsungWA54Aserieswasher.jpg",
+          "Caption": "Recalled Samsung WA54A*** series washer"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/RecalledSamsungWA55Aserieswasher.jpg",
+          "Caption": "Recalled Samsung WA55A*** series washer"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/Labelonrecalledwashersinsidelid.png",
+          "Caption": "Label on recalled washer's inside lid"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/LabelonbackofRecalledwasher.png",
+          "Caption": "Label on back of recalled washer"
+        }
+      ],
+      "Injuries": [
+        {
+          "Name": "Samsung has received 51 reports of smoking, melting, overheating or fire involving the washers; 10 of which resulted in property damage. Three consumers have reported injuries due to smoke inhalation."
+        }
+      ],
+      "Manufacturers": [],
+      "Retailers": [
+        {
+          "Name": "Best Buy, Costco, The Home Depot, Lowe's and other appliance stores nationwide and online at Samsung.com from June 2021 through December 2022 for between $900 and $1,500.",
+          "CompanyID": ""
+        }
+      ],
+      "Importers": [],
+      "Distributors": [
+        {
+          "Name": "Samsung Electronics America Inc., of Ridgefield Park, New Jersey",
+          "CompanyID": ""
+        }
+      ],
+      "SoldAtLabel": null,
+      "ManufacturerCountries": [
+        {
+          "Country": "United States"
+        }
+      ],
+      "ProductUPCs": [],
+      "Hazards": [
+        {
+          "Name": "The washing machines can short-circuit and overheat, posing a fire hazard.",
+          "HazardType": "",
+          "HazardTypeID": ""
+        }
+      ],
+      "Remedies": [
+        {
+          "Name": "Consumers should immediately check whether their washer's software has been updated to prevent the hazard; and, if not, consumers should immediately stop using the washer until the software is updated. Instructions on how to check whether a washer's software has been updated can be found here https://www.samsung.com/us/support/tlw-sw-update. All Wi-Fi equipped washers that are plugged into a power source and actively connected to the internet will automatically download the free software repair over-the-air when they are connected to the internet. Consumers who have not connected their Wi-Fi equipped washer to the internet should contact Samsung for instructions on how to download the software repair. Consumers whose washer does not have Wi-Fi capability or who otherwise wish to receive a free software repair without connecting to the internet, should immediately stop using the washer and contact Samsung directly for a free dongle to plug in and download the free software repair."
+        }
+      ],
+      "RemedyOptions": [
+        {
+          "Option": "Repair"
+        }
+      ]
+    },
+    "keywords": [],
+    "notes": "Curated from official CPSC recall JSON snapshot for Dav AI demo/search development."
+  },
+  {
+    "id": "cpsc-17028",
+    "category": "consumer_product",
+    "source_name": "CPSC Recalls API snapshot",
+    "source_type": "local_official_snapshot",
+    "source_url": "https://www.cpsc.gov/Recalls/2017/Samsung-Recalls-Top-Load-Washing-Machines",
+    "title": "Samsung Recalls Top-Load Washing Machines Due to Risk of Impact Injuries",
+    "product_name": null,
+    "brand_name": null,
+    "company_name": null,
+    "recall_number": "17028",
+    "published_date": "2016-11-04T00:00:00",
+    "hazard_type": null,
+    "reason": "This recall involves 34 models of Samsung top-load washing machines. The washing machines have mid-controls or rear-controls. Model numbers and serial information can be found on two labels affixed to the back of the machine. The following model numbers are included in the recall depending on the serial number. Consumers should check with Samsung to see if their washer is recalled. Models WA40J3000AW/A2 WA45H7000AP/A2 WA45H7000AW/A2 WA45H7200AW/A2 WA45K7600AW/A2 WA45K7100AW/A2 WA48H7400AW/A2 WA48J7700AW/A2 WA48J7770AP/A2 WA48J7770AW/A2 WA50K8600AV/A2 WA50K8600AW/A2 WA52J8700AP/A2 WA52J8700AW/A2 WA400PJHDWR/AA WA422PRHDWR/AA WA456DRHDSU/AA WA456DRHDWR/AA WA476DSHASU/A1 WA476DSHAWR/A1 WA484DSHASU/A1 WA484DSHAWR/A1 WA48H7400AP/A2 WA50F9A6DSW/A2 WA50F9A7DSP/A2 WA50F9A7DSW/A2 WA50F9A8DSP/A2 WA50F9A8DSW/A2 WA52J8060AW/A2 WA5451ANW/XAA WA5471ABP/XAA WA5471ABW/XAA WA56H9000AP/A2 WA56H9000AW/A2",
+    "remedy": null,
+    "consumer_action": "Samsung toll-free at 866-264-5636 from 8 a.m. to 10 p.m. ET, or online at www.Samsung.com and click on the recall notice at the top of the page for more information.",
+    "affected_models": null,
+    "affected_lots": null,
+    "raw_record": {
+      "RecallID": 7899,
+      "RecallNumber": "17028",
+      "RecallDate": "2016-11-04T00:00:00",
+      "Description": "This recall involves 34 models of Samsung top-load washing machines. The washing machines have mid-controls or rear-controls. Model numbers and serial information can be found on two labels affixed to the back of the machine. The following model numbers are included in the recall depending on the serial number. Consumers should check with Samsung to see if their washer is recalled. Models WA40J3000AW/A2 WA45H7000AP/A2 WA45H7000AW/A2 WA45H7200AW/A2 WA45K7600AW/A2 WA45K7100AW/A2 WA48H7400AW/A2 WA48J7700AW/A2 WA48J7770AP/A2 WA48J7770AW/A2 WA50K8600AV/A2 WA50K8600AW/A2 WA52J8700AP/A2 WA52J8700AW/A2 WA400PJHDWR/AA WA422PRHDWR/AA WA456DRHDSU/AA WA456DRHDWR/AA WA476DSHASU/A1 WA476DSHAWR/A1 WA484DSHASU/A1 WA484DSHAWR/A1 WA48H7400AP/A2 WA50F9A6DSW/A2 WA50F9A7DSP/A2 WA50F9A7DSW/A2 WA50F9A8DSP/A2 WA50F9A8DSW/A2 WA52J8060AW/A2 WA5451ANW/XAA WA5471ABP/XAA WA5471ABW/XAA WA56H9000AP/A2 WA56H9000AW/A2",
+      "URL": "https://www.cpsc.gov/Recalls/2017/Samsung-Recalls-Top-Load-Washing-Machines",
+      "Title": "Samsung Recalls Top-Load Washing Machines Due to Risk of Impact Injuries",
+      "ConsumerContact": "Samsung toll-free at 866-264-5636 from 8 a.m. to 10 p.m. ET, or online at www.Samsung.com and click on the recall notice at the top of the page for more information.",
+      "LastPublishDate": "2016-11-04T00:00:00",
+      "Products": [
+        {
+          "Name": "Samsung top-load washing machines",
+          "Description": "",
+          "Model": "",
+          "Type": "",
+          "CategoryID": "",
+          "NumberOfUnits": "About 2.8 million"
+        }
+      ],
+      "Inconjunctions": [],
+      "Images": [
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/washer1.jpg",
+          "Caption": "Samsung Rear-Control Washer"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/washer2.jpg",
+          "Caption": "Samsung Mid-Control Washer"
+        },
+        {
+          "URL": "https://www.cpsc.gov/s3fs-public/washer3.jpg",
+          "Caption": "Samsung Washing Machine Identification Label"
+        }
+      ],
+      "Injuries": [
+        {
+          "Name": "Samsung has received 733 reports of washing machines experiencing excessive vibration or the top detaching from the washing machine chassis. There are nine related reports of injuries, including a broken jaw, injured shoulder, and other impact or fall-related injuries."
+        }
+      ],
+      "Manufacturers": [],
+      "Retailers": [
+        {
+          "Name": "Best Buy, The Home Depot, Lowes, Sears and other home appliance stores nationwide from March 2011 to November 2016 for between $450 and $1,500.",
+          "CompanyID": ""
+        }
+      ],
+      "Importers": [
+        {
+          "Name": "Samsung Electronics America Inc., of Ridgefield Park, N.J.",
+          "CompanyID": ""
+        }
+      ],
+      "Distributors": [],
+      "SoldAtLabel": null,
+      "ManufacturerCountries": [
+        {
+          "Country": "South Korea"
+        },
+        {
+          "Country": "China"
+        },
+        {
+          "Country": "Thailand"
+        }
+      ],
+      "ProductUPCs": [],
+      "Hazards": [
+        {
+          "Name": "The washing machine top can unexpectedly detach from the washing machine chassis during use, posing a risk of injury from impact.",
+          "HazardType": "",
+          "HazardTypeID": ""
+        }
+      ],
+      "Remedies": [
+        {
+          "Name": "Consumers should contact Samsung immediately to receive one of the following remedy options. Consumers can choose (1) a free in-home repair that includes reinforcement of the washer's top and a free one-year extension of the manufacturer's warranty; (2) a rebate to be applied towards the purchase of a new Samsung or other brand washing machine, along with free installation of the new unit and removal of old unit; or (3) a full refund for consumers who purchased their washing machine within the past 30 days of the recall announcement. All known consumers will also receive a Home Label Kit that includes a control panel guide and additional safety instructions in the mail. Until they have received and installed a Home Label Kit, consumers should only use the delicate or waterproof cycles when washing bedding, water-resistant and bulky items. The lower spin speed in the delicate or waterproof cycles lessens the risk of the washing machine top unexpectedly detaching from the washing machine chassis."
+        }
+      ],
+      "RemedyOptions": [
+        {
+          "Option": "Refund"
+        },
+        {
+          "Option": "Replace"
+        },
+        {
+          "Option": "Repair"
+        }
+      ]
+    },
+    "keywords": [],
+    "notes": "Curated from official CPSC recall JSON snapshot for Dav AI demo/search development."
+  }
+]

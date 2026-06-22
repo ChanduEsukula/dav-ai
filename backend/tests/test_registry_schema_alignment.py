@@ -25,6 +25,10 @@ def test_registered_sources_include_current_public_source_surfaces():
         "openfda_food_enforcement",
         "usda_fsis_recall",
         "foodradar_multi_source",
+        "fda_recalls_market_withdrawals_safety_alerts",
+        "cpsc_recalls_api",
+        "nhtsa_vpic_vin_decoder_api",
+        "nhtsa_recalls_api_datasets",
         "regional_health_pulse_demo",
     }
     assert modules == {
@@ -32,6 +36,7 @@ def test_registered_sources_include_current_public_source_surfaces():
         "DrugSignal",
         "CosmeticSignal",
         "FoodRadar",
+        "RealWorldSafety",
         "RegionalHealthPulse",
     }
 
@@ -113,6 +118,29 @@ def test_everyday_safety_source_seed_migration_exists():
         "openfda_food_enforcement",
         "usda_fsis_recall",
         "foodradar_multi_source",
+    }:
+        assert source_id in migration_source
+
+    assert "on conflict (source_id) do update set" in migration_source
+
+
+def test_real_world_safety_source_seed_migration_exists():
+    migration_source = (
+        REPO_ROOT
+        / "backend"
+        / "migrations"
+        / "versions"
+        / "20260622_0011_seed_real_world_safety_sources.py"
+    ).read_text()
+
+    assert 'revision = "20260622_0011"' in migration_source
+    assert 'down_revision = "20260616_0010"' in migration_source
+
+    for source_id in {
+        "fda_recalls_market_withdrawals_safety_alerts",
+        "cpsc_recalls_api",
+        "nhtsa_vpic_vin_decoder_api",
+        "nhtsa_recalls_api_datasets",
     }:
         assert source_id in migration_source
 

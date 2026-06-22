@@ -27,4 +27,20 @@ __pycache__/
 *.py[cod]
 
 # macOS
-.DS_Store
+.DS_Storedata/safety_sources/cpsc/cpsc_recalls_snapshot.json
+
+# Local/generated travel PDF artifacts
+Duluth_Airshow_North_Shore_Deluxe_Brochure.pdf
+brochure_build/
+duluth_image_contact_sheet.jpg
+duluth_pdf_sips.png
+extracted_duluth_contact_sheet.jpg
+extracted_duluth_images/
+generate_duluth_deluxe_brochure.py
+
+# Large local CPSC source snapshot - keep local only
+/data/safety_sources/cpsc/cpsc_recalls_snapshot.json
+
+# Python cache
+__pycache__/
+*.pyc
