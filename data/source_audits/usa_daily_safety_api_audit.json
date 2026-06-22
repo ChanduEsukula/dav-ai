@@ -1,0 +1,2353 @@
+{
+  "generated_at": "2026-06-22T20:31:34.705889+00:00",
+  "purpose": "Audit real-time USA daily-life safety, recall, label, and signal APIs for Dav AI.",
+  "sources": [
+    {
+      "name": "openFDA Food Enforcement",
+      "category": "Food / groceries",
+      "owner": "FDA / openFDA",
+      "url": "https://api.fda.gov/food/enforcement.json",
+      "params": {
+        "search": "reason_for_recall:\"undeclared milk\"",
+        "limit": "2"
+      },
+      "daily_life_value": "High",
+      "data_kind": "Recall / enforcement",
+      "recommended_use": "Add / keep",
+      "request_url": "https://api.fda.gov/food/enforcement.json?search=reason_for_recall%3A%22undeclared+milk%22&limit=2",
+      "reachable": true,
+      "http_status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "json_parseable": true,
+      "record_count": 2,
+      "top_level_keys": [
+        "meta",
+        "results"
+      ],
+      "sample_record_keys": [
+        "address_1",
+        "address_2",
+        "center_classification_date",
+        "city",
+        "classification",
+        "code_info",
+        "country",
+        "distribution_pattern",
+        "event_id",
+        "initial_firm_notification",
+        "openfda",
+        "postal_code",
+        "product_description",
+        "product_quantity",
+        "product_type",
+        "reason_for_recall",
+        "recall_initiation_date",
+        "recall_number",
+        "recalling_firm",
+        "report_date",
+        "state",
+        "status",
+        "termination_date",
+        "voluntary_mandated"
+      ],
+      "sample_record": {
+        "status": "Terminated",
+        "city": "Chicago",
+        "state": "IL",
+        "country": "United States",
+        "classification": "Class II",
+        "openfda": {},
+        "product_type": "Food",
+        "event_id": "77194",
+        "recalling_firm": "Newly Weds Foods Inc",
+        "address_1": "2501 N Keeler Ave",
+        "address_2": "N/A",
+        "postal_code": "60639-2131",
+        "voluntary_mandated": "Voluntary: Firm initiated",
+        "initial_firm_notification": "Letter",
+        "distribution_pattern": "Nationwide, Mexico, Canada",
+        "recall_number": "F-3116-2017",
+        "product_description": "A96555, PREDUST X2, NET WT 50 LBS, Manufactured By: Newly Weds Foods, Inc., Chicago, IL 60639",
+        "product_quantity": "2,550 lbs",
+        "reason_for_recall": "Product may contain undeclared milk.",
+        "recall_initiation_date": "20170503",
+        "center_classification_date": "20170817",
+        "termination_date": "20190805",
+        "report_date": "20170726",
+        "code_info": "Product #A96555; Lot #WN012117E"
+      },
+      "error": null,
+      "tier": "A - Add/keep for USA daily recall MVP"
+    },
+    {
+      "name": "openFDA Drug Enforcement",
+      "category": "Medicine / OTC / prescriptions",
+      "owner": "FDA / openFDA",
+      "url": "https://api.fda.gov/drug/enforcement.json",
+      "params": {
+        "search": "product_description:\"eye drops\"",
+        "limit": "2"
+      },
+      "daily_life_value": "High",
+      "data_kind": "Recall / enforcement",
+      "recommended_use": "Add / keep",
+      "request_url": "https://api.fda.gov/drug/enforcement.json?search=product_description%3A%22eye+drops%22&limit=2",
+      "reachable": true,
+      "http_status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "json_parseable": true,
+      "record_count": 2,
+      "top_level_keys": [
+        "meta",
+        "results"
+      ],
+      "sample_record_keys": [
+        "address_1",
+        "address_2",
+        "center_classification_date",
+        "city",
+        "classification",
+        "code_info",
+        "country",
+        "distribution_pattern",
+        "event_id",
+        "initial_firm_notification",
+        "openfda",
+        "postal_code",
+        "product_description",
+        "product_quantity",
+        "product_type",
+        "reason_for_recall",
+        "recall_initiation_date",
+        "recall_number",
+        "recalling_firm",
+        "report_date",
+        "state",
+        "status",
+        "voluntary_mandated"
+      ],
+      "sample_record": {
+        "status": "Completed",
+        "city": "Aquebogue",
+        "state": "NY",
+        "country": "United States",
+        "classification": "Class II",
+        "openfda": {},
+        "product_type": "Drugs",
+        "event_id": "83265",
+        "recalling_firm": "Altaire Pharmaceuticals, Inc.",
+        "address_1": "311 W Ln",
+        "address_2": "PO Box 849",
+        "postal_code": "11931-0849",
+        "voluntary_mandated": "Voluntary: Firm initiated",
+        "initial_firm_notification": "Two or more of the following: Email, Fax, Letter, Press Release, Telephone, Visit",
+        "distribution_pattern": "U.S.A. Nationwide",
+        "recall_number": "D-0394-2020",
+        "product_description": "CVS Health Redness Relief Lubricant Redness Reliever Eye Drops, Sterile, 1 fl. oz., (30 mL), Distributed by: CVS Pharmacy Inc., One CVS Drive, Woonsocket, RI 02895",
+        "product_quantity": "N/A",
+        "reason_for_recall": "Lack of Assurance of Sterility",
+        "recall_initiation_date": "20190702",
+        "center_classification_date": "20191115",
+        "report_date": "20191127",
+        "code_info": "Lot #: 18229 9/21  18229 9/21  19056 03/22"
+      },
+      "error": null,
+      "tier": "A - Add/keep for USA daily recall MVP"
+    },
+    {
+      "name": "openFDA Device Enforcement",
+      "category": "Medical devices",
+      "owner": "FDA / openFDA",
+      "url": "https://api.fda.gov/device/enforcement.json",
+      "params": {
+        "search": "product_description:\"glucose meter\"",
+        "limit": "2"
+      },
+      "daily_life_value": "High",
+      "data_kind": "Recall / enforcement",
+      "recommended_use": "Add / keep",
+      "request_url": "https://api.fda.gov/device/enforcement.json?search=product_description%3A%22glucose+meter%22&limit=2",
+      "reachable": true,
+      "http_status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "json_parseable": true,
+      "record_count": 2,
+      "top_level_keys": [
+        "meta",
+        "results"
+      ],
+      "sample_record_keys": [
+        "address_1",
+        "address_2",
+        "center_classification_date",
+        "city",
+        "classification",
+        "code_info",
+        "country",
+        "distribution_pattern",
+        "event_id",
+        "initial_firm_notification",
+        "openfda",
+        "postal_code",
+        "product_description",
+        "product_quantity",
+        "product_type",
+        "reason_for_recall",
+        "recall_initiation_date",
+        "recall_number",
+        "recalling_firm",
+        "report_date",
+        "state",
+        "status",
+        "termination_date",
+        "voluntary_mandated"
+      ],
+      "sample_record": {
+        "status": "Terminated",
+        "city": "Indianapolis",
+        "state": "IN",
+        "country": "United States",
+        "classification": "Class II",
+        "openfda": {},
+        "product_type": "Devices",
+        "event_id": "83574",
+        "recalling_firm": "Roche Diabetes Care, Inc.",
+        "address_1": "9115 Hague Rd",
+        "address_2": "N/A",
+        "postal_code": "46256-1025",
+        "voluntary_mandated": "Voluntary: Firm initiated",
+        "initial_firm_notification": "E-Mail",
+        "distribution_pattern": "Worldwide distribution - US Nationwide distribution.",
+        "recall_number": "Z-2765-2019",
+        "product_description": "Accu-Chek Aviva II Meter - Product Usage: a. The Accu-Chek Aviva Plus Blood Glucose Monitoring System is intended to be used for the quantitative measurement of glucose (sugar) in fresh capillary whole blood samples drawn from the fingertips, forearm, upper arm, or palm. The Accu-Chek Aviva Plus Blood Glucose Monitoring System is intended to be used by a single person and should not be shared. b. The Accu-Chek Aviva Plus Blood Glucose Monitoring System is intended for self-testing outside the body (in vitro diagnostic use) by people with diabetes at home as an aid to monitor the effectiveness of diabetes control. The Accu-Chek Aviva Plus Blood Glucose Monitoring System should not be used for the diagnosis of or screening of diabetes or for neonatal use. Alternative site testing should be done only during steady state times (when glucose is not changing rapidly). c. The Accu-Chek Aviva Plus Test Strips are for use with the Accu-Chek Aviva Blood Glucose Meter to quantitatively measure glucose (sugar) in fresh capillary whole blood samples drawn from the fingertips, forearm, upper arm, or palm.",
+        "product_quantity": "26,600",
+        "reason_for_recall": "Meters may contain a damaged C29 capacitor resulting in issues with power allegation (short battery life or meter not turning on).",
+        "recall_initiation_date": "20170612",
+        "center_classification_date": "20190930",
+        "termination_date": "20201030",
+        "report_date": "20191009",
+        "code_info": "Serial numbers between xxx20000000 and xxx23284925, or less than xxx06335297    Updated serial numbers on 10/12/2019:  Aviva II: Between XXX20000000 and XXX23284925    Updated 10/18/2019:  Aviva II  from XXX05000001 to XXX06335297 OR  from XXX20000000 to XXX23284925"
+      },
+      "error": null,
+      "tier": "A - Add/keep for USA daily recall MVP"
+    },
+    {
+      "name": "openFDA Device Event",
+      "category": "Medical devices",
+      "owner": "FDA / openFDA",
+      "url": "https://api.fda.gov/device/event.json",
+      "params": {
+        "search": "device.generic_name:\"INSULIN PUMP\"",
+        "limit": "2"
+      },
+      "daily_life_value": "Medium",
+      "data_kind": "Adverse-event signal, not recall",
+      "recommended_use": "Keep with strong warning label",
+      "request_url": "https://api.fda.gov/device/event.json?search=device.generic_name%3A%22INSULIN+PUMP%22&limit=2",
+      "reachable": true,
+      "http_status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "json_parseable": true,
+      "record_count": 2,
+      "top_level_keys": [
+        "meta",
+        "results"
+      ],
+      "sample_record_keys": [
+        "adverse_event_flag",
+        "date_added",
+        "date_changed",
+        "date_of_event",
+        "date_received",
+        "date_report",
+        "device",
+        "distributor_address_1",
+        "distributor_address_2",
+        "distributor_city",
+        "distributor_name",
+        "distributor_state",
+        "distributor_zip_code",
+        "distributor_zip_code_ext",
+        "event_key",
+        "event_location",
+        "event_type",
+        "exemption_number",
+        "health_professional",
+        "initial_report_to_fda",
+        "manufacturer_address_1",
+        "manufacturer_address_2",
+        "manufacturer_city",
+        "manufacturer_contact_address_1",
+        "manufacturer_contact_address_2",
+        "manufacturer_contact_area_code",
+        "manufacturer_contact_city",
+        "manufacturer_contact_country",
+        "manufacturer_contact_exchange",
+        "manufacturer_contact_extension",
+        "manufacturer_contact_f_name",
+        "manufacturer_contact_l_name",
+        "manufacturer_contact_pcity",
+        "manufacturer_contact_pcountry",
+        "manufacturer_contact_phone_number",
+        "manufacturer_contact_plocal",
+        "manufacturer_contact_postal_code",
+        "manufacturer_contact_state",
+        "manufacturer_contact_t_name",
+        "manufacturer_contact_zip_code",
+        "manufacturer_contact_zip_ext",
+        "manufacturer_country",
+        "manufacturer_g1_address_1",
+        "manufacturer_g1_address_2",
+        "manufacturer_g1_city",
+        "manufacturer_g1_country",
+        "manufacturer_g1_name",
+        "manufacturer_g1_postal_code",
+        "manufacturer_g1_state",
+        "manufacturer_g1_zip_code",
+        "manufacturer_g1_zip_code_ext",
+        "manufacturer_link_flag",
+        "manufacturer_name",
+        "manufacturer_postal_code",
+        "manufacturer_state",
+        "manufacturer_zip_code",
+        "manufacturer_zip_code_ext",
+        "mdr_report_key",
+        "mdr_text",
+        "mfr_report_type",
+        "noe_summarized",
+        "number_devices_in_event",
+        "number_patients_in_event",
+        "patient",
+        "pma_pmn_number",
+        "previous_use_code",
+        "product_problem_flag",
+        "remedial_action",
+        "removal_correction_number",
+        "report_number",
+        "report_source_code",
+        "report_to_fda",
+        "report_to_manufacturer",
+        "reporter_country_code",
+        "reporter_occupation_code",
+        "reporter_state_code",
+        "reprocessed_and_reused_flag",
+        "single_use_flag",
+        "source_type",
+        "summary_report_flag"
+      ],
+      "sample_record": {
+        "manufacturer_contact_zip_ext": "",
+        "manufacturer_g1_address_2": "",
+        "event_location": "",
+        "report_to_fda": "",
+        "manufacturer_contact_t_name": "",
+        "manufacturer_contact_state": "",
+        "manufacturer_link_flag": "N",
+        "manufacturer_contact_address_2": "",
+        "manufacturer_g1_city": "",
+        "manufacturer_contact_address_1": "",
+        "manufacturer_contact_pcity": "",
+        "event_type": "Other",
+        "report_number": "MW5005541",
+        "type_of_report": [
+          "Initial submission"
+        ],
+        "product_problem_flag": "N",
+        "date_received": "20080218",
+        "manufacturer_address_2": "",
+        "pma_pmn_number": "",
+        "date_of_event": "20070214",
+        "reprocessed_and_reused_flag": "N",
+        "manufacturer_address_1": "",
+        "exemption_number": "",
+        "manufacturer_contact_zip_code": "",
+        "reporter_occupation_code": "NURSE",
+        "manufacturer_contact_plocal": "",
+        "noe_summarized": "1",
+        "manufacturer_contact_l_name": "",
+        "source_type": [
+          ""
+        ],
+        "distributor_zip_code_ext": "",
+        "manufacturer_g1_postal_code": "",
+        "manufacturer_g1_state": "",
+        "reporter_country_code": "US",
+        "manufacturer_contact_area_code": "",
+        "date_added": "20080228",
+        "manufacturer_contact_f_name": "",
+        "previous_use_code": "",
+        "device": [
+          {
+            "device_event_key": "",
+            "implant_flag": "",
+            "date_removed_flag": "",
+            "device_sequence_number": "1",
+            "date_received": "20080218",
+            "brand_name": "MEDTRONIC",
+            "generic_name": "PARADIGM 722 INSULIN PUMP",
+            "manufacturer_d_name": "",
+            "manufacturer_d_address_1": "",
+            "manufacturer_d_address_2": "",
+            "manufacturer_d_city": "",
+            "manufacturer_d_state": "",
+            "manufacturer_d_zip_code": "",
+            "manufacturer_d_zip_code_ext": "",
+            "manufacturer_d_country": "",
+            "manufacturer_d_postal_code": "",
+            "device_operator": "LAY USER/PATIENT",
+            "model_number": "722",
+            "catalog_number": "",
+            "lot_number": "",
+            "other_id_number": "",
+            "device_availability": "Yes",
+            "device_report_product_code": "LZG",
+            "device_age_text": "",
+            "device_evaluated_by_manufacturer": "",
+            "combination_product_flag": "",
+            "udi_di": "",
+            "udi_public": "",
+            "openfda": {
+              "device_name": "Pump, Infusion, Insulin",
+              "medical_specialty_description": "General Hospital",
+              "regulation_number": "880.5725",
+              "device_class": "2"
+            }
+          }
+        ],
+        "reporter_state_code": "AZ",
+        "manufacturer_zip_code": "",
+        "suppl_dates_mfr_received": "",
+        "mfr_report_type": "",
+        "manufacturer_contact_country": "",
+        "date_changed": "20250818",
+        "health_professional": "",
+        "summary_report_flag": "N",
+        "manufacturer_g1_zip_code_ext": "",
+        "manufacturer_contact_extension": "",
+        "manufacturer_city": "",
+        "manufacturer_contact_phone_number": "",
+        "patient": [
+          {
+            "patient_sequence_number": "1",
+            "date_received": "20080218",
+            "sequence_number_treatment": [
+              ""
+            ],
+            "sequence_number_outcome": [
+              ""
+            ],
+            "patient_age": "25 YR",
+            "patient_sex": "",
+            "patient_weight": "82",
+            "patient_ethnicity": "",
+            "patient_race": ""
+          }
+        ],
+        "distributor_city": "",
+        "date_report": "20080131",
+        "initial_report_to_fda": "",
+        "distributor_state": "",
+        "event_key": "",
+        "manufacturer_g1_country": "",
+        "manufacturer_contact_city": "",
+        "mdr_report_key": "1000017",
+        "removal_correction_number": "",
+        "number_devices_in_event": "",
+        "manufacturer_name": "",
+        "report_source_code": "Voluntary report",
+        "remedial_action": [
+          ""
+        ],
+        "manufacturer_g1_zip_code": "",
+        "report_to_manufacturer": "",
+        "manufacturer_zip_code_ext": "",
+        "manufacturer_g1_name": "",
+        "adverse_event_flag": "N",
+        "distributor_address_1": "",
+        "manufacturer_state": "",
+        "distributor_address_2": "",
+        "manufacturer_postal_code": "",
+        "single_use_flag": "",
+        "manufacturer_country": "",
+        "mdr_text": [
+          {
+            "mdr_text_key": "21393122",
+            "text_type_code": "Description of Event or Problem",
+            "patient_sequence_number": "1",
+            "text": "PATIENT PRESENTED TO ENDOCRINOLOGY OFFICE WITH A MEDTRONIC PUMP REQUESTING TO BE TRAINED. PUMP WAS ORDERED BY HIS PRIMARY CARE PHYSICIAN. AT THE TIME, PATIENT ONLY CHECKED BLOOD SUGARS TWICE A DAY AND DOES NOT COUNT CARBOHYDRATES."
+          }
+        ],
+        "number_patients_in_event": "",
+        "distributor_name": "",
+        "manufacturer_g1_address_1": "",
+        "distributor_zip_code": "",
+        "manufacturer_contact_postal_code": "",
+        "manufacturer_contact_exchange": "",
+        "manufacturer_contact_pcountry": "",
+        "suppl_dates_fda_received": ""
+      },
+      "error": null,
+      "tier": "B - Signal source, not recall"
+    },
+    {
+      "name": "openFDA Drug Label",
+      "category": "Medicine / labels",
+      "owner": "FDA / openFDA",
+      "url": "https://api.fda.gov/drug/label.json",
+      "params": {
+        "search": "openfda.generic_name:\"ACETAMINOPHEN\"",
+        "limit": "2"
+      },
+      "daily_life_value": "High",
+      "data_kind": "Official label / warnings / dosage",
+      "recommended_use": "Add next",
+      "request_url": "https://api.fda.gov/drug/label.json?search=openfda.generic_name%3A%22ACETAMINOPHEN%22&limit=2",
+      "reachable": true,
+      "http_status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "json_parseable": true,
+      "record_count": 2,
+      "top_level_keys": [
+        "meta",
+        "results"
+      ],
+      "sample_record_keys": [
+        "active_ingredient",
+        "ask_doctor",
+        "ask_doctor_or_pharmacist",
+        "do_not_use",
+        "dosage_and_administration",
+        "effective_time",
+        "id",
+        "inactive_ingredient",
+        "indications_and_usage",
+        "keep_out_of_reach_of_children",
+        "openfda",
+        "package_label_principal_display_panel",
+        "pregnancy_or_breast_feeding",
+        "purpose",
+        "questions",
+        "set_id",
+        "spl_product_data_elements",
+        "stop_use",
+        "storage_and_handling",
+        "version",
+        "warnings"
+      ],
+      "sample_record": {
+        "spl_product_data_elements": [
+          "Pain Reliever Extra Strength Acetaminophen ACETAMINOPHEN ACETAMINOPHEN CROSCARMELLOSE SODIUM D&C RED NO. 33 FD&C BLUE NO. 1 FD&C RED NO. 40 GELATIN, UNSPECIFIED HYDROXYPROPYL CELLULOSE, UNSPECIFIED HYPROMELLOSE, UNSPECIFIED FERROSOFERRIC OXIDE FERRIC OXIDE RED FERRIC OXIDE YELLOW POLYETHYLENE GLYCOL, UNSPECIFIED POVIDONE, UNSPECIFIED STARCH, CORN PROPYLENE GLYCOL SHELLAC STEARIC ACID TITANIUM DIOXIDE L;5"
+        ],
+        "active_ingredient": [
+          "Active ingredient (in each gelcap) Acetaminophen 500 mg"
+        ],
+        "purpose": [
+          "Purpose Pain reliever/fever reducer"
+        ],
+        "indications_and_usage": [
+          "Uses temporarily relieves minor aches and pains due to: headache the common cold backache minor pain of arthritis toothache muscular aches premenstrual and menstrual cramps temporarily reduces fever"
+        ],
+        "warnings": [
+          "Warnings Liver warning: This product contains acetaminophen. Severe liver damage may occur if you take more than 4,000 mg of acetaminophen in 24 hours with other drugs containing acetaminophen 3 or more alcoholic drinks every day while using this product Allergy alert: Acetaminophen may cause severe skin reactions. Symptoms may include: skin reddening blisters rash If a skin reaction occurs, stop use and seek medical help right away. Do not use if you are allergic to acetaminophen or any of the inactive ingredients in this product with any other drug containing acetaminophen (prescription or nonprescription). If you are not sure whether a drug contains acetaminophen, ask a doctor or pharmacist. Ask a doctor before use if you have liver disease. Ask a doctor or pharmacist before use if you are taking the blood thinning drug warfarin. Stop use and ask a doctor if new symptoms occur pain gets worse or lasts more than 10 days fever gets worse or lasts more than 3 days redness or swelling is present These could be signs of a serious condition. If pregnant or breast-feeding, ask a health professional before use. Keep out of reach of children. In case of overdose, get medical help or contact a Poison Control Center right away. Prompt medical attention is critical for adults as well as for children even if you do not notice any signs or symptoms."
+        ],
+        "do_not_use": [
+          "Do not use if you are allergic to acetaminophen or any of the inactive ingredients in this product with any other drug containing acetaminophen (prescription or nonprescription). If you are not sure whether a drug contains acetaminophen, ask a doctor or pharmacist."
+        ],
+        "ask_doctor": [
+          "Ask a doctor before use if you have liver disease."
+        ],
+        "ask_doctor_or_pharmacist": [
+          "Ask a doctor or pharmacist before use if you are taking the blood thinning drug warfarin."
+        ],
+        "stop_use": [
+          "Stop use and ask a doctor if new symptoms occur pain gets worse or lasts more than 10 days fever gets worse or lasts more than 3 days redness or swelling is present These could be signs of a serious condition."
+        ],
+        "pregnancy_or_breast_feeding": [
+          "If pregnant or breast-feeding, ask a health professional before use."
+        ],
+        "keep_out_of_reach_of_children": [
+          "Keep out of reach of children. In case of overdose, get medical help or contact a Poison Control Center right away. Prompt medical attention is critical for adults as well as for children even if you do not notice any signs or symptoms."
+        ],
+        "dosage_and_administration": [
+          "Directions do not take more than directed adults and children 12 years and over take 2 gelcaps every 6 hours while symptoms last do not take more than 6 gelcaps in 24 hours, unless directed by a doctor do not take for more than 10 days unless directed by a doctor children under 12 years: ask a doctor"
+        ],
+        "storage_and_handling": [
+          "Other information store at 25°C (77°F); excursions permitted between 15°-30°C (59°-86°F) avoid high humidity see end flap for expiration date and lot number"
+        ],
+        "inactive_ingredient": [
+          "Inactive ingredients croscarmellose sodium, D&C red #33, FD&C blue #1, FD&C red #40, gelatin, hydroxypropyl cellulose, hypromellose, iron oxide black, iron oxide red, iron oxide yellow, polyethylene glycol, povidone, pregelatinized starch, propylene glycol, shellac glaze, stearic acid, titanium dioxide"
+        ],
+        "questions": [
+          "Questions or comments? 1-800-426-9391"
+        ],
+        "package_label_principal_display_panel": [
+          "Principal Display Panel Compare to the active ingredient in Extra Strength Tylenol ® Rapid Release Gels* Best Choice ® EXTRA STRENGTH Pain Reliever ACETAMINOPHEN 500 mg PAIN RELIEVER/FEVER REDUCER CONTAINS NO ASPIRIN Actual Size 100 GELCAPS TAMPER EVIDENT: DO NOT USE IF IMPRINTED SAFETY SEAL UNDER CAP IS BROKEN OR MISSING *This product is not manufactured or distributed by Johnson & Johnson Corporation, owner of the registered trademark Extra Strength Tylenol ® Rapid Release Gels. 50844 REV0322H51912 PROUDLY DISTRIBUTED BY: VALU MERCHANDISERS, CO. 5000 KANSAS AVE, KANSAS CITY, KS 66106 Call 1-844-292-1112 for more product information. Best Choice ® 100% Guaranteed www.bestchoicebrand.com Best Choice 44-519 Best Choice 44-519"
+        ],
+        "set_id": "0005aafa-08f8-4990-a54d-cc097195708f",
+        "id": "ee8e3aa2-8550-41c7-9911-0723b3fb2f87",
+        "effective_time": "20260102",
+        "version": "20",
+        "openfda": {
+          "application_number": [
+            "M013"
+          ],
+          "brand_name": [
+            "Pain Reliever Extra Strength"
+          ],
+          "generic_name": [
+            "ACETAMINOPHEN"
+          ],
+          "manufacturer_name": [
+            "Valu Merchandisers Company"
+          ],
+          "product_ndc": [
+            "63941-519"
+          ],
+          "product_type": [
+            "HUMAN OTC DRUG"
+          ],
+          "route": [
+            "ORAL"
+          ],
+          "substance_name": [
+            "ACETAMINOPHEN"
+          ],
+          "rxcui": [
+            "198440"
+          ],
+          "spl_id": [
+            "ee8e3aa2-8550-41c7-9911-0723b3fb2f87"
+          ],
+          "spl_set_id": [
+            "0005aafa-08f8-4990-a54d-cc097195708f"
+          ],
+          "package_ndc": [
+            "63941-519-15",
+            "63941-519-12"
+          ],
+          "is_original_packager": [
+            true
+          ],
+          "upc": [
+            "0070038610953"
+          ],
+          "unii": [
+            "362O9ITL9D"
+          ]
+        }
+      },
+      "error": null,
+      "tier": "B - Useful context/reference"
+    },
+    {
+      "name": "openFDA Drug Event",
+      "category": "Medicine / adverse events",
+      "owner": "FDA / openFDA",
+      "url": "https://api.fda.gov/drug/event.json",
+      "params": {
+        "search": "patient.drug.medicinalproduct:\"METFORMIN\"",
+        "limit": "2"
+      },
+      "daily_life_value": "Medium",
+      "data_kind": "Adverse-event signal, not recall",
+      "recommended_use": "Add later with caution label",
+      "request_url": "https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3A%22METFORMIN%22&limit=2",
+      "reachable": true,
+      "http_status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "json_parseable": true,
+      "record_count": 2,
+      "top_level_keys": [
+        "meta",
+        "results"
+      ],
+      "sample_record_keys": [
+        "companynumb",
+        "duplicate",
+        "fulfillexpeditecriteria",
+        "occurcountry",
+        "patient",
+        "primarysource",
+        "primarysourcecountry",
+        "receiptdate",
+        "receiptdateformat",
+        "receivedate",
+        "receivedateformat",
+        "receiver",
+        "reportduplicate",
+        "reporttype",
+        "safetyreportid",
+        "safetyreportversion",
+        "sender",
+        "serious",
+        "transmissiondate",
+        "transmissiondateformat"
+      ],
+      "sample_record": {
+        "safetyreportversion": "2",
+        "safetyreportid": "10003641",
+        "primarysourcecountry": "US",
+        "occurcountry": "US",
+        "transmissiondateformat": "102",
+        "transmissiondate": "20150720",
+        "reporttype": "1",
+        "serious": "2",
+        "receivedateformat": "102",
+        "receivedate": "20140312",
+        "receiptdateformat": "102",
+        "receiptdate": "20150312",
+        "fulfillexpeditecriteria": "2",
+        "companynumb": "US-ABBVIE-13P-163-1090373-00",
+        "duplicate": "1",
+        "reportduplicate": {
+          "duplicatesource": "ABBVIE",
+          "duplicatenumb": "US-ABBVIE-13P-163-1090373-00"
+        },
+        "primarysource": {
+          "reportercountry": "US",
+          "qualification": "5"
+        },
+        "sender": {
+          "sendertype": "2",
+          "senderorganization": "FDA-Public Use"
+        },
+        "receiver": {
+          "receivertype": "6",
+          "receiverorganization": "FDA"
+        },
+        "patient": {
+          "patientonsetage": "41",
+          "patientonsetageunit": "801",
+          "patientweight": "118.04",
+          "patientsex": "1",
+          "reaction": [
+            {
+              "reactionmeddraversionpt": "18.0",
+              "reactionmeddrapt": "Medication residue present",
+              "reactionoutcome": "3"
+            }
+          ],
+          "drug": [
+            {
+              "drugcharacterization": "1",
+              "medicinalproduct": "DEPAKOTE",
+              "drugbatchnumb": "UNKNOWN",
+              "drugauthorizationnumb": "018723",
+              "drugseparatedosagenumb": "3",
+              "drugintervaldosageunitnumb": "1",
+              "drugintervaldosagedefinition": "804",
+              "drugdosagetext": "ONE IN AM AND  TWO IN  PM",
+              "drugadministrationroute": "048",
+              "drugindication": "BIPOLAR DISORDER",
+              "actiondrug": "4",
+              "activesubstance": {
+                "activesubstancename": "DIVALPROEX SODIUM"
+              },
+              "openfda": {
+                "application_number": [
+                  "NDA021168",
+                  "NDA018723",
+                  "NDA019680"
+                ],
+                "brand_name": [
+                  "DEPAKOTE ER",
+                  "DEPAKOTE",
+                  "DEPAKOTE SPRINKLES"
+                ],
+                "generic_name": [
+                  "DIVALPROEX SODIUM"
+                ],
+                "manufacturer_name": [
+                  "AbbVie Inc."
+                ],
+                "product_ndc": [
+                  "0074-7401",
+                  "0074-3826",
+                  "0074-7126",
+                  "0074-7402",
+                  "0074-7325",
+                  "0074-6212",
+                  "0074-6214",
+                  "0074-6215",
+                  "0074-7327",
+                  "0074-7326",
+                  "0074-6114"
+                ],
+                "product_type": [
+                  "HUMAN PRESCRIPTION DRUG"
+                ],
+                "route": [
+                  "ORAL"
+                ],
+                "substance_name": [
+                  "DIVALPROEX SODIUM"
+                ],
+                "rxcui": [
+                  "1099563",
+                  "1099565",
+                  "1099569",
+                  "1099571",
+                  "1099625",
+                  "1099626",
+                  "1099678",
+                  "1099679",
+                  "1099870",
+                  "1099871",
+                  "1099596",
+                  "1099598"
+                ],
+                "spl_id": [
+                  "0ee65b66-ead3-44ef-911f-14965b067903",
+                  "7cc3a0b3-93f8-4825-88e1-bf6ddb0db23d",
+                  "d038b7e9-b014-4771-93be-90aeeaece03d"
+                ],
+                "spl_set_id": [
+                  "0dc024ce-efc8-4690-7cb5-639c728fccac",
+                  "08a65cf4-7749-4ceb-6895-8f4805e2b01f",
+                  "4619aff4-0f80-444f-858d-42e4137aa809"
+                ],
+                "package_ndc": [
+                  "0074-3826-13",
+                  "0074-3826-11",
+                  "0074-7401-13",
+                  "0074-7126-13",
+                  "0074-7126-53",
+                  "0074-7126-11",
+                  "0074-7126-72",
+                  "0074-7402-13",
+                  "0074-6212-13",
+                  "0074-6214-13",
+                  "0074-6214-53",
+                  "0074-6215-13",
+                  "0074-6215-53",
+                  "0074-7325-13",
+                  "0074-7327-13",
+                  "0074-7326-13",
+                  "0074-6114-13",
+                  "0074-6114-11"
+                ],
+                "unii": [
+                  "644VL95AO6"
+                ]
+              }
+            },
+            {
+              "drugcharacterization": "2",
+              "medicinalproduct": "INVEGA",
+              "drugindication": "BIPOLAR DISORDER",
+              "activesubstance": {
+                "activesubstancename": "PALIPERIDONE"
+              },
+              "openfda": {
+                "application_number": [
+                  "NDA021999"
+                ],
+                "brand_name": [
+                  "INVEGA"
+                ],
+                "generic_name": [
+                  "PALIPERIDONE"
+                ],
+                "manufacturer_name": [
+                  "Janssen Pharmaceuticals, Inc."
+                ],
+                "product_ndc": [
+                  "50458-550",
+                  "50458-551",
+                  "50458-552",
+                  "50458-554"
+                ],
+                "product_type": [
+                  "HUMAN PRESCRIPTION DRUG"
+                ],
+                "route": [
+                  "ORAL"
+                ],
+                "substance_name": [
+                  "PALIPERIDONE"
+                ],
+                "rxcui": [
+                  "672567",
+                  "672569",
+                  "672571",
+                  "686441",
+                  "686443",
+                  "686445",
+                  "866103",
+                  "866105"
+                ],
+                "spl_id": [
+                  "3c5e5b30-a841-4dfe-88ce-361806c9275f"
+                ],
+                "spl_set_id": [
+                  "7b8e5b26-b9e4-4704-921b-3c3c0d159916"
+                ],
+                "package_ndc": [
+                  "50458-550-01",
+                  "50458-550-10",
+                  "50458-550-98",
+                  "50458-551-01",
+                  "50458-551-10",
+                  "50458-551-98",
+                  "50458-552-01",
+                  "50458-552-10",
+                  "50458-552-98",
+                  "50458-554-01",
+                  "50458-554-10",
+                  "50458-554-98"
+                ],
+                "nui": [
+                  "N0000175430"
+                ],
+                "pharm_class_epc": [
+                  "Atypical Antipsychotic [EPC]"
+                ],
+                "unii": [
+                  "838F01T721"
+                ]
+              }
+            },
+            {
+              "drugcharacterization": "2",
+              "medicinalproduct": "METFORMIN",
+              "drugindication": "DIABETES MELLITUS",
+              "activesubstance": {
+                "activesubstancename": "METFORMIN HYDROCHLORIDE"
+              },
+              "openfda": {
+                "application_number": [
+                  "ANDA200690",
+                  "ANDA209674",
+                  "ANDA209313"
+                ],
+                "brand_name": [
+                  "METFORMIN HYDROCHLORIDE",
+                  "METFORMIN"
+                ],
+                "generic_name": [
+                  "METFORMIN",
+                  "METFORMIN ER 500 MG",
+                  "METFORMIN ER 750 MG"
+                ],
+                "manufacturer_name": [
+                  "Mylan Pharmaceuticals Inc.",
+                  "Ingenus Pharmaceuticals, LLC",
+                  "Granules Pharmaceuticals Inc."
+                ],
+                "product_ndc": [
+                  "0378-6001",
+                  "0378-6002",
+                  "50742-633",
+                  "50742-634",
+                  "70010-491",
+                  "70010-492"
+                ],
+                "product_type": [
+                  "HUMAN PRESCRIPTION DRUG"
+                ],
+                "route": [
+                  "ORAL"
+                ],
+                "substance_name": [
+                  "METFORMIN HYDROCHLORIDE"
+                ],
+                "rxcui": [
+                  "1807894",
+                  "1807917"
+                ],
+                "spl_id": [
+                  "7c8e06cd-8ef3-4a03-b4ee-3df6899280cf",
+                  "3a97a225-ff03-4d81-a2fe-7f66611cc4c1",
+                  "537f5fd2-89a1-d029-e063-6394a90a9d0e"
+                ],
+                "spl_set_id": [
+                  "7e41818c-60e9-4bcf-9586-7bb8d33d5e89",
+                  "49a0b5c2-ebaf-4c4c-905f-dfd1962ac647",
+                  "6d6ee6f8-9650-ff4f-e053-2991aa0acf19"
+                ],
+                "package_ndc": [
+                  "0378-6002-91",
+                  "0378-6001-91",
+                  "50742-633-60",
+                  "50742-633-90",
+                  "50742-633-10",
+                  "50742-634-30",
+                  "50742-634-60",
+                  "50742-634-10",
+                  "70010-491-01",
+                  "70010-491-05",
+                  "70010-491-10",
+                  "70010-491-18",
+                  "70010-491-19",
+                  "70010-491-09",
+                  "70010-492-01",
+                  "70010-492-05",
+                  "70010-492-20",
+                  "70010-492-21"
+                ],
+                "unii": [
+                  "786Z46389E"
+                ]
+              }
+            },
+            {
+              "drugcharacterization": "2",
+              "medicinalproduct": "COGENTIN",
+              "drugindication": "ADVERSE EVENT",
+              "activesubstance": {
+                "activesubstancename": "BENZTROPINE MESYLATE"
+              }
+            },
+            {
+              "drugcharacterization": "2",
+              "medicinalproduct": "BISOPROLOL",
+              "drugindication": "PRODUCT USED FOR UNKNOWN INDICATION",
+              "activesubstance": {
+                "activesubstancename": "BISOPROLOL"
+              },
+              "openfda": {
+                "application_number": [
+                  "ANDA218303",
+                  "ANDA075474"
+                ],
+                "brand_name": [
+                  "BISOPROLOL"
+                ],
+                "generic_name": [
+                  "BISOPROLOL FUMARATE"
+                ],
+                "manufacturer_name": [
+                  "Micro Labs Limited",
+                  "TruPharma, LLC"
+                ],
+                "product_ndc": [
+                  "42571-470",
+                  "42571-471",
+                  "52817-270",
+                  "52817-271"
+                ],
+                "product_type": [
+                  "HUMAN PRESCRIPTION DRUG"
+                ],
+                "route": [
+                  "ORAL"
+                ],
+                "substance_name": [
+                  "BISOPROLOL FUMARATE"
+                ],
+                "rxcui": [
+                  "854901",
+                  "854905"
+                ],
+                "spl_id": [
+                  "4cbe74e3-3af3-2b98-e063-6294a90a1c2b",
+                  "2a9e4180-cb1c-f924-e063-6394a90a60c6"
+                ],
+                "spl_set_id": [
+                  "c3ee566c-74c4-45f4-a947-526a7313e326",
+                  "bba0bc2b-602f-4df1-a761-85bd3c80c7de"
+                ],
+                "package_ndc": [
+                  "42571-470-30",
+                  "42571-470-01",
+                  "42571-470-05",
+                  "42571-471-30",
+                  "42571-471-01",
+                  "42571-471-05",
+                  "52817-270-10",
+                  "52817-270-30",
+                  "52817-271-10",
+                  "52817-271-30"
+                ],
+                "unii": [
+                  "UR59KN573L"
+                ]
+              }
+            },
+            {
+              "drugcharacterization": "2",
+              "medicinalproduct": "COGENTIN",
+              "drugindication": "PROPHYLAXIS",
+              "activesubstance": {
+                "activesubstancename": "BENZTROPINE MESYLATE"
+              }
+            }
+          ],
+          "summary": {
+            "narrativeincludeclinical": "CASE EVENT DATE: 201304"
+          }
+        }
+      },
+      "error": null,
+      "tier": "B - Signal source, not recall"
+    },
+    {
+      "name": "openFDA Food Event / CAERS",
+      "category": "Food / supplements / cosmetics signals",
+      "owner": "FDA / openFDA",
+      "url": "https://api.fda.gov/food/event.json",
+      "params": {
+        "limit": "2"
+      },
+      "daily_life_value": "Medium",
+      "data_kind": "Adverse-event signal, not recall",
+      "recommended_use": "Investigate",
+      "request_url": "https://api.fda.gov/food/event.json?limit=2",
+      "reachable": true,
+      "http_status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "json_parseable": true,
+      "record_count": 2,
+      "top_level_keys": [
+        "meta",
+        "results"
+      ],
+      "sample_record_keys": [
+        "consumer",
+        "date_created",
+        "date_started",
+        "outcomes",
+        "products",
+        "reactions",
+        "report_number"
+      ],
+      "sample_record": {
+        "report_number": "216808",
+        "outcomes": [
+          "Other Serious or Important Medical Event"
+        ],
+        "date_created": "20170612",
+        "reactions": [
+          "Ovarian cancer"
+        ],
+        "date_started": "20150201",
+        "consumer": {
+          "gender": "Female"
+        },
+        "products": [
+          {
+            "role": "SUSPECT",
+            "name_brand": "EXEMPTION 4",
+            "industry_code": "53",
+            "industry_name": "Cosmetics"
+          },
+          {
+            "role": "SUSPECT",
+            "name_brand": "EXEMPTION 4",
+            "industry_code": "53",
+            "industry_name": "Cosmetics"
+          }
+        ]
+      },
+      "error": null,
+      "tier": "B - Signal source, not recall"
+    },
+    {
+      "name": "CPSC Recalls",
+      "category": "Consumer products",
+      "owner": "Consumer Product Safety Commission",
+      "url": "https://www.saferproducts.gov/RestWebServices/Recall",
+      "params": {
+        "format": "json"
+      },
+      "daily_life_value": "Very high",
+      "data_kind": "Consumer product recalls",
+      "recommended_use": "Add / keep",
+      "request_url": "https://www.saferproducts.gov/RestWebServices/Recall?format=json",
+      "reachable": true,
+      "http_status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "json_parseable": true,
+      "record_count": 9862,
+      "top_level_keys": [],
+      "sample_record_keys": [
+        "ConsumerContact",
+        "Description",
+        "Distributors",
+        "Hazards",
+        "Images",
+        "Importers",
+        "Inconjunctions",
+        "Injuries",
+        "LastPublishDate",
+        "ManufacturerCountries",
+        "Manufacturers",
+        "ProductUPCs",
+        "Products",
+        "RecallDate",
+        "RecallID",
+        "RecallNumber",
+        "Remedies",
+        "RemedyOptions",
+        "Retailers",
+        "SoldAtLabel",
+        "Title",
+        "URL"
+      ],
+      "sample_record": {
+        "RecallID": 10826,
+        "RecallNumber": "26565",
+        "RecallDate": "2026-06-18T00:00:00",
+        "Description": "This recall involves the Arizer Solo III Intergalactic (Black), a portable electronic vaporizer powered by an internal lithium-ion battery. The unit features a rigid anodized aluminum housing. It includes a front-facing digital display for temperature and device settings, with a stainless steel heating chamber and removable glass components. Only devices with serial numbers beginning with the following prefixes are included in this recall: The model number \"C0001-NB 130-LCUS\" is on a barcode sticker on the packaginM3B1G5 M3F4G6 M35C43 M3PN54 M3SR42 M38G53 M3G576 M3C121 The serial number is etched on the bottom of the device and is also printed on the outside of the product packaging. UPC 628078802274 is printed on the product packaging.",
+        "URL": "https://www.cpsc.gov/Recalls/2026/Arizer-Solo-III-Portable-Vaporizers-Recalled-Due-to-Fire-and-Burn-Hazards-Risk-of-Serious-Injury-or-Death-Imported-by-7111495-Canada",
+        "Title": "Arizer Solo III Portable Vaporizers Recalled Due to Fire and Burn Hazards; Risk of Serious Injury or Death; Imported by 7111495 Canada",
+        "ConsumerContact": "Veseacky by email at Veseackypajamarecall@outlook.com.",
+        "LastPublishDate": "2026-06-18T00:00:00",
+        "Products": [
+          {
+            "Name": "Arizer Solo III portable electronic vaporizers (Intergalactic/Black color only)",
+            "Description": "",
+            "Model": "",
+            "Type": "",
+            "CategoryID": "",
+            "NumberOfUnits": "About 5,000"
+          }
+        ],
+        "Inconjunctions": [],
+        "Images": [
+          {
+            "URL": "https://www.cpsc.gov/s3fs-public/arizer-1.gif",
+            "Caption": "Recalled Arizer Solo III Intergalactic (Black) portable electronic vaporizer"
+          }
+        ],
+        "Injuries": [
+          {
+            "Name": "The firm has received four reports of the battery exploding or igniting."
+          }
+        ],
+        "Manufacturers": [],
+        "Retailers": [
+          {
+            "Name": "Specialty, health and wellness and adult novelty stores nationwide and on Arizer.com from May 2025 through January 2026 for about $300.",
+            "CompanyID": ""
+          }
+        ],
+        "Importers": [
+          {
+            "Name": "7111495 Canada Inc., dba Arizer Tech, of Waterloo, Ontario",
+            "CompanyID": ""
+          }
+        ],
+        "Distributors": [],
+        "SoldAtLabel": null,
+        "ManufacturerCountries": [
+          {
+            "Country": "China"
+          }
+        ],
+        "ProductUPCs": [
+          {
+            "UPC": "628078802274"
+          }
+        ],
+        "Hazards": [
+          {
+            "Name": "The pajama sets violate the mandatory safety standards for children's sleepwear, posing a risk of serious injury or death to children from burns.",
+            "HazardType": "",
+            "HazardTypeID": ""
+          }
+        ],
+        "Remedies": [
+          {
+            "Name": "Consumers should stop using the Arizer Solo III portable electronic vaporizers immediately and contact 7111495 Canada regarding a replacement Solo III V2 unit. Consumers who register for the recall and have serial numbers confirmed to fall within the affected serial number ranges will receive instructions to dispose of the recalled device. Consumers will be asked to submit a photograph showing the word \"recalled\" written on their device in permanent marker and confirm that they have disposed of the device in accordance with applicable laws and regulations before receiving a replacement Solo III V2 unit. Note: Do not throw this recalled lithium-ion battery or device in the trash, the general recycling stream (e.g., street-level or curbside recycling bins), or used battery recycling boxes found at various retail and home improvement stores. Recalled lithium-ion batteries must be disposed of differently than other batteries, because they present a greater risk of fire. Your municipal household hazardous waste (HHW) collection center may accept this recalled lithium-ion battery or device for disposal. Before taking your battery or device to a HHW collection center, contact that office ahead of time and ask whether it accepts recalled lithium-ion batteries. If it does not, contact your municipality for further guidance."
+          }
+        ],
+        "RemedyOptions": [
+          {
+            "Option": "Replace"
+          }
+        ]
+      },
+      "error": null,
+      "tier": "A - Add/keep for USA daily recall MVP"
+    },
+    {
+      "name": "NHTSA Recalls by Vehicle",
+      "category": "Cars / motorcycles / vehicle equipment",
+      "owner": "NHTSA",
+      "url": "https://api.nhtsa.gov/recalls/recallsByVehicle",
+      "params": {
+        "make": "Honda",
+        "model": "Civic",
+        "modelYear": "2020"
+      },
+      "daily_life_value": "Very high",
+      "data_kind": "Vehicle recalls",
+      "recommended_use": "Add / keep",
+      "request_url": "https://api.nhtsa.gov/recalls/recallsByVehicle?make=Honda&model=Civic&modelYear=2020",
+      "reachable": true,
+      "http_status": 200,
+      "content_type": "application/json;charset=UTF-8",
+      "json_parseable": true,
+      "record_count": 5,
+      "top_level_keys": [
+        "Count",
+        "Message",
+        "results"
+      ],
+      "sample_record_keys": [
+        "Component",
+        "Consequence",
+        "Make",
+        "Manufacturer",
+        "Model",
+        "ModelYear",
+        "NHTSACampaignNumber",
+        "Notes",
+        "Remedy",
+        "ReportReceivedDate",
+        "Summary",
+        "overTheAirUpdate",
+        "parkIt",
+        "parkOutSide"
+      ],
+      "sample_record": {
+        "Manufacturer": "Honda (American Honda Motor Co.)",
+        "NHTSACampaignNumber": "21V215000",
+        "parkIt": false,
+        "parkOutSide": false,
+        "overTheAirUpdate": false,
+        "ReportReceivedDate": "25/03/2021",
+        "Component": "FUEL SYSTEM, GASOLINE:DELIVERY:FUEL PUMP",
+        "Summary": "Honda (American Honda Motor Co.) is recalling certain 2019-2020 Acura MDX, MDX Sport Hybrid, RDX, TLX, Honda Accord, Civic Hatchback, Insight, 2019 Acura ILX, Honda Accord Hybrid, Civic Coupe, Civic Coupe Si, Civic Sedan, Civic Sedan Si, Civic Type R, Fit, HR-V, Odyssey, Passport, Pilot and Ridgeline, and 2018-2019 CR-V vehicles.  The low-pressure fuel pump inside the fuel tank may fail.",
+        "Consequence": "Fuel pump failure can cause an engine stall while driving, increasing the risk of a crash.",
+        "Remedy": "Honda will notify owners, and dealers will replace the fuel pump assembly, free of charge.  Owner letters were mailed May 18, 2021.  Owners may contact Honda customer service at 1-888-234-2138.  Note: This recall is an expansion of recall 20V-314.",
+        "Notes": "Owners may also contact the National Highway Traffic Safety Administration Vehicle Safety Hotline at 1-888-327-4236 (TTY 1-800-424-9153), or go to www.safercar.gov.",
+        "ModelYear": "2020",
+        "Make": "HONDA",
+        "Model": "CIVIC"
+      },
+      "error": null,
+      "tier": "A - Add/keep for USA daily recall MVP"
+    },
+    {
+      "name": "NHTSA Vehicle Products",
+      "category": "Cars / bikes / equipment reference",
+      "owner": "NHTSA",
+      "url": "https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/car",
+      "params": {
+        "format": "json"
+      },
+      "daily_life_value": "High",
+      "data_kind": "Vehicle reference / metadata",
+      "recommended_use": "Keep as reference source",
+      "request_url": "https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/car?format=json",
+      "reachable": true,
+      "http_status": 200,
+      "content_type": "application/json",
+      "json_parseable": true,
+      "record_count": 193,
+      "top_level_keys": [
+        "Count",
+        "Message",
+        "Results",
+        "SearchCriteria"
+      ],
+      "sample_record_keys": [
+        "MakeId",
+        "MakeName",
+        "VehicleTypeId",
+        "VehicleTypeName"
+      ],
+      "sample_record": {
+        "MakeId": 440,
+        "MakeName": "ASTON MARTIN",
+        "VehicleTypeId": 2,
+        "VehicleTypeName": "Passenger Car"
+      },
+      "error": null,
+      "tier": "B - Useful context/reference"
+    },
+    {
+      "name": "Recalls.gov",
+      "category": "Multi-agency recall portal",
+      "owner": "U.S. government recall portal",
+      "url": "https://www.recalls.gov/rss/recent.xml",
+      "params": {},
+      "daily_life_value": "Medium",
+      "data_kind": "RSS / recall aggregation",
+      "recommended_use": "Investigate RSS parser",
+      "request_url": "https://www.recalls.gov/rss/recent.xml",
+      "reachable": false,
+      "http_status": null,
+      "content_type": null,
+      "json_parseable": false,
+      "record_count": 0,
+      "top_level_keys": [],
+      "sample_record_keys": [],
+      "sample_record": null,
+      "error": "HTTP Error 503: Service Unavailable",
+      "tier": "D - Not reachable / needs fix"
+    },
+    {
+      "name": "EPA ECHO",
+      "category": "Environment / facility compliance",
+      "owner": "EPA",
+      "url": "https://echodata.epa.gov/echo/resource/cwa_rest_services.get_facilities",
+      "params": {
+        "output": "JSON",
+        "p_st": "MN",
+        "p_act": "Y",
+        "pageno": "1"
+      },
+      "daily_life_value": "Low",
+      "data_kind": "Facility/environment compliance",
+      "recommended_use": "Skip for consumer recall MVP",
+      "request_url": "https://echodata.epa.gov/echo/resource/cwa_rest_services.get_facilities?output=JSON&p_st=MN&p_act=Y&pageno=1",
+      "reachable": false,
+      "http_status": null,
+      "content_type": null,
+      "json_parseable": false,
+      "record_count": 0,
+      "top_level_keys": [],
+      "sample_record_keys": [],
+      "sample_record": null,
+      "error": "HTTP Error 404: 404",
+      "tier": "D - Not reachable / needs fix"
+    },
+    {
+      "name": "ClinicalTrials.gov",
+      "category": "Drug/device research context",
+      "owner": "NIH / NLM",
+      "url": "https://clinicaltrials.gov/api/v2/studies",
+      "params": {
+        "query.term": "metformin",
+        "pageSize": "2"
+      },
+      "daily_life_value": "Low",
+      "data_kind": "Clinical research, not recall",
+      "recommended_use": "Skip for recall MVP",
+      "request_url": "https://clinicaltrials.gov/api/v2/studies?query.term=metformin&pageSize=2",
+      "reachable": true,
+      "http_status": 200,
+      "content_type": "application/json",
+      "json_parseable": true,
+      "record_count": 0,
+      "top_level_keys": [
+        "nextPageToken",
+        "studies"
+      ],
+      "sample_record_keys": [],
+      "sample_record": {
+        "studies": [
+          {
+            "protocolSection": {
+              "identificationModule": {
+                "nctId": "NCT01269996",
+                "orgStudyIdInfo": {
+                  "id": "CRE-2010.523"
+                },
+                "organization": {
+                  "fullName": "Chinese University of Hong Kong",
+                  "class": "OTHER"
+                },
+                "briefTitle": "JanUmet Before Insulin Lantus In Eastern Population Evaluation Program (JUBILEE) In Type 2 Diabetic Patients",
+                "officialTitle": "JanUmet Before Insulin Lantus In Eastern Population Evaluation Program (JUBILEE) In Type 2 Diabetic Patients",
+                "acronym": "JUBILEE"
+              },
+              "statusModule": {
+                "statusVerifiedDate": "2015-08",
+                "overallStatus": "COMPLETED",
+                "expandedAccessInfo": {
+                  "hasExpandedAccess": false
+                },
+                "startDateStruct": {
+                  "date": "2011-05"
+                },
+                "primaryCompletionDateStruct": {
+                  "date": "2014-07",
+                  "type": "ACTUAL"
+                },
+                "completionDateStruct": {
+                  "date": "2015-02",
+                  "type": "ACTUAL"
+                },
+                "studyFirstSubmitDate": "2011-01-04",
+                "studyFirstSubmitQcDate": "2011-01-04",
+                "studyFirstPostDateStruct": {
+                  "date": "2011-01-05",
+                  "type": "ESTIMATED"
+                },
+                "lastUpdateSubmitDate": "2015-08-21",
+                "lastUpdatePostDateStruct": {
+                  "date": "2015-08-24",
+                  "type": "ESTIMATED"
+                }
+              },
+              "sponsorCollaboratorsModule": {
+                "responsibleParty": {
+                  "type": "PRINCIPAL_INVESTIGATOR",
+                  "investigatorFullName": "Juliana Chan",
+                  "investigatorTitle": "Professor",
+                  "investigatorAffiliation": "Chinese University of Hong Kong"
+                },
+                "leadSponsor": {
+                  "name": "Chinese University of Hong Kong",
+                  "class": "OTHER"
+                }
+              },
+              "oversightModule": {
+                "oversightHasDmc": true
+              },
+              "descriptionModule": {
+                "briefSummary": "To evaluate the efficacy and safety of a new treatment regimen of metformin plus sitagliptin (Janumet) followed by a long-acting basal insulin (Lantus) treatment compared to the usual treatment regimen of metformin followed by sulfonylurea and intermediate-acting basal insulin in Type 2 Diabetes Mellitus patients.",
+                "detailedDescription": "Type 2 diabetes mellitus (T2DM) accounts for more than 90% of all diabetes. The worldwide prevalence of T2DM is increasing.\n\nMicrovascular and macrovascular complications are well known to cause significant morbidities and shorten life expectancy in diabetic patients. T2DM is the leading cause of adult-onset blindness, renal failure, limbs amputation, ischaemic heart disease and stroke in the industrialized world. Progressive pancreatic beta-cell failure together with insulin resistance underlie the pathogenesis of T2DM.\n\nGlycaemic control is essential and fundamental to the management of diabetes. Randomized control trials have confirmed the long term benefits of achieving glycaemic control early in the course of disease on future clinical outcomes. Long term follow up of The Diabetes Control and Complications Trial Research Group (DCCT) and U.K. Prospective Diabetes Study (UKPDS) cohorts showed that improving glycaemic control reduces the incidences of both microvascular and macrovascular complications.\n\nIt is generally agreed that HbA1c \\<7% is a reasonable goal in adults to reduce risk of diabetes complications. Subgroup analyses of DCCT and UKPDS and results of Action in Diabetes and Vascular Disease: Preterax and Diamicron Modified Release Controlled Evaluation (ADVANCE) trial suggest a small but incremental benefit in microvascular outcomes with HbA1c values closer to normal. In the subgroup analysis of the ACCORD study, subjects without history of cardiovascular disease and attained HbA1c goal of 6.5% had lower risk of cardiovascular endpoints than those with HbA1c goal of 7%. Therefore, selected individual patients including those with short duration of diabetes, long life expectancy and no significant cardiovascular disease, may benefit from a more stringent HbA1c goal of \\<6.5%, a value close to normal individual.\n\nAccording to the American Diabetes Association (ADA) and the European Association for the Study of Diabetes, lifestyle modification plus Metformin is a well-validated step 1 therapy for patients with T2DM. Sulfonylurea or insulin treatment formed the step 2 therapy in those who fail to achieve optimal glycaemic control after step 1 treatment. Sulfonylurea is an insulin secretagogue. It acts in a glucose-independent fashion by increasing the insulin concentration irrespective of the ambient glucose concentration. Despite its efficacy, it is associated with increased risk of hypoglycaemia and weight gain.\n\nIncretins are gut-derived hormones that include Glucagon-like peptide-1 (GLP-1) and Glucose-dependent insulinotropic peptide (GIP). Incretins are released into the circulation after a meal. Both GLP-1 and GIP stimulate endogenous insulin secretion in a glucose-dependent fashion. They also inhibit glucagon secretion, delay gastric emptying and induce satiety. The combined effect of incretins in augmenting insulin secretion and suppressing glucagon reduces post-prandial glucose excursion. In animal models, GLP-1 has also been shown to preserve pancreatic beta-cell mass by increased proliferation and decreased apoptosis. In T2DM patients, the attenuated post-prandial GLP-1 secretion may partially explain the increased post-prandial rise in glucose concentration.\n\nHowever, incretins have very short half-lives of a few minutes. They are rapidly inactivated by the enzyme dipeptidyl peptidase IV (DPP-4) in the circulation. Inhibitors of the enzyme DPP-4 can augment active incretin levels by delaying the clearance of the active incretins, hence augmenting the incretin action with resultant improvement in glycaemic control in T2DM patients.\n\nIn later stage of T2DM, progressive pancreatic beta-cell failure frequently results in deterioration in glycaemic control despite oral drug treatment, necessitating supplementary insulin therapy. New generations of once-daily, long-acting basal insulin may have better safety profile in terms of less hypoglycaemic events compared with traditional intermediate-acting basal insulin. Supplementary basal insulin, when titrated appropriately, will almost always improve fasting blood glucose levels and HbA1c control.\n\nSitagliptin is an orally active, potent and highly selective DPP-4 inhibitor which was approved by the U.S. Food and Drug Administration (FDA) in October 2006 as a new class of oral drug treatment for T2DM. Sitagliptin is marketed as Januvia by Merck \\& Co. In April 2007, the FDA approved an oral combination of sitagliptin and metformin marketed as Janumet with preparations of 50/500mg and 50/1000mg dosage per tablet. Sitagliptin has been proved to be effective in treating T2DM with minimal risk of hypoglycaemia together with additional benefits on reducing glucagon, slowing gastric emptying and inducing satiety.\n\nInsulin glargine, marketed by Sanofi Aventis under the name Lantus, is a long-acting basal insulin analogue. It has the advantage of a long action duration of 18 to 26 hours and a peakless profile, which resembles basal insulin secretion of non-diabetic pancreatic beta-cells.\n\nIn T2DM patients, we proposed that a new treatment regimen consists of a combination of DPP-IV inhibitor plus metformin followed by long-acting basal insulin may be more effective in achieving good and sustained glycaemic control with less hypoglycaemic drawbacks compared with the traditional regimen of metformin followed by sulfonylurea and finally intermediate-acting insulin. This proposed new treatment regimen forms the basis of this study.\n\nThe objective of this multicentre, randomized, open-label prospective study is to evaluate the efficacy and safety of a new treatment regimen of metformin plus sitagliptin (Janumet) followed by a long-acting basal insulin (Lantus) treatment compared to the usual treatment regimen of metformin follow by sulfonylurea and intermediate-acting basal insulin in T2DM patients."
+              },
+              "conditionsModule": {
+                "conditions": [
+                  "Type 2 Diabetes Mellitus"
+                ],
+                "keywords": [
+                  "type 2 diabetes mellitus",
+                  "JUBILEE Study",
+                  "Janumet",
+                  "Lantus"
+                ]
+              },
+              "designModule": {
+                "studyType": "INTERVENTIONAL",
+                "phases": [
+                  "PHASE4"
+                ],
+                "designInfo": {
+                  "allocation": "RANDOMIZED",
+                  "interventionModel": "PARALLEL",
+                  "primaryPurpose": "TREATMENT",
+                  "maskingInfo": {
+                    "masking": "NONE"
+                  }
+                },
+                "enrollmentInfo": {
+                  "count": 71,
+                  "type": "ACTUAL"
+                }
+              },
+              "armsInterventionsModule": {
+                "armGroups": [
+                  {
+                    "label": "Metformin followed by gliclazide and protaphane",
+                    "type": "ACTIVE_COMPARATOR",
+                    "interventionNames": [
+                      "Drug: Janumet, Lantus",
+                      "Drug: metformin, gliclazide, protaphane"
+                    ]
+                  },
+                  {
+                    "label": "Janumet followed by Lantus insulin injection",
+                    "type": "ACTIVE_COMPARATOR",
+                    "interventionNames": [
+                      "Drug: Janumet, Lantus",
+                      "Drug: metformin, gliclazide, protaphane"
+                    ]
+                  }
+                ],
+                "interventions": [
+                  {
+                    "type": "DRUG",
+                    "name": "Janumet, Lantus",
+                    "description": "In this multicentre, randomized, open-label prospective study. Recruited patients will be randomized to one of the two treatment groups. Treatment efficacy and safety in terms of HbA1c control and hypoglycemic events will be evaluated.\n\nTreatment groups:\n\nGroup 1 - Metformin followed by Sulfonylurea (Gliclazide) and supplementary intermediate-acting insulin (Protaphane) injection.\n\nGroup 2 - Janumet followed by Lantus insulin injection.",
+                    "armGroupLabels": [
+                      "Janumet followed by Lantus insulin injection",
+                      "Metformin followed by gliclazide and protaphane"
+                    ]
+                  },
+                  {
+                    "type": "DRUG",
+                    "name": "metformin, gliclazide, protaphane",
+                    "description": "In this multicentre, randomized, open-label prospective study. Recruited patients will be randomized to one of the two treatment groups. Treatment efficacy and safety in terms of HbA1c control and hypoglycemic events will be evaluated.\n\nTreatment groups:\n\nGroup 1 - Metformin followed by Sulfonylurea (Gliclazide) and supplementary intermediate-acting insulin (Protaphane) injection.\n\nGroup 2 - Janumet followed by Lantus insulin injection.",
+                    "armGroupLabels": [
+                      "Janumet followed by Lantus insulin injection",
+                      "Metformin followed by gliclazide and protaphane"
+                    ]
+                  }
+                ]
+              },
+              "outcomesModule": {
+                "primaryOutcomes": [
+                  {
+                    "measure": "To evaluate the treatment efficacy",
+                    "description": "The change in HbA1c in 1 year compare to baseline.",
+                    "timeFrame": "one year"
+                  }
+                ],
+                "secondaryOutcomes": [
+                  {
+                    "measure": "proportion of patients with HbA1c <6.5% in 1 year",
+                    "description": "Secondary Outcome Measure: The proportion of patients with HbA1c \\<6.5% in 1 year.\n\nOther outcome measures: a)The change in body weight compare to baseline. b)Frequency of hypoglycaemia . Hypoglycemia is defined according to the ADA definitions and classifications of hypoglycaemia.",
+                    "timeFrame": "one year"
+                  }
+                ]
+              },
+              "eligibilityModule": {
+                "eligibilityCriteria": "Inclusion Criteria:\n\n1. Adult patients aged 18 to 80 years old at Visit 1.\n2. Male or female of Chinese ethnicity.\n3. Type 2 diabetic patients who are drug naïve with HbA1c ranged between 7.0% to 11.0%.\n4. Type 2 diabetic patients who are on single oral hypoglycaemic drug treatment or insulin treatment of duration less than 6 months are eligible after at least 3 months of washout period with diet control only prior to Visit 1 and satisfy the inclusion criteria of HbA1c ranged between 7.0% to 11.0%.\n5. Patient understands the study procedures, alternative treatments available, and the risks involved with the study, and voluntarily agrees to participate by providing written informed consent.\n6. Patient agrees to provide permission to obtain all medical records necessary for complete data ascertainment during study and follow-up period.\n\nExclusion Criteria:\n\n1. Patient has a history of type 1 diabetes mellitus or a history of ketoacidosis.\n2. Patients with HbA1c 9% to 11% who have severe symptoms and showing signs of decompensation (e.g. rapid weight loss and ketonuria) due to hyperglycaemia.\n3. On anti-obesity drugs 12 weeks prior to informed consent, patient in a weight loss program or intends to be involved in weight loss intervention outside that prescribed by the study.\n4. Patient has renal impairment defined as serum creatinine equal to/more than 123 umol/l (1.4mg/dL) in female and serum creatinine equal to/more than 132 umol/l (1.5mg/dL) in male.\n5. Significant liver impairment (ALT equal to /more than 2 times upper limit of normal range) or a medical history of active liver disease (other than non-alcoholic hepatic steatosis), including chronic active hepatitis B or C, primary biliary cirrhosis, liver cirrhosis or symptomatic gallbladder disease.\n6. Any history of cardiovascular disease, stroke or peripheral vascular disease.\n7. Any symptoms of ischaemic heart disease like angina.\n8. Renal transplant patients.\n9. Active malignant disease. Patients with malignant disease who have been successfully treated and disease-free for at least 5 years are eligible. However, patients with a history of leukaemia, lymphoma, aplastic anaemia, myeloproliferative or myelodysplastic disease, thrombocytopenia, malignant melanoma, or renal cell carcinoma are ineligible for the study regardless of the time since treatment.\n10. Patient has medical history that indicates a life expectancy of less than 5 years or might limit the individual's ability to take trial treatments for the duration of the study.\n11. Patient has a history or current evidence of any condition, therapy, laboratory abnormality, or other circumstance which, in the opinion of the investigator or coordinator, might pose a risk to the patient, make participation not in the patient's best interest, confound the results of the study (e.g. if patient cannot comply with requirements of the study), or interfere with the patient's participation for the full duration of the study.\n12. Patient has a known history of hypersensitivity, intolerance or any contraindication to either metformin, sulfonylurea, DPP-IV inhibitor or insulin.\n13. Active and uncontrolled thyroid diseases or active endocrine diseases like Cushing's syndrome or acromegaly.\n14. Pre-menopausal women (last menstruation 1 year prior to signing informed consent) who: are nursing or pregnant, or are of child-bearing potential and are not practicing an acceptable and reliable contraceptive methods, or do not plan to continue using this method throughout the study and do not agree to submit to periodic pregnancy testing during participation in the trial. Acceptable methods of birth control include transdermal patch, intra-uterine devices/systems (IUDs/IUSs), oral, implantable or injectable contraceptives, sexual abstinence and vasectomised partner. No exception will be made.\n15. Any medical illness or condition as judged by the investigators as ineligible to participate the study.\n16. Special population, e.g. prisoner, mentally disabled, persons with psychiatric disorders and investigators' student or employees.\n17. Patient is currently participating in or has participated in another study with an investigational compound or device within the prior 12 weeks of screening or signing the informed consent and does not agree to refrain from participating in any other study while participating in this study.\n18. Patient has undergone surgery within the prior 12 weeks or has major surgery planned during the study.\n19. Patient is on or is likely to require treatment with equal to/ more than 14 consecutive days or repeated courses of pharmacologic doses of corticosteroids.\n\n    Note: Inhaled, nasal, and topical corticosteroids are permitted.\n20. Patient has a clinically significant laboratory or ECG abnormality which, in the opinion of the investigator, exposes the patient to risk by enrolling in the study.\n21. History of drug abuse or alcohol abuse. History of recreational or illicit drugs used. Alcohol abuse includes heavy alcohol intake as defined by more than 2 drinks per day or more than 14 drinks per week, or binge drinking.\n22. Patient has a clinically significant haematological disorder (e.g., aplastic anaemia, myeloproliferative or myelodysplastic syndromes, thrombocytopenia, thalassaemia or thalassaemia trait).\n23. Blood donation 3 months prior to the start of the study and during the whole study period.",
+                "healthyVolunteers": false,
+                "sex": "ALL",
+                "minimumAge": "18 Years",
+                "maximumAge": "80 Years",
+                "stdAges": [
+                  "ADULT",
+                  "OLDER_ADULT"
+                ]
+              },
+              "contactsLocationsModule": {
+                "overallOfficials": [
+                  {
+                    "name": "Juliana CN CHAN, FRCP, MD",
+                    "affiliation": "Chinese University of Hong Kong",
+                    "role": "PRINCIPAL_INVESTIGATOR"
+                  }
+                ],
+                "locations": [
+                  {
+                    "facility": "Department of Medicine & Therapeutics, Prince of Wales Hospital, The Chinese University of Hong Kong",
+                    "city": "Hong Kong",
+                    "country": "Hong Kong",
+                    "geoPoint": {
+                      "lat": 22.27832,
+                      "lon": 114.17469
+                    }
+                  }
+                ]
+              }
+            },
+            "derivedSection": {
+              "miscInfoModule": {
+                "versionHolder": "2026-06-22"
+              },
+              "conditionBrowseModule": {
+                "meshes": [
+                  {
+                    "id": "D003924",
+                    "term": "Diabetes Mellitus, Type 2"
+                  }
+                ],
+                "ancestors": [
+                  {
+                    "id": "D003920",
+                    "term": "Diabetes Mellitus"
+                  },
+                  {
+                    "id": "D044882",
+                    "term": "Glucose Metabolism Disorders"
+                  },
+                  {
+                    "id": "D008659",
+                    "term": "Metabolic Diseases"
+                  },
+                  {
+                    "id": "D009750",
+                    "term": "Nutritional and Metabolic Diseases"
+                  },
+                  {
+                    "id": "D004700",
+                    "term": "Endocrine System Diseases"
+                  }
+                ]
+              },
+              "interventionBrowseModule": {
+                "meshes": [
+                  {
+                    "id": "D000068899",
+                    "term": "Sitagliptin Phosphate, Metformin Hydrochloride Drug Combination"
+                  },
+                  {
+                    "id": "D000069036",
+                    "term": "Insulin Glargine"
+                  },
+                  {
+                    "id": "D008687",
+                    "term": "Metformin"
+                  },
+                  {
+                    "id": "D005907",
+                    "term": "Gliclazide"
+                  },
+                  {
+                    "id": "D007328",
+                    "term": "Insulin"
+                  }
+                ],
+                "ancestors": [
+                  {
+                    "id": "D001645",
+                    "term": "Biguanides"
+                  },
+                  {
+                    "id": "D006146",
+                    "term": "Guanidines"
+                  },
+                  {
+                    "id": "D000578",
+                    "term": "Amidines"
+                  },
+                  {
+                    "id": "D009930",
+                    "term": "Organic Chemicals"
+                  },
+                  {
+                    "id": "D000068900",
+                    "term": "Sitagliptin Phosphate"
+                  },
+                  {
+                    "id": "D014230",
+                    "term": "Triazoles"
+                  },
+                  {
+                    "id": "D001393",
+                    "term": "Azoles"
+                  },
+                  {
+                    "id": "D006573",
+                    "term": "Heterocyclic Compounds, 1-Ring"
+                  },
+                  {
+                    "id": "D006571",
+                    "term": "Heterocyclic Compounds"
+                  },
+                  {
+                    "id": "D011719",
+                    "term": "Pyrazines"
+                  },
+                  {
+                    "id": "D004338",
+                    "term": "Drug Combinations"
+                  },
+                  {
+                    "id": "D004364",
+                    "term": "Pharmaceutical Preparations"
+                  },
+                  {
+                    "id": "D049528",
+                    "term": "Insulin, Long-Acting"
+                  },
+                  {
+                    "id": "D061385",
+                    "term": "Insulins"
+                  },
+                  {
+                    "id": "D010187",
+                    "term": "Pancreatic Hormones"
+                  },
+                  {
+                    "id": "D036361",
+                    "term": "Peptide Hormones"
+                  },
+                  {
+                    "id": "D006728",
+                    "term": "Hormones"
+                  },
+                  {
+                    "id": "D006730",
+                    "term": "Hormones, Hormone Substitutes, and Hormone Antagonists"
+                  },
+                  {
+                    "id": "D010455",
+                    "term": "Peptides"
+                  },
+                  {
+                    "id": "D000602",
+                    "term": "Amino Acids, Peptides, and Proteins"
+                  },
+                  {
+                    "id": "D000096926",
+                    "term": "Benzenesulfonamides"
+                  },
+                  {
+                    "id": "D013449",
+                    "term": "Sulfonamides"
+                  },
+                  {
+                    "id": "D000577",
+                    "term": "Amides"
+                  },
+                  {
+                    "id": "D013453",
+                    "term": "Sulfonylurea Compounds"
+                  },
+                  {
+                    "id": "D014508",
+                    "term": "Urea"
+                  },
+                  {
+                    "id": "D001555",
+                    "term": "Benzene Derivatives"
+                  },
+                  {
+                    "id": "D006841",
+                    "term": "Hydrocarbons, Aromatic"
+                  },
+                  {
+                    "id": "D006844",
+                    "term": "Hydrocarbons, Cyclic"
+                  },
+                  {
+                    "id": "D006838",
+                    "term": "Hydrocarbons"
+                  },
+                  {
+                    "id": "D013450",
+                    "term": "Sulfones"
+                  },
+                  {
+                    "id": "D013457",
+                    "term": "Sulfur Compounds"
+                  },
+                  {
+                    "id": "D011384",
+                    "term": "Proinsulin"
+                  }
+                ]
+              }
+            },
+            "hasResults": false
+          },
+          {
+            "protocolSection": {
+              "identificationModule": {
+                "nctId": "NCT03230786",
+                "orgStudyIdInfo": {
+                  "id": "KBP042/CD/003"
+                },
+                "secondaryIdInfos": [
+                  {
+                    "id": "2017-001061-24",
+                    "type": "EUDRACT_NUMBER"
+                  }
+                ],
+                "organization": {
+                  "fullName": "KeyBioscience AG",
+                  "class": "INDUSTRY"
+                },
+                "briefTitle": "Study to Evaluate the Efficacy and Safety of KBP-042 in Patients With Type 2 Diabetes",
+                "officialTitle": "A Double-blind, Placebo-controlled, Randomized Study to Evaluate the Efficacy and Safety of KBP-042 in Patients With Type 2 Diabetes"
+              },
+              "statusModule": {
+                "statusVerifiedDate": "2018-09",
+                "overallStatus": "COMPLETED",
+                "expandedAccessInfo": {
+                  "hasExpandedAccess": false
+                },
+                "startDateStruct": {
+                  "date": "2017-08-23",
+                  "type": "ACTUAL"
+                },
+                "primaryCompletionDateStruct": {
+                  "date": "2018-07-09",
+                  "type": "ACTUAL"
+                },
+                "completionDateStruct": {
+                  "date": "2018-07-31",
+                  "type": "ACTUAL"
+                },
+                "studyFirstSubmitDate": "2017-07-24",
+                "studyFirstSubmitQcDate": "2017-07-24",
+                "studyFirstPostDateStruct": {
+                  "date": "2017-07-26",
+                  "type": "ACTUAL"
+                },
+                "lastUpdateSubmitDate": "2018-09-10",
+                "lastUpdatePostDateStruct": {
+                  "date": "2018-09-11",
+                  "type": "ACTUAL"
+                }
+              },
+              "sponsorCollaboratorsModule": {
+                "responsibleParty": {
+                  "type": "SPONSOR"
+                },
+                "leadSponsor": {
+                  "name": "KeyBioscience AG",
+                  "class": "INDUSTRY"
+                },
+                "collaborators": [
+                  {
+                    "name": "Nordic Bioscience A/S",
+                    "class": "INDUSTRY"
+                  }
+                ]
+              },
+              "oversightModule": {
+                "oversightHasDmc": true,
+                "isFdaRegulatedDrug": false,
+                "isFdaRegulatedDevice": false
+              },
+              "descriptionModule": {
+                "briefSummary": "This is a multicentre, randomized, double-blind, placebo-controlled, parallel-group Phase II trial of twelve weeks of KBP-042 administered as daily s.c. injections in subjects with Type 2 Diabetes Mellitus with inadequate glycaemic control while treated with a stable dose of metformin.\n\nThe trial is planned to be performed in Czech Republic, Denmark, Moldova, Poland, Romania and United Kingdom"
+              },
+              "conditionsModule": {
+                "conditions": [
+                  "Type 2 Diabetes Mellitus"
+                ],
+                "keywords": [
+                  "Type 2 Diabetes Mellitus",
+                  "KBP-042"
+                ]
+              },
+              "designModule": {
+                "studyType": "INTERVENTIONAL",
+                "phases": [
+                  "PHASE2"
+                ],
+                "designInfo": {
+                  "allocation": "RANDOMIZED",
+                  "interventionModel": "PARALLEL",
+                  "primaryPurpose": "TREATMENT",
+                  "maskingInfo": {
+                    "masking": "TRIPLE",
+                    "whoMasked": [
+                      "PARTICIPANT",
+                      "CARE_PROVIDER",
+                      "INVESTIGATOR"
+                    ]
+                  }
+                },
+                "enrollmentInfo": {
+                  "count": 255,
+                  "type": "ACTUAL"
+                }
+              },
+              "armsInterventionsModule": {
+                "armGroups": [
+                  {
+                    "label": "Placebo",
+                    "type": "PLACEBO_COMPARATOR",
+                    "description": "Placebo QD for 12 weeks as add-on to metformin",
+                    "interventionNames": [
+                      "Drug: Daily injection of KBP/placebo for 12 weeks as add-on to metformin"
+                    ]
+                  },
+                  {
+                    "label": "15µg KBP-042 QD",
+                    "type": "EXPERIMENTAL",
+                    "description": "Up to 15µg KBP-042 QD for 12 weeks as add-on to metformin",
+                    "interventionNames": [
+                      "Drug: Daily injection of KBP/placebo for 12 weeks as add-on to metformin"
+                    ]
+                  },
+                  {
+                    "label": "30µg KBP-042 QD",
+                    "type": "EXPERIMENTAL",
+                    "description": "Up to 30µg KBP-042 QD for 12 weeks as add-on to metformin",
+                    "interventionNames": [
+                      "Drug: Daily injection of KBP/placebo for 12 weeks as add-on to metformin"
+                    ]
+                  },
+                  {
+                    "label": "50µg KBP-042 QD",
+                    "type": "EXPERIMENTAL",
+                    "description": "Up to 50µg KBP-042 QD for 12 weeks as add-on to metformin",
+                    "interventionNames": [
+                      "Drug: Daily injection of KBP/placebo for 12 weeks as add-on to metformin"
+                    ]
+                  }
+                ],
+                "interventions": [
+                  {
+                    "type": "DRUG",
+                    "name": "Daily injection of KBP/placebo for 12 weeks as add-on to metformin",
+                    "description": "Daily subcutaneous injection",
+                    "armGroupLabels": [
+                      "15µg KBP-042 QD",
+                      "30µg KBP-042 QD",
+                      "50µg KBP-042 QD",
+                      "Placebo"
+                    ]
+                  }
+                ]
+              },
+              "outcomesModule": {
+                "primaryOutcomes": [
+                  {
+                    "measure": "Change from baseline in blood HbA1c at 12 weeks versus placebo.",
+                    "timeFrame": "At 12 weeks"
+                  }
+                ],
+                "secondaryOutcomes": [
+                  {
+                    "measure": "Change from baseline in body weight at 12 weeks versus placebo.",
+                    "timeFrame": "At 12 weeks"
+                  },
+                  {
+                    "measure": "Change from baseline in fasting serum glucose at 12 weeks versus placebo",
+                    "timeFrame": "At 12 weeks"
+                  },
+                  {
+                    "measure": "Change from baseline in fasting serum insulin at 12 weeks versus placebo",
+                    "timeFrame": "At 12 weeks"
+                  },
+                  {
+                    "measure": "Change from baseline in fasting serum glucagon at 12 weeks versus placebo",
+                    "timeFrame": "At 12 weeks"
+                  },
+                  {
+                    "measure": "Proportion of subjects reaching a level of HbA1c below 7.0% (53 mmol/mol) at 12 weeks versus placebo",
+                    "timeFrame": "At 12 weeks"
+                  }
+                ]
+              },
+              "eligibilityModule": {
+                "eligibilityCriteria": "Inclusion Criteria:\n\n1. Male or female subjects, 18-75 years of age, both inclusive, at the time of the first screening visit. Women must be either using adequate, highly effective methods of contraception, be post-menopausal or be considered sterile due to tubal ligation or other surgical procedures at the time of randomization. Sexually active men with a female partner of childbearing potential must agree in the use of highly effective method of contraception by the female partner throughout the trial period.\n2. Subjects with type 2 diabetes mellitus diagnosis whose HbA1c levels are ≥7.0% and ≤10.0% (53 mmol/mol to 86 mmol/mol, respectively) at screening.\n3. Stable therapy (for at least 90 days prior to randomization) with metformin.\n4. Body mass index (BMI) ≥ 25.0 kg/m², and ≤ 45.0 kg/m².\n5. The subject is able to understand and comply with protocol requirements.\n6. The subject is able and willing to give written informed consent.\n\nExclusion Criteria:\n\n1. Investigator considering the subject inappropriate for inclusion in the study based on medical interview and/or physical examination.\n2. Past or present significant co-morbidity (other than type 2 diabetes mellitus) including, but not limited to: Active liver disease (other than asymptomatic non-alcoholic fatty liver disease), significant renal disease (including creatinine clearance \\< 45 ml/min by the Modification of Diet in Renal Disease (MDRD) method, congestive heart failure (NYHA class III or IV), myocardial infarction within the past 12 months, unstable angina pectoris.\n3. Prior treatment in clinical trials with dual amylin and calcitonin receptor agonists (DACRAs).\n4. Currently receiving medical treatment for obesity.\n5. History of bariatric surgery.\n6. Current alcohol abuse.\n7. Current medical non-metformin anti-diabetic therapy, including SGLT2-inhibitors, DPP4-inhibitors (dipeptidyl peptidase 4 inhibitors), GLP-1 (Glucagon-like peptide 1) analogues, insulin and sulfonylureas, for a period of 90 days prior to randomization.\n8. Use of thiazolidinediones (glitazones) lasting for more than one month within 90 days of randomization.\n9. Regular use of insulin or insulin analogues.\n10. History or presence of sensitivity or allergy to the study drug or drugs, to their components, or drugs of these classes or a history of drug or other allergy that contraindicates participation.\n11. History of sarcoma or other malignancy within the past five years, except adequately treated basal cell or squamous cell carcinoma of the skin, or resected cervical atypia or carcinoma in situ.\n12. Participation in a study trial with any investigational new drug (new chemical entity) within 90 days prior to the start of the study.\n13. Pregnant females as determined by positive serum or urine human chorionic gonadotropin (hCG) test at screening or prior to randomization or during the treatment phase of the trial.\n14. Breast-feeding women.\n15. Known positive test results for hepatitis C antibodies, hepatitis B surface antigen, and HIV at screening.\n16. ALT (alanine transaminase) or AST (aspartat transaminase) \\> 2.5 times the upper limit of normal at screening or other clinically significant liver function test abnormalities.\n17. Clinically significant ECG abnormalities, as judged by the investigator.",
+                "healthyVolunteers": false,
+                "sex": "ALL",
+                "minimumAge": "18 Years",
+                "maximumAge": "75 Years",
+                "stdAges": [
+                  "ADULT",
+                  "OLDER_ADULT"
+                ]
+              },
+              "contactsLocationsModule": {
+                "locations": [
+                  {
+                    "facility": "Diabetologická a Obezitologická ambulance",
+                    "city": "České Budějovice",
+                    "country": "Czechia",
+                    "geoPoint": {
+                      "lat": 48.97447,
+                      "lon": 14.47434
+                    }
+                  },
+                  {
+                    "facility": "Vdoviak Miroslav MUDr. - Interní Ambulance",
+                    "city": "Karlovy Vary",
+                    "zip": "360 17",
+                    "country": "Czechia",
+                    "geoPoint": {
+                      "lat": 50.23271,
+                      "lon": 12.87117
+                    }
+                  },
+                  {
+                    "facility": "Interní a Diabetologická ambulance, Clintrial s.r.o",
+                    "city": "Prague",
+                    "zip": "100 00",
+                    "country": "Czechia",
+                    "geoPoint": {
+                      "lat": 50.08804,
+                      "lon": 14.42076
+                    }
+                  },
+                  {
+                    "facility": "Endokrinologicky Ústav",
+                    "city": "Prague",
+                    "zip": "113 94",
+                    "country": "Czechia",
+                    "geoPoint": {
+                      "lat": 50.08804,
+                      "lon": 14.42076
+                    }
+                  },
+                  {
+                    "facility": "General University Hospital",
+                    "city": "Prague",
+                    "zip": "128 00",
+                    "country": "Czechia",
+                    "geoPoint": {
+                      "lat": 50.08804,
+                      "lon": 14.42076
+                    }
+                  },
+                  {
+                    "facility": "Institute for Clinical and experimental Medicine",
+                    "city": "Prague",
+                    "zip": "140 21",
+                    "country": "Czechia",
+                    "geoPoint": {
+                      "lat": 50.08804,
+                      "lon": 14.42076
+                    }
+                  },
+                  {
+                    "facility": "Diabet2 s.r.o",
+                    "city": "Prague",
+                    "country": "Czechia",
+                    "geoPoint": {
+                      "lat": 50.08804,
+                      "lon": 14.42076
+                    }
+                  },
+                  {
+                    "facility": "Interní a Diabetologická ambulance",
+                    "city": "Uherské Hradiště",
+                    "zip": "68 601",
+                    "country": "Czechia",
+                    "geoPoint": {
+                      "lat": 49.06975,
+                      "lon": 17.45969
+                    }
+                  },
+                  {
+                    "facility": "Bispebjerg Hospital, Endokrinologisk Afdeling",
+                    "city": "Bispebjerg",
+                    "state": "Copenhagen NV",
+                    "zip": "2400",
+                    "country": "Denmark",
+                    "geoPoint": {
+                      "lat": 55.71017,
+                      "lon": 12.53147
+                    }
+                  },
+                  {
+                    "facility": "Bioclinica",
+                    "city": "Ballerup Municipality",
+                    "state": "Copenhagen",
+                    "zip": "2750",
+                    "country": "Denmark",
+                    "geoPoint": {
+                      "lat": 55.73165,
+                      "lon": 12.36328
+                    }
+                  },
+                  {
+                    "facility": "Bioclinica",
+                    "city": "Aalborg",
+                    "state": "Jutland",
+                    "zip": "9000",
+                    "country": "Denmark",
+                    "geoPoint": {
+                      "lat": 57.048,
+                      "lon": 9.9187
+                    }
+                  },
+                  {
+                    "facility": "Aarhus University Hospital, Endocrinlogy Department",
+                    "city": "Aarhus",
+                    "state": "Jutland",
+                    "zip": "8000",
+                    "country": "Denmark",
+                    "geoPoint": {
+                      "lat": 56.15674,
+                      "lon": 10.21076
+                    }
+                  },
+                  {
+                    "facility": "Sydvestjysk Sygehus",
+                    "city": "Esbjerg",
+                    "state": "Jutland",
+                    "zip": "6700",
+                    "country": "Denmark",
+                    "geoPoint": {
+                      "lat": 55.47028,
+                      "lon": 8.45187
+                    }
+                  },
+                  {
+                    "facility": "Bioclinica",
+                    "city": "Vejle",
+                    "state": "Jutland",
+                    "zip": "7100",
+                    "country": "Denmark",
+                    "geoPoint": {
+                      "lat": 55.70927,
+                      "lon": 9.5357
+                    }
+                  },
+                  {
+                    "facility": "Holbæk Sygehus",
+                    "city": "Holbæk",
+                    "zip": "4300",
+                    "country": "Denmark",
+                    "geoPoint": {
+                      "lat": 55.7175,
+                      "lon": 11.71279
+                    }
+                  },
+                  {
+                    "facility": "Rtl Sm Srl/Scr",
+                    "city": "Chisinau",
+                    "zip": "MD2025",
+                    "country": "Moldova",
+                    "geoPoint": {
+                      "lat": 47.00902,
+                      "lon": 28.85938
+                    }
+                  },
+                  {
+                    "facility": "Rtl Sm Srl",
+                    "city": "Chisinau",
+                    "zip": "MD2025",
+                    "country": "Moldova",
+                    "geoPoint": {
+                      "lat": 47.00902,
+                      "lon": 28.85938
+                    }
+                  },
+                  {
+                    "facility": "Centrum Badań Klinicznych PI-House sp. z o.o.",
+                    "city": "Gdansk",
+                    "zip": "80-546",
+                    "country": "Poland",
+                    "geoPoint": {
+                      "lat": 54.35227,
+                      "lon": 18.64912
+                    }
+                  },
+                  {
+                    "facility": "Specjalistyczna Praktyka Lekarska Piotr Kubalski",
+                    "city": "Grudziądz",
+                    "zip": "86-302",
+                    "country": "Poland",
+                    "geoPoint": {
+                      "lat": 53.48411,
+                      "lon": 18.75366
+                    }
+                  },
+                  {
+                    "facility": "Medyczne Centrum Diabetologiczno Endokrynologiczno Metaboliczno",
+                    "city": "Krakow",
+                    "zip": "31-261",
+                    "country": "Poland",
+                    "geoPoint": {
+                      "lat": 50.06143,
+                      "lon": 19.93658
+                    }
+                  },
+                  {
+                    "facility": "Prywatny Gabinet Lekarski i Wizyty Lekarskie Jan Ruxer",
+                    "city": "Lodz",
+                    "zip": "90-074",
+                    "country": "Poland",
+                    "geoPoint": {
+                      "lat": 51.77058,
+                      "lon": 19.47395
+                    }
+                  },
+                  {
+                    "facility": "Prywatny Gabinet Lekarski M. Horodecki (budynek Medicus)",
+                    "city": "Opole",
+                    "zip": "45-367",
+                    "country": "Poland",
+                    "geoPoint": {
+                      "lat": 50.67119,
+                      "lon": 17.92604
+                    }
+                  },
+                  {
+                    "facility": "Centrum Medyczne Hygea",
+                    "city": "Tychy",
+                    "zip": "43-100",
+                    "country": "Poland",
+                    "geoPoint": {
+                      "lat": 50.13717,
+                      "lon": 18.96641
+                    }
+                  },
+                  {
+                    "facility": "Centrum Medyczne AMED",
+                    "city": "Warsaw",
+                    "zip": "01-518",
+                    "country": "Poland",
+                    "geoPoint": {
+                      "lat": 52.22977,
+                      "lon": 21.01178
+                    }
+                  },
+                  {
+                    "facility": "S.C. Policlinica CCBR S.R.L.",
+                    "city": "Bucharest",
+                    "zip": "030463",
+                    "country": "Romania",
+                    "geoPoint": {
+                      "lat": 44.43225,
+                      "lon": 26.10626
+                    }
+                  },
+                  {
+                    "facility": "Institutului Național de Diabet, Nutriție și Boli Metabolice \"Prof.Dr. N.C. Paulescu\"",
+                    "city": "Bucharest",
+                    "country": "Romania",
+                    "geoPoint": {
+                      "lat": 44.43225,
+                      "lon": 26.10626
+                    }
+                  },
+                  {
+                    "facility": "S.C Nicodiab S.R.L.",
+                    "city": "Bucharest",
+                    "country": "Romania",
+                    "geoPoint": {
+                      "lat": 44.43225,
+                      "lon": 26.10626
+                    }
+                  },
+                  {
+                    "facility": "S.C. Sfinx Medica S.R.L.",
+                    "city": "Constanța",
+                    "zip": "900412",
+                    "country": "Romania",
+                    "geoPoint": {
+                      "lat": 44.18073,
+                      "lon": 28.63432
+                    }
+                  },
+                  {
+                    "facility": "S.C. Mediab S.R.L.",
+                    "city": "Târgu Mureş",
+                    "country": "Romania",
+                    "geoPoint": {
+                      "lat": 46.54245,
+                      "lon": 24.55747
+                    }
+                  },
+                  {
+                    "facility": "St. Pancras",
+                    "city": "London",
+                    "zip": "WC1X 8QD",
+                    "country": "United Kingdom",
+                    "geoPoint": {
+                      "lat": 51.50853,
+                      "lon": -0.12574
+                    }
+                  }
+                ]
+              },
+              "ipdSharingStatementModule": {
+                "ipdSharing": "NO",
+                "description": "Not to be shared"
+              }
+            },
+            "derivedSection": {
+              "miscInfoModule": {
+                "versionHolder": "2026-06-22"
+              },
+              "conditionBrowseModule": {
+                "meshes": [
+                  {
+                    "id": "D003924",
+                    "term": "Diabetes Mellitus, Type 2"
+                  }
+                ],
+                "ancestors": [
+                  {
+                    "id": "D003920",
+                    "term": "Diabetes Mellitus"
+                  },
+                  {
+                    "id": "D044882",
+                    "term": "Glucose Metabolism Disorders"
+                  },
+                  {
+                    "id": "D008659",
+                    "term": "Metabolic Diseases"
+                  },
+                  {
+                    "id": "D009750",
+                    "term": "Nutritional and Metabolic Diseases"
+                  },
+                  {
+                    "id": "D004700",
+                    "term": "Endocrine System Diseases"
+                  }
+                ]
+              }
+            },
+            "hasResults": false
+          }
+        ],
+        "nextPageToken": "ZVNj7o2Elu8o3lp0U8OiprbumpOQJJxqZvCp"
+      },
+      "error": null,
+      "tier": "C - Not core recall MVP"
+    }
+  ]
+}
