@@ -18,6 +18,7 @@ from app.services.safety_source_adapters.base import (
 from app.services.safety_source_adapters.cpsc import CPSCRecallsAdapter
 from app.services.safety_source_adapters.fda_public import FDAPublicRecallsAdapter
 from app.services.safety_source_adapters.openfda_food import OpenFDAFoodEnforcementAdapter
+from app.services.safety_source_adapters.usda_fsis import USDAFSISRecallAdapter
 from app.services.safety_source_adapters.nhtsa import (
     NHTSARecallsAdapter,
     NHTSAVPICAdapter,
@@ -29,6 +30,7 @@ from app.sources.registry import (
     CPSC_RECALLS_API,
     FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
     OPENFDA_FOOD_ENFORCEMENT,
+    USDA_FSIS_RECALL,
     NHTSA_RECALLS_API_DATASETS,
     NHTSA_VPIC_VIN_DECODER_API,
 )
@@ -45,7 +47,7 @@ PUBLIC_DATA_DISCLAIMER = (
     "Results are informational and should be verified against the official source pages."
 )
 LIMITATIONS = [
-    "Version 1 checks CPSC consumer product recalls, openFDA Food Enforcement demo records, NHTSA vehicle recalls for VIN or make/model/year input, and the FDA public recalls page.",
+    "Version 1 checks CPSC consumer product recalls, openFDA Food Enforcement demo records, USDA FSIS recall demo records, NHTSA vehicle recalls for VIN or make/model/year input, and the FDA public recalls page.",
     "No matching public record was found in the checked U.S. sources. This does not certify that the product is safe.",
     "Search results depend on source-provided product names, company names, campaign metadata, recall descriptions, and public notice table text.",
     "If one source is temporarily unavailable, Dav AI returns partial results from remaining checked sources and lists the failed source.",
@@ -55,6 +57,7 @@ LIMITATIONS = [
 cpsc_adapter = CPSCRecallsAdapter()
 fda_public_adapter = FDAPublicRecallsAdapter()
 openfda_food_adapter = OpenFDAFoodEnforcementAdapter()
+usda_fsis_adapter = USDAFSISRecallAdapter()
 vpic_adapter = NHTSAVPICAdapter()
 nhtsa_recalls_adapter = NHTSARecallsAdapter()
 logger = logging.getLogger("medtrek.real_world_safety.workflow")
@@ -482,6 +485,25 @@ async def execute_real_world_safety_search(
                 request_id=request_id,
             ),
             source=OPENFDA_FOOD_ENFORCEMENT,
+            source_type="local official snapshot",
+            source_kind="structured_api",
+            query=search_query,
+            raw_query=raw_query,
+            limit=limit,
+            sort=sort,
+            request_id=request_id,
+            results=records,
+            sources_checked=sources_checked,
+            sources_failed=sources_failed,
+            source_audits=source_audits,
+        ),
+        _run_adapter_call(
+            adapter_call=lambda: usda_fsis_adapter.search(
+                query=search_query,
+                limit=limit,
+                request_id=request_id,
+            ),
+            source=USDA_FSIS_RECALL,
             source_type="local official snapshot",
             source_kind="structured_api",
             query=search_query,
