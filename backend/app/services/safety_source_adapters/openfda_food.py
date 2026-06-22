@@ -55,7 +55,7 @@ class OpenFDAFoodEnforcementAdapter:
                     record=demo_record,
                     retrieved_at=retrieved_at,
                     source_name=self.source["source_name"],
-                    source_url=first_text(demo_record.get("source_url"), self.endpoint),
+                    source_url=self.source["endpoint"],
                 )
 
                 if record_matches_query(normalized, query) or is_match:

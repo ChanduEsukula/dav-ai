@@ -124,6 +124,62 @@ def test_real_world_safety_product_and_fda_public_notice_searches(
         assert result["source_kind"] == "structured_api"
 
 
+
+@pytest.mark.parametrize(
+    ("query", "expected_source", "expected_text"),
+    [
+        ("undeclared milk", "openFDA Food Enforcement API", "undeclared milk"),
+        ("eye drops", "openFDA Drug Enforcement API", "Eye Drops"),
+        ("metformin", "openFDA Drug Enforcement API", "Metformin"),
+    ],
+)
+def test_real_world_safety_curated_official_openfda_sources(
+    monkeypatch,
+    query,
+    expected_source,
+    expected_text,
+):
+    _patch_persistence(monkeypatch)
+    _patch_public_source_http(monkeypatch)
+
+    response = client.get("/api/v1/real-world-safety/search", params={"q": query, "limit": 5})
+
+    assert response.status_code == 200
+    body = response.json()
+
+    checked_sources = {source["source_name"] for source in body["sources_checked"]}
+    assert expected_source in checked_sources
+    assert body["sources_failed"] == []
+    assert body["structured_api_matches"] >= 1
+    assert body["total_matches"] >= 1
+
+    source_entry = next(source for source in body["sources_checked"] if source["source_name"] == expected_source)
+    assert source_entry["source_kind"] == "structured_api"
+    assert source_entry["source_type"] == "local curated official snapshot"
+    assert source_entry["record_count"] >= 1
+
+    result = next(record for record in body["results"] if record["source_name"] == expected_source)
+    searchable = " ".join(
+        str(value)
+        for value in (
+            result["product_name"],
+            result["company_name"],
+            result["title"],
+            result["reason"],
+            result["recall_number"],
+        )
+        if value
+    )
+
+    assert expected_text.lower() in searchable.lower()
+    assert result["source_kind"] == "structured_api"
+    assert result["source_type"] == "local curated official snapshot"
+    assert result["record_url"] in {
+        "https://api.fda.gov/food/enforcement.json",
+        "https://api.fda.gov/drug/enforcement.json",
+    }
+
+
 def test_real_world_safety_vehicle_query_uses_nhtsa_recalls(monkeypatch):
     _patch_persistence(monkeypatch)
     _patch_public_source_http(monkeypatch)
