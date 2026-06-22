@@ -247,6 +247,64 @@ def test_real_world_safety_drug_reference_and_device_sources(
 @pytest.mark.parametrize(
     ("query", "expected_text"),
     [
+        ("heater", "Fire Hazard"),
+        ("baby stroller", "Stroller"),
+        ("bicycle helmet", "Bicycle Helmets"),
+    ],
+)
+def test_real_world_safety_cpsc_daily_product_snapshot(
+    monkeypatch,
+    query,
+    expected_text,
+):
+    _patch_persistence(monkeypatch)
+    _patch_public_source_http(monkeypatch)
+
+    response = client.get("/api/v1/real-world-safety/search", params={"q": query, "limit": 10})
+
+    assert response.status_code == 200
+    body = response.json()
+
+    checked_sources = {source["source_name"] for source in body["sources_checked"]}
+    assert "CPSC Recalls API" in checked_sources
+    assert body["sources_failed"] == []
+
+    source_entry = next(
+        source
+        for source in body["sources_checked"]
+        if source["source_name"] == "CPSC Recalls API"
+    )
+    assert source_entry["source_kind"] == "structured_api"
+    assert source_entry["source_url"] == "local:data/safety_sources/cpsc/cpsc_daily_products_curated_records.json"
+    assert source_entry["record_count"] >= 1
+
+    matching_results = [
+        record
+        for record in body["results"]
+        if record["source_name"] == "CPSC Recalls API"
+    ]
+    assert matching_results
+
+    searchable = " ".join(
+        str(value)
+        for record in matching_results
+        for value in (
+            record["title"],
+            record["product_name"],
+            record["reason"],
+            record["hazard_type"],
+            record["remedy"],
+        )
+        if value
+    )
+
+    assert expected_text.lower() in searchable.lower()
+    assert all(record["source_kind"] == "structured_api" for record in matching_results)
+
+
+@pytest.mark.parametrize(
+    ("query", "expected_text"),
+    [
         ("insulin pump", "openFDA device event report"),
         ("glucose meter", "openFDA device event report"),
         ("ventilator", "openFDA device event report"),

@@ -21,6 +21,7 @@ from app.sources.registry import CPSC_RECALLS_API
 logger = logging.getLogger("medtrek.real_world_safety.cpsc")
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
+DAILY_RECORDS_PATH = REPO_ROOT / "data" / "safety_sources" / "cpsc" / "cpsc_daily_products_curated_records.json"
 DEMO_RECORDS_PATH = REPO_ROOT / "data" / "safety_sources" / "cpsc" / "cpsc_demo_records.json"
 
 
@@ -28,7 +29,7 @@ class CPSCRecallsAdapter:
     def __init__(self, timeout_seconds: float = 5.0):
         self.timeout_seconds = timeout_seconds
         self.source = CPSC_RECALLS_API
-        self.endpoint = "local:data/safety_sources/cpsc/cpsc_demo_records.json"
+        self.endpoint = "local:data/safety_sources/cpsc/cpsc_daily_products_curated_records.json"
 
     async def search(
         self,
@@ -40,10 +41,10 @@ class CPSCRecallsAdapter:
         retrieved_at = utc_now_iso()
 
         try:
-            demo_records = _load_demo_records()
+            cpsc_records = _load_cpsc_records()
             records: list[NormalizedSafetyRecord] = []
 
-            for demo_record in demo_records:
+            for demo_record in cpsc_records:
                 search_blob = json.dumps(demo_record, ensure_ascii=False).lower()
                 query_text = query.lower().strip()
                 query_terms = [term for term in query_text.split() if term]
@@ -75,20 +76,21 @@ class CPSCRecallsAdapter:
                 retrieved_at=retrieved_at,
                 records=records,
                 raw_payload={
-                    "mode": "local_demo_snapshot",
-                    "path": str(DEMO_RECORDS_PATH.relative_to(REPO_ROOT)),
-                    "records_loaded": len(demo_records),
+                    "mode": "local_curated_official_snapshot",
+                    "path": str(DAILY_RECORDS_PATH.relative_to(REPO_ROOT)),
+                    "fallback_path": str(DEMO_RECORDS_PATH.relative_to(REPO_ROOT)),
+                    "records_loaded": len(cpsc_records),
                     "query": query,
                 },
                 upstream_status="success" if records else "empty",
             )
 
         except FileNotFoundError as exc:
-            message = f"CPSC demo snapshot file not found: {DEMO_RECORDS_PATH}"
+            message = f"CPSC curated snapshot file not found: {DAILY_RECORDS_PATH}"
             logger.warning(
-                "cpsc_demo_snapshot_missing",
+                "cpsc_curated_snapshot_missing",
                 extra={
-                    "event": "cpsc_demo_snapshot_missing",
+                    "event": "cpsc_curated_snapshot_missing",
                     "request_id": request_id,
                     "source_id": self.source["source_id"],
                     "query": query,
@@ -97,9 +99,9 @@ class CPSCRecallsAdapter:
             raise SafetySourceAdapterError(message, error_type="missing_snapshot") from exc
         except Exception as exc:
             logger.exception(
-                "cpsc_demo_snapshot_search_failed",
+                "cpsc_curated_snapshot_search_failed",
                 extra={
-                    "event": "cpsc_demo_snapshot_search_failed",
+                    "event": "cpsc_curated_snapshot_search_failed",
                     "request_id": request_id,
                     "source_id": self.source["source_id"],
                     "query": query,
@@ -108,14 +110,23 @@ class CPSCRecallsAdapter:
             raise SafetySourceAdapterError(str(exc), error_type="adapter_error") from exc
 
 
-def _load_demo_records() -> list[dict[str, Any]]:
-    with DEMO_RECORDS_PATH.open("r", encoding="utf-8") as file:
-        payload = json.load(file)
+def _load_cpsc_records() -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
 
-    if not isinstance(payload, list):
-        return []
+    for path in (DAILY_RECORDS_PATH, DEMO_RECORDS_PATH):
+        if not path.exists():
+            continue
 
-    return [item for item in payload if isinstance(item, dict)]
+        with path.open("r", encoding="utf-8") as file:
+            payload = json.load(file)
+
+        if isinstance(payload, list):
+            records.extend(item for item in payload if isinstance(item, dict))
+
+    if not records:
+        raise FileNotFoundError(str(DAILY_RECORDS_PATH))
+
+    return records
 
 
 def _normalize_cpsc_record(
