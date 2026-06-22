@@ -23,6 +23,7 @@ def test_registered_sources_include_current_public_source_surfaces():
         "openfda_drug_event",
             "rxnorm_rxnav_api",
             "dailymed_spl_api",
+            "openfda_drug_label",
             "openfda_device_enforcement",
             "openfda_device_event",
         "openfda_cosmetic_event",

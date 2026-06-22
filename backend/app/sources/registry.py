@@ -41,6 +41,15 @@ DAILYMED_SPL_API = {
     "update_cadence": "DailyMed SPL label updates",
 }
 
+OPENFDA_DRUG_LABEL = {
+    "source_id": "openfda_drug_label",
+    "source_name": "openFDA Drug Label API",
+    "endpoint": "https://api.fda.gov/drug/label.json",
+    "module": "RealWorldSafety",
+    "description": "Official openFDA drug label records for active ingredients, warnings, dosage, and usage sections.",
+    "update_cadence": "Source-dependent FDA drug label updates",
+}
+
 OPENFDA_DEVICE_ENFORCEMENT = {
     "source_id": "openfda_device_enforcement",
     "source_name": "openFDA Device Enforcement API",
@@ -151,6 +160,7 @@ REGISTERED_SOURCES = [
     OPENFDA_DRUG_EVENT,
     RXNORM_RXNAV_API,
     DAILYMED_SPL_API,
+    OPENFDA_DRUG_LABEL,
     OPENFDA_DEVICE_ENFORCEMENT,
     OPENFDA_DEVICE_EVENT,
     OPENFDA_COSMETIC_EVENT,

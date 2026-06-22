@@ -21,6 +21,7 @@ from app.services.safety_source_adapters.openfda_food import OpenFDAFoodEnforcem
 from app.services.safety_source_adapters.openfda_drug import OpenFDADrugEnforcementAdapter
 from app.services.safety_source_adapters.rxnorm import RxNormDrugReferenceAdapter
 from app.services.safety_source_adapters.dailymed import DailyMedSPLAdapter
+from app.services.safety_source_adapters.openfda_drug_label import OpenFDADrugLabelAdapter
 from app.services.safety_source_adapters.openfda_device import OpenFDADeviceEnforcementAdapter
 from app.services.safety_source_adapters.openfda_device_event import OpenFDADeviceEventAdapter
 from app.services.safety_source_adapters.nhtsa import (
@@ -35,6 +36,7 @@ from app.sources.registry import (
     FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
     OPENFDA_FOOD_ENFORCEMENT,
     OPENFDA_DRUG_ENFORCEMENT,
+    OPENFDA_DRUG_LABEL,
     RXNORM_RXNAV_API,
     DAILYMED_SPL_API,
     OPENFDA_DEVICE_ENFORCEMENT,
@@ -68,6 +70,7 @@ openfda_food_adapter = OpenFDAFoodEnforcementAdapter()
 openfda_drug_adapter = OpenFDADrugEnforcementAdapter()
 rxnorm_adapter = RxNormDrugReferenceAdapter()
 dailymed_adapter = DailyMedSPLAdapter()
+openfda_drug_label_adapter = OpenFDADrugLabelAdapter()
 openfda_device_adapter = OpenFDADeviceEnforcementAdapter()
 openfda_device_event_adapter = OpenFDADeviceEventAdapter()
 vpic_adapter = NHTSAVPICAdapter()
@@ -554,6 +557,25 @@ async def execute_real_world_safety_search(
                 request_id=request_id,
             ),
             source=DAILYMED_SPL_API,
+            source_type="local curated official snapshot",
+            source_kind="structured_api",
+            query=search_query,
+            raw_query=raw_query,
+            limit=limit,
+            sort=sort,
+            request_id=request_id,
+            results=records,
+            sources_checked=sources_checked,
+            sources_failed=sources_failed,
+            source_audits=source_audits,
+        ),
+        _run_adapter_call(
+            adapter_call=lambda: openfda_drug_label_adapter.search(
+                query=search_query,
+                limit=limit,
+                request_id=request_id,
+            ),
+            source=OPENFDA_DRUG_LABEL,
             source_type="local curated official snapshot",
             source_kind="structured_api",
             query=search_query,

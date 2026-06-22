@@ -91,6 +91,14 @@ values
         'DailyMed SPL label updates'
     ),
     (
+        'openfda_drug_label',
+        'openFDA Drug Label API',
+        'https://api.fda.gov/drug/label.json',
+        'RealWorldSafety',
+        'Official openFDA drug label records for active ingredients, warnings, dosage, and usage sections.',
+        'Source-dependent FDA drug label updates'
+    ),
+    (
         'openfda_device_enforcement',
         'openFDA Device Enforcement API',
         'https://api.fda.gov/device/enforcement.json',
