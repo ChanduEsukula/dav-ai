@@ -49,13 +49,17 @@ def parse_vehicle_query(query: str) -> VehicleIdentity | None:
         return None
 
     year = year_match.group(1)
-    after_year = compact_text(cleaned[year_match.end() :])
-    parts = after_year.split()
+    vehicle_text = compact_text(
+        f"{cleaned[:year_match.start()]} {cleaned[year_match.end():]}"
+    )
+    parts = vehicle_text.split()
+
     if len(parts) < 2:
         return None
 
     make = parts[0]
     model = " ".join(parts[1:])
+
     return VehicleIdentity(make=make, model=model, model_year=year)
 
 
