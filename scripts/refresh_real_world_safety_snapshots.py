@@ -11,10 +11,14 @@ ROOT = Path(__file__).resolve().parents[1]
 OPENFDA_FOOD_ENDPOINT = "https://api.fda.gov/food/enforcement.json"
 OPENFDA_DRUG_ENDPOINT = "https://api.fda.gov/drug/enforcement.json"
 OPENFDA_DEVICE_ENDPOINT = "https://api.fda.gov/device/enforcement.json"
+OPENFDA_DEVICE_EVENT_ENDPOINT = "https://api.fda.gov/device/event.json"
+CPSC_RECALLS_ENDPOINT = "https://www.saferproducts.gov/RestWebServices/Recall?format=json"
 
 OPENFDA_FOOD_OUT = ROOT / "data" / "safety_sources" / "food" / "openfda_food_curated_records.json"
 OPENFDA_DRUG_OUT = ROOT / "data" / "safety_sources" / "drug" / "openfda_drug_curated_records.json"
 OPENFDA_DEVICE_OUT = ROOT / "data" / "safety_sources" / "device" / "openfda_device_enforcement_curated_records.json"
+OPENFDA_DEVICE_EVENT_OUT = ROOT / "data" / "safety_sources" / "device" / "openfda_device_event_curated_records.json"
+CPSC_DAILY_PRODUCTS_OUT = ROOT / "data" / "safety_sources" / "cpsc" / "cpsc_daily_products_curated_records.json"
 
 
 def fetch_json(url: str) -> dict[str, Any]:
@@ -68,6 +72,97 @@ def fetch_openfda_records(endpoint: str, queries: list[str], *, max_records: int
     return records
 
 
+
+def fetch_openfda_device_event_records(
+    queries: list[str],
+    *,
+    max_records: int,
+) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    seen: set[str] = set()
+
+    for query in queries:
+        url = build_openfda_url(OPENFDA_DEVICE_EVENT_ENDPOINT, query, limit=10)
+        payload = fetch_json(url)
+
+        for record in payload.get("results", []):
+            key = str(record.get("mdr_report_key") or record.get("report_number") or "")
+            if not key or key in seen:
+                continue
+
+            seen.add(key)
+            records.append(record)
+
+            if len(records) >= max_records:
+                return records
+
+    return records
+
+
+def fetch_cpsc_daily_product_records(*, max_records: int) -> list[dict[str, Any]]:
+    daily_terms = [
+        "air fryer",
+        "power bank",
+        "charger",
+        "battery",
+        "scooter",
+        "bicycle",
+        "bike",
+        "helmet",
+        "heater",
+        "toaster",
+        "blender",
+        "stroller",
+        "crib",
+        "baby",
+        "toy",
+        "furniture",
+        "dresser",
+        "candle",
+        "vaporizer",
+        "lithium-ion",
+    ]
+
+    payload = fetch_json(CPSC_RECALLS_ENDPOINT)
+    if not isinstance(payload, list):
+        return []
+
+    selected: list[dict[str, Any]] = []
+    seen: set[str] = set()
+
+    for record in payload:
+        searchable = " ".join(
+            str(record.get(key) or "")
+            for key in [
+                "Name",
+                "Title",
+                "Description",
+                "Hazards",
+                "Remedies",
+                "ConsumerContact",
+                "Products",
+                "Injuries",
+                "ManufacturerCountries",
+            ]
+        ).lower()
+
+        if not any(term in searchable for term in daily_terms):
+            continue
+
+        recall_id = str(record.get("RecallID") or record.get("RecallNumber") or "")
+        if not recall_id or recall_id in seen:
+            continue
+
+        seen.add(recall_id)
+        selected.append(record)
+
+        if len(selected) >= max_records:
+            break
+
+    return selected
+
+
+
 def write_records(path: Path, records: list[dict[str, Any]]) -> None:
     if not records:
         raise RuntimeError(f"No records fetched for {path}")
@@ -109,6 +204,14 @@ def main() -> None:
         'reason_for_recall:"battery"',
     ]
 
+    device_event_queries = [
+        'device.generic_name:"INSULIN PUMP"',
+        'device.generic_name:"BLOOD GLUCOSE METER"',
+        'device.generic_name:"VENTILATOR"',
+        'device.brand_name:"TRILOGY"',
+        'device.brand_name:"CPAP"',
+    ]
+
     food_records = fetch_openfda_records(
         OPENFDA_FOOD_ENDPOINT,
         food_queries,
@@ -124,10 +227,17 @@ def main() -> None:
         device_queries,
         max_records=15,
     )
+    device_event_records = fetch_openfda_device_event_records(
+        device_event_queries,
+        max_records=30,
+    )
+    cpsc_records = fetch_cpsc_daily_product_records(max_records=80)
 
     write_records(OPENFDA_FOOD_OUT, food_records)
     write_records(OPENFDA_DRUG_OUT, drug_records)
     write_records(OPENFDA_DEVICE_OUT, device_records)
+    write_records(OPENFDA_DEVICE_EVENT_OUT, device_event_records)
+    write_records(CPSC_DAILY_PRODUCTS_OUT, cpsc_records)
 
 
 if __name__ == "__main__":
