@@ -20,13 +20,13 @@ from app.sources.registry import OPENFDA_FOOD_ENFORCEMENT
 logger = logging.getLogger("medtrek.real_world_safety.openfda_food")
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-DEMO_RECORDS_PATH = REPO_ROOT / "data" / "safety_sources" / "food" / "openfda_food_demo_records.json"
+DEMO_RECORDS_PATH = REPO_ROOT / "data" / "safety_sources" / "food" / "openfda_food_curated_records.json"
 
 
 class OpenFDAFoodEnforcementAdapter:
     def __init__(self):
         self.source = OPENFDA_FOOD_ENFORCEMENT
-        self.endpoint = "local:data/safety_sources/food/openfda_food_demo_records.json"
+        self.endpoint = "local:data/safety_sources/food/openfda_food_curated_records.json"
 
     async def search(
         self,
@@ -72,7 +72,7 @@ class OpenFDAFoodEnforcementAdapter:
                 retrieved_at=retrieved_at,
                 records=records,
                 raw_payload={
-                    "mode": "local_demo_snapshot",
+                    "mode": "local_curated_official_snapshot",
                     "path": str(DEMO_RECORDS_PATH.relative_to(REPO_ROOT)),
                     "records_loaded": len(demo_records),
                     "query": query,
