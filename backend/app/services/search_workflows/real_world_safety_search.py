@@ -19,6 +19,7 @@ from app.services.safety_source_adapters.cpsc import CPSCRecallsAdapter
 from app.services.safety_source_adapters.fda_public import FDAPublicRecallsAdapter
 from app.services.safety_source_adapters.openfda_food import OpenFDAFoodEnforcementAdapter
 from app.services.safety_source_adapters.openfda_drug import OpenFDADrugEnforcementAdapter
+from app.services.safety_source_adapters.rxnorm import RxNormDrugReferenceAdapter
 from app.services.safety_source_adapters.nhtsa import (
     NHTSARecallsAdapter,
     NHTSAVPICAdapter,
@@ -31,6 +32,7 @@ from app.sources.registry import (
     FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
     OPENFDA_FOOD_ENFORCEMENT,
     OPENFDA_DRUG_ENFORCEMENT,
+    RXNORM_RXNAV_API,
     NHTSA_RECALLS_API_DATASETS,
     NHTSA_VPIC_VIN_DECODER_API,
 )
@@ -47,7 +49,7 @@ PUBLIC_DATA_DISCLAIMER = (
     "Results are informational and should be verified against the official source pages."
 )
 LIMITATIONS = [
-    "Version 1 checks CPSC consumer product recalls, curated official openFDA Food Enforcement records, curated official openFDA Drug Enforcement records, NHTSA vehicle recalls for VIN or make/model/year input, and the FDA public recalls page.",
+    "Version 1 checks CPSC consumer product recalls, curated official openFDA Food Enforcement records, curated official openFDA Drug Enforcement records, RxNorm/RxNav drug-name reference records, NHTSA vehicle recalls for VIN or make/model/year input, and the FDA public recalls page.",
     "No matching public record was found in the checked U.S. sources. This does not certify that the product is safe.",
     "Search results depend on source-provided product names, company names, campaign metadata, recall descriptions, and public notice table text.",
     "If one source is temporarily unavailable, Dav AI returns partial results from remaining checked sources and lists the failed source.",
@@ -58,6 +60,7 @@ cpsc_adapter = CPSCRecallsAdapter()
 fda_public_adapter = FDAPublicRecallsAdapter()
 openfda_food_adapter = OpenFDAFoodEnforcementAdapter()
 openfda_drug_adapter = OpenFDADrugEnforcementAdapter()
+rxnorm_adapter = RxNormDrugReferenceAdapter()
 vpic_adapter = NHTSAVPICAdapter()
 nhtsa_recalls_adapter = NHTSARecallsAdapter()
 logger = logging.getLogger("medtrek.real_world_safety.workflow")
@@ -504,6 +507,25 @@ async def execute_real_world_safety_search(
                 request_id=request_id,
             ),
             source=OPENFDA_DRUG_ENFORCEMENT,
+            source_type="local curated official snapshot",
+            source_kind="structured_api",
+            query=search_query,
+            raw_query=raw_query,
+            limit=limit,
+            sort=sort,
+            request_id=request_id,
+            results=records,
+            sources_checked=sources_checked,
+            sources_failed=sources_failed,
+            source_audits=source_audits,
+        ),
+        _run_adapter_call(
+            adapter_call=lambda: rxnorm_adapter.search(
+                query=search_query,
+                limit=limit,
+                request_id=request_id,
+            ),
+            source=RXNORM_RXNAV_API,
             source_type="local curated official snapshot",
             source_kind="structured_api",
             query=search_query,

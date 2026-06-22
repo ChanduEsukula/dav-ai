@@ -23,6 +23,15 @@ OPENFDA_DRUG_EVENT = {
     "update_cadence": "Periodic FDA FAERS updates",
 }
 
+RXNORM_RXNAV_API = {
+    "source_id": "rxnorm_rxnav_api",
+    "source_name": "RxNorm/RxNav API",
+    "endpoint": "https://rxnav.nlm.nih.gov/REST",
+    "module": "RealWorldSafety",
+    "description": "U.S. National Library of Medicine RxNorm drug terminology source used for drug-name normalization and RXCUI reference lookup.",
+    "update_cadence": "NLM RxNorm releases and RxNav API updates",
+}
+
 OPENFDA_COSMETIC_EVENT = {
     "source_id": "openfda_cosmetic_event",
     "source_name": "openFDA Cosmetic Event API",
@@ -113,6 +122,7 @@ REGIONAL_HEALTH_PULSE_DEMO = {
 REGISTERED_SOURCES = [
     OPENFDA_DRUG_ENFORCEMENT,
     OPENFDA_DRUG_EVENT,
+    RXNORM_RXNAV_API,
     OPENFDA_COSMETIC_EVENT,
     OPENFDA_FOOD_ENFORCEMENT,
     USDA_FSIS_RECALL,

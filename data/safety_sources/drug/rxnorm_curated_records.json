@@ -1,0 +1,93 @@
+[
+  {
+    "query": "Tylenol",
+    "rxcui": "202433",
+    "name": "Tylenol",
+    "synonym": "",
+    "tty": "BN",
+    "language": "ENG",
+    "suppress": "N",
+    "umlscui": "",
+    "source_url": "https://rxnav.nlm.nih.gov/REST/rxcui/202433/properties.json",
+    "source_name": "RxNorm/RxNav API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "Advil",
+    "rxcui": "153010",
+    "name": "Advil",
+    "synonym": "",
+    "tty": "BN",
+    "language": "ENG",
+    "suppress": "N",
+    "umlscui": "",
+    "source_url": "https://rxnav.nlm.nih.gov/REST/rxcui/153010/properties.json",
+    "source_name": "RxNorm/RxNav API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "Glucophage",
+    "rxcui": "151827",
+    "name": "Glucophage",
+    "synonym": "",
+    "tty": "BN",
+    "language": "ENG",
+    "suppress": "N",
+    "umlscui": "",
+    "source_url": "https://rxnav.nlm.nih.gov/REST/rxcui/151827/properties.json",
+    "source_name": "RxNorm/RxNav API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "metformin",
+    "rxcui": "6809",
+    "name": "metformin",
+    "synonym": "",
+    "tty": "IN",
+    "language": "ENG",
+    "suppress": "N",
+    "umlscui": "",
+    "source_url": "https://rxnav.nlm.nih.gov/REST/rxcui/6809/properties.json",
+    "source_name": "RxNorm/RxNav API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "acetaminophen",
+    "rxcui": "161",
+    "name": "acetaminophen",
+    "synonym": "",
+    "tty": "IN",
+    "language": "ENG",
+    "suppress": "N",
+    "umlscui": "",
+    "source_url": "https://rxnav.nlm.nih.gov/REST/rxcui/161/properties.json",
+    "source_name": "RxNorm/RxNav API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "ibuprofen",
+    "rxcui": "5640",
+    "name": "ibuprofen",
+    "synonym": "",
+    "tty": "IN",
+    "language": "ENG",
+    "suppress": "N",
+    "umlscui": "",
+    "source_url": "https://rxnav.nlm.nih.gov/REST/rxcui/5640/properties.json",
+    "source_name": "RxNorm/RxNav API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "cetirizine",
+    "rxcui": "20610",
+    "name": "cetirizine",
+    "synonym": "",
+    "tty": "IN",
+    "language": "ENG",
+    "suppress": "N",
+    "umlscui": "",
+    "source_url": "https://rxnav.nlm.nih.gov/REST/rxcui/20610/properties.json",
+    "source_name": "RxNorm/RxNav API",
+    "source_type": "real government API curated snapshot"
+  }
+]

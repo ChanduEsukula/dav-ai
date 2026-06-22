@@ -12,8 +12,8 @@ def test_list_sources_returns_registered_sources():
     assert response.status_code == 200
 
     body = response.json()
-    assert body["count"] == 11
-    assert len(body["sources"]) == 11
+    assert body["count"] == 12
+    assert len(body["sources"]) == 12
 
     source_ids = {source["source_id"] for source in body["sources"]}
 

@@ -75,6 +75,14 @@ values
         'Periodic FDA FAERS updates'
     ),
     (
+        'rxnorm_rxnav_api',
+        'RxNorm/RxNav API',
+        'https://rxnav.nlm.nih.gov/REST',
+        'RealWorldSafety',
+        'U.S. National Library of Medicine RxNorm drug terminology source used for drug-name normalization and RXCUI reference lookup.',
+        'NLM RxNorm releases and RxNav API updates'
+    ),
+    (
         'openfda_cosmetic_event',
         'openFDA Cosmetic Event API',
         'https://api.fda.gov/cosmetic/event.json',
