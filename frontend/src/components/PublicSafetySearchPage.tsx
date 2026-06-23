@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import {
   searchRealWorldSafety,
   type RealWorldSafetyRecord,
@@ -92,6 +92,44 @@ function formatRole(value: RealWorldSafetySourceRole) {
   return roleCopy[value]?.label ?? formatQueryType(value)
 }
 
+function quoteTerms(values: string[]) {
+  return values.map((value) => `"${value}"`).join(', ')
+}
+
+function normalizeSentence(value: string) {
+  return value.trim().replace(/\s+/g, ' ').toLocaleLowerCase('en-US')
+}
+
+function getVisibleSuggestedSteps(data: RealWorldSafetySearchResponse) {
+  const summary = data.safety_intelligence_summary
+  const expansionKeys = new Set(
+    summary.expansion_explanations.map((explanation) => normalizeSentence(explanation)),
+  )
+  const seen = new Set<string>()
+
+  return summary.suggested_next_steps.filter((step) => {
+    const key = normalizeSentence(step)
+    if (!key || expansionKeys.has(key) || seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}
+
+function truncateText(value: string, maxLength = 320) {
+  const normalizedValue = value.replace(/\s+/g, ' ').trim()
+  if (normalizedValue.length <= maxLength) {
+    return {
+      text: normalizedValue,
+      truncated: false,
+    }
+  }
+
+  return {
+    text: `${normalizedValue.slice(0, maxLength).trim()}...`,
+    truncated: true,
+  }
+}
+
 function getRecordTitle(record: RealWorldSafetyRecord) {
   return (
     record.title ||
@@ -100,6 +138,22 @@ function getRecordTitle(record: RealWorldSafetyRecord) {
     record.company_name ||
     'Public safety record'
   )
+}
+
+function resultRoleNotice(role: RealWorldSafetySourceRole) {
+  if (role === 'reference_identity') {
+    return 'Reference only - not a recall'
+  }
+  if (role === 'label_reference') {
+    return 'Official label reference - not a recall'
+  }
+  if (role === 'signal_report') {
+    return 'Signal report - not a recall or proof of causation'
+  }
+  if (role === 'recall_enforcement') {
+    return 'Official recall/enforcement record'
+  }
+  return 'Public source record'
 }
 
 function createSourceRoleLookup(data: RealWorldSafetySearchResponse | null) {
@@ -134,6 +188,31 @@ function SourceBadge({
   )
 }
 
+function CollapsiblePanel({
+  eyebrow,
+  title,
+  className = '',
+  children,
+}: {
+  eyebrow: string
+  title: string
+  className?: string
+  children: ReactNode
+}) {
+  return (
+    <details className={`public-safety-disclosure ${className}`}>
+      <summary>
+        <span>
+          <small>{eyebrow}</small>
+          <strong>{title}</strong>
+        </span>
+        <em>Show</em>
+      </summary>
+      <div className="public-safety-disclosure__body">{children}</div>
+    </details>
+  )
+}
+
 function StatusPill({
   active,
   label,
@@ -164,19 +243,24 @@ function QueryUnderstandingCard({
 }) {
   const understanding = data.query_understanding
   const identifiers = understanding.detected_identifiers
+  const detectedIdentifierEntries = (['vin', 'ndc', 'upc'] as const)
+    .map((identifier) => ({
+      identifier,
+      value: identifiers[identifier],
+    }))
+    .filter((entry) => Boolean(entry.value))
   const helpfulExpansion = understanding.expansion_search_terms_used.length
-    ? `Dav AI also checked ${understanding.expansion_search_terms_used.join(', ')} because it is a known related search term for the original query.`
+    ? `Dav AI also checked ${quoteTerms(understanding.expansion_search_terms_used)} because it is a known related search term for the original query.`
     : understanding.expanded_terms.length
-      ? `Dav AI recognized ${understanding.expanded_terms.join(', ')} as related search context, but those terms did not add extra records in this response.`
+      ? `Dav AI recognized ${quoteTerms(understanding.expanded_terms)} as related search context, but those terms did not add extra records in this response.`
       : 'Dav AI used the normalized query without extra expansion terms.'
 
   return (
-    <section className="public-safety-panel public-safety-query-understanding">
-      <div className="public-safety-section-heading">
-        <span>Query understanding</span>
-        <h2>How Dav AI interpreted the search</h2>
-      </div>
-
+    <CollapsiblePanel
+      eyebrow="Technical details"
+      title="Query understanding"
+      className="public-safety-query-understanding"
+    >
       <p className="public-safety-insight-note">{helpfulExpansion}</p>
 
       <div className="public-safety-detail-grid">
@@ -241,30 +325,34 @@ function QueryUnderstandingCard({
         </div>
       </div>
 
-      <div className="public-safety-identifiers">
-        {(['vin', 'ndc', 'upc'] as const).map((identifier) => (
-          <div key={identifier}>
-            <small>{identifier.toUpperCase()}</small>
-            <strong>{identifiers[identifier] ?? 'Not detected'}</strong>
-          </div>
-        ))}
-      </div>
-    </section>
+      {detectedIdentifierEntries.length > 0 && (
+        <div className="public-safety-identifiers">
+          {detectedIdentifierEntries.map(({ identifier, value }) => (
+            <div key={identifier}>
+              <small>{identifier.toUpperCase()}</small>
+              <strong>{value}</strong>
+            </div>
+          ))}
+        </div>
+      )}
+    </CollapsiblePanel>
   )
 }
 
-function SafetyIntelligenceSummaryCard({
+function SearchOutcomeCard({
   data,
 }: {
   data: RealWorldSafetySearchResponse
 }) {
   const summary = data.safety_intelligence_summary
+  const visibleSuggestedSteps = getVisibleSuggestedSteps(data).slice(0, 2)
+  const sourceIssueCount = data.sources_failed.length
 
   return (
-    <section className="public-safety-panel public-safety-summary-card">
+    <section className="public-safety-panel public-safety-outcome-card">
       <div className="public-safety-section-heading">
-        <span>Safety intelligence summary</span>
-        <h2>What the returned public records suggest</h2>
+        <span>Search outcome</span>
+        <h2>What Dav AI found in public records</h2>
       </div>
 
       <div className="public-safety-status-row">
@@ -286,22 +374,26 @@ function SafetyIntelligenceSummaryCard({
 
       <p className="public-safety-summary-text">{summary.plain_language_summary}</p>
 
-      {summary.expansion_explanations.length > 0 && (
-        <div className="public-safety-list-block">
-          <small>Expansion explanations</small>
-          <ul>
-            {summary.expansion_explanations.map((explanation) => (
-              <li key={explanation}>{explanation}</li>
-            ))}
-          </ul>
+      <div className="public-safety-outcome-facts">
+        <div>
+          <small>Total matches</small>
+          <strong>{data.total_matches}</strong>
         </div>
-      )}
+        <div>
+          <small>Sources checked</small>
+          <strong>{data.sources_checked.length}</strong>
+        </div>
+        <div className={sourceIssueCount > 0 ? 'public-safety-outcome-fact--issue' : ''}>
+          <small>Source issues</small>
+          <strong>{sourceIssueCount}</strong>
+        </div>
+      </div>
 
-      {summary.suggested_next_steps.length > 0 && (
+      {visibleSuggestedSteps.length > 0 && (
         <div className="public-safety-list-block">
-          <small>Suggested next steps</small>
+          <small>Next steps</small>
           <ul>
-            {summary.suggested_next_steps.map((step) => (
+            {visibleSuggestedSteps.map((step) => (
               <li key={step}>{step}</li>
             ))}
           </ul>
@@ -321,12 +413,11 @@ function SourceRolesPanel({
   const summary = data.safety_intelligence_summary
 
   return (
-    <section className="public-safety-panel public-safety-source-roles">
-      <div className="public-safety-section-heading">
-        <span>Source roles</span>
-        <h2>Matched sources by evidence type</h2>
-      </div>
-
+    <CollapsiblePanel
+      eyebrow="Source roles"
+      title="Matched sources by evidence type"
+      className="public-safety-source-roles"
+    >
       <div className="public-safety-role-grid">
         {roleOrder.map((role) => {
           const matchedSources = summary.matched_sources_by_role[role] ?? []
@@ -362,7 +453,7 @@ function SourceRolesPanel({
           )
         })}
       </div>
-    </section>
+    </CollapsiblePanel>
   )
 }
 
@@ -372,12 +463,11 @@ function SourceCoveragePanel({
   data: RealWorldSafetySearchResponse
 }) {
   return (
-    <section className="public-safety-panel public-safety-source-coverage">
-      <div className="public-safety-section-heading">
-        <span>Source coverage</span>
-        <h2>Sources checked for this search</h2>
-      </div>
-
+    <CollapsiblePanel
+      eyebrow="Source coverage"
+      title="Sources checked for this search"
+      className="public-safety-source-coverage"
+    >
       <div className="public-safety-coverage-grid">
         {data.sources_checked.map((source) => (
           <div key={`${source.source_id}-${source.source_name}`}>
@@ -400,7 +490,7 @@ function SourceCoveragePanel({
           ))}
         </div>
       )}
-    </section>
+    </CollapsiblePanel>
   )
 }
 
@@ -411,7 +501,14 @@ function ResultCard({
   record: RealWorldSafetyRecord
   role: RealWorldSafetySourceRole
 }) {
+  const [expanded, setExpanded] = useState(false)
   const title = getRecordTitle(record)
+  const reasonText = displayValue(
+    record.reason || record.hazard_type,
+    'No reason listed',
+  )
+  const reasonPreview = truncateText(reasonText)
+  const remedyText = displayValue(record.remedy, 'No remedy listed')
 
   return (
     <article className={`public-safety-result public-safety-result--${role}`}>
@@ -428,57 +525,85 @@ function ResultCard({
       <div className="public-safety-result__heading">
         <h3>{title}</h3>
         <p>
-          {displayValue(record.category, 'Uncategorized')} | {record.source_kind} |{' '}
-          {record.source_type}
+          {displayValue(record.category, 'Uncategorized')}
         </p>
+        <strong className={`public-safety-result__role-note public-safety-result__role-note--${role}`}>
+          {resultRoleNotice(role)}
+        </strong>
       </div>
 
-      <div className="public-safety-result__facts">
-        <div className="public-safety-result__fact public-safety-result__fact--wide">
-          <small>Reason / hazard</small>
-          <strong>
-            {displayValue(record.reason || record.hazard_type, 'No reason listed')}
-          </strong>
-        </div>
-        <div className="public-safety-result__fact public-safety-result__fact--wide">
-          <small>Remedy / use</small>
-          <strong>{displayValue(record.remedy, 'No remedy listed')}</strong>
-        </div>
+      <div className="public-safety-result__preview">
         <div>
-          <small>Product</small>
-          <strong>{displayValue(record.product_name)}</strong>
+          <small>Reason / hazard preview</small>
+          <p>{reasonPreview.text}</p>
         </div>
-        <div>
-          <small>Brand</small>
-          <strong>{displayValue(record.brand_name)}</strong>
-        </div>
-        <div>
-          <small>Company</small>
-          <strong>{displayValue(record.company_name)}</strong>
-        </div>
-        <div>
-          <small>Recall / record number</small>
-          <strong>{displayValue(record.recall_number)}</strong>
-        </div>
-        <div className="public-safety-result__fact public-safety-result__fact--wide">
-          <small>Affected models</small>
-          <strong>{displayList(record.affected_models)}</strong>
-        </div>
-        <div className="public-safety-result__fact public-safety-result__fact--wide">
-          <small>Affected lots</small>
-          <strong>{displayList(record.affected_lots)}</strong>
-        </div>
+        {reasonPreview.truncated && <span>Long official text shortened.</span>}
       </div>
+
+      {expanded && (
+        <div className="public-safety-result__facts">
+          <div className="public-safety-result__fact public-safety-result__fact--wide">
+            <small>Full reason / hazard</small>
+            <strong>{reasonText}</strong>
+          </div>
+          <div className="public-safety-result__fact public-safety-result__fact--wide">
+            <small>Remedy / use</small>
+            <strong>{remedyText}</strong>
+          </div>
+          <div>
+            <small>Product</small>
+            <strong>{displayValue(record.product_name)}</strong>
+          </div>
+          <div>
+            <small>Brand</small>
+            <strong>{displayValue(record.brand_name)}</strong>
+          </div>
+          <div>
+            <small>Company</small>
+            <strong>{displayValue(record.company_name)}</strong>
+          </div>
+          <div>
+            <small>Recall / record number</small>
+            <strong>{displayValue(record.recall_number)}</strong>
+          </div>
+          <div>
+            <small>Source type</small>
+            <strong>{record.source_type}</strong>
+          </div>
+          <div>
+            <small>Source kind</small>
+            <strong>{record.source_kind}</strong>
+          </div>
+          <div className="public-safety-result__fact public-safety-result__fact--wide">
+            <small>Affected models</small>
+            <strong>{displayList(record.affected_models)}</strong>
+          </div>
+          <div className="public-safety-result__fact public-safety-result__fact--wide">
+            <small>Affected lots</small>
+            <strong>{displayList(record.affected_lots)}</strong>
+          </div>
+        </div>
+      )}
 
       <div className="public-safety-result__footer">
-        <span>Retrieved {formatTimestamp(record.retrieved_at)}</span>
-        {record.record_url ? (
-          <a href={record.record_url} target="_blank" rel="noreferrer">
-            Open official record
-          </a>
-        ) : (
-          <span>Official record URL not listed</span>
-        )}
+        <button
+          type="button"
+          className="public-safety-result__toggle"
+          aria-expanded={expanded}
+          onClick={() => setExpanded((current) => !current)}
+        >
+          {expanded ? 'Hide details' : 'Show details'}
+        </button>
+        <div>
+          <span>Retrieved {formatTimestamp(record.retrieved_at)}</span>
+          {record.record_url ? (
+            <a href={record.record_url} target="_blank" rel="noreferrer">
+              Open official record
+            </a>
+          ) : (
+            <span>Official record URL not listed</span>
+          )}
+        </div>
       </div>
     </article>
   )
@@ -531,7 +656,6 @@ function PublicSafetySearchPage({
 }: PublicSafetySearchPageProps) {
   const initialSearchTerm = normalizeSearchTerm(initialRawQuery || initialQuery)
   const [query, setQuery] = useState(initialSearchTerm)
-  const [submittedQuery, setSubmittedQuery] = useState(initialSearchTerm)
   const [limit, setLimit] = useState(DEFAULT_LIMIT)
   const [data, setData] = useState<RealWorldSafetySearchResponse | null>(null)
   const [loading, setLoading] = useState(Boolean(initialSearchTerm))
@@ -571,7 +695,6 @@ function PublicSafetySearchPage({
 
       if (options.skipIfCompleted && completedKeyRef.current === requestKey) {
         setQuery(cleanQuery)
-        setSubmittedQuery(cleanQuery)
         setError('')
         setHelper('')
         return
@@ -583,7 +706,6 @@ function PublicSafetySearchPage({
       completedKeyRef.current = ''
 
       setQuery(cleanQuery)
-      setSubmittedQuery(cleanQuery)
       setData(null)
       setLoading(true)
       setError('')
@@ -629,7 +751,6 @@ function PublicSafetySearchPage({
         inFlightKeyRef.current = ''
         completedKeyRef.current = ''
         setQuery('')
-        setSubmittedQuery('')
         setData(null)
         setLoading(false)
         setError('')
@@ -758,40 +879,17 @@ function PublicSafetySearchPage({
 
       {data && !loading && (
         <>
-          <section className="public-safety-metrics" aria-label="Search summary">
-            <article>
-              <small>Total matches</small>
-              <strong>{data.total_matches}</strong>
-              <span>{data.count} shown from the ranked response</span>
-            </article>
-            <article>
-              <small>Sources checked</small>
-              <strong>{data.sources_checked.length}</strong>
-              <span>{data.sources_failed.length} source issues reported</span>
-            </article>
-            <article>
-              <small>Structured records</small>
-              <strong>{data.structured_api_matches}</strong>
-              <span>{data.public_notice_matches} public notice matches</span>
-            </article>
-            <article>
-              <small>Backend query</small>
-              <strong>{displayValue(data.query, submittedQuery)}</strong>
-              <span>{formatTimestamp(data.retrieval_timestamp)}</span>
-            </article>
-          </section>
-
-          <QueryUnderstandingCard data={data} />
-          <SafetyIntelligenceSummaryCard data={data} />
-          <SourceRolesPanel data={data} />
+          <SearchOutcomeCard data={data} />
           <ResultsList data={data} roleLookup={roleLookup} />
+          <QueryUnderstandingCard data={data} />
+          <SourceRolesPanel data={data} />
           <SourceCoveragePanel data={data} />
 
-          <section className="public-safety-panel public-safety-boundary">
-            <div className="public-safety-section-heading">
-              <span>Public data boundary</span>
-              <h2>What this response does not prove</h2>
-            </div>
+          <CollapsiblePanel
+            eyebrow="Public data boundary"
+            title="What this response does not prove"
+            className="public-safety-boundary"
+          >
             <p>{data.public_data_disclaimer}</p>
             {data.limitations.length > 0 && (
               <ul>
@@ -800,7 +898,7 @@ function PublicSafetySearchPage({
                 ))}
               </ul>
             )}
-          </section>
+          </CollapsiblePanel>
         </>
       )}
     </section>

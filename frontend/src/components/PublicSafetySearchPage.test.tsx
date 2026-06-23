@@ -15,6 +15,9 @@ vi.mock('../api/realWorldSafety', async () => {
 
 const mockSearchRealWorldSafety = vi.mocked(searchRealWorldSafety)
 
+const longOfficialReason =
+  'Official openFDA NDC Directory drug listing/reference record. This long official text includes active ingredient, labeler, dosage form, route, product package, and listing context that should not be dumped into the collapsed result preview for a normal user. It should remain available in the expanded details view for reviewers who need the full source text. UNIQUE_FULL_LABEL_WARNING_TAIL'
+
 const publicSafetyResponse: RealWorldSafetySearchResponse = {
   query: 'Advil',
   raw_query: 'Advil',
@@ -89,6 +92,7 @@ const publicSafetyResponse: RealWorldSafetySearchResponse = {
     plain_language_summary:
       'No matching recall/enforcement record was found in the returned results, but Dav AI found official identity or label reference records.',
     suggested_next_steps: [
+      'Dav AI also checked "ibuprofen" because it is a known related search term for the original query.',
       'Use the reference records to confirm exact product identity before searching official recall pages again.',
     ],
     caveat:
@@ -109,7 +113,7 @@ const publicSafetyResponse: RealWorldSafetySearchResponse = {
       brand_name: 'Advil',
       company_name: 'FDA / openFDA NDC Directory',
       title: 'openFDA NDC listing: Advil (ibuprofen)',
-      reason: 'Official openFDA NDC Directory drug listing/reference record.',
+      reason: longOfficialReason,
       hazard_type: 'Reference record, not a recall',
       remedy:
         'Use this record to identify the drug product, NDC, active ingredient, dosage form, route, labeler, and package listing before comparing against recall/enforcement sources.',
@@ -141,8 +145,19 @@ test('renders RealWorldSafety response data in the Public Safety Search page', a
     expect(mockSearchRealWorldSafety).toHaveBeenCalledWith('Advil', 10)
   })
 
-  expect(await screen.findByText(/How Dav AI interpreted the search/i)).toBeInTheDocument()
-  expect(screen.getByText(/Dav AI also checked ibuprofen/i)).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: /What Dav AI found in public records/i })).toBeInTheDocument()
+  expect(screen.getByText(/No matching recall\/enforcement record was found/i)).toBeInTheDocument()
+  expect(screen.getByText('Total matches')).toBeInTheDocument()
+  expect(screen.getByText('Sources checked')).toBeInTheDocument()
+  expect(screen.getByText('Source issues')).toBeInTheDocument()
+
+  expect(screen.getByText('Query understanding')).toBeVisible()
+  expect(screen.getByText('Raw query')).not.toBeVisible()
+
+  expect(screen.getByText('Reference only - not a recall')).toBeInTheDocument()
+  expect(screen.getByText(/Official openFDA NDC Directory drug listing/i)).toBeInTheDocument()
+  expect(screen.queryByText(/UNIQUE_FULL_LABEL_WARNING_TAIL/i)).not.toBeInTheDocument()
+
   expect(screen.getAllByText('advil').length).toBeGreaterThan(0)
   expect(screen.getAllByText('ibuprofen').length).toBeGreaterThan(0)
   expect(screen.getByText(/official identity or label reference records/i)).toBeInTheDocument()
@@ -153,4 +168,12 @@ test('renders RealWorldSafety response data in the Public Safety Search page', a
     'href',
     'https://api.fda.gov/drug/ndc.json',
   )
+
+  await user.click(screen.getByRole('button', { name: 'Show details' }))
+  expect(screen.getByText(/UNIQUE_FULL_LABEL_WARNING_TAIL/i)).toBeInTheDocument()
+
+  await user.click(screen.getByText('Query understanding'))
+  expect(
+    screen.getAllByText(/Dav AI also checked "ibuprofen" because it is a known related search term/i),
+  ).toHaveLength(1)
 })

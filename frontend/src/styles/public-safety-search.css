@@ -9,6 +9,7 @@
 
 .public-safety-hero,
 .public-safety-panel,
+.public-safety-disclosure,
 .public-safety-empty,
 .public-safety-result,
 .public-safety-metrics article {
@@ -253,7 +254,8 @@
 }
 
 .public-safety-empty,
-.public-safety-panel {
+.public-safety-panel,
+.public-safety-disclosure {
   border-radius: 26px;
   padding: 1.1rem;
 }
@@ -442,6 +444,51 @@
   margin-top: 0.9rem;
 }
 
+.public-safety-outcome-card {
+  display: grid;
+  gap: 0.15rem;
+  border-color: rgba(14, 116, 144, 0.14);
+  background:
+    radial-gradient(circle at top right, rgba(45, 212, 191, 0.16), transparent 34%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(238, 248, 250, 0.78));
+}
+
+.public-safety-outcome-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.95rem;
+}
+
+.public-safety-outcome-facts div {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.78rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(14, 116, 144, 0.1);
+}
+
+.public-safety-outcome-facts small {
+  color: rgba(15, 23, 42, 0.56);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.public-safety-outcome-facts strong {
+  color: #061523;
+  font-size: 1.45rem;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.public-safety-outcome-fact--issue {
+  border-color: rgba(245, 158, 11, 0.22) !important;
+  background: rgba(254, 243, 199, 0.74) !important;
+}
+
 .public-safety-list-block ul,
 .public-safety-boundary ul {
   display: grid;
@@ -465,6 +512,71 @@
   background: rgba(248, 250, 252, 0.9);
   border: 1px solid rgba(148, 163, 184, 0.18);
   font-weight: 750;
+}
+
+.public-safety-disclosure {
+  padding: 0;
+  overflow: hidden;
+}
+
+.public-safety-disclosure summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  cursor: pointer;
+  list-style: none;
+  padding: 1rem 1.1rem;
+}
+
+.public-safety-disclosure summary::-webkit-details-marker {
+  display: none;
+}
+
+.public-safety-disclosure summary span {
+  display: grid;
+  gap: 0.22rem;
+}
+
+.public-safety-disclosure summary small {
+  color: #007b87;
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.public-safety-disclosure summary strong {
+  color: #061523;
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.public-safety-disclosure summary em {
+  flex: 0 0 auto;
+  min-width: 58px;
+  padding: 0.38rem 0.62rem;
+  border-radius: 999px;
+  color: #0b4f71;
+  background: rgba(238, 248, 250, 0.9);
+  border: 1px solid rgba(11, 79, 113, 0.1);
+  font-style: normal;
+  font-size: 0.76rem;
+  font-weight: 950;
+  text-align: center;
+}
+
+.public-safety-disclosure[open] summary em {
+  font-size: 0;
+}
+
+.public-safety-disclosure[open] summary em::after {
+  content: "Hide";
+  font-size: 0.76rem;
+}
+
+.public-safety-disclosure__body {
+  padding: 0 1.1rem 1.1rem;
 }
 
 .public-safety-role-grid {
@@ -529,9 +641,9 @@
 }
 
 .public-safety-badge--reference_identity {
-  color: #166534;
-  background: rgba(220, 252, 231, 0.82);
-  border: 1px solid rgba(34, 197, 94, 0.16);
+  color: #0b4f71;
+  background: rgba(224, 242, 254, 0.86);
+  border: 1px solid rgba(14, 165, 233, 0.16);
 }
 
 .public-safety-badge--label_reference {
@@ -620,6 +732,73 @@
   overflow-wrap: anywhere;
 }
 
+.public-safety-result__role-note {
+  width: fit-content;
+  padding: 0.42rem 0.62rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 950;
+  line-height: 1.2;
+}
+
+.public-safety-result__role-note--recall_enforcement {
+  color: #991b1b;
+  background: rgba(254, 226, 226, 0.72);
+  border: 1px solid rgba(220, 38, 38, 0.14);
+}
+
+.public-safety-result__role-note--reference_identity,
+.public-safety-result__role-note--label_reference {
+  color: #0b4f71;
+  background: rgba(224, 242, 254, 0.84);
+  border: 1px solid rgba(14, 165, 233, 0.14);
+}
+
+.public-safety-result__role-note--signal_report {
+  color: #92400e;
+  background: rgba(254, 243, 199, 0.82);
+  border: 1px solid rgba(245, 158, 11, 0.18);
+}
+
+.public-safety-result__role-note--other {
+  color: #475569;
+  background: rgba(226, 232, 240, 0.74);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.public-safety-result__preview {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.82rem;
+  border-radius: 18px;
+  color: rgba(15, 23, 42, 0.72);
+  background: rgba(248, 250, 252, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.public-safety-result__preview small {
+  color: rgba(15, 23, 42, 0.56);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.public-safety-result__preview p {
+  margin: 0.3rem 0 0;
+  line-height: 1.55;
+}
+
+.public-safety-result__preview span {
+  width: fit-content;
+  padding: 0.35rem 0.52rem;
+  border-radius: 999px;
+  color: #92400e;
+  background: rgba(254, 243, 199, 0.78);
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
 .public-safety-result__facts {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -640,9 +819,38 @@
   grid-column: span 2;
 }
 
-.public-safety-result__footer a {
+.public-safety-result__footer > div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.public-safety-result__footer a,
+.public-safety-result__toggle {
   color: #007b87;
   font-weight: 950;
+}
+
+.public-safety-result__toggle {
+  border: 1px solid rgba(11, 79, 113, 0.12);
+  border-radius: 999px;
+  background: rgba(238, 248, 250, 0.9);
+  cursor: pointer;
+  padding: 0.5rem 0.72rem;
+  font: inherit;
+  font-size: 0.84rem;
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.public-safety-result__toggle:hover {
+  transform: translateY(-1px);
+  background: rgba(223, 248, 239, 0.94);
+  box-shadow: 0 10px 22px rgba(0, 123, 135, 0.12);
 }
 
 .public-safety-source-coverage {
@@ -695,6 +903,7 @@
   }
 
   .public-safety-detail-grid,
+  .public-safety-outcome-facts,
   .public-safety-metrics,
   .public-safety-coverage-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -736,6 +945,7 @@
   .public-safety-detail-grid,
   .public-safety-chip-grid,
   .public-safety-identifiers,
+  .public-safety-outcome-facts,
   .public-safety-metrics,
   .public-safety-result__facts,
   .public-safety-coverage-grid {

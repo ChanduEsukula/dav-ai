@@ -43,6 +43,9 @@
   border: 0;
   background: transparent;
   cursor: pointer;
+  min-height: 42px;
+  padding: 0 0.45rem;
+  margin-right: 0.25rem;
 }
 
 .nav-links {
