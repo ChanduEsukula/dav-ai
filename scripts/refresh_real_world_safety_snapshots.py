@@ -13,12 +13,14 @@ OPENFDA_DRUG_ENDPOINT = "https://api.fda.gov/drug/enforcement.json"
 OPENFDA_DEVICE_ENDPOINT = "https://api.fda.gov/device/enforcement.json"
 OPENFDA_DEVICE_EVENT_ENDPOINT = "https://api.fda.gov/device/event.json"
 CPSC_RECALLS_ENDPOINT = "https://www.saferproducts.gov/RestWebServices/Recall?format=json"
+USDA_FSIS_ENDPOINT = "https://www.fsis.usda.gov/fsis/api/recall/v/1"
 
 OPENFDA_FOOD_OUT = ROOT / "data" / "safety_sources" / "food" / "openfda_food_curated_records.json"
 OPENFDA_DRUG_OUT = ROOT / "data" / "safety_sources" / "drug" / "openfda_drug_curated_records.json"
 OPENFDA_DEVICE_OUT = ROOT / "data" / "safety_sources" / "device" / "openfda_device_enforcement_curated_records.json"
 OPENFDA_DEVICE_EVENT_OUT = ROOT / "data" / "safety_sources" / "device" / "openfda_device_event_curated_records.json"
 CPSC_DAILY_PRODUCTS_OUT = ROOT / "data" / "safety_sources" / "cpsc" / "cpsc_daily_products_curated_records.json"
+USDA_FSIS_OUT = ROOT / "data" / "safety_sources" / "food" / "usda_fsis_curated_records.json"
 
 
 def fetch_json(url: str) -> dict[str, Any]:
@@ -163,6 +165,71 @@ def fetch_cpsc_daily_product_records(*, max_records: int) -> list[dict[str, Any]
 
 
 
+
+def fetch_usda_fsis_records(*, max_records: int) -> list[dict[str, Any]]:
+    terms = [
+        "chicken",
+        "beef",
+        "turkey",
+        "pork",
+        "sausage",
+        "meatloaf",
+        "poultry",
+        "ham",
+        "egg",
+        "listeria",
+        "salmonella",
+        "e. coli",
+        "undeclared",
+        "allergen",
+        "misbranding",
+        "ready-to-eat",
+        "frozen",
+    ]
+
+    payload = fetch_json(USDA_FSIS_ENDPOINT)
+    if not isinstance(payload, list):
+        return []
+
+    selected: list[dict[str, Any]] = []
+    seen: set[str] = set()
+
+    for record in payload:
+        searchable = " ".join(
+            str(record.get(key) or "")
+            for key in [
+                "field_title",
+                "field_recall_number",
+                "field_recall_date",
+                "field_recall_reason",
+                "field_recall_classification",
+                "field_risk_level",
+                "field_product_items",
+                "field_establishment",
+                "field_states",
+                "field_summary",
+                "field_recall_type",
+                "field_processing",
+            ]
+        ).lower()
+
+        if not any(term in searchable for term in terms):
+            continue
+
+        recall_number = str(record.get("field_recall_number") or record.get("field_title") or "")
+        if not recall_number or recall_number in seen:
+            continue
+
+        seen.add(recall_number)
+        selected.append(record)
+
+        if len(selected) >= max_records:
+            break
+
+    return selected
+
+
+
 def write_records(path: Path, records: list[dict[str, Any]]) -> None:
     if not records:
         raise RuntimeError(f"No records fetched for {path}")
@@ -232,12 +299,14 @@ def main() -> None:
         max_records=30,
     )
     cpsc_records = fetch_cpsc_daily_product_records(max_records=80)
+    fsis_records = fetch_usda_fsis_records(max_records=100)
 
     write_records(OPENFDA_FOOD_OUT, food_records)
     write_records(OPENFDA_DRUG_OUT, drug_records)
     write_records(OPENFDA_DEVICE_OUT, device_records)
     write_records(OPENFDA_DEVICE_EVENT_OUT, device_event_records)
     write_records(CPSC_DAILY_PRODUCTS_OUT, cpsc_records)
+    write_records(USDA_FSIS_OUT, fsis_records)
 
 
 if __name__ == "__main__":

@@ -20,6 +20,7 @@ from app.services.safety_source_adapters.fda_public import FDAPublicRecallsAdapt
 from app.services.safety_source_adapters.openfda_food import OpenFDAFoodEnforcementAdapter
 from app.services.safety_source_adapters.openfda_drug import OpenFDADrugEnforcementAdapter
 from app.services.safety_source_adapters.rxnorm import RxNormDrugReferenceAdapter
+from app.services.safety_source_adapters.usda_fsis import USDAFSISRecallAdapter
 from app.services.safety_source_adapters.dailymed import DailyMedSPLAdapter
 from app.services.safety_source_adapters.openfda_drug_label import OpenFDADrugLabelAdapter
 from app.services.safety_source_adapters.openfda_device import OpenFDADeviceEnforcementAdapter
@@ -38,6 +39,7 @@ from app.sources.registry import (
     OPENFDA_DRUG_ENFORCEMENT,
     OPENFDA_DRUG_LABEL,
     RXNORM_RXNAV_API,
+    USDA_FSIS_RECALL,
     DAILYMED_SPL_API,
     OPENFDA_DEVICE_ENFORCEMENT,
     OPENFDA_DEVICE_EVENT,
@@ -67,6 +69,7 @@ LIMITATIONS = [
 cpsc_adapter = CPSCRecallsAdapter()
 fda_public_adapter = FDAPublicRecallsAdapter()
 openfda_food_adapter = OpenFDAFoodEnforcementAdapter()
+usda_fsis_adapter = USDAFSISRecallAdapter()
 openfda_drug_adapter = OpenFDADrugEnforcementAdapter()
 rxnorm_adapter = RxNormDrugReferenceAdapter()
 dailymed_adapter = DailyMedSPLAdapter()
@@ -501,6 +504,25 @@ async def execute_real_world_safety_search(
             ),
             source=OPENFDA_FOOD_ENFORCEMENT,
             source_type="local official snapshot",
+            source_kind="structured_api",
+            query=search_query,
+            raw_query=raw_query,
+            limit=limit,
+            sort=sort,
+            request_id=request_id,
+            results=records,
+            sources_checked=sources_checked,
+            sources_failed=sources_failed,
+            source_audits=source_audits,
+        ),
+        _run_adapter_call(
+            adapter_call=lambda: usda_fsis_adapter.search(
+                query=search_query,
+                limit=limit,
+                request_id=request_id,
+            ),
+            source=USDA_FSIS_RECALL,
+            source_type="local curated official snapshot",
             source_kind="structured_api",
             query=search_query,
             raw_query=raw_query,
