@@ -23,9 +23,11 @@ import './styles/ask-dav-ai.css'
 import './styles/search-glass.css'
 import './styles/query-typeahead.css'
 import './styles/productscan.css'
+import './styles/public-safety-search.css'
 import type { AssistantChatContext } from './api/assistant'
 import Navbar from './components/Navbar'
 import UniversalSafetySearch from './components/UniversalSafetySearch'
+import PublicSafetySearchPage from './components/PublicSafetySearchPage'
 import PharmacySafetyPage from './components/PharmacySafetyPage'
 import FoodSafetyPage from './components/FoodSafetyPage'
 import CosmeticSafetyPage from './components/CosmeticSafetyPage'
@@ -205,6 +207,13 @@ function App() {
 
           <Signals />
         </>
+      )}
+
+      {activePage === PAGE_IDS.PUBLIC_SAFETY && (
+        <PublicSafetySearchPage
+          initialQuery={safetyQuery}
+          initialRawQuery={rawSafetyQuery}
+        />
       )}
 
       {activePage === PAGE_IDS.PHARMACY_SAFETY && (

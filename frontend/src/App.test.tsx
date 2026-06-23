@@ -154,6 +154,7 @@ test('renders the current main navigation labels', () => {
 
   for (const label of [
     'Home',
+    'Public Safety',
     'Pharmacy Safety',
     'Food Safety',
     'Cosmetic Safety',

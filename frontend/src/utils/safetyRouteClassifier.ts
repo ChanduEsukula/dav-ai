@@ -4,7 +4,12 @@ import {
 } from './queryNormalization'
 import { PAGE_IDS, type SafetyDetailPage } from '../types/navigation'
 
-export type SafetyArea = 'pharmacy' | 'food' | 'cosmetic' | 'ambiguous'
+export type SafetyArea =
+  | 'public_safety'
+  | 'pharmacy'
+  | 'food'
+  | 'cosmetic'
+  | 'ambiguous'
 export type SafetyDetailArea = Exclude<SafetyArea, 'ambiguous'>
 
 export type SafetyRouteSuggestion = {
@@ -52,6 +57,43 @@ const pharmacyTerms = [
   'amoxicillin',
   'adderall',
   'insulin',
+]
+
+const publicSafetyTerms = [
+  'public safety',
+  'recall',
+  'recalls',
+  'tire',
+  'tires',
+  'vehicle',
+  'vin',
+  'toyota',
+  'honda',
+  'ford',
+  'tesla',
+  'truck',
+  'scooter',
+  'electric scooter',
+  'air fryer',
+  'airfryer',
+  'car seat',
+  'carseat',
+  'battery',
+  'power bank',
+  'powerbank',
+  'glucose meter',
+  'blood sugar monitor',
+  'blood sugar meter',
+  'cpap',
+  'insulin pump',
+  'ndc',
+  'upc',
+  'advil',
+  'tylonal',
+  'tylenol',
+  'motrin',
+  'benadryl',
+  'claritin',
 ]
 
 const foodTerms = [
@@ -127,11 +169,27 @@ const cosmeticSuggestion: SafetyRouteSuggestion = {
   page: PAGE_IDS.COSMETIC_SAFETY,
 }
 
+const publicSafetySuggestion: SafetyRouteSuggestion = {
+  area: 'public_safety',
+  label: 'Public Safety Search',
+  description:
+    'Check public recall, reference, label, vehicle, device, and consumer-product safety records.',
+  page: PAGE_IDS.PUBLIC_SAFETY,
+}
+
 const suggestionsByArea: Record<SafetyDetailArea, SafetyRouteSuggestion> = {
+  public_safety: publicSafetySuggestion,
   pharmacy: pharmacySuggestion,
   food: foodSuggestion,
   cosmetic: cosmeticSuggestion,
 }
+
+const allSuggestions = [
+  publicSafetySuggestion,
+  pharmacySuggestion,
+  foodSuggestion,
+  cosmeticSuggestion,
+]
 
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -157,11 +215,12 @@ export function classifySafetyQuery(rawQuery: string): SafetyRouteClassification
       confidence: 'low',
       reason:
         'Enter a product, drug, brand, food, supplement, cosmetic, or ingredient to search public records.',
-      suggestions: [pharmacySuggestion, foodSuggestion, cosmeticSuggestion],
+      suggestions: allSuggestions,
     }
   }
 
   const matches = {
+    public_safety: includesAnyTerm(normalizedQuery, publicSafetyTerms),
     pharmacy: includesAnyTerm(normalizedQuery, pharmacyTerms),
     food: includesAnyTerm(normalizedQuery, foodTerms),
     cosmetic: includesAnyTerm(normalizedQuery, cosmeticTerms),
@@ -171,8 +230,10 @@ export function classifySafetyQuery(rawQuery: string): SafetyRouteClassification
     .filter(([, matched]) => matched)
     .map(([area]) => area)
 
-  if (matchedAreas.length === 1) {
-    const primaryArea = matchedAreas[0]
+  if (matchedAreas.length === 1 || matchedAreas.includes('public_safety')) {
+    const primaryArea = matchedAreas.includes('public_safety')
+      ? 'public_safety'
+      : matchedAreas[0]
     const primarySuggestion = suggestionsByArea[primaryArea]
 
     return {
@@ -180,14 +241,16 @@ export function classifySafetyQuery(rawQuery: string): SafetyRouteClassification
       primaryArea,
       confidence: 'high',
       reason:
-        primaryArea === 'pharmacy'
+        primaryArea === 'public_safety'
+          ? 'This looks most relevant to public recall, reference, label, vehicle, device, or consumer-product records.'
+          : primaryArea === 'pharmacy'
           ? 'This looks most relevant to drug recalls or adverse event reporting.'
           : primaryArea === 'food'
             ? 'This looks most relevant to food or supplement safety records.'
             : 'This looks most relevant to cosmetic or personal-care safety records.',
       suggestions: [
         primarySuggestion,
-        ...[pharmacySuggestion, foodSuggestion, cosmeticSuggestion].filter(
+        ...allSuggestions.filter(
           (suggestion) => suggestion.area !== primaryArea,
         ),
       ],
@@ -202,7 +265,7 @@ export function classifySafetyQuery(rawQuery: string): SafetyRouteClassification
       reason: 'This query could match more than one safety area. Choose the best fit below.',
       suggestions: [
         ...matchedAreas.map((area) => suggestionsByArea[area]),
-        ...[pharmacySuggestion, foodSuggestion, cosmeticSuggestion].filter(
+        ...allSuggestions.filter(
           (suggestion) => !matchedAreas.includes(suggestion.area),
         ),
       ],
@@ -214,7 +277,7 @@ export function classifySafetyQuery(rawQuery: string): SafetyRouteClassification
     primaryArea: 'ambiguous',
     confidence: 'low',
     reason: 'Dav AI is not fully sure which safety area fits this search. Choose one to continue.',
-    suggestions: [pharmacySuggestion, foodSuggestion, cosmeticSuggestion],
+    suggestions: allSuggestions,
   }
 }
 

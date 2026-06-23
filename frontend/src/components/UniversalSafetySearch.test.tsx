@@ -63,7 +63,7 @@ test('shows quiet guidance for an empty universal search', async () => {
   await user.click(screen.getByRole('button', { name: 'Analyze' }))
 
   expect(screen.getByRole('status')).toHaveTextContent(
-    /Enter a product, drug, brand, food, supplement, cosmetic, or ingredient/i,
+    /Enter a product, vehicle, drug, brand, food, supplement, cosmetic, identifier, or ingredient/i,
   )
   expect(mockSearchRecalls).not.toHaveBeenCalled()
 })
@@ -116,6 +116,35 @@ test.each([
   },
 )
 
+test.each([
+  'tire',
+  'scooter',
+  'air fryer',
+  'car seat',
+  'battery',
+  'NDC 66715 6547',
+  'Advil',
+  'tylonal',
+  'blood sugar monitor',
+] as const)('routes %s to Public Safety Search from universal search', async (query) => {
+  const user = userEvent.setup()
+  render(<UniversalSafetySearch goToPage={mockGoToPage} />)
+
+  await user.type(screen.getByLabelText(/Safety search/i), query)
+  await user.click(screen.getByRole('button', { name: 'Analyze' }))
+
+  expect(
+    await screen.findByText(new RegExp(`${query} belongs in Public Safety Search`, 'i')),
+  ).toBeInTheDocument()
+  expect(mockSearchRecalls).not.toHaveBeenCalled()
+  expect(mockSearchDrugEvents).not.toHaveBeenCalled()
+  expect(mockSearchEverydaySafety).not.toHaveBeenCalled()
+  expect(mockSearchCosmeticEvents).not.toHaveBeenCalled()
+
+  await user.click(screen.getByRole('button', { name: 'Open Public Safety Search' }))
+  expect(mockGoToPage).toHaveBeenCalledWith('public-safety', query)
+})
+
 test('does not repeat a completed equivalent universal search', async () => {
   const user = userEvent.setup()
   render(<UniversalSafetySearch goToPage={mockGoToPage} />)
@@ -140,7 +169,7 @@ test('example chips clear previous universal search guidance', async () => {
 
   await user.click(screen.getByRole('button', { name: 'Analyze' }))
   expect(screen.getByRole('status')).toHaveTextContent(
-    /Enter a product, drug, brand, food, supplement, cosmetic, or ingredient/i,
+    /Enter a product, vehicle, drug, brand, food, supplement, cosmetic, identifier, or ingredient/i,
   )
 
   await user.click(screen.getByRole('button', { name: 'Chicken' }))
@@ -150,7 +179,7 @@ test('example chips clear previous universal search guidance', async () => {
   ).toBeInTheDocument()
   expect(
     screen.queryByText(
-      /Enter a product, drug, brand, food, supplement, cosmetic, or ingredient to search public records/i,
+      /Enter a product, vehicle, drug, brand, food, supplement, cosmetic, identifier, or ingredient to search public records/i,
     ),
   ).not.toBeInTheDocument()
 })

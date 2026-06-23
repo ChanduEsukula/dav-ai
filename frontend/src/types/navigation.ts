@@ -1,5 +1,6 @@
 export const PAGE_IDS = {
   HOME: 'home',
+  PUBLIC_SAFETY: 'public-safety',
   PHARMACY_SAFETY: 'pharmacy-safety',
   FOOD_SAFETY: 'food-safety',
   COSMETIC_SAFETY: 'cosmetic-safety',
@@ -17,6 +18,7 @@ export const PAGE_IDS = {
 export type ActivePage = (typeof PAGE_IDS)[keyof typeof PAGE_IDS]
 export type UrlPage = Exclude<ActivePage, typeof PAGE_IDS.HOME>
 export type SafetyDetailPage =
+  | typeof PAGE_IDS.PUBLIC_SAFETY
   | typeof PAGE_IDS.PHARMACY_SAFETY
   | typeof PAGE_IDS.FOOD_SAFETY
   | typeof PAGE_IDS.COSMETIC_SAFETY
@@ -28,6 +30,10 @@ type PageMetadata = {
 
 export const PAGE_METADATA = {
   [PAGE_IDS.HOME]: { id: PAGE_IDS.HOME, label: 'Home' },
+  [PAGE_IDS.PUBLIC_SAFETY]: {
+    id: PAGE_IDS.PUBLIC_SAFETY,
+    label: 'Public Safety',
+  },
   [PAGE_IDS.PHARMACY_SAFETY]: {
     id: PAGE_IDS.PHARMACY_SAFETY,
     label: 'Pharmacy Safety',
@@ -52,6 +58,7 @@ export const PAGE_METADATA = {
 } as const satisfies Record<ActivePage, PageMetadata>
 
 export const URL_PAGE_IDS = [
+  PAGE_IDS.PUBLIC_SAFETY,
   PAGE_IDS.PHARMACY_SAFETY,
   PAGE_IDS.FOOD_SAFETY,
   PAGE_IDS.COSMETIC_SAFETY,
@@ -68,6 +75,7 @@ export const URL_PAGE_IDS = [
 
 export const PRIMARY_NAV_PAGE_IDS = [
   PAGE_IDS.HOME,
+  PAGE_IDS.PUBLIC_SAFETY,
   PAGE_IDS.PHARMACY_SAFETY,
   PAGE_IDS.FOOD_SAFETY,
   PAGE_IDS.COSMETIC_SAFETY,
