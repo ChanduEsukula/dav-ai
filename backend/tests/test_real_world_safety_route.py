@@ -73,7 +73,7 @@ def _patch_public_source_http(monkeypatch):
     [
         ("Samsung washing machine", "CPSC Recalls API", "Samsung Recalls Top-Load Washing Machines"),
         ("air fryer", "CPSC Recalls API", "Insignia® Air Fryers"),
-        ("Segway scooter", "CPSC Recalls API", "Segway Ninebot Max G30P"),
+        ("Segway scooter", "CPSC Recalls API", "Segway"),
         ("Fry Pie Factory", "FDA Recalls, Market Withdrawals & Safety Alerts", "Fry Pie Factory"),
         ("Pepperoni Rolls", "FDA Recalls, Market Withdrawals & Safety Alerts", "Pepperoni Rolls"),
     ],

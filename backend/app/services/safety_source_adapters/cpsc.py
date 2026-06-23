@@ -18,7 +18,7 @@ from app.services.safety_source_adapters.base import (
 )
 from app.sources.registry import CPSC_RECALLS_API
 
-logger = logging.getLogger("medtrek.real_world_safety.cpsc")
+logger = logging.getLogger("dav_ai.real_world_safety.cpsc")
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 DAILY_RECORDS_PATH = REPO_ROOT / "data" / "safety_sources" / "cpsc" / "cpsc_daily_products_curated_records.json"
@@ -70,7 +70,7 @@ class CPSCRecallsAdapter:
             return SourceAdapterResult(
                 source_id=self.source["source_id"],
                 source_name=self.source["source_name"],
-                source_type="local official snapshot",
+                source_type="local curated official snapshot",
                 source_url=self.endpoint,
                 source_kind="structured_api",
                 retrieved_at=retrieved_at,
@@ -141,13 +141,24 @@ def _normalize_cpsc_record(
     remedies = record.get("Remedies") or record.get("remedies") or []
     manufacturers = record.get("Manufacturers") or record.get("manufacturers") or []
     importers = record.get("Importers") or record.get("importers") or []
+    distributors = record.get("Distributors") or record.get("distributors") or []
+    retailers = record.get("Retailers") or record.get("retailers") or []
+    product_upcs = record.get("ProductUPCs") or record.get("productUPCs") or []
+    remedy_options = record.get("RemedyOptions") or record.get("remedyOptions") or []
+    images = record.get("Images") or record.get("images") or []
 
     product_names = list_text(products, "Name", "name", "Description", "description")
     model_names = list_text(products, "Model", "model", "ModelNumber", "modelNumber")
+    unit_counts = list_text(products, "NumberOfUnits", "numberOfUnits")
+    upc_values = list_text(product_upcs, "UPC", "upc")
     hazard_names = list_text(hazards, "Name", "name", "Hazard", "hazard")
     remedy_names = list_text(remedies, "Name", "name", "Remedy", "remedy")
+    remedy_option_names = list_text(remedy_options, "Option", "option", "Name", "name")
     manufacturer_names = list_text(manufacturers, "Name", "name")
     importer_names = list_text(importers, "Name", "name")
+    distributor_names = list_text(distributors, "Name", "name")
+    retailer_names = list_text(retailers, "Name", "name")
+    image_urls = list_text(images, "URL", "url")
 
     title = first_text(record.get("Title"), record.get("title"))
     description = first_text(record.get("Description"), record.get("description"))
@@ -155,13 +166,45 @@ def _normalize_cpsc_record(
     company_name = first_text(
         "; ".join(manufacturer_names),
         "; ".join(importer_names),
+        "; ".join(distributor_names),
         record.get("Manufacturer"),
         record.get("manufacturer"),
     )
 
+    sold_at = first_text(record.get("SoldAtLabel"), record.get("soldAtLabel"), "; ".join(retailer_names))
+    hazard_text = first_text("; ".join(hazard_names))
+    retailer_text = first_text("; ".join(retailer_names))
+    upc_text = first_text("; ".join(upc_values))
+    image_text = first_text("; ".join(image_urls))
+
+    reason_parts = [
+        description,
+        f"Hazard: {hazard_text}" if hazard_text else None,
+        f"Sold at: {sold_at}" if sold_at else None,
+        f"Retailers: {retailer_text}" if retailer_text and retailer_text != sold_at else None,
+        f"UPC: {upc_text}" if upc_text else None,
+        f"Image: {image_text}" if image_text else None,
+    ]
+
+    remedy_parts = [
+        first_text("; ".join(remedy_names), record.get("Remedy")),
+        f"Remedy option: {'; '.join(remedy_option_names)}" if remedy_option_names else None,
+    ]
+
+    affected_models = [
+        value
+        for value in [*product_names, *model_names, *unit_counts]
+        if value
+    ]
+    affected_lots = [
+        value
+        for value in [*upc_values, sold_at, retailer_text]
+        if value
+    ]
+
     return NormalizedSafetyRecord(
         source_name=source_name,
-        source_type="local official snapshot",
+        source_type="local curated official snapshot",
         source_url=source_url,
         source_kind="structured_api",
         category=first_text(record.get("ProductType"), record.get("Category"), "Consumer product"),
@@ -169,13 +212,13 @@ def _normalize_cpsc_record(
         brand_name=first_text(record.get("Brand"), record.get("brand")),
         company_name=company_name,
         title=title,
-        reason=description,
-        hazard_type=first_text("; ".join(hazard_names)),
-        remedy=first_text("; ".join(remedy_names), record.get("Remedy")),
+        reason=" ".join(part for part in reason_parts if part) or description,
+        hazard_type=hazard_text,
+        remedy=" ".join(part for part in remedy_parts if part) or None,
         published_date=first_text(record.get("RecallDate"), record.get("recallDate")),
         recall_number=first_text(record.get("RecallNumber"), record.get("recallNumber")),
-        affected_models=model_names,
-        affected_lots=[],
+        affected_models=affected_models,
+        affected_lots=affected_lots,
         raw_payload_hash=stable_payload_hash(record),
         retrieved_at=retrieved_at,
         record_url=first_text(record.get("URL"), record.get("url"), source_url),
