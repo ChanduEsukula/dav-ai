@@ -79,17 +79,17 @@ export const PRIMARY_NAV_PAGE_IDS = [
   PAGE_IDS.PHARMACY_SAFETY,
   PAGE_IDS.FOOD_SAFETY,
   PAGE_IDS.COSMETIC_SAFETY,
-  PAGE_IDS.SAVED_MONITORS,
+  PAGE_IDS.ABOUT,
 ] as const satisfies readonly ActivePage[]
 
 export const OPERATIONS_NAV_PAGE_IDS = [
+  PAGE_IDS.SAVED_MONITORS,
   PAGE_IDS.AUDIT,
   PAGE_IDS.SOURCES,
   PAGE_IDS.SYSTEM,
 ] as const satisfies readonly ActivePage[]
 
 export const INFORMATION_NAV_PAGE_IDS = [
-  PAGE_IDS.ABOUT,
   PAGE_IDS.FAQ,
   PAGE_IDS.HELP,
 ] as const satisfies readonly ActivePage[]

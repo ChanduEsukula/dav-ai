@@ -184,13 +184,23 @@ test('opens ProductScan from the homepage experiment entry without adding primar
   expect(new URLSearchParams(window.location.search).get('page')).toBe(PAGE_IDS.PRODUCT_SCAN)
 })
 
-test('renders information navigation in the pill nav group', () => {
+test('renders focused navigation groups in the pill nav', () => {
   render(<App />)
 
-  for (const label of ['About', 'FAQ', 'Help']) {
+  expect(screen.getByRole('button', { name: 'About' }).closest('.nav-links')).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'About' }).closest('.nav-actions')).not.toBeInTheDocument()
+
+  for (const label of ['FAQ', 'Help']) {
     const navButton = screen.getByRole('button', { name: label })
 
     expect(navButton.closest('.nav-actions')).toBeInTheDocument()
+    expect(navButton.closest('.nav-links')).toBeInTheDocument()
+  }
+
+  for (const label of ['Monitors', 'Audit', 'Sources', 'System']) {
+    const navButton = screen.getByRole('button', { name: label })
+
+    expect(navButton.closest('.nav-links-secondary')).toBeInTheDocument()
     expect(navButton.closest('.nav-links')).toBeInTheDocument()
   }
 })

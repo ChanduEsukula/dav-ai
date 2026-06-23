@@ -60,11 +60,11 @@ function Navbar({
         Dav AI
       </button>
 
-      <div className="nav-links" aria-label="Primary modules">
+      <div className="nav-links" aria-label="Main pages">
         {primaryNavItems.map(renderNavItem)}
       </div>
 
-      <div className="nav-links nav-links-secondary" aria-label="Operations">
+      <div className="nav-links nav-links-secondary" aria-label="Advanced operations">
         {operationsNavItems.map(renderNavItem)}
       </div>
 
