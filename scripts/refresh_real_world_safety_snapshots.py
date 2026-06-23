@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OPENFDA_FOOD_ENDPOINT = "https://api.fda.gov/food/enforcement.json"
 OPENFDA_DRUG_ENDPOINT = "https://api.fda.gov/drug/enforcement.json"
 OPENFDA_DRUG_LABEL_ENDPOINT = "https://api.fda.gov/drug/label.json"
+OPENFDA_NDC_ENDPOINT = "https://api.fda.gov/drug/ndc.json"
 OPENFDA_DEVICE_ENDPOINT = "https://api.fda.gov/device/enforcement.json"
 OPENFDA_DEVICE_EVENT_ENDPOINT = "https://api.fda.gov/device/event.json"
 CPSC_RECALLS_ENDPOINT = "https://www.saferproducts.gov/RestWebServices/Recall?format=json"
@@ -21,6 +22,7 @@ USDA_FSIS_ENDPOINT = "https://www.fsis.usda.gov/fsis/api/recall/v/1"
 OPENFDA_FOOD_OUT = ROOT / "data" / "safety_sources" / "food" / "openfda_food_curated_records.json"
 OPENFDA_DRUG_OUT = ROOT / "data" / "safety_sources" / "drug" / "openfda_drug_curated_records.json"
 OPENFDA_DRUG_LABEL_OUT = ROOT / "data" / "safety_sources" / "drug" / "openfda_drug_label_curated_records.json"
+OPENFDA_NDC_OUT = ROOT / "data" / "safety_sources" / "drug" / "openfda_ndc_curated_records.json"
 OPENFDA_DEVICE_OUT = ROOT / "data" / "safety_sources" / "device" / "openfda_device_enforcement_curated_records.json"
 OPENFDA_DEVICE_EVENT_OUT = ROOT / "data" / "safety_sources" / "device" / "openfda_device_event_curated_records.json"
 CPSC_DAILY_PRODUCTS_OUT = ROOT / "data" / "safety_sources" / "cpsc" / "cpsc_daily_products_curated_records.json"
@@ -119,6 +121,34 @@ def fetch_openfda_drug_label_records(
 
     return records
 
+
+
+
+def fetch_openfda_ndc_records(
+    queries: list[str],
+    *,
+    max_records: int,
+) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    seen: set[str] = set()
+
+    for query in queries:
+        url = build_openfda_url(OPENFDA_NDC_ENDPOINT, query, limit=10)
+        payload = fetch_json(url)
+
+        for record in payload.get("results", []):
+            key = str(record.get("product_ndc") or record.get("product_id") or "")
+            if not key or key in seen:
+                continue
+
+            record["_dav_query"] = query
+            seen.add(key)
+            records.append(record)
+
+            if len(records) >= max_records:
+                return records
+
+    return records
 
 
 def fetch_openfda_device_event_records(
@@ -367,6 +397,19 @@ def main() -> None:
         'openfda.generic_name:"ALBUTEROL"',
     ]
 
+    ndc_queries = [
+        'brand_name:"TYLENOL"',
+        'generic_name:"ACETAMINOPHEN"',
+        'brand_name:"ADVIL"',
+        'generic_name:"IBUPROFEN"',
+        'brand_name:"BENADRYL"',
+        'generic_name:"DIPHENHYDRAMINE"',
+        'brand_name:"CLARITIN"',
+        'generic_name:"LORATADINE"',
+        'generic_name:"METFORMIN"',
+        'generic_name:"ALBUTEROL"',
+    ]
+
     device_queries = [
         'product_description:"glucose meter"',
         'product_description:"insulin pump"',
@@ -398,6 +441,10 @@ def main() -> None:
     drug_label_records = fetch_openfda_drug_label_records(
         drug_label_queries,
         max_records=30,
+    )
+    ndc_records = fetch_openfda_ndc_records(
+        ndc_queries,
+        max_records=40,
     )
     device_records = fetch_openfda_records(
         OPENFDA_DEVICE_ENDPOINT,
@@ -438,6 +485,14 @@ def main() -> None:
             refreshed_at=refreshed_at,
         ),
         manifest_entry(
+            source_id="openfda_ndc_directory",
+            source_name="openFDA NDC Directory API",
+            endpoint=OPENFDA_NDC_ENDPOINT,
+            snapshot_path=OPENFDA_NDC_OUT,
+            records=ndc_records,
+            refreshed_at=refreshed_at,
+        ),
+        manifest_entry(
             source_id="openfda_device_enforcement",
             source_name="openFDA Device Enforcement API",
             endpoint=OPENFDA_DEVICE_ENDPOINT,
@@ -474,6 +529,7 @@ def main() -> None:
     write_records(OPENFDA_FOOD_OUT, food_records)
     write_records(OPENFDA_DRUG_OUT, drug_records)
     write_records(OPENFDA_DRUG_LABEL_OUT, drug_label_records)
+    write_records(OPENFDA_NDC_OUT, ndc_records)
     write_records(OPENFDA_DEVICE_OUT, device_records)
     write_records(OPENFDA_DEVICE_EVENT_OUT, device_event_records)
     write_records(CPSC_DAILY_PRODUCTS_OUT, cpsc_records)

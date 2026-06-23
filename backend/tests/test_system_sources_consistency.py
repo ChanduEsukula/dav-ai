@@ -42,6 +42,7 @@ def test_sources_route_count_and_ids_match_shared_registry():
             "rxnorm_rxnav_api",
             "dailymed_spl_api",
             "openfda_drug_label",
+            "openfda_ndc_directory",
             "openfda_device_enforcement",
             "openfda_device_event",
         "openfda_cosmetic_event",

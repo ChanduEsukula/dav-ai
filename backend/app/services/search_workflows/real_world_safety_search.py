@@ -23,6 +23,7 @@ from app.services.safety_source_adapters.rxnorm import RxNormDrugReferenceAdapte
 from app.services.safety_source_adapters.usda_fsis import USDAFSISRecallAdapter
 from app.services.safety_source_adapters.dailymed import DailyMedSPLAdapter
 from app.services.safety_source_adapters.openfda_drug_label import OpenFDADrugLabelAdapter
+from app.services.safety_source_adapters.openfda_ndc import OpenFDANDCDirectoryAdapter
 from app.services.safety_source_adapters.openfda_device import OpenFDADeviceEnforcementAdapter
 from app.services.safety_source_adapters.openfda_device_event import OpenFDADeviceEventAdapter
 from app.services.safety_source_adapters.nhtsa import (
@@ -38,6 +39,7 @@ from app.sources.registry import (
     OPENFDA_FOOD_ENFORCEMENT,
     OPENFDA_DRUG_ENFORCEMENT,
     OPENFDA_DRUG_LABEL,
+    OPENFDA_NDC_DIRECTORY,
     RXNORM_RXNAV_API,
     USDA_FSIS_RECALL,
     DAILYMED_SPL_API,
@@ -59,7 +61,7 @@ PUBLIC_DATA_DISCLAIMER = (
     "Results are informational and should be verified against the official source pages."
 )
 LIMITATIONS = [
-    "Version 1 checks CPSC consumer product recalls, curated official openFDA Food Enforcement records, curated official openFDA Drug Enforcement records, RxNorm/RxNav drug-name reference records, DailyMed official SPL drug label records, openFDA medical device enforcement records, openFDA medical device adverse-event reports, NHTSA vehicle recalls for VIN or make/model/year input, and the FDA public recalls page.",
+    "Version 1 checks CPSC consumer product recalls, curated official openFDA Food Enforcement records, curated official openFDA Drug Enforcement records, RxNorm/RxNav drug-name reference records, DailyMed official SPL drug label records, openFDA NDC Directory drug identity/reference records, openFDA medical device enforcement records, openFDA medical device adverse-event reports, NHTSA vehicle recalls for VIN or make/model/year input, and the FDA public recalls page.",
     "No matching public record was found in the checked U.S. sources. This does not certify that the product is safe.",
     "Search results depend on source-provided product names, company names, campaign metadata, recall descriptions, and public notice table text.",
     "If one source is temporarily unavailable, Dav AI returns partial results from remaining checked sources and lists the failed source.",
@@ -74,11 +76,12 @@ openfda_drug_adapter = OpenFDADrugEnforcementAdapter()
 rxnorm_adapter = RxNormDrugReferenceAdapter()
 dailymed_adapter = DailyMedSPLAdapter()
 openfda_drug_label_adapter = OpenFDADrugLabelAdapter()
+openfda_ndc_adapter = OpenFDANDCDirectoryAdapter()
 openfda_device_adapter = OpenFDADeviceEnforcementAdapter()
 openfda_device_event_adapter = OpenFDADeviceEventAdapter()
 vpic_adapter = NHTSAVPICAdapter()
 nhtsa_recalls_adapter = NHTSARecallsAdapter()
-logger = logging.getLogger("medtrek.real_world_safety.workflow")
+logger = logging.getLogger("dav_ai.real_world_safety.workflow")
 
 
 def _save_audit_event_with_request_id(audit_event: dict[str, Any], request_id: str | None):
@@ -598,6 +601,25 @@ async def execute_real_world_safety_search(
                 request_id=request_id,
             ),
             source=OPENFDA_DRUG_LABEL,
+            source_type="local curated official snapshot",
+            source_kind="structured_api",
+            query=search_query,
+            raw_query=raw_query,
+            limit=limit,
+            sort=sort,
+            request_id=request_id,
+            results=records,
+            sources_checked=sources_checked,
+            sources_failed=sources_failed,
+            source_audits=source_audits,
+        ),
+        _run_adapter_call(
+            adapter_call=lambda: openfda_ndc_adapter.search(
+                query=search_query,
+                limit=limit,
+                request_id=request_id,
+            ),
+            source=OPENFDA_NDC_DIRECTORY,
             source_type="local curated official snapshot",
             source_kind="structured_api",
             query=search_query,

@@ -50,6 +50,15 @@ OPENFDA_DRUG_LABEL = {
     "update_cadence": "Source-dependent FDA drug label updates",
 }
 
+OPENFDA_NDC_DIRECTORY = {
+    "source_id": "openfda_ndc_directory",
+    "source_name": "openFDA NDC Directory API",
+    "endpoint": "https://api.fda.gov/drug/ndc.json",
+    "module": "RealWorldSafety",
+    "description": "Official openFDA National Drug Code directory records for drug identity, labeler, active ingredients, dosage form, route, product NDC, and packaging reference. This is a reference source, not a recall source.",
+    "update_cadence": "Source-dependent FDA NDC directory updates",
+}
+
 OPENFDA_DEVICE_ENFORCEMENT = {
     "source_id": "openfda_device_enforcement",
     "source_name": "openFDA Device Enforcement API",
@@ -161,6 +170,7 @@ REGISTERED_SOURCES = [
     RXNORM_RXNAV_API,
     DAILYMED_SPL_API,
     OPENFDA_DRUG_LABEL,
+    OPENFDA_NDC_DIRECTORY,
     OPENFDA_DEVICE_ENFORCEMENT,
     OPENFDA_DEVICE_EVENT,
     OPENFDA_COSMETIC_EVENT,

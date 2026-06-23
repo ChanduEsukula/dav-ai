@@ -185,7 +185,7 @@ def test_real_world_safety_curated_official_openfda_sources(
     ("query", "expected_source", "expected_text"),
     [
         ("Tylenol", "RxNorm/RxNav API", "RXCUI"),
-        ("acetaminophen", "DailyMed SPL API", "DailyMed official label"),
+        ("acetaminophen", "openFDA NDC Directory API", "openFDA NDC listing"),
         ("glucose meter", "openFDA Device Enforcement API", "Blood Glucose"),
         ("insulin pump", "openFDA Device Enforcement API", "Insulin pump"),
         ("CPAP", "openFDA Device Enforcement API", "CPAP"),
