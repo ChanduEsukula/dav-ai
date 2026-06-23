@@ -12,6 +12,7 @@ from app.services.safety_source_adapters.base import (
     NormalizedSafetyRecord,
     SourceAdapterResult,
     date_sort_value,
+    dedupe_records,
     match_score,
     utc_now_iso,
 )
@@ -721,6 +722,113 @@ async def execute_real_world_safety_search(
 
     initial_results = await asyncio.gather(*initial_calls)
 
+    for expansion_query in query_understanding.expanded_terms:
+        if expansion_query == search_query:
+            continue
+
+        records_before_expansion = len(records)
+        expansion_calls = [
+            _run_adapter_call(
+                adapter_call=lambda expansion_query=expansion_query: openfda_drug_adapter.search(
+                    query=expansion_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=OPENFDA_DRUG_ENFORCEMENT,
+                source_type="local curated official snapshot",
+                source_kind="structured_api",
+                query=expansion_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            ),
+            _run_adapter_call(
+                adapter_call=lambda expansion_query=expansion_query: rxnorm_adapter.search(
+                    query=expansion_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=RXNORM_RXNAV_API,
+                source_type="local curated official snapshot",
+                source_kind="structured_api",
+                query=expansion_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            ),
+            _run_adapter_call(
+                adapter_call=lambda expansion_query=expansion_query: dailymed_adapter.search(
+                    query=expansion_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=DAILYMED_SPL_API,
+                source_type="local curated official snapshot",
+                source_kind="structured_api",
+                query=expansion_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            ),
+            _run_adapter_call(
+                adapter_call=lambda expansion_query=expansion_query: openfda_drug_label_adapter.search(
+                    query=expansion_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=OPENFDA_DRUG_LABEL,
+                source_type="local curated official snapshot",
+                source_kind="structured_api",
+                query=expansion_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            ),
+            _run_adapter_call(
+                adapter_call=lambda expansion_query=expansion_query: openfda_ndc_adapter.search(
+                    query=expansion_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=OPENFDA_NDC_DIRECTORY,
+                source_type="local curated official snapshot",
+                source_kind="structured_api",
+                query=expansion_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            ),
+        ]
+        await asyncio.gather(*expansion_calls)
+
+        if len(records) > records_before_expansion:
+            query_understanding.expansion_search_terms_used.append(expansion_query)
+
     if is_vin_like(vin):
         vpic_result = next(
             (
@@ -758,6 +866,8 @@ async def execute_real_world_safety_search(
                 sources_failed=sources_failed,
                 source_audits=source_audits,
             )
+
+    records = dedupe_records(records)
 
     records_per_source: dict[str, int] = {}
     for record in records:

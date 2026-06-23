@@ -67,6 +67,7 @@ class RealWorldSafetyQueryUnderstanding(BaseModel):
     search_query: str
     corrections_applied: list[str] = Field(default_factory=list)
     expanded_terms: list[str] = Field(default_factory=list)
+    expansion_search_terms_used: list[str] = Field(default_factory=list)
     detected_identifiers: dict[str, str | None]
     query_type_hints: list[str] = Field(default_factory=list)
 

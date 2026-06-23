@@ -571,3 +571,30 @@ def test_real_world_safety_query_understanding_corrects_typo_in_route(monkeypatc
     assert "acetaminophen" in body["query_understanding"]["expanded_terms"]
     assert "drug" in body["query_understanding"]["query_type_hints"]
     assert body["total_matches"] >= 1
+
+
+def test_real_world_safety_uses_expansion_search_terms_for_brand_generic_fallback(monkeypatch):
+    _patch_persistence(monkeypatch)
+    _patch_public_source_http(monkeypatch)
+
+    response = client.get("/api/v1/real-world-safety/search", params={"q": "Advil", "limit": 25})
+
+    assert response.status_code == 200
+    body = response.json()
+
+    assert body["query"] == "Advil"
+    assert body["query_understanding"]["normalized_query"] == "advil"
+    assert "ibuprofen" in body["query_understanding"]["expanded_terms"]
+    assert "ibuprofen" in body["query_understanding"]["expansion_search_terms_used"]
+    assert body["total_matches"] >= 1
+
+    matched_sources = {
+        record["source_name"]
+        for record in body["results"]
+    }
+    assert {
+        "RxNorm/RxNav API",
+        "openFDA NDC Directory API",
+        "DailyMed SPL API",
+        "openFDA Drug Label API",
+    } & matched_sources

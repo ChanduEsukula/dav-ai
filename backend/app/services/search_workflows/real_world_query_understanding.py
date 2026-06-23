@@ -119,6 +119,7 @@ class RealWorldQueryUnderstanding:
     search_query: str
     corrections_applied: list[str]
     expanded_terms: list[str]
+    expansion_search_terms_used: list[str]
     detected_identifiers: dict[str, str | None]
     query_type_hints: list[str]
 
@@ -255,6 +256,7 @@ def understand_real_world_safety_query(raw_query: str) -> RealWorldQueryUndersta
         search_query=search_query,
         corrections_applied=corrections,
         expanded_terms=expanded,
+        expansion_search_terms_used=[],
         detected_identifiers=detected_identifiers,
         query_type_hints=_query_type_hints(
             normalized_query=normalized,

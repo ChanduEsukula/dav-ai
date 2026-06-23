@@ -78,3 +78,10 @@ def test_detects_upc_without_confusing_it_for_ndc():
     assert result.detected_identifiers["upc"] == "036000291452"
     assert result.detected_identifiers["ndc"] is None
     assert "consumer_product" in result.query_type_hints
+
+
+def test_query_understanding_tracks_expansion_search_terms_used_as_empty_initially():
+    result = understand_real_world_safety_query("Advil")
+
+    assert result.expanded_terms == ["ibuprofen"]
+    assert result.expansion_search_terms_used == []
