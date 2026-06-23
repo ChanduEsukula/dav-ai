@@ -26,6 +26,7 @@ from app.services.safety_source_adapters.openfda_drug_label import OpenFDADrugLa
 from app.services.safety_source_adapters.openfda_ndc import OpenFDANDCDirectoryAdapter
 from app.services.safety_source_adapters.openfda_device import OpenFDADeviceEnforcementAdapter
 from app.services.safety_source_adapters.openfda_device_event import OpenFDADeviceEventAdapter
+from app.services.search_workflows.safety_intelligence_summary import build_safety_intelligence_summary
 from app.services.safety_source_adapters.nhtsa import (
     NHTSARecallsAdapter,
     NHTSAVPICAdapter,
@@ -769,6 +770,14 @@ async def execute_real_world_safety_search(
         sort=sort,
     )
 
+    safety_intelligence_summary = build_safety_intelligence_summary(
+        query=search_query,
+        records=records,
+        ranked_records=ranked_records,
+        sources_checked=sources_checked,
+        sources_failed=sources_failed,
+    )
+
     response = {
         "query": search_query,
         "raw_query": raw_query,
@@ -782,6 +791,7 @@ async def execute_real_world_safety_search(
         "public_notice_matches": public_notice_matches,
         "total_matches": total_matches,
         "no_match_explanation": NO_MATCH_EXPLANATION if total_matches == 0 else None,
+        "safety_intelligence_summary": safety_intelligence_summary,
         "public_data_disclaimer": PUBLIC_DATA_DISCLAIMER,
         "limitations": LIMITATIONS,
         "source_audits": source_audits,

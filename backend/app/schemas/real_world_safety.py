@@ -61,6 +61,19 @@ class RealWorldSafetyAuditSummary(BaseModel):
     source_payload_hash: str | None = None
 
 
+class RealWorldSafetyIntelligenceSummary(BaseModel):
+    query_type: str
+    recall_or_enforcement_found: bool
+    reference_or_label_found: bool
+    signal_report_found: bool
+    matched_sources_by_role: dict[str, list[str]]
+    checked_sources_by_role: dict[str, list[str]]
+    top_result_titles: list[str] = Field(default_factory=list)
+    plain_language_summary: str
+    suggested_next_steps: list[str] = Field(default_factory=list)
+    caveat: str
+
+
 class RealWorldSafetySearchResponse(BaseModel):
     query: str
     raw_query: str
@@ -74,6 +87,7 @@ class RealWorldSafetySearchResponse(BaseModel):
     public_notice_matches: int
     total_matches: int
     no_match_explanation: str | None = None
+    safety_intelligence_summary: RealWorldSafetyIntelligenceSummary
     public_data_disclaimer: str
     limitations: list[str]
     source_audits: list[RealWorldSafetyAuditSummary]

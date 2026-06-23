@@ -7,7 +7,7 @@ from app.schemas.real_world_safety import RealWorldSafetySearchResponse
 from app.services.search_workflows.real_world_safety_search import execute_real_world_safety_search
 
 router = APIRouter()
-logger = logging.getLogger("medtrek.real_world_safety.route")
+logger = logging.getLogger("dav_ai.real_world_safety.route")
 
 
 @router.get("/search", response_model=RealWorldSafetySearchResponse)

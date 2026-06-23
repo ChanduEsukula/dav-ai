@@ -517,3 +517,38 @@ def test_real_world_safety_usda_fsis_recall_source(
     assert expected_text.lower() in searchable.lower()
     assert all(record["source_kind"] == "structured_api" for record in matching_results)
     assert all(record["source_type"] == "local curated official snapshot" for record in matching_results)
+
+
+def test_real_world_safety_returns_intelligence_summary_for_reference_only_drug(monkeypatch):
+    _patch_persistence(monkeypatch)
+    _patch_public_source_http(monkeypatch)
+
+    response = client.get("/api/v1/real-world-safety/search", params={"q": "acetaminophen", "limit": 25})
+
+    assert response.status_code == 200
+    body = response.json()
+    summary = body["safety_intelligence_summary"]
+
+    assert summary["query_type"] == "drug"
+    assert summary["reference_or_label_found"] is True
+    assert "openFDA NDC Directory API" in summary["matched_sources_by_role"]["reference_identity"]
+    assert "DailyMed SPL API" in summary["matched_sources_by_role"]["label_reference"]
+    assert "official identity or label reference records" in summary["plain_language_summary"]
+    assert "does not invent missing recalls" in summary["caveat"]
+
+
+def test_real_world_safety_returns_intelligence_summary_for_recall_match(monkeypatch):
+    _patch_persistence(monkeypatch)
+    _patch_public_source_http(monkeypatch)
+
+    response = client.get("/api/v1/real-world-safety/search", params={"q": "Segway scooter", "limit": 10})
+
+    assert response.status_code == 200
+    body = response.json()
+    summary = body["safety_intelligence_summary"]
+
+    assert summary["query_type"] in {"consumer_product", "unknown"}
+    assert summary["recall_or_enforcement_found"] is True
+    assert "CPSC Recalls API" in summary["matched_sources_by_role"]["recall_enforcement"]
+    assert "official recall/enforcement records" in summary["plain_language_summary"]
+    assert summary["suggested_next_steps"]
