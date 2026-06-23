@@ -261,7 +261,9 @@ function App() {
       )}
 
       {assistantContext && <AskDavAIChat context={assistantContext} />}
-      <FloatingSafetyReportIntake />
+      {[PAGE_IDS.PUBLIC_SAFETY, PAGE_IDS.PHARMACY_SAFETY, PAGE_IDS.FOOD_SAFETY, PAGE_IDS.COSMETIC_SAFETY].some(
+        (pageId) => pageId === activePage,
+      ) && <FloatingSafetyReportIntake />}
     </main>
   )
 }
