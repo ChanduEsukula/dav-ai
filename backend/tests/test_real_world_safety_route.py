@@ -552,3 +552,22 @@ def test_real_world_safety_returns_intelligence_summary_for_recall_match(monkeyp
     assert "CPSC Recalls API" in summary["matched_sources_by_role"]["recall_enforcement"]
     assert "official recall/enforcement records" in summary["plain_language_summary"]
     assert summary["suggested_next_steps"]
+
+
+def test_real_world_safety_query_understanding_corrects_typo_in_route(monkeypatch):
+    _patch_persistence(monkeypatch)
+    _patch_public_source_http(monkeypatch)
+
+    response = client.get("/api/v1/real-world-safety/search", params={"q": "tylonal", "limit": 25})
+
+    assert response.status_code == 200
+    body = response.json()
+
+    assert body["raw_query"] == "tylonal"
+    assert body["query"] == "tylenol"
+    assert body["query_understanding"]["normalized_query"] == "tylenol"
+    assert body["query_understanding"]["search_query"] == "tylenol"
+    assert "tylonal → tylenol" in body["query_understanding"]["corrections_applied"]
+    assert "acetaminophen" in body["query_understanding"]["expanded_terms"]
+    assert "drug" in body["query_understanding"]["query_type_hints"]
+    assert body["total_matches"] >= 1

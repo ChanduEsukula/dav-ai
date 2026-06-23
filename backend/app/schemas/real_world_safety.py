@@ -61,6 +61,16 @@ class RealWorldSafetyAuditSummary(BaseModel):
     source_payload_hash: str | None = None
 
 
+class RealWorldSafetyQueryUnderstanding(BaseModel):
+    original_query: str
+    normalized_query: str
+    search_query: str
+    corrections_applied: list[str] = Field(default_factory=list)
+    expanded_terms: list[str] = Field(default_factory=list)
+    detected_identifiers: dict[str, str | None]
+    query_type_hints: list[str] = Field(default_factory=list)
+
+
 class RealWorldSafetyIntelligenceSummary(BaseModel):
     query_type: str
     recall_or_enforcement_found: bool
@@ -77,6 +87,7 @@ class RealWorldSafetyIntelligenceSummary(BaseModel):
 class RealWorldSafetySearchResponse(BaseModel):
     query: str
     raw_query: str
+    query_understanding: RealWorldSafetyQueryUnderstanding
     count: int
     limit: int
     retrieval_timestamp: str

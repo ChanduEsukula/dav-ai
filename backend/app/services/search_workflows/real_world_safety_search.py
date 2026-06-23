@@ -26,6 +26,7 @@ from app.services.safety_source_adapters.openfda_drug_label import OpenFDADrugLa
 from app.services.safety_source_adapters.openfda_ndc import OpenFDANDCDirectoryAdapter
 from app.services.safety_source_adapters.openfda_device import OpenFDADeviceEnforcementAdapter
 from app.services.safety_source_adapters.openfda_device_event import OpenFDADeviceEventAdapter
+from app.services.search_workflows.real_world_query_understanding import understand_real_world_safety_query
 from app.services.search_workflows.safety_intelligence_summary import build_safety_intelligence_summary
 from app.services.safety_source_adapters.nhtsa import (
     NHTSARecallsAdapter,
@@ -436,7 +437,9 @@ async def execute_real_world_safety_search(
     request_id: str | None = None,
 ) -> dict[str, Any]:
     raw_query = query
-    search_query = " ".join(query.split())
+    query_understanding = understand_real_world_safety_query(query)
+    search_query = query_understanding.search_query
+    response_query = search_query if query_understanding.corrections_applied else " ".join(query.split())
     if not search_query:
         raise ValueError("Real-world safety search query must contain at least two non-whitespace characters.")
 
@@ -779,8 +782,9 @@ async def execute_real_world_safety_search(
     )
 
     response = {
-        "query": search_query,
+        "query": response_query,
         "raw_query": raw_query,
+        "query_understanding": query_understanding.as_response_dict(),
         "count": len(ranked_records),
         "limit": limit,
         "retrieval_timestamp": retrieval_timestamp,
