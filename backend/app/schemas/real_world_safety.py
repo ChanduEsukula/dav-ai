@@ -80,6 +80,7 @@ class RealWorldSafetyIntelligenceSummary(BaseModel):
     matched_sources_by_role: dict[str, list[str]]
     checked_sources_by_role: dict[str, list[str]]
     top_result_titles: list[str] = Field(default_factory=list)
+    expansion_explanations: list[str] = Field(default_factory=list)
     plain_language_summary: str
     suggested_next_steps: list[str] = Field(default_factory=list)
     caveat: str

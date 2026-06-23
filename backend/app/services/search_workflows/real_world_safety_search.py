@@ -889,6 +889,7 @@ async def execute_real_world_safety_search(
         ranked_records=ranked_records,
         sources_checked=sources_checked,
         sources_failed=sources_failed,
+        expansion_search_terms_used=query_understanding.expansion_search_terms_used,
     )
 
     response = {

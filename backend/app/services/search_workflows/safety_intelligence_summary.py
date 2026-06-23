@@ -93,6 +93,7 @@ def build_safety_intelligence_summary(
     ranked_records: list[NormalizedSafetyRecord],
     sources_checked: list[dict[str, Any]],
     sources_failed: list[dict[str, Any]],
+    expansion_search_terms_used: list[str] | None = None,
 ) -> dict[str, Any]:
     matched_sources_by_role = _empty_role_map()
     checked_sources_by_role = _empty_role_map()
@@ -115,6 +116,12 @@ def build_safety_intelligence_summary(
     top_titles: list[str] = []
     for record in ranked_records[:3]:
         _append_unique(top_titles, record.title or record.product_name or record.brand_name)
+
+    expansion_terms = expansion_search_terms_used or []
+    expansion_explanations: list[str] = [
+        f'Dav AI also checked "{term}" because it is a known related search term for the original query.'
+        for term in expansion_terms
+    ]
 
     if recall_or_enforcement_found and reference_or_label_found:
         plain_language_summary = (
@@ -145,6 +152,8 @@ def build_safety_intelligence_summary(
         )
 
     suggested_next_steps: list[str] = []
+    if expansion_explanations:
+        suggested_next_steps.extend(expansion_explanations)
     if recall_or_enforcement_found:
         suggested_next_steps.extend(
             [
@@ -170,6 +179,7 @@ def build_safety_intelligence_summary(
         "matched_sources_by_role": matched_sources_by_role,
         "checked_sources_by_role": checked_sources_by_role,
         "top_result_titles": top_titles,
+        "expansion_explanations": expansion_explanations,
         "plain_language_summary": plain_language_summary,
         "suggested_next_steps": suggested_next_steps,
         "caveat": "This summary is generated only from returned official/public records. It does not invent missing recalls, certify safety, or provide medical/legal advice.",

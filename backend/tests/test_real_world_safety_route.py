@@ -598,3 +598,7 @@ def test_real_world_safety_uses_expansion_search_terms_for_brand_generic_fallbac
         "DailyMed SPL API",
         "openFDA Drug Label API",
     } & matched_sources
+
+    summary = body["safety_intelligence_summary"]
+    assert any("ibuprofen" in explanation for explanation in summary["expansion_explanations"])
+    assert any("ibuprofen" in step for step in summary["suggested_next_steps"])
