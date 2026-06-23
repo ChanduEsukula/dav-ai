@@ -1,0 +1,76 @@
+{
+  "generated_at": "2026-06-23T14:32:01.833444+00:00",
+  "purpose": "Records official/public curated snapshot refresh metadata for RealWorldSafety sources.",
+  "entries": [
+    {
+      "source_id": "openfda_food_enforcement",
+      "source_name": "openFDA Food Enforcement API",
+      "endpoint": "https://api.fda.gov/food/enforcement.json",
+      "snapshot_path": "data/safety_sources/food/openfda_food_curated_records.json",
+      "record_count": 10,
+      "refreshed_at": "2026-06-23T14:32:01.820443+00:00",
+      "mode": "local_curated_official_snapshot",
+      "payload_sha256": "ee6ab99b8fe56b9566656e39a4506d956d2b2a80134034c9fae26856ca8ab157"
+    },
+    {
+      "source_id": "openfda_drug_enforcement",
+      "source_name": "openFDA Drug Enforcement API",
+      "endpoint": "https://api.fda.gov/drug/enforcement.json",
+      "snapshot_path": "data/safety_sources/drug/openfda_drug_curated_records.json",
+      "record_count": 12,
+      "refreshed_at": "2026-06-23T14:32:01.820443+00:00",
+      "mode": "local_curated_official_snapshot",
+      "payload_sha256": "eb2bbe3c110431249e70c1236baf971dd632b9639e62555f3ee06e3f8e7a75dd"
+    },
+    {
+      "source_id": "openfda_drug_label",
+      "source_name": "openFDA Drug Label API",
+      "endpoint": "https://api.fda.gov/drug/label.json",
+      "snapshot_path": "data/safety_sources/drug/openfda_drug_label_curated_records.json",
+      "record_count": 30,
+      "refreshed_at": "2026-06-23T14:32:01.820443+00:00",
+      "mode": "local_curated_official_snapshot",
+      "payload_sha256": "795e995905702072ce697ca9f403aff4529d80cc36798a95ca213bb6d9e3e9b8"
+    },
+    {
+      "source_id": "openfda_device_enforcement",
+      "source_name": "openFDA Device Enforcement API",
+      "endpoint": "https://api.fda.gov/device/enforcement.json",
+      "snapshot_path": "data/safety_sources/device/openfda_device_enforcement_curated_records.json",
+      "record_count": 15,
+      "refreshed_at": "2026-06-23T14:32:01.820443+00:00",
+      "mode": "local_curated_official_snapshot",
+      "payload_sha256": "b501cd4b2794209b5f3c8d4e9abec9869ecbc457d044a3eb39d53d8f405c1972"
+    },
+    {
+      "source_id": "openfda_device_event",
+      "source_name": "openFDA Device Event API",
+      "endpoint": "https://api.fda.gov/device/event.json",
+      "snapshot_path": "data/safety_sources/device/openfda_device_event_curated_records.json",
+      "record_count": 30,
+      "refreshed_at": "2026-06-23T14:32:01.820443+00:00",
+      "mode": "local_curated_official_snapshot",
+      "payload_sha256": "287225a91118147f4a0d913a5f2a053702aaa5f6e3cce26fd5dd00802ec51df1"
+    },
+    {
+      "source_id": "cpsc_recalls",
+      "source_name": "CPSC Recalls API",
+      "endpoint": "https://www.saferproducts.gov/RestWebServices/Recall?format=json",
+      "snapshot_path": "data/safety_sources/cpsc/cpsc_daily_products_curated_records.json",
+      "record_count": 80,
+      "refreshed_at": "2026-06-23T14:32:01.820443+00:00",
+      "mode": "local_curated_official_snapshot",
+      "payload_sha256": "0efa3198254dc3592d80f6a7bac3a892dda451f81bb4cdde5876dcde6d972e0d"
+    },
+    {
+      "source_id": "usda_fsis_recall",
+      "source_name": "USDA FSIS Recall API",
+      "endpoint": "https://www.fsis.usda.gov/fsis/api/recall/v/1",
+      "snapshot_path": "data/safety_sources/food/usda_fsis_curated_records.json",
+      "record_count": 100,
+      "refreshed_at": "2026-06-23T14:32:01.820443+00:00",
+      "mode": "local_curated_official_snapshot",
+      "payload_sha256": "afce247fa1487da118f226a421ce12b6e1e546956095d9c0ed15b7a39c6f7e39"
+    }
+  ]
+}

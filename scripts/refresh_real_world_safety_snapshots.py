@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import urllib.parse
 import urllib.request
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -23,6 +25,7 @@ OPENFDA_DEVICE_OUT = ROOT / "data" / "safety_sources" / "device" / "openfda_devi
 OPENFDA_DEVICE_EVENT_OUT = ROOT / "data" / "safety_sources" / "device" / "openfda_device_event_curated_records.json"
 CPSC_DAILY_PRODUCTS_OUT = ROOT / "data" / "safety_sources" / "cpsc" / "cpsc_daily_products_curated_records.json"
 USDA_FSIS_OUT = ROOT / "data" / "safety_sources" / "food" / "usda_fsis_curated_records.json"
+SNAPSHOT_REFRESH_MANIFEST_OUT = ROOT / "data" / "source_audits" / "snapshot_refresh_manifest.json"
 
 
 def fetch_json(url: str) -> dict[str, Any]:
@@ -273,6 +276,53 @@ def fetch_usda_fsis_records(*, max_records: int) -> list[dict[str, Any]]:
 
 
 
+
+def payload_hash(records: list[dict[str, Any]]) -> str:
+    canonical = json.dumps(records, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def manifest_entry(
+    *,
+    source_id: str,
+    source_name: str,
+    endpoint: str,
+    snapshot_path: Path,
+    records: list[dict[str, Any]],
+    refreshed_at: str,
+    mode: str = "local_curated_official_snapshot",
+) -> dict[str, Any]:
+    return {
+        "source_id": source_id,
+        "source_name": source_name,
+        "endpoint": endpoint,
+        "snapshot_path": str(snapshot_path.relative_to(ROOT)),
+        "record_count": len(records),
+        "refreshed_at": refreshed_at,
+        "mode": mode,
+        "payload_sha256": payload_hash(records),
+    }
+
+
+def write_snapshot_manifest(entries: list[dict[str, Any]]) -> None:
+    SNAPSHOT_REFRESH_MANIFEST_OUT.parent.mkdir(parents=True, exist_ok=True)
+    SNAPSHOT_REFRESH_MANIFEST_OUT.write_text(
+        json.dumps(
+            {
+                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "purpose": "Records official/public curated snapshot refresh metadata for RealWorldSafety sources.",
+                "entries": entries,
+            },
+            indent=2,
+            ensure_ascii=False,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    print(f"Wrote snapshot refresh manifest to {SNAPSHOT_REFRESH_MANIFEST_OUT}")
+
+
+
 def write_records(path: Path, records: list[dict[str, Any]]) -> None:
     if not records:
         raise RuntimeError(f"No records fetched for {path}")
@@ -361,6 +411,66 @@ def main() -> None:
     cpsc_records = fetch_cpsc_daily_product_records(max_records=80)
     fsis_records = fetch_usda_fsis_records(max_records=100)
 
+    refreshed_at = datetime.now(timezone.utc).isoformat()
+    manifest_entries = [
+        manifest_entry(
+            source_id="openfda_food_enforcement",
+            source_name="openFDA Food Enforcement API",
+            endpoint=OPENFDA_FOOD_ENDPOINT,
+            snapshot_path=OPENFDA_FOOD_OUT,
+            records=food_records,
+            refreshed_at=refreshed_at,
+        ),
+        manifest_entry(
+            source_id="openfda_drug_enforcement",
+            source_name="openFDA Drug Enforcement API",
+            endpoint=OPENFDA_DRUG_ENDPOINT,
+            snapshot_path=OPENFDA_DRUG_OUT,
+            records=drug_records,
+            refreshed_at=refreshed_at,
+        ),
+        manifest_entry(
+            source_id="openfda_drug_label",
+            source_name="openFDA Drug Label API",
+            endpoint=OPENFDA_DRUG_LABEL_ENDPOINT,
+            snapshot_path=OPENFDA_DRUG_LABEL_OUT,
+            records=drug_label_records,
+            refreshed_at=refreshed_at,
+        ),
+        manifest_entry(
+            source_id="openfda_device_enforcement",
+            source_name="openFDA Device Enforcement API",
+            endpoint=OPENFDA_DEVICE_ENDPOINT,
+            snapshot_path=OPENFDA_DEVICE_OUT,
+            records=device_records,
+            refreshed_at=refreshed_at,
+        ),
+        manifest_entry(
+            source_id="openfda_device_event",
+            source_name="openFDA Device Event API",
+            endpoint=OPENFDA_DEVICE_EVENT_ENDPOINT,
+            snapshot_path=OPENFDA_DEVICE_EVENT_OUT,
+            records=device_event_records,
+            refreshed_at=refreshed_at,
+        ),
+        manifest_entry(
+            source_id="cpsc_recalls",
+            source_name="CPSC Recalls API",
+            endpoint=CPSC_RECALLS_ENDPOINT,
+            snapshot_path=CPSC_DAILY_PRODUCTS_OUT,
+            records=cpsc_records,
+            refreshed_at=refreshed_at,
+        ),
+        manifest_entry(
+            source_id="usda_fsis_recall",
+            source_name="USDA FSIS Recall API",
+            endpoint=USDA_FSIS_ENDPOINT,
+            snapshot_path=USDA_FSIS_OUT,
+            records=fsis_records,
+            refreshed_at=refreshed_at,
+        ),
+    ]
+
     write_records(OPENFDA_FOOD_OUT, food_records)
     write_records(OPENFDA_DRUG_OUT, drug_records)
     write_records(OPENFDA_DRUG_LABEL_OUT, drug_label_records)
@@ -368,6 +478,7 @@ def main() -> None:
     write_records(OPENFDA_DEVICE_EVENT_OUT, device_event_records)
     write_records(CPSC_DAILY_PRODUCTS_OUT, cpsc_records)
     write_records(USDA_FSIS_OUT, fsis_records)
+    write_snapshot_manifest(manifest_entries)
 
 
 if __name__ == "__main__":
