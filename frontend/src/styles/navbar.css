@@ -44,11 +44,13 @@
   background: transparent;
   cursor: pointer;
   min-height: 42px;
-  padding: 0 0.45rem;
-  margin-right: 0.25rem;
+  padding: 0 0.95rem 0 0.45rem;
+  margin-right: 0.55rem;
+  border-right: 1px solid rgba(11, 79, 113, 0.12);
 }
 
 .nav-links {
+  justify-self: start;
   min-height: 42px;
   display: flex;
   align-items: center;
