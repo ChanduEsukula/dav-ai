@@ -17,7 +17,7 @@ from app.services.safety_source_adapters.base import (
 )
 from app.sources.registry import OPENFDA_FOOD_ENFORCEMENT
 
-logger = logging.getLogger("medtrek.real_world_safety.openfda_food")
+logger = logging.getLogger("dav_ai.real_world_safety.openfda_food")
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 DEMO_RECORDS_PATH = REPO_ROOT / "data" / "safety_sources" / "food" / "openfda_food_curated_records.json"
@@ -128,7 +128,12 @@ def _normalize_openfda_food_record(
     classification = first_text(record.get("classification"))
     status = first_text(record.get("status"))
     code_info = first_text(record.get("code_info"))
+    more_code_info = first_text(record.get("more_code_info"))
     distribution = first_text(record.get("distribution_pattern"))
+    product_quantity = first_text(record.get("product_quantity"))
+    notification = first_text(record.get("initial_firm_notification"))
+    termination_date = first_text(record.get("termination_date"))
+    voluntary_mandated = first_text(record.get("voluntary_mandated"))
     recall_date = first_text(record.get("recall_initiation_date"), record.get("report_date"))
 
     title = first_text(
@@ -143,6 +148,28 @@ def _normalize_openfda_food_record(
         reason,
     )
 
+    reason_parts = [
+        reason,
+        f"Classification: {classification}" if classification else None,
+        f"Status: {status}" if status else None,
+        f"Distribution: {distribution}" if distribution else None,
+        f"Quantity: {product_quantity}" if product_quantity else None,
+    ]
+
+    remedy_parts = [
+        first_text(record.get("remedy")),
+        f"Firm notification: {notification}" if notification else None,
+        f"Termination date: {termination_date}" if termination_date else None,
+        f"Recall type: {voluntary_mandated}" if voluntary_mandated else None,
+        f"Distribution: {distribution}" if distribution else None,
+    ]
+
+    affected_lots = [
+        value
+        for value in [code_info, more_code_info, product_quantity, distribution, status]
+        if value
+    ]
+
     return NormalizedSafetyRecord(
         source_name=source_name,
         source_type="local curated official snapshot",
@@ -153,13 +180,13 @@ def _normalize_openfda_food_record(
         brand_name=first_text(record.get("brand_name")),
         company_name=recalling_firm,
         title=title,
-        reason=reason,
+        reason=" ".join(part for part in reason_parts if part) or reason,
         hazard_type=hazard_text,
-        remedy=first_text(record.get("remedy"), distribution),
+        remedy=" ".join(part for part in remedy_parts if part) or None,
         published_date=recall_date,
         recall_number=first_text(record.get("recall_number"), record.get("id")),
         affected_models=[],
-        affected_lots=[value for value in [code_info] if value],
+        affected_lots=affected_lots,
         raw_payload_hash=stable_payload_hash(record),
         retrieved_at=retrieved_at,
         record_url=source_url,

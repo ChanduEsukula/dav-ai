@@ -17,7 +17,7 @@ from app.services.safety_source_adapters.base import (
 )
 from app.sources.registry import OPENFDA_DEVICE_ENFORCEMENT
 
-logger = logging.getLogger("medtrek.real_world_safety.openfda_device")
+logger = logging.getLogger("dav_ai.real_world_safety.openfda_device")
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 CURATED_RECORDS_PATH = REPO_ROOT / "data" / "safety_sources" / "device" / "openfda_device_enforcement_curated_records.json"
@@ -113,6 +113,12 @@ def _normalize_device_record(
     status = first_text(record.get("status"))
     classification = first_text(record.get("classification"))
     event_id = first_text(record.get("event_id"))
+    code_info = first_text(record.get("code_info"))
+    more_code_info = first_text(record.get("more_code_info"))
+    distribution = first_text(record.get("distribution_pattern"))
+    product_quantity = first_text(record.get("product_quantity"))
+    notification = first_text(record.get("initial_firm_notification"))
+    voluntary_mandated = first_text(record.get("voluntary_mandated"))
 
     title = first_text(
         f"{firm} recalls {product_name}" if firm and product_name else None,
@@ -120,9 +126,20 @@ def _normalize_device_record(
         recall_number,
     )
 
+    reason_parts = [
+        reason,
+        f"Classification: {classification}" if classification else None,
+        f"Status: {status}" if status else None,
+        f"Distribution: {distribution}" if distribution else None,
+        f"Quantity: {product_quantity}" if product_quantity else None,
+    ]
+
     remedy = first_text(
-        record.get("code_info"),
-        record.get("distribution_pattern"),
+        code_info,
+        more_code_info,
+        distribution,
+        f"Firm notification: {notification}" if notification else None,
+        f"Recall type: {voluntary_mandated}" if voluntary_mandated else None,
         "Review FDA device enforcement details for affected products, lots, and firm instructions.",
     )
 
@@ -136,7 +153,7 @@ def _normalize_device_record(
         brand_name=None,
         company_name=firm,
         title=title,
-        reason=reason,
+        reason=" ".join(part for part in reason_parts if part) or reason,
         hazard_type=first_text(classification, "Device enforcement recall"),
         remedy=remedy,
         published_date=first_text(record.get("recall_initiation_date"), record.get("report_date")),
@@ -145,6 +162,10 @@ def _normalize_device_record(
         affected_lots=[
             value
             for value in [
+                code_info,
+                more_code_info,
+                product_quantity,
+                distribution,
                 first_text(record.get("product_code")),
                 first_text(record.get("product_type")),
                 first_text(record.get("k_numbers")),
