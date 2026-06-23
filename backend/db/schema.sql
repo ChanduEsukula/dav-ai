@@ -92,12 +92,19 @@ values
     ),
     (
         'openfda_drug_label',
-    ('openfda_ndc_directory', 'openFDA NDC Directory API', 'https://api.fda.gov/drug/ndc.json', 'RealWorldSafety', 'Official openFDA National Drug Code directory records for drug identity, labeler, active ingredients, dosage form, route, product NDC, and packaging reference. This is a reference source, not a recall source.', 'Source-dependent FDA NDC directory updates'),
         'openFDA Drug Label API',
         'https://api.fda.gov/drug/label.json',
         'RealWorldSafety',
         'Official openFDA drug label records for active ingredients, warnings, dosage, and usage sections.',
         'Source-dependent FDA drug label updates'
+    ),
+    (
+        'openfda_ndc_directory',
+        'openFDA NDC Directory API',
+        'https://api.fda.gov/drug/ndc.json',
+        'RealWorldSafety',
+        'Official openFDA National Drug Code directory records for drug identity, labeler, active ingredients, dosage form, route, product NDC, and packaging reference. This is a reference source, not a recall source.',
+        'Source-dependent FDA NDC directory updates'
     ),
     (
         'openfda_device_enforcement',
