@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 OPENFDA_FOOD_ENDPOINT = "https://api.fda.gov/food/enforcement.json"
 OPENFDA_DRUG_ENDPOINT = "https://api.fda.gov/drug/enforcement.json"
+OPENFDA_DRUG_LABEL_ENDPOINT = "https://api.fda.gov/drug/label.json"
 OPENFDA_DEVICE_ENDPOINT = "https://api.fda.gov/device/enforcement.json"
 OPENFDA_DEVICE_EVENT_ENDPOINT = "https://api.fda.gov/device/event.json"
 CPSC_RECALLS_ENDPOINT = "https://www.saferproducts.gov/RestWebServices/Recall?format=json"
@@ -17,6 +18,7 @@ USDA_FSIS_ENDPOINT = "https://www.fsis.usda.gov/fsis/api/recall/v/1"
 
 OPENFDA_FOOD_OUT = ROOT / "data" / "safety_sources" / "food" / "openfda_food_curated_records.json"
 OPENFDA_DRUG_OUT = ROOT / "data" / "safety_sources" / "drug" / "openfda_drug_curated_records.json"
+OPENFDA_DRUG_LABEL_OUT = ROOT / "data" / "safety_sources" / "drug" / "openfda_drug_label_curated_records.json"
 OPENFDA_DEVICE_OUT = ROOT / "data" / "safety_sources" / "device" / "openfda_device_enforcement_curated_records.json"
 OPENFDA_DEVICE_EVENT_OUT = ROOT / "data" / "safety_sources" / "device" / "openfda_device_event_curated_records.json"
 CPSC_DAILY_PRODUCTS_OUT = ROOT / "data" / "safety_sources" / "cpsc" / "cpsc_daily_products_curated_records.json"
@@ -63,6 +65,47 @@ def fetch_openfda_records(endpoint: str, queries: list[str], *, max_records: int
                 )
             )
             if key in seen:
+                continue
+
+            seen.add(key)
+            records.append(record)
+
+            if len(records) >= max_records:
+                return records
+
+    return records
+
+
+
+
+def fetch_openfda_drug_label_records(
+    queries: list[str],
+    *,
+    max_records: int,
+) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    seen: set[str] = set()
+
+    for query in queries:
+        url = build_openfda_url(OPENFDA_DRUG_LABEL_ENDPOINT, query, limit=10)
+        payload = fetch_json(url)
+
+        for record in payload.get("results", []):
+            openfda = record.get("openfda") or {}
+            brand_names = openfda.get("brand_name") or []
+            generic_names = openfda.get("generic_name") or []
+            manufacturers = openfda.get("manufacturer_name") or []
+
+            key = "|".join(
+                [
+                    ";".join(str(value) for value in brand_names),
+                    ";".join(str(value) for value in generic_names),
+                    ";".join(str(value) for value in manufacturers),
+                    str(record.get("id") or record.get("set_id") or ""),
+                ]
+            )
+
+            if not key.strip("|") or key in seen:
                 continue
 
             seen.add(key)
@@ -261,6 +304,19 @@ def main() -> None:
         'reason_for_recall:"NDMA"',
     ]
 
+    drug_label_queries = [
+        'openfda.brand_name:"TYLENOL"',
+        'openfda.generic_name:"ACETAMINOPHEN"',
+        'openfda.brand_name:"ADVIL"',
+        'openfda.generic_name:"IBUPROFEN"',
+        'openfda.brand_name:"BENADRYL"',
+        'openfda.generic_name:"DIPHENHYDRAMINE"',
+        'openfda.brand_name:"CLARITIN"',
+        'openfda.generic_name:"LORATADINE"',
+        'openfda.generic_name:"METFORMIN"',
+        'openfda.generic_name:"ALBUTEROL"',
+    ]
+
     device_queries = [
         'product_description:"glucose meter"',
         'product_description:"insulin pump"',
@@ -289,6 +345,10 @@ def main() -> None:
         drug_queries,
         max_records=12,
     )
+    drug_label_records = fetch_openfda_drug_label_records(
+        drug_label_queries,
+        max_records=30,
+    )
     device_records = fetch_openfda_records(
         OPENFDA_DEVICE_ENDPOINT,
         device_queries,
@@ -303,6 +363,7 @@ def main() -> None:
 
     write_records(OPENFDA_FOOD_OUT, food_records)
     write_records(OPENFDA_DRUG_OUT, drug_records)
+    write_records(OPENFDA_DRUG_LABEL_OUT, drug_label_records)
     write_records(OPENFDA_DEVICE_OUT, device_records)
     write_records(OPENFDA_DEVICE_EVENT_OUT, device_event_records)
     write_records(CPSC_DAILY_PRODUCTS_OUT, cpsc_records)

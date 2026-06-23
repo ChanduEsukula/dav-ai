@@ -200,7 +200,7 @@ def test_real_world_safety_drug_reference_and_device_sources(
     _patch_persistence(monkeypatch)
     _patch_public_source_http(monkeypatch)
 
-    response = client.get("/api/v1/real-world-safety/search", params={"q": query, "limit": 20})
+    response = client.get("/api/v1/real-world-safety/search", params={"q": query, "limit": 25})
 
     assert response.status_code == 200
     body = response.json()
