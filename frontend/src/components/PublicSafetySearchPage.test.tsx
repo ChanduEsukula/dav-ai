@@ -128,9 +128,57 @@ const publicSafetyResponse: RealWorldSafetySearchResponse = {
   ],
 }
 
+function createPublicSafetyResponse(
+  query: string,
+): RealWorldSafetySearchResponse {
+  if (query.toLocaleLowerCase('en-US') === 'advil') {
+    return publicSafetyResponse
+  }
+
+  const normalizedQuery = query.toLocaleLowerCase('en-US')
+
+  return {
+    ...publicSafetyResponse,
+    query,
+    raw_query: query,
+    query_understanding: {
+      ...publicSafetyResponse.query_understanding,
+      original_query: query,
+      normalized_query: normalizedQuery,
+      search_query: normalizedQuery,
+      corrections_applied: [],
+      expanded_terms: [],
+      expansion_search_terms_used: [],
+      query_type_hints: ['consumer_product'],
+    },
+    safety_intelligence_summary: {
+      ...publicSafetyResponse.safety_intelligence_summary,
+      top_result_titles: [`Public safety result for ${query}`],
+      expansion_explanations: [],
+      plain_language_summary: `Public records returned for ${query}.`,
+      suggested_next_steps: [`Verify official source records for ${query}.`],
+    },
+    results: publicSafetyResponse.results.map((record) => ({
+      ...record,
+      category: 'Consumer product reference',
+      product_name: query,
+      brand_name: query,
+      title: `Public safety result for ${query}`,
+      reason: `Official public record text for ${query}.`,
+      hazard_type: 'Public record, not a recall',
+      recall_number: null,
+      affected_models: [],
+      affected_lots: [],
+      raw_payload_hash: `hash-${normalizedQuery.replace(/\s+/g, '-')}`,
+    })),
+  }
+}
+
 beforeEach(() => {
   mockSearchRealWorldSafety.mockReset()
-  mockSearchRealWorldSafety.mockResolvedValue(publicSafetyResponse)
+  mockSearchRealWorldSafety.mockImplementation(async (query) =>
+    createPublicSafetyResponse(query),
+  )
   window.history.replaceState(null, '', '/')
 })
 
@@ -176,4 +224,69 @@ test('renders RealWorldSafety response data in the Public Safety Search page', a
   expect(
     screen.getAllByText(/Dav AI also checked "ibuprofen" because it is a known related search term/i),
   ).toHaveLength(1)
+})
+
+test('keeps edited draft input separate from submitted Public Safety results', async () => {
+  const user = userEvent.setup()
+  window.history.replaceState(null, '', '/?page=public-safety&q=air+fryer')
+
+  render(<PublicSafetySearchPage initialQuery="air fryer" />)
+
+  expect(
+    await screen.findByRole('heading', { name: 'Showing results for: air fryer' }),
+  ).toBeInTheDocument()
+  expect(screen.getByText('Public records returned for air fryer.')).toBeInTheDocument()
+  expect(new URLSearchParams(window.location.search).get('q')).toBe('air fryer')
+
+  const input = screen.getByLabelText(/Safety record search/i)
+  expect(input).toHaveValue('air fryer')
+
+  await user.clear(input)
+  await user.type(input, 'refrigerator')
+
+  expect(input).toHaveValue('refrigerator')
+  expect(
+    screen.getByRole('heading', { name: 'Showing results for: air fryer' }),
+  ).toBeInTheDocument()
+  expect(screen.getByText('Public records returned for air fryer.')).toBeInTheDocument()
+  expect(
+    screen.getByText(
+      'Showing results for air fryer. Search refrigerator to update results.',
+    ),
+  ).toBeInTheDocument()
+  expect(new URLSearchParams(window.location.search).get('q')).toBe('air fryer')
+
+  await user.click(screen.getByRole('button', { name: 'Search public records' }))
+
+  await waitFor(() => {
+    expect(mockSearchRealWorldSafety).toHaveBeenLastCalledWith('refrigerator', 10)
+  })
+  expect(
+    await screen.findByRole('heading', {
+      name: 'Showing results for: refrigerator',
+    }),
+  ).toBeInTheDocument()
+  expect(screen.getByText('Public records returned for refrigerator.')).toBeInTheDocument()
+  expect(
+    screen.queryByText(
+      'Showing results for air fryer. Search refrigerator to update results.',
+    ),
+  ).not.toBeInTheDocument()
+  expect(new URLSearchParams(window.location.search).get('q')).toBe('refrigerator')
+})
+
+test('submits Public Safety quick chips immediately and updates the URL query', async () => {
+  const user = userEvent.setup()
+  render(<PublicSafetySearchPage initialQuery="" />)
+
+  await user.click(screen.getByRole('button', { name: 'air fryer' }))
+
+  await waitFor(() => {
+    expect(mockSearchRealWorldSafety).toHaveBeenLastCalledWith('air fryer', 10)
+  })
+  expect(
+    await screen.findByRole('heading', { name: 'Showing results for: air fryer' }),
+  ).toBeInTheDocument()
+  expect(screen.getByLabelText(/Safety record search/i)).toHaveValue('air fryer')
+  expect(new URLSearchParams(window.location.search).get('q')).toBe('air fryer')
 })

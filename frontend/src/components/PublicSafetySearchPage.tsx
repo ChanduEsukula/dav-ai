@@ -6,7 +6,7 @@ import {
   type RealWorldSafetySourceRole,
 } from '../api/realWorldSafety'
 import { PAGE_IDS } from '../types/navigation'
-import { normalizeSearchTerm } from '../utils/queryNormalization'
+import { getSearchComparisonKey, normalizeSearchTerm } from '../utils/queryNormalization'
 import { formatDate, formatTimestamp } from '../utils/recallFormatters'
 import { writeSafetyQueryToUrl } from '../utils/safetyQueryUrl'
 import QueryTypeahead from './QueryTypeahead'
@@ -341,8 +341,10 @@ function QueryUnderstandingCard({
 
 function SearchOutcomeCard({
   data,
+  submittedQuery,
 }: {
   data: RealWorldSafetySearchResponse
+  submittedQuery: string
 }) {
   const summary = data.safety_intelligence_summary
   const visibleSuggestedSteps = getVisibleSuggestedSteps(data).slice(0, 2)
@@ -354,6 +356,10 @@ function SearchOutcomeCard({
         <span>Search outcome</span>
         <h2>What Dav AI found in public records</h2>
       </div>
+
+      <p className="public-safety-submitted-query">
+        Showing results for: <strong>{submittedQuery}</strong>
+      </p>
 
       <div className="public-safety-status-row">
         <StatusPill
@@ -612,16 +618,18 @@ function ResultCard({
 function ResultsList({
   data,
   roleLookup,
+  submittedQuery,
 }: {
   data: RealWorldSafetySearchResponse
   roleLookup: Map<string, RealWorldSafetySourceRole>
+  submittedQuery: string
 }) {
   if (data.total_matches === 0) {
     return (
       <section className="public-safety-panel public-safety-no-results">
         <div className="public-safety-section-heading">
           <span>No returned records</span>
-          <h2>No matching public record was found</h2>
+          <h2>Showing results for: {submittedQuery}</h2>
         </div>
 
         <p>{data.no_match_explanation}</p>
@@ -634,7 +642,7 @@ function ResultsList({
     <section className="public-safety-results">
       <div className="public-safety-section-heading">
         <span>Returned records</span>
-        <h2>Review source records carefully</h2>
+        <h2>Showing results for: {submittedQuery}</h2>
       </div>
 
       <div className="public-safety-results-list">
@@ -656,6 +664,7 @@ function PublicSafetySearchPage({
 }: PublicSafetySearchPageProps) {
   const initialSearchTerm = normalizeSearchTerm(initialRawQuery || initialQuery)
   const [query, setQuery] = useState(initialSearchTerm)
+  const [submittedQuery, setSubmittedQuery] = useState(initialSearchTerm)
   const [limit, setLimit] = useState(DEFAULT_LIMIT)
   const [data, setData] = useState<RealWorldSafetySearchResponse | null>(null)
   const [loading, setLoading] = useState(Boolean(initialSearchTerm))
@@ -695,6 +704,7 @@ function PublicSafetySearchPage({
 
       if (options.skipIfCompleted && completedKeyRef.current === requestKey) {
         setQuery(cleanQuery)
+        setSubmittedQuery(cleanQuery)
         setError('')
         setHelper('')
         return
@@ -706,6 +716,7 @@ function PublicSafetySearchPage({
       completedKeyRef.current = ''
 
       setQuery(cleanQuery)
+      setSubmittedQuery(cleanQuery)
       setData(null)
       setLoading(true)
       setError('')
@@ -751,6 +762,7 @@ function PublicSafetySearchPage({
         inFlightKeyRef.current = ''
         completedKeyRef.current = ''
         setQuery('')
+        setSubmittedQuery('')
         setData(null)
         setLoading(false)
         setError('')
@@ -771,6 +783,15 @@ function PublicSafetySearchPage({
   }, [initialQuery, initialRawQuery, loadPublicSafetyRecords])
 
   const roleLookup = useMemo(() => createSourceRoleLookup(data), [data])
+  const cleanDraftQuery = normalizeSearchTerm(query)
+  const hasUnsubmittedDraft =
+    Boolean(data) &&
+    !loading &&
+    getSearchComparisonKey(cleanDraftQuery) !== getSearchComparisonKey(submittedQuery)
+
+  const unsubmittedDraftMessage = cleanDraftQuery
+    ? `Showing results for ${submittedQuery}. Search ${cleanDraftQuery} to update results.`
+    : `Showing results for ${submittedQuery}. Enter a new query and press Search to update results.`
 
   function handleSubmit() {
     void loadPublicSafetyRecords(query, limit, { updateUrl: true })
@@ -867,6 +888,12 @@ function PublicSafetySearchPage({
         </p>
       )}
 
+      {hasUnsubmittedDraft && (
+        <p className="public-safety-draft-notice" role="status">
+          {unsubmittedDraftMessage}
+        </p>
+      )}
+
       {!loading && !data && !error && (
         <section className="public-safety-empty">
           <h2>Start with a real product, identifier, or vehicle term.</h2>
@@ -879,8 +906,12 @@ function PublicSafetySearchPage({
 
       {data && !loading && (
         <>
-          <SearchOutcomeCard data={data} />
-          <ResultsList data={data} roleLookup={roleLookup} />
+          <SearchOutcomeCard data={data} submittedQuery={submittedQuery} />
+          <ResultsList
+            data={data}
+            roleLookup={roleLookup}
+            submittedQuery={submittedQuery}
+          />
           <QueryUnderstandingCard data={data} />
           <SourceRolesPanel data={data} />
           <SourceCoveragePanel data={data} />

@@ -231,6 +231,7 @@
 
 .public-safety-guidance,
 .public-safety-error,
+.public-safety-draft-notice,
 .public-safety-loading {
   margin: 0;
   padding: 0.85rem 1rem;
@@ -245,6 +246,12 @@
   color: #0b4f71;
   background: rgba(238, 248, 250, 0.84);
   border: 1px solid rgba(11, 79, 113, 0.1);
+}
+
+.public-safety-draft-notice {
+  color: #0b4f71;
+  background: rgba(255, 251, 235, 0.9);
+  border: 1px solid rgba(245, 158, 11, 0.22);
 }
 
 .public-safety-error {
@@ -451,6 +458,23 @@
   background:
     radial-gradient(circle at top right, rgba(45, 212, 191, 0.16), transparent 34%),
     linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(238, 248, 250, 0.78));
+}
+
+.public-safety-submitted-query {
+  width: fit-content;
+  margin: 0 0 0.75rem;
+  padding: 0.48rem 0.7rem;
+  border-radius: 999px;
+  color: #0b4f71;
+  background: rgba(238, 248, 250, 0.88);
+  border: 1px solid rgba(11, 79, 113, 0.1);
+  font-size: 0.86rem;
+  font-weight: 850;
+  line-height: 1.35;
+}
+
+.public-safety-submitted-query strong {
+  color: #061523;
 }
 
 .public-safety-outcome-facts {
