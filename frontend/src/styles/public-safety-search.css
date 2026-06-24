@@ -581,3 +581,57 @@
 .public-safety-page-search .public-safety-search-controls select {
   display: none;
 }
+
+.public-safety-vehicle-card {
+  gap: 0.85rem;
+}
+
+.public-safety-vehicle-card p {
+  color: rgba(226, 232, 240, 0.78);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.public-safety-vehicle-card ul {
+  display: grid;
+  gap: 0.45rem;
+  color: rgba(226, 232, 240, 0.76);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  margin: 0;
+  padding-left: 1.15rem;
+}
+
+.public-safety-vehicle-card li::marker {
+  color: rgba(96, 165, 250, 0.9);
+}
+
+.public-safety-vehicle-example-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.public-safety-vehicle-example-grid button {
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.72);
+  color: rgba(226, 232, 240, 0.92);
+  cursor: pointer;
+  font-size: 0.86rem;
+  font-weight: 700;
+  padding: 0.48rem 0.75rem;
+}
+
+.public-safety-vehicle-example-grid button:hover {
+  border-color: rgba(96, 165, 250, 0.58);
+  color: #ffffff;
+}
+
+.public-safety-vehicle-inline {
+  margin: 1rem 0;
+}
+
+.public-safety-vehicle-inline .public-safety-vehicle-card {
+  max-width: none;
+}

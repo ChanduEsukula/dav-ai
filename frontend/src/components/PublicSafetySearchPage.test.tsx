@@ -465,6 +465,38 @@ test('submits Public Safety quick chips immediately and updates the URL query', 
   expect(new URLSearchParams(window.location.search).get('q')).toBe('air fryer')
 })
 
+test('shows Vehicle Recall Check guidance on the empty Public Safety workspace', () => {
+  render(<PublicSafetySearchPage initialQuery="" />)
+
+  expect(screen.getByText('Vehicle Recall Check')).toBeInTheDocument()
+  expect(
+    screen.getByRole('heading', { name: 'Search by year, make, model, or VIN.' }),
+  ).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: '2018 Toyota Camry' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: '2020 Honda Civic' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: '4T1B11HK5JU000001' })).toBeInTheDocument()
+  expect(
+    screen.getByText(/Always verify the exact VIN and campaign status on the official NHTSA page/i),
+  ).toBeInTheDocument()
+})
+
+test('submits Vehicle Recall Check examples through Public Safety search', async () => {
+  const user = userEvent.setup()
+  render(<PublicSafetySearchPage initialQuery="" />)
+
+  await user.click(screen.getByRole('button', { name: '2018 Toyota Camry' }))
+
+  await waitFor(() => {
+    expect(mockSearchRealWorldSafety).toHaveBeenLastCalledWith(
+      '2018 Toyota Camry',
+      10,
+      'score',
+    )
+  })
+  expect(screen.getByLabelText(/Safety record search/i)).toHaveValue('2018 Toyota Camry')
+  expect(new URLSearchParams(window.location.search).get('q')).toBe('2018 Toyota Camry')
+})
+
 test('keeps the shared Priority and Latest controls wired to Public Safety sorting', async () => {
   const user = userEvent.setup()
   render(<PublicSafetySearchPage initialQuery="Advil" />)

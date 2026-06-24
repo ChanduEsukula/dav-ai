@@ -411,6 +411,46 @@ function PublicSafetyDownloadCard() {
   )
 }
 
+const vehicleRecallExamples = [
+  '2018 Toyota Camry',
+  '2020 Honda Civic',
+  '4T1B11HK5JU000001',
+]
+
+function VehicleRecallCheckCard({
+  onExampleClick,
+}: {
+  onExampleClick: (example: string) => void
+}) {
+  return (
+    <section className="pharmacy-insight-card public-safety-vehicle-card">
+      <div>
+        <p className="eyebrow">Vehicle Recall Check</p>
+        <h2>Search by year, make, model, or VIN.</h2>
+      </div>
+
+      <p>
+        Dav AI routes vehicle searches to NHTSA recall sources when the query looks
+        like a vehicle, tire, car seat, equipment item, or VIN.
+      </p>
+
+      <div className="public-safety-vehicle-example-grid" aria-label="Vehicle recall examples">
+        {vehicleRecallExamples.map((example) => (
+          <button key={example} type="button" onClick={() => onExampleClick(example)}>
+            {example}
+          </button>
+        ))}
+      </div>
+
+      <ul>
+        <li>Use year/make/model for a quick recall search.</li>
+        <li>Use VIN when available for better vehicle-specific verification.</li>
+        <li>Always verify the exact VIN and campaign status on the official NHTSA page.</li>
+      </ul>
+    </section>
+  )
+}
+
 function SourceRolesPanel({
   data,
 }: {
@@ -568,7 +608,11 @@ function PublicSafetyBoundaryCard({
   )
 }
 
-function PublicSafetyEmptyWorkspace() {
+function PublicSafetyEmptyWorkspace({
+  onVehicleExampleClick,
+}: {
+  onVehicleExampleClick: (example: string) => void
+}) {
   return (
     <div className="pharmacy-workspace public-safety-workspace">
       <section className="pharmacy-recall-panel public-safety-record-panel">
@@ -590,6 +634,8 @@ function PublicSafetyEmptyWorkspace() {
       </section>
 
       <aside className="pharmacy-insight-rail">
+        <VehicleRecallCheckCard onExampleClick={onVehicleExampleClick} />
+
         <section className="pharmacy-insight-card public-safety-interpretation-card">
           <div>
             <p className="eyebrow">What to verify next</p>
@@ -1173,7 +1219,15 @@ function PublicSafetySearchPage({
         </p>
       )}
 
-      {!loading && !data && !error && <PublicSafetyEmptyWorkspace />}
+      {!loading && !data && !error && (
+        <PublicSafetyEmptyWorkspace onVehicleExampleClick={handleExampleClick} />
+      )}
+
+      {data && !loading && (
+        <section className="public-safety-vehicle-inline">
+          <VehicleRecallCheckCard onExampleClick={handleExampleClick} />
+        </section>
+      )}
 
       {data && !loading && (
         <>
