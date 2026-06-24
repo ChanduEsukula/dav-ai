@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {
   searchRealWorldSafety,
@@ -271,7 +271,7 @@ beforeEach(() => {
   window.history.replaceState(null, '', '/')
 })
 
-test('renders RealWorldSafety response data in the Public Safety Search page', async () => {
+test('renders a compact Public Safety summary, workspace, and advanced details', async () => {
   const user = userEvent.setup()
   render(<PublicSafetySearchPage initialQuery="" />)
 
@@ -282,24 +282,29 @@ test('renders RealWorldSafety response data in the Public Safety Search page', a
     expect(mockSearchRealWorldSafety).toHaveBeenCalledWith('Advil', 10)
   })
 
-  expect(await screen.findByRole('heading', { name: /What Dav AI found in public records/i })).toBeInTheDocument()
+  expect(
+    await screen.findByRole('heading', { name: 'Showing results for: Advil' }),
+  ).toBeInTheDocument()
+  const summaryStrip = screen.getByLabelText('Summary for Advil')
   expect(screen.getByText(/No matching recall\/enforcement record was found/i)).toBeInTheDocument()
-  expect(screen.getByText('Total matches')).toBeInTheDocument()
-  expect(screen.getByText('Sources checked')).toBeInTheDocument()
-  expect(screen.getByText('Source issues')).toBeInTheDocument()
+  expect(within(summaryStrip).getByText('Current query')).toBeInTheDocument()
+  expect(within(summaryStrip).getByText('Detected area')).toBeInTheDocument()
+  expect(within(summaryStrip).getByText('Matches')).toBeInTheDocument()
+  expect(within(summaryStrip).getByText('Sources checked')).toBeInTheDocument()
+  expect(within(summaryStrip).getByText('Source issues')).toBeInTheDocument()
+  expect(within(summaryStrip).getByText('drug')).toBeInTheDocument()
 
-  expect(screen.getByText('Query understanding')).toBeVisible()
-  expect(screen.getByText('Raw query')).not.toBeVisible()
+  expect(screen.getByText('Export')).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Download Excel' })).toBeDisabled()
+  expect(screen.getByText('Advanced source details')).toBeVisible()
+  expect(screen.getByText('Query understanding')).not.toBeVisible()
+  expect(screen.getByText('Matched sources by evidence type')).not.toBeVisible()
+  expect(screen.getByText('Sources checked for this search')).not.toBeVisible()
 
-  expect(screen.getByText('Reference only - not a recall')).toBeInTheDocument()
   expect(screen.getByText(/Official openFDA NDC Directory drug listing/i)).toBeInTheDocument()
   expect(screen.queryByText(/UNIQUE_FULL_LABEL_WARNING_TAIL/i)).not.toBeInTheDocument()
 
-  expect(screen.getAllByText('advil').length).toBeGreaterThan(0)
-  expect(screen.getAllByText('ibuprofen').length).toBeGreaterThan(0)
   expect(screen.getByText(/official identity or label reference records/i)).toBeInTheDocument()
-  expect(screen.getAllByText('Reference identity').length).toBeGreaterThan(0)
-  expect(screen.getAllByText('openFDA NDC Directory API').length).toBeGreaterThan(0)
   expect(screen.getByText('openFDA NDC listing: Advil (ibuprofen)')).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Open official record' })).toHaveAttribute(
     'href',
@@ -308,8 +313,14 @@ test('renders RealWorldSafety response data in the Public Safety Search page', a
 
   await user.click(screen.getByRole('button', { name: 'Show details' }))
   expect(screen.getByText(/UNIQUE_FULL_LABEL_WARNING_TAIL/i)).toBeInTheDocument()
+  expect(screen.queryByText('Record role')).not.toBeInTheDocument()
 
+  await user.click(screen.getByText('Advanced source details'))
+  expect(screen.getByText('Query understanding')).toBeVisible()
+  expect(screen.getByText('Matched sources by evidence type')).toBeVisible()
+  expect(screen.getByText('Sources checked for this search')).toBeVisible()
   await user.click(screen.getByText('Query understanding'))
+  expect(screen.getByText('Raw query')).toBeVisible()
   expect(
     screen.getAllByText(/Dav AI also checked "ibuprofen" because it is a known related search term/i),
   ).toHaveLength(1)
@@ -393,6 +404,8 @@ test('shows a clarification state for ambiguous Public Safety searches', async (
   ).toBeInTheDocument()
   expect(screen.getByText(/did not run a broad source sweep/i)).toBeInTheDocument()
   expect(screen.getByText('Not checked yet')).toBeInTheDocument()
+  expect(screen.getByText('Advanced source details')).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Download Excel' })).toBeDisabled()
   expect(screen.getByRole('button', { name: 'Consumer product recall' })).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Drug / OTC label' })).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Food or supplement' })).toBeInTheDocument()

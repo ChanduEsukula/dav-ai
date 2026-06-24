@@ -7,7 +7,7 @@ import {
 } from '../api/realWorldSafety'
 import { PAGE_IDS } from '../types/navigation'
 import { getSearchComparisonKey, normalizeSearchTerm } from '../utils/queryNormalization'
-import { formatDate, formatTimestamp } from '../utils/recallFormatters'
+import { formatDate } from '../utils/recallFormatters'
 import { writeSafetyQueryToUrl } from '../utils/safetyQueryUrl'
 import QueryTypeahead from './QueryTypeahead'
 
@@ -97,10 +97,6 @@ function formatQueryType(value: string) {
   return value.replace(/_/g, ' ')
 }
 
-function formatRole(value: RealWorldSafetySourceRole) {
-  return roleCopy[value]?.label ?? formatQueryType(value)
-}
-
 function quoteTerms(values: string[]) {
   return values.map((value) => `"${value}"`).join(', ')
 }
@@ -147,22 +143,6 @@ function getRecordTitle(record: RealWorldSafetyRecord) {
     record.company_name ||
     'Public safety record'
   )
-}
-
-function resultRoleNotice(role: RealWorldSafetySourceRole) {
-  if (role === 'reference_identity') {
-    return 'Reference only - not a recall'
-  }
-  if (role === 'label_reference') {
-    return 'Official label reference - not a recall'
-  }
-  if (role === 'signal_report') {
-    return 'Signal report - not a recall or proof of causation'
-  }
-  if (role === 'recall_enforcement') {
-    return 'Official recall/enforcement record'
-  }
-  return 'Public source record'
 }
 
 function createSourceRoleLookup(data: RealWorldSafetySearchResponse | null) {
@@ -219,29 +199,6 @@ function CollapsiblePanel({
       </summary>
       <div className="public-safety-disclosure__body">{children}</div>
     </details>
-  )
-}
-
-function StatusPill({
-  active,
-  label,
-  caution = false,
-}: {
-  active: boolean
-  label: string
-  caution?: boolean
-}) {
-  const className = active
-    ? caution
-      ? 'public-safety-status-pill public-safety-status-pill--caution'
-      : 'public-safety-status-pill public-safety-status-pill--success'
-    : 'public-safety-status-pill public-safety-status-pill--neutral'
-
-  return (
-    <span className={className}>
-      <strong>{active ? 'Yes' : 'No'}</strong>
-      {label}
-    </span>
   )
 }
 
@@ -348,95 +305,112 @@ function QueryUnderstandingCard({
   )
 }
 
+function formatPublicSafetyDate(value: string | null | undefined) {
+  if (!value) return 'Date not listed'
+
+  const parsed = new Date(value)
+  if (!Number.isNaN(parsed.getTime())) {
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    }).format(parsed)
+  }
+
+  return formatDate(value)
+}
+
 function SearchOutcomeCard({
+  data,
+}: {
+  data: RealWorldSafetySearchResponse
+}) {
+  if (!data.search_plan.clarification_required) return null
+
+  return (
+    <section className="public-safety-panel public-safety-outcome-card">
+      <div className="public-safety-section-heading">
+        <span>Search needs a category</span>
+        <h2>Choose a safety area to continue</h2>
+      </div>
+
+      <p className="public-safety-summary-text">
+        This query could belong to multiple safety categories, so Dav AI did not run a
+        broad source sweep. Choose the closest safety area to check the right official
+        sources.
+      </p>
+
+      <div className="public-safety-list-block public-safety-clarification-options">
+        <small>Choose one category</small>
+        <div className="public-safety-chip-row">
+          {clarificationOptions.map((option) => (
+            <button key={option} type="button">
+              {option}
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function PublicSafetySummaryStrip({
   data,
   submittedQuery,
 }: {
   data: RealWorldSafetySearchResponse
   submittedQuery: string
 }) {
-  const summary = data.safety_intelligence_summary
-  const isClarificationRequired = data.search_plan.clarification_required
-  const visibleSuggestedSteps = isClarificationRequired
-    ? []
-    : getVisibleSuggestedSteps(data).slice(0, 2)
-  const sourceIssueCount = data.sources_failed.length
+  const sourcesChecked = data.search_plan.clarification_required
+    ? 'Not checked yet'
+    : data.sources_checked.length
 
   return (
-    <section className="public-safety-panel public-safety-outcome-card">
-      <div className="public-safety-section-heading">
-        <span>Search outcome</span>
-        <h2>{isClarificationRequired ? 'Choose a safety area to continue' : 'What Dav AI found in public records'}</h2>
+    <section
+      className="public-safety-summary-strip"
+      aria-label={`Summary for ${submittedQuery}`}
+    >
+      <div className="public-safety-summary-strip__query">
+        <small>Current query</small>
+        <strong>{submittedQuery}</strong>
+        <span>Public records, not a personal safety determination</span>
       </div>
 
-      <p className="public-safety-submitted-query">
-        Showing results for: <strong>{submittedQuery}</strong>
-      </p>
-
-      <div className="public-safety-status-row">
-        <StatusPill
-          active={summary.recall_or_enforcement_found}
-          label="Recall / enforcement found"
-          caution
-        />
-        <StatusPill
-          active={summary.reference_or_label_found}
-          label="Reference / label found"
-        />
-        <StatusPill
-          active={summary.signal_report_found}
-          label="Signal report found"
-          caution
-        />
-      </div>
-
-      <p className="public-safety-summary-text">
-        {isClarificationRequired
-          ? 'This query could belong to multiple safety categories, so Dav AI did not run a broad source sweep. Choose the closest safety area to check the right official sources.'
-          : summary.plain_language_summary}
-      </p>
-
-      <div className="public-safety-outcome-facts">
+      <dl className="public-safety-summary-metrics">
         <div>
-          <small>Total matches</small>
-          <strong>{data.total_matches}</strong>
+          <dt>Detected area</dt>
+          <dd>{formatQueryType(data.search_plan.intent)}</dd>
         </div>
         <div>
-          <small>Sources checked</small>
-          <strong>{isClarificationRequired ? 'Not checked yet' : data.sources_checked.length}</strong>
+          <dt>Matches</dt>
+          <dd>{data.total_matches}</dd>
         </div>
-        <div className={sourceIssueCount > 0 ? 'public-safety-outcome-fact--issue' : ''}>
-          <small>Source issues</small>
-          <strong>{sourceIssueCount}</strong>
+        <div>
+          <dt>Sources checked</dt>
+          <dd>{sourcesChecked}</dd>
         </div>
-      </div>
-
-      {isClarificationRequired && (
-        <div className="public-safety-list-block public-safety-clarification-options">
-          <small>Choose one category</small>
-          <div className="public-safety-chip-row">
-            {clarificationOptions.map((option) => (
-              <button key={option} type="button">
-                {option}
-              </button>
-            ))}
-          </div>
+        <div className={data.sources_failed.length > 0 ? 'has-issues' : ''}>
+          <dt>Source issues</dt>
+          <dd>{data.sources_failed.length}</dd>
         </div>
-      )}
-
-      {visibleSuggestedSteps.length > 0 && (
-        <div className="public-safety-list-block">
-          <small>Next steps</small>
-          <ul>
-            {visibleSuggestedSteps.map((step) => (
-              <li key={step}>{step}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <p className="public-safety-caveat">{summary.caveat}</p>
+      </dl>
     </section>
+  )
+}
+
+function PublicSafetyDownloadCard() {
+  return (
+    <div className="public-safety-download-action" aria-label="Export results">
+      <span>
+        <small>Export</small>
+        <strong>Download Excel</strong>
+      </span>
+      <button type="button" disabled aria-label="Download Excel">
+        <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+          <path d="M12 3v11m0 0 4-4m-4 4-4-4M5 19h14" />
+        </svg>
+      </button>
+    </div>
   )
 }
 
@@ -529,6 +503,91 @@ function SourceCoveragePanel({
   )
 }
 
+function PublicSafetyInterpretationCard({
+  data,
+}: {
+  data: RealWorldSafetySearchResponse
+}) {
+  const visibleSuggestedSteps = getVisibleSuggestedSteps(data).slice(0, 2)
+
+  return (
+    <section className="public-safety-rail-card public-safety-interpretation-card">
+      <div>
+        <span className="public-safety-eyebrow">What to verify next</span>
+        <h2>Use the returned records as a starting point.</h2>
+      </div>
+
+      <p>{data.safety_intelligence_summary.plain_language_summary}</p>
+
+      {visibleSuggestedSteps.length > 0 && (
+        <ul>
+          {visibleSuggestedSteps.map((step) => (
+            <li key={step}>{step}</li>
+          ))}
+        </ul>
+      )}
+
+      <p className="public-safety-primary-caveat">
+        Public records only. Not a safety guarantee. Verify official sources.
+      </p>
+    </section>
+  )
+}
+
+function PublicSafetyAdvancedDetails({
+  data,
+}: {
+  data: RealWorldSafetySearchResponse
+}) {
+  return (
+    <CollapsiblePanel
+      eyebrow="Optional technical context"
+      title="Advanced source details"
+      className="public-safety-advanced-details"
+    >
+      <div className="public-safety-advanced-details__stack">
+        <section className="public-safety-advanced-summary">
+          <div className="public-safety-detail-grid">
+            <div>
+              <small>Detected intent</small>
+              <strong>{formatQueryType(data.search_plan.intent)}</strong>
+            </div>
+            <div>
+              <small>Confidence</small>
+              <strong>{formatQueryType(data.search_plan.confidence)}</strong>
+            </div>
+            <div>
+              <small>Planned sources</small>
+              <strong>{data.search_plan.sources_to_check.length}</strong>
+            </div>
+            <div>
+              <small>Clarification required</small>
+              <strong>{data.search_plan.clarification_required ? 'Yes' : 'No'}</strong>
+            </div>
+          </div>
+          <p>{data.search_plan.reason}</p>
+        </section>
+
+        <QueryUnderstandingCard data={data} />
+        <SourceRolesPanel data={data} />
+        <SourceCoveragePanel data={data} />
+
+        <section className="public-safety-advanced-boundary">
+          <h3>Public data boundary</h3>
+          <p>{data.public_data_disclaimer}</p>
+          {data.limitations.length > 0 && (
+            <ul>
+              {data.limitations.map((limitation) => (
+                <li key={limitation}>{limitation}</li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
+    </CollapsiblePanel>
+  )
+}
+
 function ResultCard({
   record,
   role,
@@ -549,22 +608,15 @@ function ResultCard({
     <article className={`public-safety-result public-safety-result--${role}`}>
       <div className="public-safety-result__topline">
         <div className="public-safety-result__source">
-          <SourceBadge role={role}>{formatRole(role)}</SourceBadge>
           <span>{record.source_name}</span>
         </div>
         <span className="public-safety-result__date">
-          {formatDate(record.published_date)}
+          {formatPublicSafetyDate(record.published_date)}
         </span>
       </div>
 
       <div className="public-safety-result__heading">
         <h3>{title}</h3>
-        <p>
-          {displayValue(record.category, 'Uncategorized')}
-        </p>
-        <strong className={`public-safety-result__role-note public-safety-result__role-note--${role}`}>
-          {resultRoleNotice(role)}
-        </strong>
       </div>
 
       <div className="public-safety-result__preview">
@@ -601,22 +653,18 @@ function ResultCard({
             <small>Recall / record number</small>
             <strong>{displayValue(record.recall_number)}</strong>
           </div>
-          <div>
-            <small>Source type</small>
-            <strong>{record.source_type}</strong>
-          </div>
-          <div>
-            <small>Source kind</small>
-            <strong>{record.source_kind}</strong>
-          </div>
-          <div className="public-safety-result__fact public-safety-result__fact--wide">
-            <small>Affected models</small>
-            <strong>{displayList(record.affected_models)}</strong>
-          </div>
-          <div className="public-safety-result__fact public-safety-result__fact--wide">
-            <small>Affected lots</small>
-            <strong>{displayList(record.affected_lots)}</strong>
-          </div>
+          {(record.affected_models?.length ?? 0) > 0 && (
+            <div className="public-safety-result__fact public-safety-result__fact--wide">
+              <small>Affected models</small>
+              <strong>{displayList(record.affected_models)}</strong>
+            </div>
+          )}
+          {(record.affected_lots?.length ?? 0) > 0 && (
+            <div className="public-safety-result__fact public-safety-result__fact--wide">
+              <small>Affected lots</small>
+              <strong>{displayList(record.affected_lots)}</strong>
+            </div>
+          )}
         </div>
       )}
 
@@ -627,10 +675,12 @@ function ResultCard({
           aria-expanded={expanded}
           onClick={() => setExpanded((current) => !current)}
         >
-          {expanded ? 'Hide details' : 'Show details'}
+          <span>{expanded ? 'Hide details' : 'Show details'}</span>
+          <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
         </button>
         <div>
-          <span>Retrieved {formatTimestamp(record.retrieved_at)}</span>
           {record.record_url ? (
             <a href={record.record_url} target="_blank" rel="noreferrer">
               Open official record
@@ -666,7 +716,6 @@ function ResultsList({
         </div>
 
         <p>{data.no_match_explanation}</p>
-        <p>{data.safety_intelligence_summary.caveat}</p>
       </section>
     )
   }
@@ -847,7 +896,6 @@ function PublicSafetySearchPage({
             Search public recall, reference, label, vehicle, device, and
             consumer-product safety records.
           </p>
-          <strong>Public records only. Not a safety guarantee. Verify official sources.</strong>
         </div>
 
         <form
@@ -917,7 +965,7 @@ function PublicSafetySearchPage({
 
       {loading && (
         <p className="public-safety-loading" role="status" aria-live="polite">
-          Checking public records and source roles...
+          Checking public safety records...
         </p>
       )}
 
@@ -931,38 +979,34 @@ function PublicSafetySearchPage({
         <section className="public-safety-empty">
           <h2>Start with a real product, identifier, or vehicle term.</h2>
           <p>
-            Dav AI will show query understanding, source roles, official/public
-            records, caveats, and next steps without creating synthetic results.
+            Dav AI will check public sources and return matching records with links
+            for official verification.
           </p>
         </section>
       )}
 
       {data && !loading && (
         <>
-          <SearchOutcomeCard data={data} submittedQuery={submittedQuery} />
-          <ResultsList
-            data={data}
-            roleLookup={roleLookup}
-            submittedQuery={submittedQuery}
-          />
-          <QueryUnderstandingCard data={data} />
-          <SourceRolesPanel data={data} />
-          <SourceCoveragePanel data={data} />
+          <PublicSafetySummaryStrip data={data} submittedQuery={submittedQuery} />
 
-          <CollapsiblePanel
-            eyebrow="Public data boundary"
-            title="What this response does not prove"
-            className="public-safety-boundary"
-          >
-            <p>{data.public_data_disclaimer}</p>
-            {data.limitations.length > 0 && (
-              <ul>
-                {data.limitations.map((limitation) => (
-                  <li key={limitation}>{limitation}</li>
-                ))}
-              </ul>
+          <div className="public-safety-workspace">
+            {data.search_plan.clarification_required ? (
+              <SearchOutcomeCard data={data} />
+            ) : (
+              <ResultsList
+                data={data}
+                roleLookup={roleLookup}
+                submittedQuery={submittedQuery}
+              />
             )}
-          </CollapsiblePanel>
+
+            <aside className="public-safety-insight-rail">
+              <PublicSafetyDownloadCard />
+              <PublicSafetyInterpretationCard data={data} />
+            </aside>
+          </div>
+
+          <PublicSafetyAdvancedDetails data={data} />
         </>
       )}
     </section>
