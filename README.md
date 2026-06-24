@@ -62,6 +62,19 @@ The project emphasizes:
 | Testing | pytest, Vitest, ESLint, TypeScript build, Playwright smoke tests |
 | Boundaries | Public records only; selected sources; no safety guarantee; not medical/legal advice |
 
+## Phase 2 Source Expansion Status
+
+Phase 2 is a validated prototype checkpoint, not a production deployment. The source registry and database schema now explicitly describe each source's integration mode and update cadence.
+
+| Integration mode | Current implementation |
+|---|---|
+| **Live public API** (`live_public_api`) | NHTSA vPIC VIN decoding followed by NHTSA vehicle recall lookup using decoded or user-supplied make, model, and model year |
+| **Curated official-source snapshot** (`curated_official_snapshot`) | USDA FSIS meat, poultry, and egg-product recalls/public health alerts, plus CPSC consumer-product recalls, loaded from curated local snapshots derived from official records |
+| **Public page ingestion** (`live_public_page`) | FDA recall, market-withdrawal, and safety-alert notices fetched from public FDA pages rather than a structured API |
+| **Prototype scaffold** (`prototype_scaffold`) | Regional Health Pulse architecture/demo path; no live CDC/HHS surveillance feed is connected |
+
+USDA FSIS and CPSC are **not real-time integrations** in the current prototype. The next engineering step is to add automated FSIS/CPSC refresh jobs or implement a live ingestion mode with appropriate reliability, audit, and rate-limit handling.
+
 ## Current Demo Flow
 
 Recommended recruiter/interviewer walkthrough:
@@ -104,22 +117,16 @@ For a short demo, lead with **Public Safety Search**. Use the other pages only t
 
 ## Validation
 
-Current validated checkpoint:
+Current Phase 2 source-expansion checkpoint, validated June 24, 2026:
 
-- **Backend pytest:** 393 passed
-- **Frontend tests:** 238 passed
+- **Backend pytest:** 409 passed
+- **Frontend tests:** 243 passed
 - **TypeScript/Vite build:** passed
-- **ESLint:** passed
-- **Playwright Chromium smoke:** passed
 - **`git diff --check`:** passed
 
-Relevant current tags:
+Current tag:
 
-- `realworld-safety-fullstack-v1`
-- `realworld-safety-fullstack-polished-v1`
-- `realworld-safety-query-state-fix-v1`
-- `realworld-safety-ui-clean-v1`
-- `realworld-safety-registry-alignment-v1`
+- `phase2-source-metadata-alignment-v1`
 
 ## Portfolio Documentation
 
@@ -172,7 +179,7 @@ The workspace keeps recall records separate from adverse-event summaries. Review
 Food Safety reviews supported public food and supplement records from:
 
 - openFDA Food Enforcement
-- USDA FSIS recall and public-health-alert coverage for meat, poultry, and egg products
+- a curated USDA FSIS official-source snapshot covering meat, poultry, and egg-product recalls/public health alerts
 
 Users must compare the exact brand, product, package, lot/code, establishment number, date, and official recall notice. A possible text match does not prove that a user’s package is affected.
 
@@ -243,7 +250,7 @@ They demonstrate evaluation and responsible-ML preparation only. Dav AI does not
 React + TypeScript frontend
   -> FastAPI workflow routes
   -> bounded normalization and deterministic transforms
-  -> openFDA / USDA public source clients
+  -> live APIs, public-page ingestion, curated official-source snapshots, and prototype scaffolds
   -> typed responses and PDF reports
   -> audit events, source pulls, payload hashes, monitor history
   -> PostgreSQL / Supabase persistence
@@ -287,7 +294,10 @@ docs/
 | openFDA Drug Enforcement API | Drug recall records |
 | openFDA Drug Event API | FAERS-style adverse-event reporting patterns |
 | openFDA Food Enforcement API | FDA-regulated food and supplement enforcement records |
-| USDA FSIS Recall API | Meat, poultry, and egg-product recall/public-health-alert coverage |
+| USDA FSIS curated official-source snapshot | Meat, poultry, and egg-product recall/public-health-alert coverage; no automated live refresh |
+| CPSC curated official-source snapshot | Consumer-product recall coverage; no automated live refresh |
+| NHTSA vPIC and Recalls APIs | Live VIN decoding and vehicle recall lookup by make/model/year |
+| FDA public recall pages | Live public-page ingestion for recalls, market withdrawals, and safety alerts |
 | openFDA Cosmetic Event API | Public cosmetic-event reports |
 | Regional Health Pulse scaffold | Architecture/demo extension only |
 
