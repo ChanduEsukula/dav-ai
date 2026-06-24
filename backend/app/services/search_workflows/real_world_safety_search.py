@@ -30,6 +30,7 @@ from app.services.safety_source_adapters.openfda_device_event import OpenFDADevi
 from app.services.search_workflows.real_world_query_understanding import understand_real_world_safety_query
 from app.services.search_workflows.real_world_source_planner import plan_real_world_safety_sources
 from app.services.search_workflows.safety_intelligence_summary import build_safety_intelligence_summary
+from app.services.search_workflows.identifier_check import build_identifier_check
 from app.services.safety_source_adapters.nhtsa import (
     NHTSARecallsAdapter,
     NHTSAVPICAdapter,
@@ -961,6 +962,10 @@ async def execute_real_world_safety_search(
         sources_failed=sources_failed,
         expansion_search_terms_used=query_understanding.expansion_search_terms_used,
     )
+    identifier_check = build_identifier_check(
+        detected_identifiers=query_understanding.detected_identifiers,
+        records=ranked_records,
+    )
 
     response = {
         "query": response_query,
@@ -978,6 +983,7 @@ async def execute_real_world_safety_search(
         "total_matches": total_matches,
         "no_match_explanation": NO_MATCH_EXPLANATION if total_matches == 0 else None,
         "safety_intelligence_summary": safety_intelligence_summary,
+        "identifier_check": identifier_check,
         "public_data_disclaimer": PUBLIC_DATA_DISCLAIMER,
         "limitations": LIMITATIONS,
         "source_audits": source_audits,

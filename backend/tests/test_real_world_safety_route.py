@@ -405,6 +405,21 @@ def test_real_world_safety_vehicle_query_uses_nhtsa_recalls(monkeypatch):
     assert "stall" in result["reason"].lower()
     assert "repair" in result["remedy"].lower()
 
+    identifier_check = body["identifier_check"]
+    assert identifier_check["detected"] == []
+    assert identifier_check["user_message"].startswith("Verify exact identifiers")
+    assert {
+        "type": "campaign_number",
+        "label": "NHTSA campaign number",
+        "value": "18V200000",
+        "source": "NHTSA Recalls API / datasets",
+        "reason": "Match this official record number before acting on the result.",
+    } in identifier_check["to_verify"]
+    assert any(
+        item["type"] == "model" and item["value"] == "2018 TOYOTA CAMRY"
+        for item in identifier_check["to_verify"]
+    )
+
     nhtsa_audits = [
         audit
         for audit in body["source_audits"]
@@ -435,6 +450,18 @@ def test_real_world_safety_vin_input_decodes_vehicle_before_recall_search(monkey
     assert body["results"][0]["source_kind"] == "structured_api"
     assert body["results"][0]["product_name"] == "2018 TOYOTA CAMRY"
     assert body["results"][0]["recall_number"] == "18V200000"
+
+    assert {
+        "type": "vin",
+        "label": "VIN",
+        "value": "4T1B11HK5JU000001",
+        "source": "query",
+        "reason": "Use this VIN to verify the exact vehicle and recall campaign on the official NHTSA page.",
+    } in body["identifier_check"]["detected"]
+    assert any(
+        item["type"] == "campaign_number" and item["value"] == "18V200000"
+        for item in body["identifier_check"]["to_verify"]
+    )
 
     audit_source_ids = {audit["source_id"] for audit in body["source_audits"]}
     assert "nhtsa_vpic_vin_decoder_api" in audit_source_ids

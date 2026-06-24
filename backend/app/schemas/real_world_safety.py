@@ -98,6 +98,20 @@ class RealWorldSafetyIntelligenceSummary(BaseModel):
     caveat: str
 
 
+class RealWorldSafetyIdentifierCheckItem(BaseModel):
+    type: str
+    label: str
+    value: str | None = None
+    source: str
+    reason: str
+
+
+class RealWorldSafetyIdentifierCheck(BaseModel):
+    detected: list[RealWorldSafetyIdentifierCheckItem] = Field(default_factory=list)
+    to_verify: list[RealWorldSafetyIdentifierCheckItem] = Field(default_factory=list)
+    user_message: str
+
+
 class RealWorldSafetySearchResponse(BaseModel):
     query: str
     raw_query: str
@@ -114,6 +128,7 @@ class RealWorldSafetySearchResponse(BaseModel):
     total_matches: int
     no_match_explanation: str | None = None
     safety_intelligence_summary: RealWorldSafetyIntelligenceSummary
+    identifier_check: RealWorldSafetyIdentifierCheck
     public_data_disclaimer: str
     limitations: list[str]
     source_audits: list[RealWorldSafetyAuditSummary]
