@@ -144,7 +144,7 @@ values
         'https://www.fsis.usda.gov/fsis/api/recall/v/1',
         'FoodRadar',
         'Meat, poultry, egg-product recall and public-health-alert records from USDA FSIS.',
-        'Real-time FSIS recall and public health alert updates'
+        'Curated official-source snapshot for prototype demo; live FSIS refresh not automated yet'
     ),
     (
         'foodradar_multi_source',
@@ -152,7 +152,7 @@ values
         'https://api.fda.gov/food/enforcement.json + https://www.fsis.usda.gov/fsis/api/recall/v/1',
         'FoodRadar',
         'Aggregate FoodRadar workflow combining openFDA Food Enforcement and USDA FSIS recall/public-health-alert records.',
-        'Source-dependent FDA updates plus FSIS recall/public-health-alert updates'
+        'Source-dependent openFDA updates plus curated USDA FSIS official-source snapshot; live FSIS refresh not automated yet'
     ),
     (
         'fda_recalls_market_withdrawals_safety_alerts',
@@ -168,7 +168,7 @@ values
         'https://www.saferproducts.gov/RestWebServices/Recall',
         'RealWorldSafety',
         'Consumer Product Safety Commission recall records for home goods, electronics, batteries, scooters, toys, baby products, furniture, appliances, and other consumer products.',
-        'CPSC recall API updates as public recalls are published'
+        'Curated official-source snapshot for prototype demo; live CPSC refresh not automated yet'
     ),
     (
         'nhtsa_vpic_vin_decoder_api',
