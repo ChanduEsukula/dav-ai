@@ -1493,3 +1493,52 @@
     flex-direction: column;
   }
 }
+
+/* Public Safety rows now follow the Pharmacy/Food/Cosmetic record-table pattern */
+.public-safety-record-table {
+  overflow: hidden;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.public-safety-record-row {
+  background: rgba(255, 255, 255, 0.56);
+}
+
+.public-safety-record-row summary {
+  grid-template-columns: minmax(0, 1.5fr) minmax(150px, 0.72fr) 92px 34px;
+}
+
+.public-safety-record-row .pharmacy-record-row__badges small:first-child {
+  color: #155e75;
+  background: rgba(207, 250, 254, 0.72);
+}
+
+.public-safety-record-row .pharmacy-record-row__badges small:last-child {
+  color: #0b4f71;
+  background: rgba(224, 242, 254, 0.78);
+}
+
+.public-safety-record-row--recall_enforcement .pharmacy-record-row__badges small:last-child {
+  color: #991b1b;
+  background: rgba(254, 226, 226, 0.78);
+}
+
+.public-safety-record-row--signal_report .pharmacy-record-row__badges small:last-child {
+  color: #92400e;
+  background: rgba(254, 243, 199, 0.82);
+}
+
+.public-safety-record-details a {
+  color: #007b87;
+  font-weight: 950;
+}
+
+.public-safety-results .public-safety-results-list,
+.public-safety-result__preview,
+.public-safety-result__footer,
+.public-safety-result__topline,
+.public-safety-result__heading {
+  display: none;
+}

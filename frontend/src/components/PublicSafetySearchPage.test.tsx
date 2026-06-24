@@ -302,7 +302,7 @@ test('renders a compact Public Safety summary, workspace, and advanced details',
   expect(screen.getByText('Sources checked for this search')).not.toBeVisible()
 
   expect(screen.getByText(/Official openFDA NDC Directory drug listing/i)).toBeInTheDocument()
-  expect(screen.queryByText(/UNIQUE_FULL_LABEL_WARNING_TAIL/i)).not.toBeInTheDocument()
+  expect(screen.getByText(/UNIQUE_FULL_LABEL_WARNING_TAIL/i)).not.toBeVisible()
 
   expect(screen.getByText(/official identity or label reference records/i)).toBeInTheDocument()
   expect(screen.getByText('openFDA NDC listing: Advil (ibuprofen)')).toBeInTheDocument()
@@ -311,7 +311,7 @@ test('renders a compact Public Safety summary, workspace, and advanced details',
     'https://api.fda.gov/drug/ndc.json',
   )
 
-  await user.click(screen.getByRole('button', { name: 'Show details' }))
+  await user.click(screen.getByText(/Official openFDA NDC Directory drug listing/i))
   expect(screen.getByText(/UNIQUE_FULL_LABEL_WARNING_TAIL/i)).toBeInTheDocument()
   expect(screen.queryByText('Record role')).not.toBeInTheDocument()
 

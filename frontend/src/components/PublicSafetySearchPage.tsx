@@ -589,6 +589,25 @@ function PublicSafetyAdvancedDetails({
   )
 }
 
+function publicSafetyRoleLabel(role: RealWorldSafetySourceRole) {
+  switch (role) {
+    case 'recall_enforcement':
+      return 'Recall / enforcement'
+    case 'reference_identity':
+      return 'Reference'
+    case 'label_reference':
+      return 'Label'
+    case 'signal_report':
+      return 'Signal report'
+    default:
+      return 'Public record'
+  }
+}
+
+function publicSafetyCategoryLabel(record: RealWorldSafetyRecord) {
+  return formatQueryType(record.category || record.source_type || 'Public record')
+}
+
 function ResultCard({
   record,
   role,
@@ -596,102 +615,113 @@ function ResultCard({
   record: RealWorldSafetyRecord
   role: RealWorldSafetySourceRole
 }) {
-  const [expanded, setExpanded] = useState(false)
   const title = getRecordTitle(record)
   const reasonText = displayValue(
     record.reason || record.hazard_type,
     'No reason listed',
   )
-  const reasonPreview = truncateText(reasonText)
   const remedyText = displayValue(record.remedy, 'No remedy listed')
+  const sourceOrCompany = record.company_name || record.source_name || 'Source not listed'
 
   return (
-    <article className={`public-safety-result public-safety-result--${role}`}>
-      <div className="public-safety-result__topline">
-        <div className="public-safety-result__source">
-          <span>{record.source_name}</span>
-        </div>
-        <span className="public-safety-result__date">
-          {formatPublicSafetyDate(record.published_date)}
+    <details
+      className={`pharmacy-record-row public-safety-record-row public-safety-record-row--${role}`}
+      key={record.raw_payload_hash}
+    >
+      <summary aria-label="Show details">
+        <span className="pharmacy-record-row__product">
+          <span className="pharmacy-record-row__badges">
+            <small>{publicSafetyCategoryLabel(record)}</small>
+            <small>{publicSafetyRoleLabel(role)}</small>
+          </span>
+          <strong title={title}>{truncateText(title, 96).text}</strong>
+          <span>{record.recall_number || record.product_name || 'Record ID not listed'}</span>
         </span>
-        <button
-          type="button"
-          className="public-safety-result__arrow"
-          aria-label={expanded ? 'Hide details' : 'Show details'}
-          aria-expanded={expanded}
-          onClick={() => setExpanded((current) => !current)}
-        >
-          <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+
+        <span className="pharmacy-record-row__firm">
+          <strong>{sourceOrCompany}</strong>
+          <span>{record.source_name}</span>
+        </span>
+
+        <span className="pharmacy-record-row__date">
+          <strong>{formatPublicSafetyDate(record.published_date)}</strong>
+          <span>{record.source_kind === 'public_notice' ? 'Public notice' : 'Structured API'}</span>
+        </span>
+
+        <span className="pharmacy-record-row__arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false">
             <path d="M6 9l6 6 6-6" />
           </svg>
-        </button>
-      </div>
+        </span>
+      </summary>
 
-      <div className="public-safety-result__heading">
-        <h3>{title}</h3>
-      </div>
+      <div className="pharmacy-record-details public-safety-record-details">
+        <div className="pharmacy-record-details__wide">
+          <span>Reason / hazard</span>
+          <strong>{reasonText}</strong>
+        </div>
 
-      <div className="public-safety-result__preview">
+        <div className="pharmacy-record-details__wide">
+          <span>Remedy / use</span>
+          <strong>{remedyText}</strong>
+        </div>
+
         <div>
-          <small>Reason / hazard preview</small>
-          <p>{reasonPreview.text}</p>
+          <span>Product</span>
+          <strong>{displayValue(record.product_name)}</strong>
         </div>
-        {reasonPreview.truncated && <span>Long official text shortened.</span>}
-      </div>
 
-      {expanded && (
-        <div className="public-safety-result__facts">
-          <div className="public-safety-result__fact public-safety-result__fact--wide">
-            <small>Full reason / hazard</small>
-            <strong>{reasonText}</strong>
-          </div>
-          <div className="public-safety-result__fact public-safety-result__fact--wide">
-            <small>Remedy / use</small>
-            <strong>{remedyText}</strong>
-          </div>
-          <div>
-            <small>Product</small>
-            <strong>{displayValue(record.product_name)}</strong>
-          </div>
-          <div>
-            <small>Brand</small>
-            <strong>{displayValue(record.brand_name)}</strong>
-          </div>
-          <div>
-            <small>Company</small>
-            <strong>{displayValue(record.company_name)}</strong>
-          </div>
-          <div>
-            <small>Recall / record number</small>
-            <strong>{displayValue(record.recall_number)}</strong>
-          </div>
-          {(record.affected_models?.length ?? 0) > 0 && (
-            <div className="public-safety-result__fact public-safety-result__fact--wide">
-              <small>Affected models</small>
-              <strong>{displayList(record.affected_models)}</strong>
-            </div>
-          )}
-          {(record.affected_lots?.length ?? 0) > 0 && (
-            <div className="public-safety-result__fact public-safety-result__fact--wide">
-              <small>Affected lots</small>
-              <strong>{displayList(record.affected_lots)}</strong>
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className="public-safety-result__footer">
         <div>
-          {record.record_url ? (
-            <a href={record.record_url} target="_blank" rel="noreferrer">
-              Open official record
-            </a>
-          ) : (
-            <span>Official record URL not listed</span>
-          )}
+          <span>Brand</span>
+          <strong>{displayValue(record.brand_name)}</strong>
         </div>
+
+        <div>
+          <span>Company</span>
+          <strong>{displayValue(record.company_name)}</strong>
+        </div>
+
+        <div>
+          <span>Recall / record number</span>
+          <strong>{displayValue(record.recall_number)}</strong>
+        </div>
+
+        {(record.affected_models?.length ?? 0) > 0 && (
+          <div className="pharmacy-record-details__wide">
+            <span>Affected models</span>
+            <strong>{displayList(record.affected_models)}</strong>
+          </div>
+        )}
+
+        {(record.affected_lots?.length ?? 0) > 0 && (
+          <div className="pharmacy-record-details__wide">
+            <span>Affected lots</span>
+            <strong>{displayList(record.affected_lots)}</strong>
+          </div>
+        )}
+
+        <div>
+          <span>Source</span>
+          <strong>{record.source_name}</strong>
+        </div>
+
+        <div>
+          <span>Source type</span>
+          <strong>{record.source_kind === 'public_notice' ? 'Public notice' : 'Structured API'}</strong>
+        </div>
+
+        {record.record_url && (
+          <div className="pharmacy-record-details__wide">
+            <span>Official record</span>
+            <strong>
+              <a href={record.record_url} target="_blank" rel="noreferrer">
+                Open official record
+              </a>
+            </strong>
+          </div>
+        )}
       </div>
-    </article>
+    </details>
   )
 }
 
@@ -757,7 +787,14 @@ function ResultsList({
         </div>
       </div>
 
-      <div className="public-safety-results-list">
+      <div className="pharmacy-record-table public-safety-record-table">
+        <div className="pharmacy-record-table__head" aria-hidden="true">
+          <span>Record and product</span>
+          <span>Source / company</span>
+          <span>Date</span>
+          <span />
+        </div>
+
         {data.results.map((record, index) => (
           <ResultCard
             key={`${record.source_name}-${record.raw_payload_hash}-${index}`}
