@@ -99,6 +99,11 @@ CONSUMER_PRODUCT_TERMS = {
     "scooter",
     "electric scooter",
     "battery",
+    "microwave",
+    "microwave oven",
+    "toaster",
+    "oven",
+    "appliance",
 }
 
 VEHICLE_TERMS = {
