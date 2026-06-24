@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getSources, type SourceRecord, type SourceRegistryResponse } from '../api/sources'
+import SourceIntegrationBadge from './SourceIntegrationBadge'
 
 function formatTimestamp(value: string | null) {
   if (!value) {
@@ -91,6 +92,10 @@ function DataSourcesPage() {
             </div>
 
             <h3>{source.source_name}</h3>
+            <SourceIntegrationBadge
+              sourceId={source.source_id}
+              sourceName={source.source_name}
+            />
             <p>{source.description}</p>
 
             <div className="source-freshness-panel">

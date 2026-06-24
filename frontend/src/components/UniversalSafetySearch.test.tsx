@@ -41,7 +41,19 @@ const mockGoToPage = vi.fn()
 
 const recallResponse = { count: 1 } as RecallSearchResponse
 const drugResponse = { count: 2 } as DrugEventSearchResponse
-const foodResponse = { count: 3 } as EverydaySafetySearchResponse
+const foodResponse = {
+  count: 3,
+  sources_checked: [
+    {
+      source_id: 'usda_fsis_recall',
+      source_name: 'USDA FSIS Recall API',
+      source_type: 'USDA_FSIS_RECALL',
+      endpoint: 'local:data/safety_sources/food/usda_fsis_curated_records.json',
+      upstream_status: 'success',
+      record_count: 3,
+    },
+  ],
+} as EverydaySafetySearchResponse
 const cosmeticResponse = { count: 4 } as CosmeticEventSearchResponse
 
 beforeEach(() => {
@@ -109,6 +121,7 @@ test.each([
       expect(
         screen.getByText(/No result does not prove that a product is safe/i),
       ).toBeInTheDocument()
+      expect(screen.getByText('Curated official snapshot')).toBeInTheDocument()
     } else {
       expect(mockSearchCosmeticEvents).toHaveBeenCalledWith(query, 5)
       expect(screen.getByText(/public reporting signals/i)).toBeInTheDocument()

@@ -239,6 +239,7 @@ test('renders the Food Safety dashboard and multiple records for Chicken', async
     screen.getAllByText('Frozen chicken and vegetable meal, 16-ounce package'),
   ).toHaveLength(2)
   expect(screen.getByText(/Showing 2 of 2 returned records/i)).toBeInTheDocument()
+  expect(screen.getAllByText('Curated official snapshot').length).toBeGreaterThan(0)
 })
 
 test('renders normalized FDA notices with concise fields and an official link', async () => {
@@ -248,6 +249,7 @@ test('renders normalized FDA notices with concise fields and an official link', 
 
   expect(await screen.findByTitle('Pepperoni Rolls')).toBeInTheDocument()
   expect(screen.getAllByText('Normalized public notice').length).toBeGreaterThan(0)
+  expect(screen.getAllByText('Live public page').length).toBeGreaterThan(0)
   await user.click(screen.getByTitle('Pepperoni Rolls'))
 
   expect(

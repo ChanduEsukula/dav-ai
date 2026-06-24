@@ -15,6 +15,8 @@ import { normalizeSafetyQuery } from '../utils/queryNormalization'
 import type { ActivePage } from '../types/navigation'
 import QueryNormalizationNotice from './QueryNormalizationNotice'
 import QueryTypeahead from './QueryTypeahead'
+import SourceIntegrationBadge from './SourceIntegrationBadge'
+import { getSourceIntegrationMode } from '../utils/sourceIntegrationMode'
 
 type UniversalSafetySearchProps = {
   goToPage: (page: ActivePage, query?: string, rawQuery?: string) => void
@@ -34,6 +36,12 @@ type UniversalSearchData = {
   drug?: DrugEventSearchResponse
   food?: EverydaySafetySearchResponse
   cosmetic?: CosmeticEventSearchResponse
+}
+
+type UniversalSourceIdentity = {
+  sourceId?: string
+  sourceName: string
+  sourceType?: string
 }
 
 const examples = ['Air fryer', 'NDC 66715 6547', 'Advil', 'Chicken', 'Sunscreen']
@@ -150,6 +158,35 @@ function buildPreview(
   }
 }
 
+function getIntegrationSources(data: UniversalSearchData): UniversalSourceIdentity[] {
+  const sources: UniversalSourceIdentity[] = [
+    ...(data.recall?.sources_checked?.map((source) => ({
+      sourceId: source.source_id,
+      sourceName: source.source_name,
+      sourceType: source.source_type,
+    })) ?? []),
+    ...(data.food?.sources_checked.map((source) => ({
+      sourceId: source.source_id,
+      sourceName: source.source_name,
+      sourceType: source.source_type,
+    })) ?? []),
+    ...(data.cosmetic?.recall_notices?.map((notice) => ({
+      sourceName: notice.source_name,
+      sourceType: notice.source_type,
+    })) ?? []),
+  ]
+
+  const seen = new Set<string>()
+
+  return sources.filter((source) => {
+    if (!getSourceIntegrationMode(source)) return false
+    const key = `${source.sourceId ?? ''}:${source.sourceName}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}
+
 function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
   const [query, setQuery] = useState('')
   const [submittedQuery, setSubmittedQuery] = useState('')
@@ -170,6 +207,7 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
   const preview = hasSubmittedQuery
     ? buildPreview(submittedQuery, classification, searchData)
     : null
+  const integrationSources = getIntegrationSources(searchData)
 
   async function runPreviewSearch(nextQuery: string) {
     const normalization = normalizeSafetyQuery(nextQuery)
@@ -380,6 +418,27 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
               <p>{preview.detail}</p>
 
               <strong className="universal-safety-search__count">{preview.countLabel}</strong>
+
+              {integrationSources.length > 0 && (
+                <div
+                  className="universal-safety-search__source-modes"
+                  aria-label="Source integration modes"
+                >
+                  {integrationSources.map((source) => (
+                    <span
+                      className="universal-safety-search__source-mode"
+                      key={`${source.sourceId ?? ''}-${source.sourceName}`}
+                    >
+                      <span>{source.sourceName}</span>
+                      <SourceIntegrationBadge
+                        sourceId={source.sourceId}
+                        sourceName={source.sourceName}
+                        sourceType={source.sourceType}
+                      />
+                    </span>
+                  ))}
+                </div>
+              )}
 
               <ul className="universal-safety-search__checklist">
                 {preview.checklist.map((item) => (

@@ -344,6 +344,64 @@ test('renders a compact Public Safety summary, workspace, and advanced details',
   ).toHaveLength(1)
 })
 
+test('labels curated snapshots, live APIs, and live public pages in source metadata', async () => {
+  const sourceRecords = [
+    {
+      source_id: 'cpsc_recalls_api',
+      source_name: 'CPSC Recalls API',
+      source_type: 'local curated official snapshot',
+      source_url: 'local:data/safety_sources/cpsc/cpsc_daily_products_curated_records.json',
+      source_kind: 'structured_api' as const,
+      upstream_status: 'success',
+      record_count: 1,
+    },
+    {
+      source_id: 'nhtsa_recalls_api_datasets',
+      source_name: 'NHTSA Recalls API / datasets',
+      source_type: 'API',
+      source_url: 'https://api.nhtsa.gov/recalls/recallsByVehicle',
+      source_kind: 'structured_api' as const,
+      upstream_status: 'success',
+      record_count: 1,
+    },
+    {
+      source_id: 'fda_recalls_market_withdrawals_safety_alerts',
+      source_name: 'FDA Recalls, Market Withdrawals & Safety Alerts',
+      source_type: 'public notice page',
+      source_url: 'https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts',
+      source_kind: 'public_notice' as const,
+      upstream_status: 'success',
+      record_count: 1,
+    },
+  ]
+  const baseRecord = publicSafetyResponse.results[0]
+
+  mockSearchRealWorldSafety.mockResolvedValueOnce({
+    ...publicSafetyResponse,
+    query: 'air fryer',
+    raw_query: 'air fryer',
+    count: 3,
+    total_matches: 3,
+    sources_checked: sourceRecords,
+    results: sourceRecords.map((source, index) => ({
+      ...baseRecord,
+      source_name: source.source_name,
+      source_type: source.source_type,
+      source_url: source.source_url,
+      source_kind: source.source_kind,
+      title: `${source.source_name} result`,
+      raw_payload_hash: `source-mode-${index}`,
+    })),
+  })
+
+  render(<PublicSafetySearchPage initialQuery="air fryer" />)
+
+  expect(await screen.findByText('CPSC Recalls API result')).toBeInTheDocument()
+  expect(screen.getAllByText('Curated official snapshot').length).toBeGreaterThan(0)
+  expect(screen.getAllByText('Live public API').length).toBeGreaterThan(0)
+  expect(screen.getAllByText('Live public page').length).toBeGreaterThan(0)
+})
+
 test('keeps edited draft input separate from submitted Public Safety results', async () => {
   const user = userEvent.setup()
   window.history.replaceState(null, '', '/?page=public-safety&q=air+fryer')

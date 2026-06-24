@@ -16,6 +16,7 @@ import { normalizeSafetyQuery } from '../utils/queryNormalization'
 import { writeSafetyQueryToUrl } from '../utils/safetyQueryUrl'
 import QueryNormalizationNotice from './QueryNormalizationNotice'
 import QueryTypeahead from './QueryTypeahead'
+import SourceIntegrationBadge from './SourceIntegrationBadge'
 
 type FoodSafetyPageProps = {
   initialQuery: string
@@ -82,6 +83,10 @@ function FoodRecordRow({ record, index }: { record: EverydaySafetyRecord; index:
         <span className="pharmacy-record-row__date">
           <strong>{formatDate(recordDate(record))}</strong>
           <span>{sourceTypeLabel(record.source_type, record.source_kind)}</span>
+          <SourceIntegrationBadge
+            sourceName={record.source.name}
+            sourceType={record.source_type}
+          />
         </span>
 
         <span className="pharmacy-record-row__arrow" aria-hidden="true">
@@ -625,6 +630,11 @@ function FoodSafetyPage({
                     <div>
                       <strong>{source.source_name}</strong>
                       <span>{sourceTypeLabel(source.source_type, source.source_kind)}</span>
+                      <SourceIntegrationBadge
+                        sourceId={source.source_id}
+                        sourceName={source.source_name}
+                        sourceType={source.source_type}
+                      />
                     </div>
                     <dl>
                       <div>

@@ -11,6 +11,7 @@ import { getSearchComparisonKey, normalizeSearchTerm } from '../utils/queryNorma
 import { formatDate } from '../utils/recallFormatters'
 import { writeSafetyQueryToUrl } from '../utils/safetyQueryUrl'
 import QueryTypeahead from './QueryTypeahead'
+import SourceIntegrationBadge from './SourceIntegrationBadge'
 
 type PublicSafetySearchPageProps = {
   initialQuery: string
@@ -477,6 +478,11 @@ function SourceCoveragePanel({
           <div key={`${source.source_id}-${source.source_name}`}>
             <small>{source.upstream_status}</small>
             <strong>{source.source_name}</strong>
+            <SourceIntegrationBadge
+              sourceId={source.source_id}
+              sourceName={source.source_name}
+              sourceType={source.source_type}
+            />
             <span>
               {source.record_count} records | {source.source_type}
             </span>
@@ -709,6 +715,10 @@ function ResultCard({
         <span className="pharmacy-record-row__date">
           <strong>{formatPublicSafetyDate(record.published_date)}</strong>
           <span>{publicSafetySourceKindLabel(record.source_kind)}</span>
+          <SourceIntegrationBadge
+            sourceName={record.source_name}
+            sourceType={record.source_type}
+          />
         </span>
 
         <span className="pharmacy-record-row__arrow" aria-hidden="true">
