@@ -184,7 +184,7 @@ test('empty input falls back to the submitted Cosmetic query', async () => {
   renderCosmeticPage()
 
   await screen.findByRole('heading', { name: /Safety review for Sunscreen/i })
-  await user.clear(screen.getByLabelText(/Search cosmetic-event reports/i))
+  await user.clear(screen.getByLabelText(/Search cosmetic safety records/i))
   await user.click(screen.getByRole('button', { name: 'Search' }))
 
   await waitFor(() => {
@@ -198,7 +198,7 @@ test('spaces-only input falls back to the submitted Cosmetic query', async () =>
   renderCosmeticPage()
 
   await screen.findByRole('heading', { name: /Safety review for Sunscreen/i })
-  const input = screen.getByLabelText(/Search cosmetic-event reports/i)
+  const input = screen.getByLabelText(/Search cosmetic safety records/i)
   await user.clear(input)
   await user.type(input, '   ')
   await user.click(screen.getByRole('button', { name: 'Search' }))
@@ -245,7 +245,7 @@ test('a Xanax Cosmetic search suggests Pharmacy Safety', async () => {
   window.history.replaceState(null, '', '?page=cosmetic-safety')
   renderCosmeticPage('')
 
-  await user.type(screen.getByLabelText(/Search cosmetic-event reports/i), 'Xanax')
+  await user.type(screen.getByLabelText(/Search cosmetic safety records/i), 'Xanax')
   await user.click(screen.getByRole('button', { name: 'Search' }))
 
   expect(
@@ -261,7 +261,7 @@ test('a Chicken Cosmetic search suggests Food & Supplement Safety', async () => 
   window.history.replaceState(null, '', '?page=cosmetic-safety')
   renderCosmeticPage('')
 
-  await user.type(screen.getByLabelText(/Search cosmetic-event reports/i), 'Chicken')
+  await user.type(screen.getByLabelText(/Search cosmetic safety records/i), 'Chicken')
   await user.click(screen.getByRole('button', { name: 'Search' }))
 
   const suggestion = await screen.findByText(
@@ -277,7 +277,7 @@ test('a Chicken Cosmetic search suggests Food & Supplement Safety', async () => 
     screen.getByText(/This looks better suited for Food & Supplement Safety/i),
   ).toBeInTheDocument()
   expect(
-    screen.queryByText(/No public reports returned for this exact search/i),
+    screen.queryByText(/No cosmetic-event reports returned for this exact search/i),
   ).not.toBeInTheDocument()
   await user.click(screen.getByRole('button', { name: 'Open Food & Supplement Safety' }))
   expect(mockGoToPage).toHaveBeenCalledWith('food-safety', 'Chicken')
@@ -288,7 +288,7 @@ test('zero reports show calm guidance without claiming the cosmetic is safe', as
   renderCosmeticPage('Unknown cream')
 
   expect(
-    await screen.findByText(/No public reports returned for this exact search/i),
+    await screen.findByText(/No cosmetic-event reports returned for this exact search/i),
   ).toBeInTheDocument()
   expect(screen.getByText(/No result does not prove a cosmetic is safe/i)).toBeInTheDocument()
   expect(screen.queryByText(/This cosmetic is safe/i)).not.toBeInTheDocument()
@@ -347,7 +347,7 @@ test('normalizes hairdye and preserves the original Cosmetic query', async () =>
   expect(
     screen.getByText(/Showing results for 'hair dye' based on your search 'hairdye'/i),
   ).toBeInTheDocument()
-  expect(screen.getByLabelText(/Search cosmetic-event reports/i)).toHaveValue('hairdye')
+  expect(screen.getByLabelText(/Search cosmetic safety records/i)).toHaveValue('hairdye')
   expect(new URLSearchParams(window.location.search).get('q')).toBe('hair dye')
   expect(new URLSearchParams(window.location.search).get('raw_q')).toBe('hairdye')
 })

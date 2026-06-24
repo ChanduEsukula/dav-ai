@@ -29,7 +29,22 @@ type CosmeticSearchOptions = {
   skipIfCompleted?: boolean
 }
 
+type CosmeticSort = 'score' | 'latest'
+
 const cosmeticExamples = ['Sunscreen', 'Shampoo', 'Lipstick', 'Moisturizer', 'Hair dye']
+
+
+function cosmeticDateValue(record: CosmeticEventRecord) {
+  const raw = record.report_date || ''
+  const digits = raw.replace(/\D/g, '')
+  if (digits.length >= 8) return Number(digits.slice(0, 8))
+  return 0
+}
+
+function cosmeticPriorityValue(record: CosmeticEventRecord) {
+  const seriousBoost = String(record.serious || '').toLowerCase().startsWith('y') ? 100 : 0
+  return seriousBoost + record.reactions.length * 10 + record.outcomes.length
+}
 
 function getCosmeticReportTitle(record: CosmeticEventRecord) {
   const product = record.products[0]
@@ -302,6 +317,7 @@ function CosmeticSafetyPage({
     initialNormalization.rawQuery,
   )
   const [data, setData] = useState<CosmeticEventSearchResponse | null>(null)
+  const [sort, setSort] = useState<CosmeticSort>('score')
   const [loading, setLoading] = useState(Boolean(normalizedInitialQuery))
   const [error, setError] = useState('')
   const [helper, setHelper] = useState('')
@@ -456,6 +472,21 @@ function CosmeticSafetyPage({
   }
 
   const records = data?.records ?? []
+  const sortedRecords = useMemo(() => {
+    const nextRecords = [...records]
+
+    if (sort === 'latest') {
+      return nextRecords.sort(
+        (first, second) => cosmeticDateValue(second) - cosmeticDateValue(first),
+      )
+    }
+
+    return nextRecords.sort(
+      (first, second) =>
+        cosmeticPriorityValue(second) - cosmeticPriorityValue(first) ||
+        cosmeticDateValue(second) - cosmeticDateValue(first),
+    )
+  }, [records, sort])
   const recallNotices = data?.recall_notices ?? []
   const displayQuery = submittedQuery || 'a cosmetic or personal-care product'
   const topReaction = data?.top_reactions[0] ?? null
@@ -481,7 +512,7 @@ function CosmeticSafetyPage({
                 Safety review for <span>{submittedQuery}</span>
               </>
             ) : (
-              'Search cosmetic-event reports'
+              'Search cosmetic safety records'
             )}
           </h1>
 
@@ -496,7 +527,7 @@ function CosmeticSafetyPage({
               handleSearch()
             }}
           >
-            <label htmlFor="cosmetic-page-search">Search cosmetic-event reports</label>
+            <label htmlFor="cosmetic-page-search">Search cosmetic safety records</label>
             <div>
               <QueryTypeahead
                 id="cosmetic-page-search"
@@ -506,7 +537,7 @@ function CosmeticSafetyPage({
                   if (helper) setHelper('')
                 }}
                 area="cosmetic"
-                placeholder="Search another cosmetic, brand, ingredient, or personal-care product"
+                placeholder="Search cosmetic, brand, ingredient, or personal-care product"
               />
               <button type="submit" disabled={loading}>
                 {loading ? 'Checking...' : 'Search'}
@@ -594,7 +625,7 @@ function CosmeticSafetyPage({
       {hasZeroReports && !hasWrongCategoryOnly && (
         <aside className="safety-search-guidance" aria-live="polite">
           <span>
-            No public reports returned for this exact search. Check spelling or try a simpler
+            No cosmetic-event reports returned for this exact search. Check spelling or try a simpler
             brand/product term.
           </span>
         </aside>
@@ -608,7 +639,7 @@ function CosmeticSafetyPage({
           <div className="pharmacy-summary-strip__query">
             <small>Current query</small>
             <strong>{displayQuery}</strong>
-            <span>Public event reports, not a product safety determination</span>
+            <span>Public event reports and FDA notices, not a safety guarantee</span>
           </div>
 
           <dl className="pharmacy-summary-metrics">
@@ -649,6 +680,27 @@ function CosmeticSafetyPage({
                   : 'Search to load cosmetic-event reports'}
               </span>
             </div>
+
+            <div className="recall-sort-control" aria-label="Sort cosmetic reports">
+              <button
+                type="button"
+                className={sort === 'score' ? 'active' : ''}
+                aria-pressed={sort === 'score'}
+                disabled={!data || records.length === 0 || loading}
+                onClick={() => setSort('score')}
+              >
+                Priority
+              </button>
+              <button
+                type="button"
+                className={sort === 'latest' ? 'active' : ''}
+                aria-pressed={sort === 'latest'}
+                disabled={!data || records.length === 0 || loading}
+                onClick={() => setSort('latest')}
+              >
+                Latest
+              </button>
+            </div>
           </div>
 
           {records.length > 0 && data ? (
@@ -660,7 +712,7 @@ function CosmeticSafetyPage({
                 <span />
               </div>
 
-              {records.map((record, index) => (
+              {sortedRecords.map((record, index) => (
                 <CosmeticReportRow
                   key={`${record.report_number ?? 'cosmetic-report'}-${index}`}
                   record={record}
