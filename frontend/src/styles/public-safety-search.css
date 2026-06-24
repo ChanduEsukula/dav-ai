@@ -572,3 +572,12 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Keep Public Safety search simple for normal users: input + Search only */
+.public-safety-page-search .public-safety-search-controls {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.public-safety-page-search .public-safety-search-controls select {
+  display: none;
+}

@@ -751,19 +751,11 @@ function ResultCard({
 
         {record.extraction_confidence && (
           <div>
-            <span>Extraction confidence</span>
+            <span>Notice extraction</span>
             <strong>{record.extraction_confidence}</strong>
           </div>
         )}
-
-        {record.source_text_excerpt && (
-          <div className="pharmacy-record-details__wide">
-            <span>Source text excerpt</span>
-            <strong>{record.source_text_excerpt}</strong>
-          </div>
-        )}
-
-        {(record.affected_models?.length ?? 0) > 0 && (
+{(record.affected_models?.length ?? 0) > 0 && (
           <div className="pharmacy-record-details__wide">
             <span>Affected models</span>
             <strong>{displayList(record.affected_models)}</strong>

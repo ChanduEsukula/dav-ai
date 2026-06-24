@@ -275,6 +275,32 @@ def _source_excerpt(text: str, query: str, fallback: str | None = None) -> str |
     return None
 
 
+
+def _clean_notice_candidate(value: str | None) -> str | None:
+    text = compact_text(value)
+    if not text:
+        return None
+
+    noisy_terms = (
+        "search menu search fda",
+        "skip to fda search",
+        "skip to main content",
+        "featured report a product problem",
+        "contact fda",
+        "documents recalls, market withdrawals",
+        "in this section",
+        "an official website",
+        "here's how you know",
+    )
+    lower = text.lower()
+    if any(term in lower for term in noisy_terms):
+        return None
+
+    if len(text) > 420:
+        text = text[:420].rsplit(" ", 1)[0] + "..."
+
+    return text
+
 def _normalize_notice_from_text(
     *,
     base_record: NormalizedSafetyRecord,
@@ -288,44 +314,47 @@ def _normalize_notice_from_text(
     if len(notice_text) < 220:
         return None
 
-    reason = first_text(
-        base_record.reason,
-        _first_sentence_matching(
-            notice_text,
-            (
-                "recall",
-                "recalled",
-                "because",
-                "due to",
-                "undeclared",
-                "contaminated",
-                "contamination",
-                "allergen",
-                "risk",
-                "injury",
-                "hazard",
+    reason = _clean_notice_candidate(
+        first_text(
+            base_record.reason,
+            _first_sentence_matching(
+                notice_text,
+                (
+                    "recall",
+                    "recalled",
+                    "because",
+                    "due to",
+                    "undeclared",
+                    "contaminated",
+                    "contamination",
+                    "allergen",
+                    "risk",
+                    "injury",
+                    "hazard",
+                ),
             ),
-        ),
+        )
     )
 
-    remedy = first_text(
-        base_record.remedy,
-        _first_sentence_matching(
-            notice_text,
-            (
-                "consumers should",
-                "customers should",
-                "patients should",
-                "stop using",
-                "return",
-                "discard",
-                "contact",
-                "refund",
+    remedy = _clean_notice_candidate(
+        first_text(
+            base_record.remedy,
+            _first_sentence_matching(
+                notice_text,
+                (
+                    "consumers should",
+                    "customers should",
+                    "patients should",
+                    "stop using",
+                    "return",
+                    "discard",
+                    "refund",
+                ),
             ),
-        ),
+        )
     )
 
-    excerpt = _source_excerpt(notice_text, query, reason)
+    excerpt = _clean_notice_candidate(_source_excerpt(notice_text, query, reason))
     confidence_score = sum(
         1
         for value in (
