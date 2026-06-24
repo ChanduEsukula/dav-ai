@@ -395,9 +395,24 @@ def test_real_world_safety_vehicle_query_uses_nhtsa_recalls(monkeypatch):
 
     result = body["results"][0]
     assert result["source_name"] == "NHTSA Recalls API / datasets"
+    assert result["source_type"] == "API"
+    assert result["source_kind"] == "structured_api"
+    assert result["category"] == "Vehicle recall"
     assert result["product_name"] == "2018 TOYOTA CAMRY"
     assert result["recall_number"] == "18V200000"
     assert result["brand_name"] == "TOYOTA"
+    assert result["hazard_type"] == "ENGINE AND ENGINE COOLING"
+    assert "stall" in result["reason"].lower()
+    assert "repair" in result["remedy"].lower()
+
+    nhtsa_audits = [
+        audit
+        for audit in body["source_audits"]
+        if audit["source_id"] == "nhtsa_recalls_api_datasets"
+    ]
+    assert nhtsa_audits
+    assert nhtsa_audits[0]["source_snapshot_status"] == "stored"
+    assert nhtsa_audits[0]["source_payload_hash"] == "test-hash-nhtsa_recalls_api_datasets"
 
 
 def test_real_world_safety_vin_input_decodes_vehicle_before_recall_search(monkeypatch):
@@ -416,8 +431,14 @@ def test_real_world_safety_vin_input_decodes_vehicle_before_recall_search(monkey
     assert "NHTSA vPIC VIN Decoder API" in checked_names
     assert "NHTSA Recalls API / datasets" in checked_names
     assert body["total_matches"] == 1
+    assert body["results"][0]["source_name"] == "NHTSA Recalls API / datasets"
+    assert body["results"][0]["source_kind"] == "structured_api"
     assert body["results"][0]["product_name"] == "2018 TOYOTA CAMRY"
     assert body["results"][0]["recall_number"] == "18V200000"
+
+    audit_source_ids = {audit["source_id"] for audit in body["source_audits"]}
+    assert "nhtsa_vpic_vin_decoder_api" in audit_source_ids
+    assert "nhtsa_recalls_api_datasets" in audit_source_ids
 
 
 def test_real_world_safety_no_match_response_does_not_certify_safety(monkeypatch):
