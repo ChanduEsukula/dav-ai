@@ -63,6 +63,22 @@ class RealWorldSafetyAuditSummary(BaseModel):
     source_payload_hash: str | None = None
 
 
+class RealWorldSafetySourceFreshness(BaseModel):
+    source_id: str
+    source_name: str
+    source_type: str
+    source_kind: RealWorldSafetySourceKind
+    upstream_status: str
+    record_count: int
+    freshness_status: str
+    user_label: str
+    explanation: str
+    source_snapshot_status: str | None = None
+    source_pull_id: str | None = None
+    source_payload_hash: str | None = None
+    checked_at: str
+
+
 class RealWorldSafetyQueryUnderstanding(BaseModel):
     original_query: str
     normalized_query: str
@@ -132,4 +148,5 @@ class RealWorldSafetySearchResponse(BaseModel):
     public_data_disclaimer: str
     limitations: list[str]
     source_audits: list[RealWorldSafetyAuditSummary]
+    source_freshness: list[RealWorldSafetySourceFreshness]
     results: list[RealWorldSafetyRecord]

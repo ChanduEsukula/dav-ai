@@ -759,3 +759,34 @@ def test_real_world_safety_sunscreen_requires_clarification_without_adapter_call
     assert body["no_match_explanation"] == NO_MATCH_EXPLANATION
     assert body["public_data_disclaimer"] == real_world_safety_search.PUBLIC_DATA_DISCLAIMER
     assert body["limitations"] == real_world_safety_search.LIMITATIONS
+
+
+def test_real_world_safety_response_includes_source_freshness(monkeypatch):
+    _patch_persistence(monkeypatch)
+    _patch_public_source_http(monkeypatch)
+
+    response = client.get(
+        "/api/v1/real-world-safety/search",
+        params={"q": "2018 Toyota Camry", "limit": 5},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+
+    nhtsa_freshness = [
+        freshness
+        for freshness in body["source_freshness"]
+        if freshness["source_id"] == "nhtsa_recalls_api_datasets"
+    ]
+
+    assert len(nhtsa_freshness) == 1
+    assert nhtsa_freshness[0]["source_name"] == "NHTSA Recalls API / datasets"
+    assert nhtsa_freshness[0]["freshness_status"] == "pulled_and_stored"
+    assert nhtsa_freshness[0]["user_label"] == "Pulled and stored"
+    assert nhtsa_freshness[0]["upstream_status"] == "success"
+    assert nhtsa_freshness[0]["record_count"] == 1
+    assert nhtsa_freshness[0]["source_snapshot_status"] == "stored"
+    assert nhtsa_freshness[0]["source_pull_id"]
+    assert nhtsa_freshness[0]["source_payload_hash"] == "test-hash-nhtsa_recalls_api_datasets"
+    assert nhtsa_freshness[0]["checked_at"] == body["retrieval_timestamp"]
+    assert "stored audit metadata" in nhtsa_freshness[0]["explanation"]

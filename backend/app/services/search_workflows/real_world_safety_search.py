@@ -31,6 +31,7 @@ from app.services.search_workflows.real_world_query_understanding import underst
 from app.services.search_workflows.real_world_source_planner import plan_real_world_safety_sources
 from app.services.search_workflows.safety_intelligence_summary import build_safety_intelligence_summary
 from app.services.search_workflows.identifier_check import build_identifier_check
+from app.services.search_workflows.source_freshness import build_source_freshness
 from app.services.safety_source_adapters.nhtsa import (
     NHTSARecallsAdapter,
     NHTSAVPICAdapter,
@@ -966,6 +967,12 @@ async def execute_real_world_safety_search(
         detected_identifiers=query_understanding.detected_identifiers,
         records=ranked_records,
     )
+    source_freshness = build_source_freshness(
+        sources_checked=sources_checked,
+        sources_failed=sources_failed,
+        source_audits=source_audits,
+        checked_at=retrieval_timestamp,
+    )
 
     response = {
         "query": response_query,
@@ -987,6 +994,7 @@ async def execute_real_world_safety_search(
         "public_data_disclaimer": PUBLIC_DATA_DISCLAIMER,
         "limitations": LIMITATIONS,
         "source_audits": source_audits,
+        "source_freshness": source_freshness,
         "results": [record.as_response_dict() for record in ranked_records],
     }
 
