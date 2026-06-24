@@ -12,6 +12,7 @@ import { formatDate } from '../utils/recallFormatters'
 import { writeSafetyQueryToUrl } from '../utils/safetyQueryUrl'
 import QueryTypeahead from './QueryTypeahead'
 import SourceIntegrationBadge from './SourceIntegrationBadge'
+import SourceDetailsDisclosure from './SourceDetailsDisclosure'
 
 type PublicSafetySearchPageProps = {
   initialQuery: string
@@ -486,6 +487,14 @@ function SourceCoveragePanel({
             <span>
               {source.record_count} records | {source.source_type}
             </span>
+            <SourceDetailsDisclosure
+              sourceId={source.source_id}
+              sourceName={source.source_name}
+              sourceType={source.source_type}
+              sourceUrl={source.source_url}
+              recordCount={source.record_count}
+              upstreamStatus={source.upstream_status}
+            />
           </div>
         ))}
       </div>

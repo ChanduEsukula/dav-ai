@@ -17,6 +17,7 @@ import { writeSafetyQueryToUrl } from '../utils/safetyQueryUrl'
 import QueryNormalizationNotice from './QueryNormalizationNotice'
 import QueryTypeahead from './QueryTypeahead'
 import SourceIntegrationBadge from './SourceIntegrationBadge'
+import SourceDetailsDisclosure from './SourceDetailsDisclosure'
 
 type FoodSafetyPageProps = {
   initialQuery: string
@@ -647,6 +648,15 @@ function FoodSafetyPage({
                       </div>
                     </dl>
                     <p>{source.endpoint}</p>
+                    <SourceDetailsDisclosure
+                      sourceId={source.source_id}
+                      sourceName={source.source_name}
+                      sourceType={source.source_type}
+                      sourceKind={source.source_kind}
+                      endpoint={source.endpoint}
+                      recordCount={source.record_count}
+                      upstreamStatus={source.upstream_status}
+                    />
                   </article>
                 ))}
               </div>

@@ -16,6 +16,7 @@ import type { ActivePage } from '../types/navigation'
 import QueryNormalizationNotice from './QueryNormalizationNotice'
 import QueryTypeahead from './QueryTypeahead'
 import SourceIntegrationBadge from './SourceIntegrationBadge'
+import SourceDetailsDisclosure from './SourceDetailsDisclosure'
 import { getSourceIntegrationMode } from '../utils/sourceIntegrationMode'
 
 type UniversalSafetySearchProps = {
@@ -431,6 +432,11 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
                     >
                       <span>{source.sourceName}</span>
                       <SourceIntegrationBadge
+                        sourceId={source.sourceId}
+                        sourceName={source.sourceName}
+                        sourceType={source.sourceType}
+                      />
+                      <SourceDetailsDisclosure
                         sourceId={source.sourceId}
                         sourceName={source.sourceName}
                         sourceType={source.sourceType}
