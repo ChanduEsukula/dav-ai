@@ -646,6 +646,12 @@ function PublicSafetyAdvancedDetails({
   )
 }
 
+function publicSafetySourceKindLabel(kind: string) {
+  if (kind === 'normalized_public_notice') return 'Normalized public notice'
+  if (kind === 'public_notice') return 'Official public notice'
+  return 'Official API record'
+}
+
 function publicSafetyRoleLabel(role: RealWorldSafetySourceRole) {
   switch (role) {
     case 'recall_enforcement':
@@ -702,7 +708,7 @@ function ResultCard({
 
         <span className="pharmacy-record-row__date">
           <strong>{formatPublicSafetyDate(record.published_date)}</strong>
-          <span>{record.source_kind === 'public_notice' ? 'Public notice' : 'Structured API'}</span>
+          <span>{publicSafetySourceKindLabel(record.source_kind)}</span>
         </span>
 
         <span className="pharmacy-record-row__arrow" aria-hidden="true">
@@ -743,6 +749,20 @@ function ResultCard({
           <strong>{displayValue(record.recall_number)}</strong>
         </div>
 
+        {record.extraction_confidence && (
+          <div>
+            <span>Extraction confidence</span>
+            <strong>{record.extraction_confidence}</strong>
+          </div>
+        )}
+
+        {record.source_text_excerpt && (
+          <div className="pharmacy-record-details__wide">
+            <span>Source text excerpt</span>
+            <strong>{record.source_text_excerpt}</strong>
+          </div>
+        )}
+
         {(record.affected_models?.length ?? 0) > 0 && (
           <div className="pharmacy-record-details__wide">
             <span>Affected models</span>
@@ -764,7 +784,7 @@ function ResultCard({
 
         <div>
           <span>Source type</span>
-          <strong>{record.source_kind === 'public_notice' ? 'Public notice' : 'Structured API'}</strong>
+          <strong>{publicSafetySourceKindLabel(record.source_kind)}</strong>
         </div>
 
         {record.record_url && (

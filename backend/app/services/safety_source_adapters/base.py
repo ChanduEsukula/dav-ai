@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from typing import Any, Literal
 
 
-SourceKind = Literal["structured_api", "public_notice"]
+SourceKind = Literal["structured_api", "public_notice", "normalized_public_notice"]
 
 
 class SafetySourceAdapterError(RuntimeError):
@@ -40,6 +40,8 @@ class NormalizedSafetyRecord:
     raw_payload_hash: str = ""
     retrieved_at: str = ""
     record_url: str | None = None
+    extraction_confidence: str | None = None
+    source_text_excerpt: str | None = None
 
     def as_response_dict(self) -> dict[str, Any]:
         return asdict(self)

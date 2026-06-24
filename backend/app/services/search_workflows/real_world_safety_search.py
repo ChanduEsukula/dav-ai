@@ -945,7 +945,7 @@ async def execute_real_world_safety_search(
         records_per_source[record.source_name] = records_per_source.get(record.source_name, 0) + 1
 
     structured_api_matches = sum(1 for record in records if record.source_kind == "structured_api")
-    public_notice_matches = sum(1 for record in records if record.source_kind == "public_notice")
+    public_notice_matches = sum(1 for record in records if record.source_kind in {"public_notice", "normalized_public_notice"})
     total_matches = len(records)
     ranked_records = _rank_results(
         records=records,

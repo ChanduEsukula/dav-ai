@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from html.parser import HTMLParser
 from typing import Any
 
@@ -54,8 +55,42 @@ class FDAPublicRecallsAdapter:
                     source_name=self.source["source_name"],
                     source_url=endpoint,
                 )
-                if record_matches_query(normalized, query):
-                    records.append(normalized)
+
+                if not record_matches_query(normalized, query):
+                    continue
+
+                enriched_record = None
+                if normalized.record_url:
+                    try:
+                        async with httpx.AsyncClient(timeout=self.timeout_seconds) as client:
+                            detail_response = await client.get(normalized.record_url)
+                        detail_response.raise_for_status()
+                        notice_text = parse_visible_text(detail_response.text)
+                        enriched_record = _normalize_notice_from_text(
+                            base_record=normalized,
+                            notice_text=notice_text,
+                            query=query,
+                            retrieved_at=retrieved_at,
+                            source_name=self.source["source_name"],
+                            source_url=endpoint,
+                            raw_payload={
+                                "row": row,
+                                "notice_text": notice_text[:5000],
+                                "record_url": normalized.record_url,
+                            },
+                        )
+                    except Exception:
+                        logger.info(
+                            "fda_public_notice_detail_normalization_skipped",
+                            extra={
+                                "event": "fda_public_notice_detail_normalization_skipped",
+                                "request_id": request_id,
+                                "source_id": self.source["source_id"],
+                                "record_url": normalized.record_url,
+                            },
+                        )
+
+                records.append(enriched_record or normalized)
 
             records = dedupe_records(records)[:limit]
             return SourceAdapterResult(
@@ -171,6 +206,162 @@ class _FDARecallTableParser(HTMLParser):
             self.in_row = False
             self.current_row = []
             self.row_link = None
+
+
+class _VisibleTextParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.skip_depth = 0
+        self.parts: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag in {"script", "style", "noscript", "svg"}:
+            self.skip_depth += 1
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in {"script", "style", "noscript", "svg"} and self.skip_depth > 0:
+            self.skip_depth -= 1
+
+    def handle_data(self, data: str) -> None:
+        if self.skip_depth == 0:
+            text = compact_text(data)
+            if text:
+                self.parts.append(text)
+
+
+def parse_visible_text(html: str) -> str:
+    parser = _VisibleTextParser()
+    parser.feed(html)
+    text = compact_text(" ".join(parser.parts))
+    junk_patterns = [
+        r"Skip to main content.*?",
+        r"Share.*?",
+        r"Subscribe.*?",
+    ]
+    for pattern in junk_patterns:
+        text = re.sub(pattern, " ", text, flags=re.IGNORECASE)
+    return compact_text(text)
+
+
+def _sentences(text: str) -> list[str]:
+    return [
+        compact_text(sentence)
+        for sentence in re.split(r"(?<=[.!?])\s+", text)
+        if compact_text(sentence)
+    ]
+
+
+def _first_sentence_matching(text: str, keywords: tuple[str, ...]) -> str | None:
+    for sentence in _sentences(text):
+        lower = sentence.lower()
+        if any(keyword in lower for keyword in keywords):
+            return sentence
+    return None
+
+
+def _source_excerpt(text: str, query: str, fallback: str | None = None) -> str | None:
+    sentences = _sentences(text)
+    query_tokens = [token for token in re.findall(r"[a-z0-9]+", query.lower()) if len(token) >= 3]
+
+    for sentence in sentences:
+        lower = sentence.lower()
+        if any(token in lower for token in query_tokens):
+            return sentence[:360]
+
+    if fallback:
+        return fallback[:360]
+    if sentences:
+        return sentences[0][:360]
+    return None
+
+
+def _normalize_notice_from_text(
+    *,
+    base_record: NormalizedSafetyRecord,
+    notice_text: str,
+    query: str,
+    retrieved_at: str,
+    source_name: str,
+    source_url: str,
+    raw_payload: dict[str, Any],
+) -> NormalizedSafetyRecord | None:
+    if len(notice_text) < 220:
+        return None
+
+    reason = first_text(
+        base_record.reason,
+        _first_sentence_matching(
+            notice_text,
+            (
+                "recall",
+                "recalled",
+                "because",
+                "due to",
+                "undeclared",
+                "contaminated",
+                "contamination",
+                "allergen",
+                "risk",
+                "injury",
+                "hazard",
+            ),
+        ),
+    )
+
+    remedy = first_text(
+        base_record.remedy,
+        _first_sentence_matching(
+            notice_text,
+            (
+                "consumers should",
+                "customers should",
+                "patients should",
+                "stop using",
+                "return",
+                "discard",
+                "contact",
+                "refund",
+            ),
+        ),
+    )
+
+    excerpt = _source_excerpt(notice_text, query, reason)
+    confidence_score = sum(
+        1
+        for value in (
+            base_record.product_name,
+            base_record.company_name,
+            reason,
+            excerpt,
+            base_record.published_date,
+        )
+        if value
+    )
+    confidence = "high" if confidence_score >= 4 else "medium" if confidence_score >= 3 else "low"
+
+    return NormalizedSafetyRecord(
+        source_name=source_name,
+        source_type="normalized official public notice",
+        source_url=source_url,
+        source_kind="normalized_public_notice",
+        category=base_record.category,
+        product_name=base_record.product_name,
+        brand_name=base_record.brand_name,
+        company_name=base_record.company_name,
+        title=base_record.title,
+        reason=reason,
+        hazard_type=first_text(base_record.hazard_type, reason),
+        remedy=remedy,
+        published_date=base_record.published_date,
+        recall_number=base_record.recall_number,
+        affected_models=base_record.affected_models,
+        affected_lots=base_record.affected_lots,
+        raw_payload_hash=stable_payload_hash(raw_payload),
+        retrieved_at=retrieved_at,
+        record_url=base_record.record_url,
+        extraction_confidence=confidence,
+        source_text_excerpt=excerpt,
+    )
 
 
 def parse_fda_recalls_table(html: str) -> list[dict[str, Any]]:

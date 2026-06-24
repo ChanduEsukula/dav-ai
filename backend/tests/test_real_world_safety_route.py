@@ -129,7 +129,10 @@ def test_real_world_safety_product_and_fda_public_notice_searches(
 
     if expected_source == "FDA Recalls, Market Withdrawals & Safety Alerts":
         assert body["public_notice_matches"] >= 1
-        assert result["source_kind"] == "public_notice"
+        assert result["source_kind"] in {"public_notice", "normalized_public_notice"}
+        if result["source_kind"] == "normalized_public_notice":
+            assert result["extraction_confidence"] in {"high", "medium", "low"}
+            assert result["source_text_excerpt"]
     else:
         assert body["structured_api_matches"] >= 1
         assert result["source_kind"] == "structured_api"

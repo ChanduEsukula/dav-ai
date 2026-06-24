@@ -3,7 +3,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 
-RealWorldSafetySourceKind = Literal["structured_api", "public_notice"]
+RealWorldSafetySourceKind = Literal["structured_api", "public_notice", "normalized_public_notice"]
 
 
 class RealWorldSafetyRecord(BaseModel):
@@ -26,6 +26,8 @@ class RealWorldSafetyRecord(BaseModel):
     raw_payload_hash: str
     retrieved_at: str
     record_url: str | None = None
+    extraction_confidence: str | None = None
+    source_text_excerpt: str | None = None
 
 
 class RealWorldSafetyCheckedSource(BaseModel):

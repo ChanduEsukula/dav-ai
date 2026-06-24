@@ -1,6 +1,6 @@
 import { apiClient } from './client'
 
-export type RealWorldSafetySourceKind = 'structured_api' | 'public_notice'
+export type RealWorldSafetySourceKind = 'structured_api' | 'public_notice' | 'normalized_public_notice'
 export type RealWorldSafetySort = 'score' | 'latest'
 
 export type RealWorldSafetyRecord = {
@@ -23,6 +23,8 @@ export type RealWorldSafetyRecord = {
   raw_payload_hash: string
   retrieved_at: string
   record_url: string | null
+  extraction_confidence?: string | null
+  source_text_excerpt?: string | null
 }
 
 export type RealWorldSafetyCheckedSource = {
