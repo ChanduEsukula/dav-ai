@@ -271,6 +271,24 @@ beforeEach(() => {
   window.history.replaceState(null, '', '/')
 })
 
+test('uses the shared safety-area workspace for the empty state', () => {
+  const { container } = render(<PublicSafetySearchPage initialQuery="" />)
+
+  expect(
+    container.querySelector(
+      '.safety-area-page.safety-area-page--public.pharmacy-detail-page.public-safety-page',
+    ),
+  ).toBeInTheDocument()
+  expect(container.querySelector('.pharmacy-overview.public-safety-overview')).toBeInTheDocument()
+  expect(container.querySelector('.pharmacy-workspace')).toBeInTheDocument()
+  expect(container.querySelector('.pharmacy-recall-panel')).toBeInTheDocument()
+  expect(container.querySelector('.pharmacy-insight-rail')).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'Matched public records' })).toBeInTheDocument()
+  expect(screen.getByText('Public records will appear here.')).toBeInTheDocument()
+  expect(screen.getByText('What to verify next')).toBeInTheDocument()
+  expect(screen.getByText('Safety boundary')).toBeInTheDocument()
+})
+
 test('renders a compact Public Safety summary, workspace, and advanced details', async () => {
   const user = userEvent.setup()
   render(<PublicSafetySearchPage initialQuery="" />)
@@ -283,7 +301,7 @@ test('renders a compact Public Safety summary, workspace, and advanced details',
   })
 
   expect(
-    await screen.findByRole('heading', { name: 'Showing results for: Advil' }),
+    await screen.findByRole('heading', { name: 'Matched public records' }),
   ).toBeInTheDocument()
   const summaryStrip = screen.getByLabelText('Summary for Advil')
   expect(screen.getByText(/No matching recall\/enforcement record was found/i)).toBeInTheDocument()
@@ -333,7 +351,7 @@ test('keeps edited draft input separate from submitted Public Safety results', a
   render(<PublicSafetySearchPage initialQuery="air fryer" />)
 
   expect(
-    await screen.findByRole('heading', { name: 'Showing results for: air fryer' }),
+    await screen.findByRole('heading', { name: 'Matched public records' }),
   ).toBeInTheDocument()
   expect(screen.getByText('Public records returned for air fryer.')).toBeInTheDocument()
   expect(new URLSearchParams(window.location.search).get('q')).toBe('air fryer')
@@ -346,7 +364,7 @@ test('keeps edited draft input separate from submitted Public Safety results', a
 
   expect(input).toHaveValue('refrigerator')
   expect(
-    screen.getByRole('heading', { name: 'Showing results for: air fryer' }),
+    screen.getByText(/Showing 1 of 1 returned record for air fryer/i),
   ).toBeInTheDocument()
   expect(screen.getByText('Public records returned for air fryer.')).toBeInTheDocument()
   expect(
@@ -362,9 +380,7 @@ test('keeps edited draft input separate from submitted Public Safety results', a
     expect(mockSearchRealWorldSafety).toHaveBeenLastCalledWith('refrigerator', 10, 'score')
   })
   expect(
-    await screen.findByRole('heading', {
-      name: 'Showing results for: refrigerator',
-    }),
+    await screen.findByText(/Showing 1 of 1 returned record for refrigerator/i),
   ).toBeInTheDocument()
   expect(screen.getByText('Public records returned for refrigerator.')).toBeInTheDocument()
   expect(
@@ -385,10 +401,31 @@ test('submits Public Safety quick chips immediately and updates the URL query', 
     expect(mockSearchRealWorldSafety).toHaveBeenLastCalledWith('air fryer', 10, 'score')
   })
   expect(
-    await screen.findByRole('heading', { name: 'Showing results for: air fryer' }),
+    await screen.findByText(/Showing 1 of 1 returned record for air fryer/i),
   ).toBeInTheDocument()
   expect(screen.getByLabelText(/Safety record search/i)).toHaveValue('air fryer')
   expect(new URLSearchParams(window.location.search).get('q')).toBe('air fryer')
+})
+
+test('keeps the shared Priority and Latest controls wired to Public Safety sorting', async () => {
+  const user = userEvent.setup()
+  render(<PublicSafetySearchPage initialQuery="Advil" />)
+
+  await screen.findByRole('heading', { name: 'Matched public records' })
+  expect(screen.getByRole('button', { name: 'Priority' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+
+  await user.click(screen.getByRole('button', { name: 'Latest' }))
+
+  await waitFor(() => {
+    expect(mockSearchRealWorldSafety).toHaveBeenLastCalledWith('Advil', 10, 'latest')
+  })
+  expect(screen.getByRole('button', { name: 'Latest' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
 })
 
 

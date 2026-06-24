@@ -319,20 +319,21 @@ function SearchOutcomeCard({
   if (!data.search_plan.clarification_required) return null
 
   return (
-    <section className="public-safety-panel public-safety-outcome-card">
-      <div className="public-safety-section-heading">
-        <span>Search needs a category</span>
-        <h2>Choose a safety area to continue</h2>
+    <section className="pharmacy-recall-panel public-safety-clarification-panel">
+      <div className="pharmacy-panel-header">
+        <div>
+          <p className="eyebrow">Search needs a category</p>
+          <h2>Choose a safety area to continue</h2>
+          <span>Dav AI did not run a broad source sweep for this ambiguous query.</span>
+        </div>
       </div>
 
-      <p className="public-safety-summary-text">
-        This query could belong to multiple safety categories, so Dav AI did not run a
-        broad source sweep. Choose the closest safety area to check the right official
-        sources.
-      </p>
-
-      <div className="public-safety-list-block public-safety-clarification-options">
-        <small>Choose one category</small>
+      <div className="pharmacy-empty-card public-safety-clarification-options">
+        <h3>What kind of item are you checking?</h3>
+        <p>
+          This query could belong to multiple safety categories. Choose the closest
+          safety area to check the right official sources.
+        </p>
         <div className="public-safety-chip-row">
           {clarificationOptions.map((option) => (
             <button key={option} type="button">
@@ -358,16 +359,16 @@ function PublicSafetySummaryStrip({
 
   return (
     <section
-      className="public-safety-summary-strip"
+      className="pharmacy-summary-strip public-safety-summary-strip"
       aria-label={`Summary for ${submittedQuery}`}
     >
-      <div className="public-safety-summary-strip__query">
+      <div className="pharmacy-summary-strip__query">
         <small>Current query</small>
         <strong>{submittedQuery}</strong>
         <span>Public records, not a personal safety determination</span>
       </div>
 
-      <dl className="public-safety-summary-metrics">
+      <dl className="pharmacy-summary-metrics">
         <div>
           <dt>Detected area</dt>
           <dd>{formatQueryType(data.search_plan.intent)}</dd>
@@ -391,17 +392,20 @@ function PublicSafetySummaryStrip({
 
 function PublicSafetyDownloadCard() {
   return (
-    <div className="public-safety-download-action" aria-label="Export results">
-      <span>
-        <small>Export</small>
-        <strong>Download Excel</strong>
-      </span>
-      <button type="button" disabled aria-label="Download Excel">
-        <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-          <path d="M12 3v11m0 0 4-4m-4 4-4-4M5 19h14" />
-        </svg>
+    <section className="pharmacy-insight-card public-safety-export-card">
+      <div className="pharmacy-insight-card__header">
+        <div>
+          <p className="eyebrow">Export</p>
+          <h2>Download results</h2>
+        </div>
+      </div>
+      <p className="pharmacy-insight-card__empty">
+        Export the summary, returned records, checked sources, and limitations.
+      </p>
+      <button type="button" disabled>
+        Download Excel
       </button>
-    </div>
+    </section>
   )
 }
 
@@ -502,9 +506,9 @@ function PublicSafetyInterpretationCard({
   const visibleSuggestedSteps = getVisibleSuggestedSteps(data).slice(0, 2)
 
   return (
-    <section className="public-safety-rail-card public-safety-interpretation-card">
+    <section className="pharmacy-insight-card public-safety-interpretation-card">
       <div>
-        <span className="public-safety-eyebrow">What to verify next</span>
+        <p className="eyebrow">What to verify next</p>
         <h2>Use the returned records as a starting point.</h2>
       </div>
 
@@ -522,6 +526,69 @@ function PublicSafetyInterpretationCard({
         Public records only. Not a safety guarantee. Verify official sources.
       </p>
     </section>
+  )
+}
+
+function PublicSafetyBoundaryCard({
+  data,
+}: {
+  data?: RealWorldSafetySearchResponse
+}) {
+  return (
+    <section className="pharmacy-safety-card public-safety-boundary-card">
+      <div>
+        <p className="eyebrow">Safety boundary</p>
+        <h2>Verify the exact record before acting.</h2>
+      </div>
+      <ul>
+        <li>Match product, brand, model, lot, code, and date details.</li>
+        <li>No returned record is proof that an item is safe.</li>
+        <li>Open the official source for current instructions and status.</li>
+      </ul>
+      <p className="pharmacy-safety-card__source">
+        {data?.public_data_disclaimer ??
+          'Public records only. This is not a safety guarantee or professional guidance.'}
+      </p>
+    </section>
+  )
+}
+
+function PublicSafetyEmptyWorkspace() {
+  return (
+    <div className="pharmacy-workspace public-safety-workspace">
+      <section className="pharmacy-recall-panel public-safety-record-panel">
+        <div className="pharmacy-panel-header">
+          <div>
+            <p className="eyebrow">Public records</p>
+            <h2>Matched public records</h2>
+            <span>Search to load official and public safety records</span>
+          </div>
+        </div>
+
+        <div className="pharmacy-empty-card pharmacy-empty-card--quiet">
+          <h3>Public records will appear here.</h3>
+          <p>
+            Search above to check source links, affected products, models, lots,
+            remedies, and public safety context.
+          </p>
+        </div>
+      </section>
+
+      <aside className="pharmacy-insight-rail">
+        <section className="pharmacy-insight-card public-safety-interpretation-card">
+          <div>
+            <p className="eyebrow">What to verify next</p>
+            <h2>Use returned public records as a starting point.</h2>
+          </div>
+          <p>
+            Start with a product, identifier, vehicle, drug, device, UPC, VIN, or NDC.
+            Dav AI will show matching records with official links.
+          </p>
+        </section>
+
+        <PublicSafetyBoundaryCard />
+      </aside>
+    </div>
   )
 }
 
@@ -736,26 +803,40 @@ function ResultsList({
 
   if (data.total_matches === 0) {
     return (
-      <section className="public-safety-panel public-safety-no-results">
-        <div className="public-safety-section-heading">
-          <span>No returned records</span>
-          <h2>Showing results for: {submittedQuery}</h2>
+      <section className="pharmacy-recall-panel public-safety-record-panel">
+        <div className="pharmacy-panel-header">
+          <div>
+            <p className="eyebrow">Public records</p>
+            <h2>Matched public records</h2>
+            <span>Showing results for: {submittedQuery}</span>
+          </div>
         </div>
 
-        <p>{data.no_match_explanation}</p>
+        <div className="pharmacy-empty-card public-safety-no-results">
+          <h3>No matching public records returned.</h3>
+          <p>{data.no_match_explanation}</p>
+        </div>
       </section>
     )
   }
 
   return (
-    <section className="public-safety-results">
-      <div className="public-safety-results-header">
-        <div className="public-safety-section-heading">
-          <span>Returned records</span>
-          <h2>Showing results for: {submittedQuery}</h2>
+    <section className="pharmacy-recall-panel public-safety-record-panel">
+      <div className="pharmacy-panel-header">
+        <div>
+          <p className="eyebrow">Public records</p>
+          <h2>Matched public records</h2>
+          <span>
+            Showing {data.results.length} of {data.total_matches} returned record
+            {data.total_matches === 1 ? '' : 's'} for {submittedQuery}
+          </span>
         </div>
 
-        <div className="recall-sort-control" aria-label="Sort public safety records">
+        <div
+          className="recall-sort-control"
+          role="group"
+          aria-label="Sort public safety records"
+        >
           <button
             type="button"
             className={sort === 'score' ? 'active' : ''}
@@ -777,7 +858,7 @@ function ResultsList({
         </div>
       </div>
 
-      <div className="pharmacy-record-table public-safety-record-table">
+      <div className="pharmacy-record-table" aria-label="Public safety search results">
         <div className="pharmacy-record-table__head" aria-hidden="true">
           <span>Record and product</span>
           <span>Source / company</span>
@@ -827,7 +908,7 @@ function PublicSafetySearchPage({
     async (
       nextQuery: string,
       nextLimit: number,
-      nextSort: RealWorldSafetySort = sort,
+      nextSort: RealWorldSafetySort,
       options: SearchOptions = {},
     ) => {
       const cleanQuery = normalizeSearchTerm(nextQuery)
@@ -958,107 +1039,116 @@ function PublicSafetySearchPage({
     loading || !data || data.search_plan.clarification_required || data.total_matches === 0
 
   return (
-    <section className="public-safety-page">
-      <section className="public-safety-hero">
-        <div className="public-safety-hero__copy">
-          <span className="public-safety-eyebrow">Public Safety Search</span>
-          <h1>Search public safety records</h1>
-          <p>
-            Search recalls, labels, vehicles, devices, drugs, and consumer-product safety records.
+    <section className="safety-area-page safety-area-page--public pharmacy-detail-page public-safety-page">
+      <header className="pharmacy-overview public-safety-overview">
+        <div className="pharmacy-overview__main">
+          <p className="eyebrow">Public Safety</p>
+          <h1>
+            {submittedQuery ? (
+              <>
+                Safety review for <span>{submittedQuery}</span>
+              </>
+            ) : (
+              'Search public safety records'
+            )}
+          </h1>
+          <p className="pharmacy-overview__description">
+            Search recalls, labels, vehicles, devices, drugs, and consumer-product
+            safety records from relevant public sources.
+          </p>
+
+          <form
+            className="pharmacy-page-search public-safety-page-search"
+            onSubmit={(event) => {
+              event.preventDefault()
+              handleSubmit()
+            }}
+          >
+            <label htmlFor="public-safety-query">Safety record search</label>
+            <div className="public-safety-search-controls">
+              <QueryTypeahead
+                id="public-safety-query"
+                value={query}
+                onChange={(nextQuery) => {
+                  setQuery(nextQuery)
+                  if (helper) setHelper('')
+                }}
+                area="public_safety"
+                placeholder="Search tire, scooter, Advil, NDC, VIN, or UPC"
+                ariaDescribedBy="public-safety-helper"
+                showWorkflow
+              />
+              <select
+                id="public-safety-limit"
+                aria-label="Result limit"
+                value={limit}
+                onChange={(event) => setLimit(Number(event.target.value))}
+              >
+                <option value={10}>10 results</option>
+                <option value={15}>15 results</option>
+                <option value={25}>25 results</option>
+              </select>
+              <button type="submit" disabled={loading}>
+                {loading ? 'Checking...' : 'Search'}
+              </button>
+            </div>
+          </form>
+
+          <div
+            className="pharmacy-example-row public-safety-example-row"
+            aria-label="Public safety examples"
+          >
+            <span>Try</span>
+            {exampleQueries.map((example) => (
+              <button key={example} type="button" onClick={() => handleExampleClick(example)}>
+                {example}
+              </button>
+            ))}
+          </div>
+
+          <p className="pharmacy-source-line public-safety-source-line">
+            <span aria-hidden="true" />
+            <strong>Public safety records</strong>
+            <span>CPSC + FDA + NHTSA where relevant</span>
+            <span>Not a safety guarantee</span>
+          </p>
+          <p id="public-safety-helper" className="public-safety-search-helper">
+            Search a product, identifier, vehicle, drug, or device.
           </p>
         </div>
-
-        <form
-          className="public-safety-search-form"
-          onSubmit={(event) => {
-            event.preventDefault()
-            handleSubmit()
-          }}
-        >
-          <div className="public-safety-search-field">
-            <label htmlFor="public-safety-query">Safety record search</label>
-            <QueryTypeahead
-              id="public-safety-query"
-              value={query}
-              onChange={(nextQuery) => {
-                setQuery(nextQuery)
-                if (helper) setHelper('')
-              }}
-              area="public_safety"
-              placeholder="Search tire, scooter, Advil, NDC, VIN, or UPC"
-              ariaDescribedBy="public-safety-helper"
-              showWorkflow
-            />
-            <p id="public-safety-helper">
-              Search a product, identifier, vehicle, drug, or device.
-            </p>
-          </div>
-
-          <div className="public-safety-form-actions">
-            <label htmlFor="public-safety-limit">Limit</label>
-            <select
-              id="public-safety-limit"
-              value={limit}
-              onChange={(event) => setLimit(Number(event.target.value))}
-            >
-              <option value={10}>10</option>
-              <option value={15}>15</option>
-              <option value={25}>25</option>
-            </select>
-            <button type="submit" disabled={loading}>
-              {loading ? 'Checking...' : 'Search'}
-            </button>
-          </div>
-        </form>
-
-        <div className="public-safety-examples" aria-label="Public safety examples">
-          {exampleQueries.map((example) => (
-            <button key={example} type="button" onClick={() => handleExampleClick(example)}>
-              {example}
-            </button>
-          ))}
-        </div>
-      </section>
+      </header>
 
       {helper && (
-        <p className="public-safety-guidance" role="status">
+        <p className="safety-search-guidance" role="status">
           {helper}
         </p>
       )}
 
       {error && (
-        <p className="public-safety-error" role="alert">
+        <p className="error-message pharmacy-page-error" role="alert">
           {error}
         </p>
       )}
 
       {loading && (
-        <p className="public-safety-loading" role="status" aria-live="polite">
+        <p className="safety-area-status" role="status" aria-live="polite">
           Checking public safety records...
         </p>
       )}
 
       {hasUnsubmittedDraft && (
-        <p className="public-safety-draft-notice" role="status">
+        <p className="safety-search-guidance" role="status">
           {unsubmittedDraftMessage}
         </p>
       )}
 
-      {!loading && !data && !error && (
-        <section className="public-safety-empty">
-          <h2>Start with a real product, identifier, or vehicle term.</h2>
-          <p>
-            Dav AI will check public sources and return matching records with links
-            for official verification.
-          </p>
-        </section>
-      )}
+      {!loading && !data && !error && <PublicSafetyEmptyWorkspace />}
 
       {data && !loading && (
         <>
           <PublicSafetySummaryStrip data={data} submittedQuery={submittedQuery} />
 
-          <div className="public-safety-workspace">
+          <div className="pharmacy-workspace public-safety-workspace">
             {data.search_plan.clarification_required ? (
               <SearchOutcomeCard data={data} />
             ) : (
@@ -1072,9 +1162,10 @@ function PublicSafetySearchPage({
               />
             )}
 
-            <aside className="public-safety-insight-rail">
+            <aside className="pharmacy-insight-rail">
               <PublicSafetyDownloadCard />
               <PublicSafetyInterpretationCard data={data} />
+              <PublicSafetyBoundaryCard data={data} />
             </aside>
           </div>
 
