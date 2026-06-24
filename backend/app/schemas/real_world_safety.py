@@ -72,6 +72,16 @@ class RealWorldSafetyQueryUnderstanding(BaseModel):
     query_type_hints: list[str] = Field(default_factory=list)
 
 
+class RealWorldSafetySearchPlan(BaseModel):
+    intent: str
+    confidence: str
+    reason: str
+    primary_source_ids: list[str] = Field(default_factory=list)
+    secondary_source_ids: list[str] = Field(default_factory=list)
+    sources_to_check: list[str] = Field(default_factory=list)
+    clarification_required: bool = False
+
+
 class RealWorldSafetyIntelligenceSummary(BaseModel):
     query_type: str
     recall_or_enforcement_found: bool
@@ -90,6 +100,7 @@ class RealWorldSafetySearchResponse(BaseModel):
     query: str
     raw_query: str
     query_understanding: RealWorldSafetyQueryUnderstanding
+    search_plan: RealWorldSafetySearchPlan
     count: int
     limit: int
     retrieval_timestamp: str

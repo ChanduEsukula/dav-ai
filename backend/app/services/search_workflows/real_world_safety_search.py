@@ -28,6 +28,7 @@ from app.services.safety_source_adapters.openfda_ndc import OpenFDANDCDirectoryA
 from app.services.safety_source_adapters.openfda_device import OpenFDADeviceEnforcementAdapter
 from app.services.safety_source_adapters.openfda_device_event import OpenFDADeviceEventAdapter
 from app.services.search_workflows.real_world_query_understanding import understand_real_world_safety_query
+from app.services.search_workflows.real_world_source_planner import plan_real_world_safety_sources
 from app.services.search_workflows.safety_intelligence_summary import build_safety_intelligence_summary
 from app.services.safety_source_adapters.nhtsa import (
     NHTSARecallsAdapter,
@@ -439,10 +440,15 @@ async def execute_real_world_safety_search(
 ) -> dict[str, Any]:
     raw_query = query
     query_understanding = understand_real_world_safety_query(query)
+    source_plan = plan_real_world_safety_sources(query_understanding)
+    planned_source_ids = set(source_plan.sources_to_check)
     search_query = query_understanding.search_query
     response_query = search_query if query_understanding.corrections_applied else " ".join(query.split())
     if not search_query:
         raise ValueError("Real-world safety search query must contain at least two non-whitespace characters.")
+
+    def should_check(source: dict[str, str]) -> bool:
+        return source["source_id"] in planned_source_ids
 
     workflow_started_at = time.perf_counter()
     retrieval_timestamp = utc_now_iso()
@@ -465,219 +471,262 @@ async def execute_real_world_safety_search(
     vehicle_identity: VehicleIdentity | None = None
     vin = search_query.strip().upper()
 
-    initial_calls = [
-        _run_adapter_call(
-            adapter_call=lambda: cpsc_adapter.search(
-                query=search_query,
-                limit=limit,
-                request_id=request_id,
-            ),
-            source=CPSC_RECALLS_API,
-            source_type="API",
-            source_kind="structured_api",
-            query=search_query,
-            raw_query=raw_query,
-            limit=limit,
-            sort=sort,
-            request_id=request_id,
-            results=records,
-            sources_checked=sources_checked,
-            sources_failed=sources_failed,
-            source_audits=source_audits,
-        ),
-        _run_adapter_call(
-            adapter_call=lambda: fda_public_adapter.search(
-                query=search_query,
-                limit=limit,
-                request_id=request_id,
-            ),
-            source=FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
-            source_type="public notice page",
-            source_kind="public_notice",
-            query=search_query,
-            raw_query=raw_query,
-            limit=limit,
-            sort=sort,
-            request_id=request_id,
-            results=records,
-            sources_checked=sources_checked,
-            sources_failed=sources_failed,
-            source_audits=source_audits,
-        ),
-        _run_adapter_call(
-            adapter_call=lambda: openfda_food_adapter.search(
-                query=search_query,
-                limit=limit,
-                request_id=request_id,
-            ),
-            source=OPENFDA_FOOD_ENFORCEMENT,
-            source_type="local official snapshot",
-            source_kind="structured_api",
-            query=search_query,
-            raw_query=raw_query,
-            limit=limit,
-            sort=sort,
-            request_id=request_id,
-            results=records,
-            sources_checked=sources_checked,
-            sources_failed=sources_failed,
-            source_audits=source_audits,
-        ),
-        _run_adapter_call(
-            adapter_call=lambda: usda_fsis_adapter.search(
-                query=search_query,
-                limit=limit,
-                request_id=request_id,
-            ),
-            source=USDA_FSIS_RECALL,
-            source_type="local curated official snapshot",
-            source_kind="structured_api",
-            query=search_query,
-            raw_query=raw_query,
-            limit=limit,
-            sort=sort,
-            request_id=request_id,
-            results=records,
-            sources_checked=sources_checked,
-            sources_failed=sources_failed,
-            source_audits=source_audits,
-        ),
-        _run_adapter_call(
-            adapter_call=lambda: openfda_drug_adapter.search(
-                query=search_query,
-                limit=limit,
-                request_id=request_id,
-            ),
-            source=OPENFDA_DRUG_ENFORCEMENT,
-            source_type="local curated official snapshot",
-            source_kind="structured_api",
-            query=search_query,
-            raw_query=raw_query,
-            limit=limit,
-            sort=sort,
-            request_id=request_id,
-            results=records,
-            sources_checked=sources_checked,
-            sources_failed=sources_failed,
-            source_audits=source_audits,
-        ),
-        _run_adapter_call(
-            adapter_call=lambda: rxnorm_adapter.search(
-                query=search_query,
-                limit=limit,
-                request_id=request_id,
-            ),
-            source=RXNORM_RXNAV_API,
-            source_type="local curated official snapshot",
-            source_kind="structured_api",
-            query=search_query,
-            raw_query=raw_query,
-            limit=limit,
-            sort=sort,
-            request_id=request_id,
-            results=records,
-            sources_checked=sources_checked,
-            sources_failed=sources_failed,
-            source_audits=source_audits,
-        ),
-        _run_adapter_call(
-            adapter_call=lambda: dailymed_adapter.search(
-                query=search_query,
-                limit=limit,
-                request_id=request_id,
-            ),
-            source=DAILYMED_SPL_API,
-            source_type="local curated official snapshot",
-            source_kind="structured_api",
-            query=search_query,
-            raw_query=raw_query,
-            limit=limit,
-            sort=sort,
-            request_id=request_id,
-            results=records,
-            sources_checked=sources_checked,
-            sources_failed=sources_failed,
-            source_audits=source_audits,
-        ),
-        _run_adapter_call(
-            adapter_call=lambda: openfda_drug_label_adapter.search(
-                query=search_query,
-                limit=limit,
-                request_id=request_id,
-            ),
-            source=OPENFDA_DRUG_LABEL,
-            source_type="local curated official snapshot",
-            source_kind="structured_api",
-            query=search_query,
-            raw_query=raw_query,
-            limit=limit,
-            sort=sort,
-            request_id=request_id,
-            results=records,
-            sources_checked=sources_checked,
-            sources_failed=sources_failed,
-            source_audits=source_audits,
-        ),
-        _run_adapter_call(
-            adapter_call=lambda: openfda_ndc_adapter.search(
-                query=search_query,
-                limit=limit,
-                request_id=request_id,
-            ),
-            source=OPENFDA_NDC_DIRECTORY,
-            source_type="local curated official snapshot",
-            source_kind="structured_api",
-            query=search_query,
-            raw_query=raw_query,
-            limit=limit,
-            sort=sort,
-            request_id=request_id,
-            results=records,
-            sources_checked=sources_checked,
-            sources_failed=sources_failed,
-            source_audits=source_audits,
-        ),
-        _run_adapter_call(
-            adapter_call=lambda: openfda_device_adapter.search(
-                query=search_query,
-                limit=limit,
-                request_id=request_id,
-            ),
-            source=OPENFDA_DEVICE_ENFORCEMENT,
-            source_type="local curated official snapshot",
-            source_kind="structured_api",
-            query=search_query,
-            raw_query=raw_query,
-            limit=limit,
-            sort=sort,
-            request_id=request_id,
-            results=records,
-            sources_checked=sources_checked,
-            sources_failed=sources_failed,
-            source_audits=source_audits,
-        ),
-        _run_adapter_call(
-            adapter_call=lambda: openfda_device_event_adapter.search(
-                query=search_query,
-                limit=limit,
-                request_id=request_id,
-            ),
-            source=OPENFDA_DEVICE_EVENT,
-            source_type="local curated official snapshot",
-            source_kind="structured_api",
-            query=search_query,
-            raw_query=raw_query,
-            limit=limit,
-            sort=sort,
-            request_id=request_id,
-            results=records,
-            sources_checked=sources_checked,
-            sources_failed=sources_failed,
-            source_audits=source_audits,
-        ),
-    ]
+    initial_calls = []
 
-    if is_vin_like(vin):
+    if should_check(CPSC_RECALLS_API):
+        initial_calls.append(
+            _run_adapter_call(
+                adapter_call=lambda: cpsc_adapter.search(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=CPSC_RECALLS_API,
+                source_type="API",
+                source_kind="structured_api",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+        )
+
+    if should_check(FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS):
+        initial_calls.append(
+            _run_adapter_call(
+                adapter_call=lambda: fda_public_adapter.search(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
+                source_type="public notice page",
+                source_kind="public_notice",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+        )
+
+    if should_check(OPENFDA_FOOD_ENFORCEMENT):
+        initial_calls.append(
+            _run_adapter_call(
+                adapter_call=lambda: openfda_food_adapter.search(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=OPENFDA_FOOD_ENFORCEMENT,
+                source_type="local official snapshot",
+                source_kind="structured_api",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+        )
+
+    if should_check(USDA_FSIS_RECALL):
+        initial_calls.append(
+            _run_adapter_call(
+                adapter_call=lambda: usda_fsis_adapter.search(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=USDA_FSIS_RECALL,
+                source_type="local curated official snapshot",
+                source_kind="structured_api",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+        )
+
+    if should_check(OPENFDA_DRUG_ENFORCEMENT):
+        initial_calls.append(
+            _run_adapter_call(
+                adapter_call=lambda: openfda_drug_adapter.search(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=OPENFDA_DRUG_ENFORCEMENT,
+                source_type="local curated official snapshot",
+                source_kind="structured_api",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+        )
+
+    if should_check(RXNORM_RXNAV_API):
+        initial_calls.append(
+            _run_adapter_call(
+                adapter_call=lambda: rxnorm_adapter.search(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=RXNORM_RXNAV_API,
+                source_type="local curated official snapshot",
+                source_kind="structured_api",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+        )
+
+    if should_check(DAILYMED_SPL_API):
+        initial_calls.append(
+            _run_adapter_call(
+                adapter_call=lambda: dailymed_adapter.search(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=DAILYMED_SPL_API,
+                source_type="local curated official snapshot",
+                source_kind="structured_api",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+        )
+
+    if should_check(OPENFDA_DRUG_LABEL):
+        initial_calls.append(
+            _run_adapter_call(
+                adapter_call=lambda: openfda_drug_label_adapter.search(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=OPENFDA_DRUG_LABEL,
+                source_type="local curated official snapshot",
+                source_kind="structured_api",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+        )
+
+    if should_check(OPENFDA_NDC_DIRECTORY):
+        initial_calls.append(
+            _run_adapter_call(
+                adapter_call=lambda: openfda_ndc_adapter.search(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=OPENFDA_NDC_DIRECTORY,
+                source_type="local curated official snapshot",
+                source_kind="structured_api",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+        )
+
+    if should_check(OPENFDA_DEVICE_ENFORCEMENT):
+        initial_calls.append(
+            _run_adapter_call(
+                adapter_call=lambda: openfda_device_adapter.search(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=OPENFDA_DEVICE_ENFORCEMENT,
+                source_type="local curated official snapshot",
+                source_kind="structured_api",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+        )
+
+    if should_check(OPENFDA_DEVICE_EVENT):
+        initial_calls.append(
+            _run_adapter_call(
+                adapter_call=lambda: openfda_device_event_adapter.search(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=OPENFDA_DEVICE_EVENT,
+                source_type="local curated official snapshot",
+                source_kind="structured_api",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+        )
+
+    if is_vin_like(vin) and should_check(NHTSA_VPIC_VIN_DECODER_API):
         initial_calls.append(
             _run_adapter_call(
                 adapter_call=lambda: vpic_adapter.decode(vin=vin, request_id=request_id),
@@ -695,9 +744,9 @@ async def execute_real_world_safety_search(
                 source_audits=source_audits,
             )
         )
-    else:
+    elif not is_vin_like(vin):
         vehicle_identity = parse_vehicle_query(search_query)
-        if vehicle_identity:
+        if vehicle_identity and should_check(NHTSA_RECALLS_API_DATASETS):
             initial_calls.append(
                 _run_adapter_call(
                     adapter_call=lambda: nhtsa_recalls_adapter.search_vehicle_recalls(
@@ -722,112 +771,133 @@ async def execute_real_world_safety_search(
 
     initial_results = await asyncio.gather(*initial_calls)
 
-    for expansion_query in query_understanding.expanded_terms:
-        if expansion_query == search_query:
-            continue
+    if source_plan.intent == "drug":
+        for expansion_query in query_understanding.expanded_terms:
+            if expansion_query == search_query:
+                continue
 
-        records_before_expansion = len(records)
-        expansion_calls = [
-            _run_adapter_call(
-                adapter_call=lambda expansion_query=expansion_query: openfda_drug_adapter.search(
-                    query=expansion_query,
-                    limit=limit,
-                    request_id=request_id,
-                ),
-                source=OPENFDA_DRUG_ENFORCEMENT,
-                source_type="local curated official snapshot",
-                source_kind="structured_api",
-                query=expansion_query,
-                raw_query=raw_query,
-                limit=limit,
-                sort=sort,
-                request_id=request_id,
-                results=records,
-                sources_checked=sources_checked,
-                sources_failed=sources_failed,
-                source_audits=source_audits,
-            ),
-            _run_adapter_call(
-                adapter_call=lambda expansion_query=expansion_query: rxnorm_adapter.search(
-                    query=expansion_query,
-                    limit=limit,
-                    request_id=request_id,
-                ),
-                source=RXNORM_RXNAV_API,
-                source_type="local curated official snapshot",
-                source_kind="structured_api",
-                query=expansion_query,
-                raw_query=raw_query,
-                limit=limit,
-                sort=sort,
-                request_id=request_id,
-                results=records,
-                sources_checked=sources_checked,
-                sources_failed=sources_failed,
-                source_audits=source_audits,
-            ),
-            _run_adapter_call(
-                adapter_call=lambda expansion_query=expansion_query: dailymed_adapter.search(
-                    query=expansion_query,
-                    limit=limit,
-                    request_id=request_id,
-                ),
-                source=DAILYMED_SPL_API,
-                source_type="local curated official snapshot",
-                source_kind="structured_api",
-                query=expansion_query,
-                raw_query=raw_query,
-                limit=limit,
-                sort=sort,
-                request_id=request_id,
-                results=records,
-                sources_checked=sources_checked,
-                sources_failed=sources_failed,
-                source_audits=source_audits,
-            ),
-            _run_adapter_call(
-                adapter_call=lambda expansion_query=expansion_query: openfda_drug_label_adapter.search(
-                    query=expansion_query,
-                    limit=limit,
-                    request_id=request_id,
-                ),
-                source=OPENFDA_DRUG_LABEL,
-                source_type="local curated official snapshot",
-                source_kind="structured_api",
-                query=expansion_query,
-                raw_query=raw_query,
-                limit=limit,
-                sort=sort,
-                request_id=request_id,
-                results=records,
-                sources_checked=sources_checked,
-                sources_failed=sources_failed,
-                source_audits=source_audits,
-            ),
-            _run_adapter_call(
-                adapter_call=lambda expansion_query=expansion_query: openfda_ndc_adapter.search(
-                    query=expansion_query,
-                    limit=limit,
-                    request_id=request_id,
-                ),
-                source=OPENFDA_NDC_DIRECTORY,
-                source_type="local curated official snapshot",
-                source_kind="structured_api",
-                query=expansion_query,
-                raw_query=raw_query,
-                limit=limit,
-                sort=sort,
-                request_id=request_id,
-                results=records,
-                sources_checked=sources_checked,
-                sources_failed=sources_failed,
-                source_audits=source_audits,
-            ),
-        ]
-        await asyncio.gather(*expansion_calls)
+            records_before_expansion = len(records)
+            expansion_calls = []
 
-        if len(records) > records_before_expansion:
-            query_understanding.expansion_search_terms_used.append(expansion_query)
+            if should_check(OPENFDA_DRUG_ENFORCEMENT):
+                expansion_calls.append(
+                    _run_adapter_call(
+                        adapter_call=lambda expansion_query=expansion_query: openfda_drug_adapter.search(
+                            query=expansion_query,
+                            limit=limit,
+                            request_id=request_id,
+                        ),
+                        source=OPENFDA_DRUG_ENFORCEMENT,
+                        source_type="local curated official snapshot",
+                        source_kind="structured_api",
+                        query=expansion_query,
+                        raw_query=raw_query,
+                        limit=limit,
+                        sort=sort,
+                        request_id=request_id,
+                        results=records,
+                        sources_checked=sources_checked,
+                        sources_failed=sources_failed,
+                        source_audits=source_audits,
+                    )
+                )
+
+            if should_check(RXNORM_RXNAV_API):
+                expansion_calls.append(
+                    _run_adapter_call(
+                        adapter_call=lambda expansion_query=expansion_query: rxnorm_adapter.search(
+                            query=expansion_query,
+                            limit=limit,
+                            request_id=request_id,
+                        ),
+                        source=RXNORM_RXNAV_API,
+                        source_type="local curated official snapshot",
+                        source_kind="structured_api",
+                        query=expansion_query,
+                        raw_query=raw_query,
+                        limit=limit,
+                        sort=sort,
+                        request_id=request_id,
+                        results=records,
+                        sources_checked=sources_checked,
+                        sources_failed=sources_failed,
+                        source_audits=source_audits,
+                    )
+                )
+
+            if should_check(DAILYMED_SPL_API):
+                expansion_calls.append(
+                    _run_adapter_call(
+                        adapter_call=lambda expansion_query=expansion_query: dailymed_adapter.search(
+                            query=expansion_query,
+                            limit=limit,
+                            request_id=request_id,
+                        ),
+                        source=DAILYMED_SPL_API,
+                        source_type="local curated official snapshot",
+                        source_kind="structured_api",
+                        query=expansion_query,
+                        raw_query=raw_query,
+                        limit=limit,
+                        sort=sort,
+                        request_id=request_id,
+                        results=records,
+                        sources_checked=sources_checked,
+                        sources_failed=sources_failed,
+                        source_audits=source_audits,
+                    )
+                )
+
+            if should_check(OPENFDA_DRUG_LABEL):
+                expansion_calls.append(
+                    _run_adapter_call(
+                        adapter_call=lambda expansion_query=expansion_query: openfda_drug_label_adapter.search(
+                            query=expansion_query,
+                            limit=limit,
+                            request_id=request_id,
+                        ),
+                        source=OPENFDA_DRUG_LABEL,
+                        source_type="local curated official snapshot",
+                        source_kind="structured_api",
+                        query=expansion_query,
+                        raw_query=raw_query,
+                        limit=limit,
+                        sort=sort,
+                        request_id=request_id,
+                        results=records,
+                        sources_checked=sources_checked,
+                        sources_failed=sources_failed,
+                        source_audits=source_audits,
+                    )
+                )
+
+            if should_check(OPENFDA_NDC_DIRECTORY):
+                expansion_calls.append(
+                    _run_adapter_call(
+                        adapter_call=lambda expansion_query=expansion_query: openfda_ndc_adapter.search(
+                            query=expansion_query,
+                            limit=limit,
+                            request_id=request_id,
+                        ),
+                        source=OPENFDA_NDC_DIRECTORY,
+                        source_type="local curated official snapshot",
+                        source_kind="structured_api",
+                        query=expansion_query,
+                        raw_query=raw_query,
+                        limit=limit,
+                        sort=sort,
+                        request_id=request_id,
+                        results=records,
+                        sources_checked=sources_checked,
+                        sources_failed=sources_failed,
+                        source_audits=source_audits,
+                    )
+                )
+
+            await asyncio.gather(*expansion_calls)
+
+            if len(records) > records_before_expansion:
+                query_understanding.expansion_search_terms_used.append(expansion_query)
 
     if is_vin_like(vin):
         vpic_result = next(
@@ -847,25 +917,26 @@ async def execute_real_world_safety_search(
                 vin=identity_payload.get("vin"),
             )
 
-            await _run_adapter_call(
-                adapter_call=lambda: nhtsa_recalls_adapter.search_vehicle_recalls(
-                    vehicle=vehicle_identity,
+            if should_check(NHTSA_RECALLS_API_DATASETS):
+                await _run_adapter_call(
+                    adapter_call=lambda: nhtsa_recalls_adapter.search_vehicle_recalls(
+                        vehicle=vehicle_identity,
+                        limit=limit,
+                        request_id=request_id,
+                    ),
+                    source=NHTSA_RECALLS_API_DATASETS,
+                    source_type="API",
+                    source_kind="structured_api",
+                    query=search_query,
+                    raw_query=raw_query,
                     limit=limit,
+                    sort=sort,
                     request_id=request_id,
-                ),
-                source=NHTSA_RECALLS_API_DATASETS,
-                source_type="API",
-                source_kind="structured_api",
-                query=search_query,
-                raw_query=raw_query,
-                limit=limit,
-                sort=sort,
-                request_id=request_id,
-                results=records,
-                sources_checked=sources_checked,
-                sources_failed=sources_failed,
-                source_audits=source_audits,
-            )
+                    results=records,
+                    sources_checked=sources_checked,
+                    sources_failed=sources_failed,
+                    source_audits=source_audits,
+                )
 
     records = dedupe_records(records)
 
@@ -896,6 +967,7 @@ async def execute_real_world_safety_search(
         "query": response_query,
         "raw_query": raw_query,
         "query_understanding": query_understanding.as_response_dict(),
+        "search_plan": source_plan.as_response_dict(),
         "count": len(ranked_records),
         "limit": limit,
         "retrieval_timestamp": retrieval_timestamp,

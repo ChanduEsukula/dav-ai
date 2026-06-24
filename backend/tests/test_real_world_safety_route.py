@@ -7,6 +7,17 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.services.search_workflows import real_world_safety_search
+from app.sources.registry import (
+    CPSC_RECALLS_API,
+    DAILYMED_SPL_API,
+    FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
+    OPENFDA_DRUG_ENFORCEMENT,
+    OPENFDA_DRUG_LABEL,
+    OPENFDA_FOOD_ENFORCEMENT,
+    OPENFDA_NDC_DIRECTORY,
+    RXNORM_RXNAV_API,
+    USDA_FSIS_RECALL,
+)
 
 
 client = TestClient(app)
@@ -424,6 +435,14 @@ def test_real_world_safety_no_match_response_does_not_certify_safety(monkeypatch
     assert body["sources_failed"] == []
     assert body["structured_api_matches"] == 0
     assert body["public_notice_matches"] == 0
+    assert body["search_plan"]["intent"] == "unknown"
+    assert set(body["search_plan"]["sources_to_check"]) == {
+        CPSC_RECALLS_API["source_id"],
+        FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS["source_id"],
+    }
+    assert {source["source_id"] for source in body["sources_checked"]} == set(
+        body["search_plan"]["sources_to_check"]
+    )
 
 
 def old_test_real_world_safety_returns_partial_results_when_one_source_fails(monkeypatch):
@@ -602,3 +621,90 @@ def test_real_world_safety_uses_expansion_search_terms_for_brand_generic_fallbac
     summary = body["safety_intelligence_summary"]
     assert any("ibuprofen" in explanation for explanation in summary["expansion_explanations"])
     assert any("ibuprofen" in step for step in summary["suggested_next_steps"])
+
+
+def test_real_world_safety_microwave_checks_consumer_sources_without_drug_sources(monkeypatch):
+    _patch_persistence(monkeypatch)
+    _patch_public_source_http(monkeypatch)
+
+    response = client.get("/api/v1/real-world-safety/search", params={"q": "microwave", "limit": 5})
+
+    assert response.status_code == 200
+    body = response.json()
+    checked_source_ids = {source["source_id"] for source in body["sources_checked"]}
+
+    assert body["search_plan"]["intent"] == "consumer_product"
+    assert checked_source_ids == set(body["search_plan"]["sources_to_check"])
+    assert CPSC_RECALLS_API["source_id"] in checked_source_ids
+    assert {
+        RXNORM_RXNAV_API["source_id"],
+        DAILYMED_SPL_API["source_id"],
+        OPENFDA_DRUG_LABEL["source_id"],
+        OPENFDA_NDC_DIRECTORY["source_id"],
+    }.isdisjoint(checked_source_ids)
+
+
+def test_real_world_safety_advil_checks_drug_sources_without_cpsc(monkeypatch):
+    _patch_persistence(monkeypatch)
+    _patch_public_source_http(monkeypatch)
+
+    response = client.get("/api/v1/real-world-safety/search", params={"q": "Advil", "limit": 25})
+
+    assert response.status_code == 200
+    body = response.json()
+    checked_source_ids = {source["source_id"] for source in body["sources_checked"]}
+
+    assert body["search_plan"]["intent"] == "drug"
+    assert checked_source_ids == set(body["search_plan"]["sources_to_check"])
+    assert {
+        OPENFDA_DRUG_ENFORCEMENT["source_id"],
+        RXNORM_RXNAV_API["source_id"],
+        DAILYMED_SPL_API["source_id"],
+        OPENFDA_DRUG_LABEL["source_id"],
+        OPENFDA_NDC_DIRECTORY["source_id"],
+    }.issubset(checked_source_ids)
+    assert CPSC_RECALLS_API["source_id"] not in checked_source_ids
+
+
+def test_real_world_safety_chicken_checks_food_sources_without_drug_label(monkeypatch):
+    _patch_persistence(monkeypatch)
+    _patch_public_source_http(monkeypatch)
+
+    response = client.get("/api/v1/real-world-safety/search", params={"q": "chicken", "limit": 20})
+
+    assert response.status_code == 200
+    body = response.json()
+    checked_source_ids = {source["source_id"] for source in body["sources_checked"]}
+
+    assert body["search_plan"]["intent"] == "food"
+    assert checked_source_ids == set(body["search_plan"]["sources_to_check"])
+    assert {
+        OPENFDA_FOOD_ENFORCEMENT["source_id"],
+        USDA_FSIS_RECALL["source_id"],
+        FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS["source_id"],
+    }.issubset(checked_source_ids)
+    assert OPENFDA_DRUG_LABEL["source_id"] not in checked_source_ids
+
+
+def test_real_world_safety_sunscreen_requires_clarification_without_adapter_calls(monkeypatch):
+    async def unexpected_adapter_call(**kwargs):
+        raise AssertionError("Ambiguous queries must not execute source adapters.")
+
+    monkeypatch.setattr(real_world_safety_search, "_run_adapter_call", unexpected_adapter_call)
+
+    response = client.get("/api/v1/real-world-safety/search", params={"q": "sunscreen", "limit": 5})
+
+    assert response.status_code == 200
+    body = response.json()
+
+    assert body["search_plan"]["intent"] == "ambiguous"
+    assert body["search_plan"]["clarification_required"] is True
+    assert body["search_plan"]["sources_to_check"] == []
+    assert body["sources_checked"] == []
+    assert body["sources_failed"] == []
+    assert body["source_audits"] == []
+    assert body["results"] == []
+    assert body["total_matches"] == 0
+    assert body["no_match_explanation"] == NO_MATCH_EXPLANATION
+    assert body["public_data_disclaimer"] == real_world_safety_search.PUBLIC_DATA_DISCLAIMER
+    assert body["limitations"] == real_world_safety_search.LIMITATIONS

@@ -60,6 +60,7 @@ DRUG_TERMS = {
     "advil",
     "motrin",
     "ibuprofen",
+    "eye drops",
     "benadryl",
     "diphenhydramine",
     "claritin",
@@ -73,6 +74,7 @@ DRUG_TERMS = {
 
 FOOD_TERMS = {
     "food",
+    "milk",
     "chicken",
     "beef",
     "poultry",
@@ -87,6 +89,7 @@ DEVICE_TERMS = {
     "glucose meter",
     "insulin pump",
     "cpap",
+    "ventilator",
     "medical device",
 }
 
