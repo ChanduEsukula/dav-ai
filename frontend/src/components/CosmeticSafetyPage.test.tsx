@@ -59,6 +59,23 @@ const cosmeticResponse: CosmeticEventSearchResponse = {
     { reaction: 'BURNING SENSATION', count: 3 },
     { reaction: 'ERYTHEMA', count: 1 },
   ],
+  recall_count: 1,
+  recall_source_name: 'FDA Recalls, Market Withdrawals & Safety Alerts',
+  recall_source_status: 'success',
+  recall_source_error: null,
+  recall_notices: [
+    {
+      title: 'FDA public notice for Solstice Daily Mineral Sunscreen SPF 50',
+      product_name: 'Daily Mineral Sunscreen SPF 50',
+      brand_name: 'Solstice',
+      company_name: 'Solstice Labs',
+      category: 'Cosmetics',
+      reason: 'Potential product quality concern',
+      published_date: '2026-06-02',
+      record_url: 'https://www.fda.gov/safety/example-sunscreen-notice',
+      source_name: 'FDA Recalls, Market Withdrawals & Safety Alerts',
+    },
+  ],
   records: [
     {
       report_number: 'CAERS-2026-001',
@@ -147,6 +164,10 @@ test('renders the Cosmetic Safety dashboard and multiple reports for Sunscreen',
   expect(screen.getByTitle(sunscreenProduct)).toBeInTheDocument()
   expect(screen.getByTitle('Sun Veil Face Lotion')).toBeInTheDocument()
   expect(screen.getByText(/Showing 2 of 2 returned reports/i)).toBeInTheDocument()
+  expect(screen.getByText(/FDA public notices/i)).toBeInTheDocument()
+  expect(
+    screen.getByTitle('FDA public notice for Solstice Daily Mineral Sunscreen SPF 50'),
+  ).toBeInTheDocument()
 })
 
 test('loads normalized Cosmetic reports with limit 8', async () => {
@@ -281,7 +302,24 @@ test('uses the report number when a Cosmetic report has no product title fields'
   mockSearchCosmeticEvents.mockResolvedValue({
     ...cosmeticResponse,
     count: 1,
-    records: [
+    recall_count: 1,
+  recall_source_name: 'FDA Recalls, Market Withdrawals & Safety Alerts',
+  recall_source_status: 'success',
+  recall_source_error: null,
+  recall_notices: [
+    {
+      title: 'FDA public notice for Solstice Daily Mineral Sunscreen SPF 50',
+      product_name: 'Daily Mineral Sunscreen SPF 50',
+      brand_name: 'Solstice',
+      company_name: 'Solstice Labs',
+      category: 'Cosmetics',
+      reason: 'Potential product quality concern',
+      published_date: '2026-06-02',
+      record_url: 'https://www.fda.gov/safety/example-sunscreen-notice',
+      source_name: 'FDA Recalls, Market Withdrawals & Safety Alerts',
+    },
+  ],
+  records: [
       {
         ...cosmeticResponse.records[0],
         report_number: 'CAERS-FALLBACK-001',

@@ -4,6 +4,7 @@ import {
   type CosmeticEventRecord,
   type CosmeticEventSearchResponse,
   type CosmeticProduct,
+  type CosmeticRecallNotice,
 } from '../api/cosmeticEvents'
 import { PAGE_IDS, type ActivePage } from '../types/navigation'
 import { formatDate, formatTimestamp } from '../utils/recallFormatters'
@@ -55,9 +56,113 @@ function productDetails(product: CosmeticProduct, index: number) {
   }
 }
 
+function truncateText(value: string | null | undefined, maxLength = 88) {
+  if (!value) return 'Not listed'
+  const normalizedValue = value.replace(/\s+/g, ' ').trim()
+  if (normalizedValue.length <= maxLength) return normalizedValue
+  return `${normalizedValue.slice(0, maxLength).trim()}...`
+}
+
 function compactList(values: string[], emptyLabel = 'Not listed') {
   if (values.length === 0) return emptyLabel
   return values.slice(0, 3).join(', ')
+}
+
+
+function getRecallNoticeTitle(notice: CosmeticRecallNotice) {
+  return (
+    notice.title ||
+    notice.product_name ||
+    notice.brand_name ||
+    'FDA public recall or safety alert notice'
+  )
+}
+
+function CosmeticRecallNoticeRow({
+  notice,
+  index,
+}: {
+  notice: CosmeticRecallNotice
+  index: number
+}) {
+  const title = getRecallNoticeTitle(notice)
+
+  return (
+    <details
+      className="pharmacy-record-row cosmetic-record-row"
+      key={`${notice.source_name}-${notice.record_url ?? index}`}
+    >
+      <summary>
+        <span className="pharmacy-record-row__product">
+          <span className="pharmacy-record-row__badges">
+            <small>{notice.category || 'FDA notice'}</small>
+            <small>Recall / alert</small>
+          </span>
+          <strong title={title}>{truncateText(title)}</strong>
+          <span>{notice.brand_name || notice.product_name || 'Product details not listed'}</span>
+        </span>
+
+        <span className="pharmacy-record-row__firm">
+          <strong>{notice.company_name || 'Company not listed'}</strong>
+          <span>{notice.source_name}</span>
+        </span>
+
+        <span className="pharmacy-record-row__date">
+          <strong>{formatDate(notice.published_date)}</strong>
+          <span>Published</span>
+        </span>
+
+        <span className="pharmacy-record-row__arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </span>
+      </summary>
+
+      <div className="pharmacy-record-details cosmetic-record-details">
+        <div className="pharmacy-record-details__wide">
+          <span>Notice title</span>
+          <strong>{title}</strong>
+        </div>
+
+        <div className="pharmacy-record-details__wide">
+          <span>Reason / concern</span>
+          <strong>{notice.reason || 'Not listed'}</strong>
+        </div>
+
+        <div>
+          <span>Product</span>
+          <strong>{notice.product_name || 'Not listed'}</strong>
+        </div>
+
+        <div>
+          <span>Brand</span>
+          <strong>{notice.brand_name || 'Not listed'}</strong>
+        </div>
+
+        <div>
+          <span>Company</span>
+          <strong>{notice.company_name || 'Not listed'}</strong>
+        </div>
+
+        <div>
+          <span>Source</span>
+          <strong>{notice.source_name}</strong>
+        </div>
+
+        {notice.record_url && (
+          <div className="pharmacy-record-details__wide">
+            <span>Official notice</span>
+            <strong>
+              <a href={notice.record_url} target="_blank" rel="noreferrer">
+                Open FDA notice
+              </a>
+            </strong>
+          </div>
+        )}
+      </div>
+    </details>
+  )
 }
 
 function CosmeticReportRow({
@@ -351,6 +456,7 @@ function CosmeticSafetyPage({
   }
 
   const records = data?.records ?? []
+  const recallNotices = data?.recall_notices ?? []
   const displayQuery = submittedQuery || 'a cosmetic or personal-care product'
   const topReaction = data?.top_reactions[0] ?? null
   const topReactions = data?.top_reactions.slice(0, 5) ?? []
@@ -380,8 +486,7 @@ function CosmeticSafetyPage({
           </h1>
 
           <p className="pharmacy-overview__description">
-            Review public cosmetic-event reports, reactions, product context, and source
-            limitations.
+            Review public cosmetic-event reports and FDA recall or safety alert notices in one place.
           </p>
 
           <form
@@ -461,8 +566,8 @@ function CosmeticSafetyPage({
 
           <p className="pharmacy-source-line cosmetic-source-line">
             <span aria-hidden="true" />
-            <strong>Public cosmetic reports</strong>
-            <span>FDA CAERS-style event records</span>
+            <strong>Public FDA records</strong>
+            <span>Cosmetic event reports + FDA notices</span>
             <span>Signal, not proof</span>
           </p>
         </div>
@@ -520,8 +625,8 @@ function CosmeticSafetyPage({
               <dd>{data.count > 0 ? data.signal_score.label : 'No returned reports'}</dd>
             </div>
             <div>
-              <dt>Confidence</dt>
-              <dd>{data.count > 0 ? data.signal_score.data_confidence : 'Not assessable'}</dd>
+              <dt>Recall / alerts</dt>
+              <dd>{recallNotices.length}</dd>
             </div>
           </dl>
         </section>
@@ -585,6 +690,52 @@ function CosmeticSafetyPage({
               <p>Search above to review public reports, reactions, outcomes, and product context.</p>
             </div>
           )}
+
+          {data && (
+            <div className="cosmetic-recall-notice-section">
+              <div className="pharmacy-panel-header">
+                <div>
+                  <p className="eyebrow">Recall / safety alerts</p>
+                  <h2>FDA public notices</h2>
+                  <span>
+                    {recallNotices.length > 0
+                      ? `Showing ${recallNotices.length} matching public notice${
+                          recallNotices.length === 1 ? '' : 's'
+                        }`
+                      : 'No FDA public recall or safety alert notices matched this search'}
+                  </span>
+                </div>
+              </div>
+
+              {recallNotices.length > 0 ? (
+                <div className="pharmacy-record-table" aria-label="Cosmetic FDA recall and alert notices">
+                  <div className="pharmacy-record-table__head" aria-hidden="true">
+                    <span>Notice and product</span>
+                    <span>Company</span>
+                    <span>Date</span>
+                    <span />
+                  </div>
+
+                  {recallNotices.map((notice, index) => (
+                    <CosmeticRecallNoticeRow
+                      key={`${notice.source_name}-${notice.record_url ?? index}`}
+                      notice={notice}
+                      index={index}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="pharmacy-empty-card pharmacy-empty-card--quiet">
+                  <h3>No matching FDA public notices.</h3>
+                  <p>
+                    This does not prove the product is safe. It only means this public
+                    FDA notice source did not return a matching notice for the exact search.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
         </section>
 
         <aside className="pharmacy-insight-rail">
