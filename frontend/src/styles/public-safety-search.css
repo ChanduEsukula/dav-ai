@@ -691,3 +691,27 @@
   font-style: normal;
   line-height: 1.45;
 }
+
+.public-safety-source-freshness {
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.42);
+  display: grid;
+  gap: 0.24rem;
+  margin-top: 0.65rem;
+  padding: 0.62rem;
+}
+
+.public-safety-source-freshness small {
+  color: rgba(148, 163, 184, 0.92);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.public-safety-source-freshness span {
+  color: rgba(226, 232, 240, 0.78);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}

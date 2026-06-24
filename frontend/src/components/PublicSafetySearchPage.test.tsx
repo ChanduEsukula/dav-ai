@@ -144,7 +144,20 @@ const publicSafetyResponse: RealWorldSafetySearchResponse = {
   public_data_disclaimer:
     'Public records only. This does not certify that the product is safe.',
   limitations: ['Users must verify official source records.'],
-  source_audits: [],
+  source_audits: [
+    {
+      audit_id: 'audit-openfda-ndc',
+      source_id: 'openfda_ndc_directory',
+      source_name: 'openFDA NDC Directory API',
+      module: 'RealWorldSafety',
+      upstream_status: 'success',
+      record_count: 1,
+      transform_version: 'real-world-safety-v0.1',
+      source_snapshot_status: 'stored',
+      source_pull_id: 'pull-openfda-ndc',
+      source_payload_hash: 'payload-openfda-ndc',
+    },
+  ],
   results: [
     {
       source_name: 'openFDA NDC Directory API',
@@ -365,6 +378,11 @@ test('renders a compact Public Safety summary, workspace, and advanced details',
   expect(screen.getByText('Query understanding')).toBeVisible()
   expect(screen.getByText('Matched sources by evidence type')).toBeVisible()
   expect(screen.getByText('Sources checked for this search')).toBeVisible()
+  expect(screen.getAllByText('Source freshness').length).toBeGreaterThan(0)
+  expect(screen.getByText('Pulled and stored')).toBeInTheDocument()
+  expect(screen.getByText('Snapshot: stored')).toBeInTheDocument()
+  expect(screen.getByText('Source pull stored')).toBeInTheDocument()
+  expect(screen.getByText('Payload hash captured')).toBeInTheDocument()
   await user.click(screen.getByText('Query understanding'))
   expect(screen.getByText('Raw query')).toBeVisible()
   expect(

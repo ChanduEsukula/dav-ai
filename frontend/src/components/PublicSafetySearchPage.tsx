@@ -503,11 +503,36 @@ function SourceRolesPanel({
   )
 }
 
+function formatSourceFreshnessValue(value: string | null | undefined) {
+  if (!value) return 'Not listed'
+  return value.replace(/_/g, ' ')
+}
+
+function formatSourceFreshnessStatus({
+  upstreamStatus,
+  sourceSnapshotStatus,
+  sourcePullId,
+}: {
+  upstreamStatus: string
+  sourceSnapshotStatus?: string | null
+  sourcePullId?: string | null
+}) {
+  if (upstreamStatus === 'error') return 'Source issue reported'
+  if (sourceSnapshotStatus === 'stored' || sourcePullId) return 'Pulled and stored'
+  if (upstreamStatus === 'success') return 'Checked during this search'
+  if (upstreamStatus === 'empty') return 'Checked; no records returned'
+  return formatSourceFreshnessValue(upstreamStatus)
+}
+
 function SourceCoveragePanel({
   data,
 }: {
   data: RealWorldSafetySearchResponse
 }) {
+  const auditsBySourceId = new Map(
+    data.source_audits.map((audit) => [audit.source_id, audit]),
+  )
+
   return (
     <CollapsiblePanel
       eyebrow="Source coverage"
@@ -515,28 +540,53 @@ function SourceCoveragePanel({
       className="public-safety-source-coverage"
     >
       <div className="public-safety-coverage-grid">
-        {data.sources_checked.map((source) => (
-          <div key={`${source.source_id}-${source.source_name}`}>
-            <small>{source.upstream_status}</small>
-            <strong>{source.source_name}</strong>
-            <SourceIntegrationBadge
-              sourceId={source.source_id}
-              sourceName={source.source_name}
-              sourceType={source.source_type}
-            />
-            <span>
-              {source.record_count} records | {source.source_type}
-            </span>
-            <SourceDetailsDisclosure
-              sourceId={source.source_id}
-              sourceName={source.source_name}
-              sourceType={source.source_type}
-              sourceUrl={source.source_url}
-              recordCount={source.record_count}
-              upstreamStatus={source.upstream_status}
-            />
-          </div>
-        ))}
+        {data.sources_checked.map((source) => {
+          const audit = auditsBySourceId.get(source.source_id)
+          const freshnessStatus = formatSourceFreshnessStatus({
+            upstreamStatus: source.upstream_status,
+            sourceSnapshotStatus: audit?.source_snapshot_status,
+            sourcePullId: audit?.source_pull_id,
+          })
+
+          return (
+            <div key={`${source.source_id}-${source.source_name}`}>
+              <small>{source.upstream_status}</small>
+              <strong>{source.source_name}</strong>
+              <SourceIntegrationBadge
+                sourceId={source.source_id}
+                sourceName={source.source_name}
+                sourceType={source.source_type}
+              />
+              <span>
+                {source.record_count} records | {source.source_type}
+              </span>
+
+              <div className="public-safety-source-freshness">
+                <small>Source freshness</small>
+                <span>{freshnessStatus}</span>
+                <span>Checked: {formatPublicSafetyDate(data.retrieval_timestamp)}</span>
+                {audit?.source_snapshot_status && (
+                  <span>
+                    Snapshot: {formatSourceFreshnessValue(audit.source_snapshot_status)}
+                  </span>
+                )}
+                {audit?.source_pull_id && <span>Source pull stored</span>}
+                {audit?.source_payload_hash && <span>Payload hash captured</span>}
+              </div>
+
+              <SourceDetailsDisclosure
+                sourceId={source.source_id}
+                sourceName={source.source_name}
+                sourceType={source.source_type}
+                sourceKind={source.source_kind}
+                sourceUrl={source.source_url}
+                recordCount={source.record_count}
+                upstreamStatus={source.upstream_status}
+                retrievedAt={data.retrieval_timestamp}
+              />
+            </div>
+          )
+        })}
       </div>
 
       {data.sources_failed.length > 0 && (
