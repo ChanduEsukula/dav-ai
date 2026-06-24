@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
+import sys
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
@@ -28,6 +30,30 @@ OPENFDA_DEVICE_EVENT_OUT = ROOT / "data" / "safety_sources" / "device" / "openfd
 CPSC_DAILY_PRODUCTS_OUT = ROOT / "data" / "safety_sources" / "cpsc" / "cpsc_daily_products_curated_records.json"
 USDA_FSIS_OUT = ROOT / "data" / "safety_sources" / "food" / "usda_fsis_curated_records.json"
 SNAPSHOT_REFRESH_MANIFEST_OUT = ROOT / "data" / "source_audits" / "snapshot_refresh_manifest.json"
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    normalized_argv = [
+        f"--{argument[1:]}" if argument.startswith(("\u2013", "\u2014")) else argument
+        for argument in (argv or [])
+    ]
+    parser = argparse.ArgumentParser(
+        description=(
+            "Refresh curated RealWorldSafety snapshots from official/public sources."
+        ),
+    )
+    parser.add_argument(
+        "--source",
+        choices=("all", "fsis", "cpsc", "openfda"),
+        default="all",
+        help="Source group to refresh (default: all).",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Fetch and print planned snapshot/manifest results without writing files.",
+    )
+    return parser.parse_args(normalized_argv)
 
 
 def fetch_json(url: str) -> dict[str, Any]:
@@ -352,6 +378,32 @@ def write_snapshot_manifest(entries: list[dict[str, Any]]) -> None:
     print(f"Wrote snapshot refresh manifest to {SNAPSHOT_REFRESH_MANIFEST_OUT}")
 
 
+def print_dry_run(
+    snapshots: list[tuple[Path, list[dict[str, Any]]]],
+    manifest_entries: list[dict[str, Any]],
+) -> None:
+    print("Dry run: fetched snapshot data; no files will be written.")
+    print("Planned snapshots:")
+    for path, records in snapshots:
+        print(
+            f"  - {path.relative_to(ROOT)}: "
+            f"{len(records)} records, sha256={payload_hash(records)}"
+        )
+
+    print(f"Planned manifest: {SNAPSHOT_REFRESH_MANIFEST_OUT.relative_to(ROOT)}")
+    print(
+        json.dumps(
+            {
+                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "purpose": "Records official/public curated snapshot refresh metadata for RealWorldSafety sources.",
+                "entries": manifest_entries,
+            },
+            indent=2,
+            ensure_ascii=False,
+        )
+    )
+
+
 
 def write_records(path: Path, records: list[dict[str, Any]]) -> None:
     if not records:
@@ -367,7 +419,9 @@ def write_records(path: Path, records: list[dict[str, Any]]) -> None:
         print(f"  - {firm}")
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
+    args = parse_args(argv)
+
     food_queries = [
         'reason_for_recall:"undeclared milk"',
         'reason_for_recall:"listeria"',
@@ -428,114 +482,121 @@ def main() -> None:
         'device.brand_name:"CPAP"',
     ]
 
-    food_records = fetch_openfda_records(
-        OPENFDA_FOOD_ENDPOINT,
-        food_queries,
-        max_records=10,
-    )
-    drug_records = fetch_openfda_records(
-        OPENFDA_DRUG_ENDPOINT,
-        drug_queries,
-        max_records=12,
-    )
-    drug_label_records = fetch_openfda_drug_label_records(
-        drug_label_queries,
-        max_records=30,
-    )
-    ndc_records = fetch_openfda_ndc_records(
-        ndc_queries,
-        max_records=40,
-    )
-    device_records = fetch_openfda_records(
-        OPENFDA_DEVICE_ENDPOINT,
-        device_queries,
-        max_records=15,
-    )
-    device_event_records = fetch_openfda_device_event_records(
-        device_event_queries,
-        max_records=30,
-    )
-    cpsc_records = fetch_cpsc_daily_product_records(max_records=80)
-    fsis_records = fetch_usda_fsis_records(max_records=100)
-
     refreshed_at = datetime.now(timezone.utc).isoformat()
-    manifest_entries = [
-        manifest_entry(
+    snapshots: list[tuple[Path, list[dict[str, Any]]]] = []
+    manifest_entries: list[dict[str, Any]] = []
+
+    def add_snapshot(
+        *,
+        source_id: str,
+        source_name: str,
+        endpoint: str,
+        snapshot_path: Path,
+        records: list[dict[str, Any]],
+    ) -> None:
+        snapshots.append((snapshot_path, records))
+        manifest_entries.append(
+            manifest_entry(
+                source_id=source_id,
+                source_name=source_name,
+                endpoint=endpoint,
+                snapshot_path=snapshot_path,
+                records=records,
+                refreshed_at=refreshed_at,
+            )
+        )
+
+    if args.source in {"all", "openfda"}:
+        add_snapshot(
             source_id="openfda_food_enforcement",
             source_name="openFDA Food Enforcement API",
             endpoint=OPENFDA_FOOD_ENDPOINT,
             snapshot_path=OPENFDA_FOOD_OUT,
-            records=food_records,
-            refreshed_at=refreshed_at,
-        ),
-        manifest_entry(
+            records=fetch_openfda_records(
+                OPENFDA_FOOD_ENDPOINT,
+                food_queries,
+                max_records=10,
+            ),
+        )
+        add_snapshot(
             source_id="openfda_drug_enforcement",
             source_name="openFDA Drug Enforcement API",
             endpoint=OPENFDA_DRUG_ENDPOINT,
             snapshot_path=OPENFDA_DRUG_OUT,
-            records=drug_records,
-            refreshed_at=refreshed_at,
-        ),
-        manifest_entry(
+            records=fetch_openfda_records(
+                OPENFDA_DRUG_ENDPOINT,
+                drug_queries,
+                max_records=12,
+            ),
+        )
+        add_snapshot(
             source_id="openfda_drug_label",
             source_name="openFDA Drug Label API",
             endpoint=OPENFDA_DRUG_LABEL_ENDPOINT,
             snapshot_path=OPENFDA_DRUG_LABEL_OUT,
-            records=drug_label_records,
-            refreshed_at=refreshed_at,
-        ),
-        manifest_entry(
+            records=fetch_openfda_drug_label_records(
+                drug_label_queries,
+                max_records=30,
+            ),
+        )
+        add_snapshot(
             source_id="openfda_ndc_directory",
             source_name="openFDA NDC Directory API",
             endpoint=OPENFDA_NDC_ENDPOINT,
             snapshot_path=OPENFDA_NDC_OUT,
-            records=ndc_records,
-            refreshed_at=refreshed_at,
-        ),
-        manifest_entry(
+            records=fetch_openfda_ndc_records(
+                ndc_queries,
+                max_records=40,
+            ),
+        )
+        add_snapshot(
             source_id="openfda_device_enforcement",
             source_name="openFDA Device Enforcement API",
             endpoint=OPENFDA_DEVICE_ENDPOINT,
             snapshot_path=OPENFDA_DEVICE_OUT,
-            records=device_records,
-            refreshed_at=refreshed_at,
-        ),
-        manifest_entry(
+            records=fetch_openfda_records(
+                OPENFDA_DEVICE_ENDPOINT,
+                device_queries,
+                max_records=15,
+            ),
+        )
+        add_snapshot(
             source_id="openfda_device_event",
             source_name="openFDA Device Event API",
             endpoint=OPENFDA_DEVICE_EVENT_ENDPOINT,
             snapshot_path=OPENFDA_DEVICE_EVENT_OUT,
-            records=device_event_records,
-            refreshed_at=refreshed_at,
-        ),
-        manifest_entry(
-            source_id="cpsc_recalls",
+            records=fetch_openfda_device_event_records(
+                device_event_queries,
+                max_records=30,
+            ),
+        )
+
+    if args.source in {"all", "cpsc"}:
+        add_snapshot(
+            source_id="cpsc_recalls_api",
             source_name="CPSC Recalls API",
             endpoint=CPSC_RECALLS_ENDPOINT,
             snapshot_path=CPSC_DAILY_PRODUCTS_OUT,
-            records=cpsc_records,
-            refreshed_at=refreshed_at,
-        ),
-        manifest_entry(
+            records=fetch_cpsc_daily_product_records(max_records=80),
+        )
+
+    if args.source in {"all", "fsis"}:
+        add_snapshot(
             source_id="usda_fsis_recall",
             source_name="USDA FSIS Recall API",
             endpoint=USDA_FSIS_ENDPOINT,
             snapshot_path=USDA_FSIS_OUT,
-            records=fsis_records,
-            refreshed_at=refreshed_at,
-        ),
-    ]
+            records=fetch_usda_fsis_records(max_records=100),
+        )
 
-    write_records(OPENFDA_FOOD_OUT, food_records)
-    write_records(OPENFDA_DRUG_OUT, drug_records)
-    write_records(OPENFDA_DRUG_LABEL_OUT, drug_label_records)
-    write_records(OPENFDA_NDC_OUT, ndc_records)
-    write_records(OPENFDA_DEVICE_OUT, device_records)
-    write_records(OPENFDA_DEVICE_EVENT_OUT, device_event_records)
-    write_records(CPSC_DAILY_PRODUCTS_OUT, cpsc_records)
-    write_records(USDA_FSIS_OUT, fsis_records)
+    if args.dry_run:
+        print_dry_run(snapshots, manifest_entries)
+        return
+
+    for snapshot_path, records in snapshots:
+        write_records(snapshot_path, records)
     write_snapshot_manifest(manifest_entries)
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
