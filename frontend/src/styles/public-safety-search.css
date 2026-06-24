@@ -1411,3 +1411,85 @@
     max-height: 560px;
   }
 }
+
+/* Manual consistency pass: Pharma-style top arrow and sort controls */
+.public-safety-results-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.public-safety-results-header .public-safety-section-heading {
+  margin-bottom: 0;
+}
+
+.public-safety-result__topline {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.public-safety-result__arrow {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  color: #0b4f71;
+  background: rgba(224, 242, 254, 0.78);
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.public-safety-result__arrow:hover {
+  color: #ffffff;
+  background: #007b87;
+}
+
+.public-safety-result__arrow svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 160ms ease;
+}
+
+.public-safety-result__arrow[aria-expanded='true'] {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0b4f71, #007b87);
+}
+
+.public-safety-result__arrow[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+
+.public-safety-result__toggle {
+  display: none;
+}
+
+.public-safety-results-header .recall-sort-control {
+  flex: 0 0 auto;
+}
+
+.public-safety-results-header .recall-sort-control button {
+  min-height: 32px;
+  padding: 0 0.7rem;
+  font-size: 0.72rem;
+}
+
+@media (max-width: 760px) {
+  .public-safety-results-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

@@ -46,7 +46,6 @@ import FaqPage from './components/FaqPage'
 import AboutPage from './components/AboutPage'
 import InfoPage from './components/InfoPage'
 import AskDavAIChat from './components/AskDavAIChat'
-import FloatingSafetyReportIntake from './components/FloatingSafetyReportIntake'
 import { PAGE_IDS, isUrlPage, type ActivePage } from './types/navigation'
 import { infoPages } from './data/infoPages'
 import {
@@ -261,9 +260,6 @@ function App() {
       )}
 
       {assistantContext && <AskDavAIChat context={assistantContext} />}
-      {[PAGE_IDS.PUBLIC_SAFETY, PAGE_IDS.PHARMACY_SAFETY, PAGE_IDS.FOOD_SAFETY, PAGE_IDS.COSMETIC_SAFETY].some(
-        (pageId) => pageId === activePage,
-      ) && <FloatingSafetyReportIntake />}
     </main>
   )
 }

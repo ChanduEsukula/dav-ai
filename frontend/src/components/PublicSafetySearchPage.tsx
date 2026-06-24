@@ -3,6 +3,7 @@ import {
   searchRealWorldSafety,
   type RealWorldSafetyRecord,
   type RealWorldSafetySearchResponse,
+  type RealWorldSafetySort,
   type RealWorldSafetySourceRole,
 } from '../api/realWorldSafety'
 import { PAGE_IDS } from '../types/navigation'
@@ -613,6 +614,17 @@ function ResultCard({
         <span className="public-safety-result__date">
           {formatPublicSafetyDate(record.published_date)}
         </span>
+        <button
+          type="button"
+          className="public-safety-result__arrow"
+          aria-label={expanded ? 'Hide details' : 'Show details'}
+          aria-expanded={expanded}
+          onClick={() => setExpanded((current) => !current)}
+        >
+          <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </button>
       </div>
 
       <div className="public-safety-result__heading">
@@ -669,17 +681,6 @@ function ResultCard({
       )}
 
       <div className="public-safety-result__footer">
-        <button
-          type="button"
-          className="public-safety-result__toggle"
-          aria-expanded={expanded}
-          onClick={() => setExpanded((current) => !current)}
-        >
-          <span>{expanded ? 'Hide details' : 'Show details'}</span>
-          <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-        </button>
         <div>
           {record.record_url ? (
             <a href={record.record_url} target="_blank" rel="noreferrer">
@@ -698,10 +699,16 @@ function ResultsList({
   data,
   roleLookup,
   submittedQuery,
+  sort,
+  sortDisabled,
+  handleSortChange,
 }: {
   data: RealWorldSafetySearchResponse
   roleLookup: Map<string, RealWorldSafetySourceRole>
   submittedQuery: string
+  sort: RealWorldSafetySort
+  sortDisabled: boolean
+  handleSortChange: (nextSort: RealWorldSafetySort) => void
 }) {
   if (data.search_plan.clarification_required) {
     return null
@@ -722,9 +729,32 @@ function ResultsList({
 
   return (
     <section className="public-safety-results">
-      <div className="public-safety-section-heading">
-        <span>Returned records</span>
-        <h2>Showing results for: {submittedQuery}</h2>
+      <div className="public-safety-results-header">
+        <div className="public-safety-section-heading">
+          <span>Returned records</span>
+          <h2>Showing results for: {submittedQuery}</h2>
+        </div>
+
+        <div className="recall-sort-control" aria-label="Sort public safety records">
+          <button
+            type="button"
+            className={sort === 'score' ? 'active' : ''}
+            aria-pressed={sort === 'score'}
+            disabled={sortDisabled}
+            onClick={() => handleSortChange('score')}
+          >
+            Priority
+          </button>
+          <button
+            type="button"
+            className={sort === 'latest' ? 'active' : ''}
+            aria-pressed={sort === 'latest'}
+            disabled={sortDisabled}
+            onClick={() => handleSortChange('latest')}
+          >
+            Latest
+          </button>
+        </div>
       </div>
 
       <div className="public-safety-results-list">
@@ -748,6 +778,7 @@ function PublicSafetySearchPage({
   const [query, setQuery] = useState(initialSearchTerm)
   const [submittedQuery, setSubmittedQuery] = useState(initialSearchTerm)
   const [limit, setLimit] = useState(DEFAULT_LIMIT)
+  const [sort, setSort] = useState<RealWorldSafetySort>('score')
   const [data, setData] = useState<RealWorldSafetySearchResponse | null>(null)
   const [loading, setLoading] = useState(Boolean(initialSearchTerm))
   const [error, setError] = useState('')
@@ -769,6 +800,7 @@ function PublicSafetySearchPage({
     async (
       nextQuery: string,
       nextLimit: number,
+      nextSort: RealWorldSafetySort = sort,
       options: SearchOptions = {},
     ) => {
       const cleanQuery = normalizeSearchTerm(nextQuery)
@@ -781,7 +813,7 @@ function PublicSafetySearchPage({
       }
 
       const boundedLimit = Math.min(Math.max(nextLimit, 1), 25)
-      const requestKey = `${cleanQuery.toLocaleLowerCase('en-US')}::${boundedLimit}`
+      const requestKey = `${cleanQuery.toLocaleLowerCase('en-US')}::${boundedLimit}::${nextSort}`
       if (inFlightKeyRef.current === requestKey) return
 
       if (options.skipIfCompleted && completedKeyRef.current === requestKey) {
@@ -809,7 +841,7 @@ function PublicSafetySearchPage({
       }
 
       try {
-        const response = await searchRealWorldSafety(cleanQuery, boundedLimit)
+        const response = await searchRealWorldSafety(cleanQuery, boundedLimit, nextSort)
 
         if (!isMountedRef.current || requestId !== requestIdRef.current) return
 
@@ -852,7 +884,7 @@ function PublicSafetySearchPage({
         return
       }
 
-      await loadPublicSafetyRecords(nextInitialQuery, DEFAULT_LIMIT, {
+      await loadPublicSafetyRecords(nextInitialQuery, DEFAULT_LIMIT, 'score', {
         skipIfCompleted: true,
       })
     }
@@ -876,15 +908,27 @@ function PublicSafetySearchPage({
     : `Showing results for ${submittedQuery}. Enter a new query and press Search to update results.`
 
   function handleSubmit() {
-    void loadPublicSafetyRecords(query, limit, { updateUrl: true })
+    void loadPublicSafetyRecords(query, limit, sort, { updateUrl: true })
   }
 
   function handleExampleClick(example: string) {
     setQuery(example)
     setError('')
     setHelper('')
-    void loadPublicSafetyRecords(example, limit, { updateUrl: true })
+    void loadPublicSafetyRecords(example, limit, sort, { updateUrl: true })
   }
+
+  function handleSortChange(nextSort: RealWorldSafetySort) {
+    if (nextSort === sort || !submittedQuery || loading) return
+
+    setSort(nextSort)
+    void loadPublicSafetyRecords(submittedQuery, limit, nextSort, {
+      skipIfCompleted: true,
+    })
+  }
+
+  const sortDisabled =
+    loading || !data || data.search_plan.clarification_required || data.total_matches === 0
 
   return (
     <section className="public-safety-page">
@@ -997,6 +1041,9 @@ function PublicSafetySearchPage({
                 data={data}
                 roleLookup={roleLookup}
                 submittedQuery={submittedQuery}
+                sort={sort}
+                sortDisabled={sortDisabled}
+                handleSortChange={handleSortChange}
               />
             )}
 

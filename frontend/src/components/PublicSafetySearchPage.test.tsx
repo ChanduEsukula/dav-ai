@@ -279,7 +279,7 @@ test('renders a compact Public Safety summary, workspace, and advanced details',
   await user.click(screen.getByRole('button', { name: 'Search public records' }))
 
   await waitFor(() => {
-    expect(mockSearchRealWorldSafety).toHaveBeenCalledWith('Advil', 10)
+    expect(mockSearchRealWorldSafety).toHaveBeenCalledWith('Advil', 10, 'score')
   })
 
   expect(
@@ -359,7 +359,7 @@ test('keeps edited draft input separate from submitted Public Safety results', a
   await user.click(screen.getByRole('button', { name: 'Search public records' }))
 
   await waitFor(() => {
-    expect(mockSearchRealWorldSafety).toHaveBeenLastCalledWith('refrigerator', 10)
+    expect(mockSearchRealWorldSafety).toHaveBeenLastCalledWith('refrigerator', 10, 'score')
   })
   expect(
     await screen.findByRole('heading', {
@@ -382,7 +382,7 @@ test('submits Public Safety quick chips immediately and updates the URL query', 
   await user.click(screen.getByRole('button', { name: 'air fryer' }))
 
   await waitFor(() => {
-    expect(mockSearchRealWorldSafety).toHaveBeenLastCalledWith('air fryer', 10)
+    expect(mockSearchRealWorldSafety).toHaveBeenLastCalledWith('air fryer', 10, 'score')
   })
   expect(
     await screen.findByRole('heading', { name: 'Showing results for: air fryer' }),
