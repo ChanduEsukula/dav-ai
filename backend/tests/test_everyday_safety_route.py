@@ -1,9 +1,14 @@
 from datetime import datetime, timezone
 
 from fastapi.testclient import TestClient
+import pytest
 
 from app.main import app
 from app.services.search_workflows import everyday_safety_search
+from app.services.safety_source_adapters.base import (
+    NormalizedSafetyRecord,
+    SourceAdapterResult,
+)
 
 
 client = TestClient(app)
@@ -27,6 +32,32 @@ def _patch_persistence(monkeypatch):
         everyday_safety_search,
         "save_source_pull_with_snapshot",
         _fake_source_pull,
+    )
+
+
+def _empty_notice_result() -> SourceAdapterResult:
+    return SourceAdapterResult(
+        source_id="fda_recalls_market_withdrawals_safety_alerts",
+        source_name="FDA Recalls, Market Withdrawals & Safety Alerts",
+        source_type="public notice page",
+        source_url="https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts",
+        source_kind="public_notice",
+        retrieved_at="2026-06-24T12:00:00Z",
+        records=[],
+        raw_payload={"rows": []},
+        upstream_status="empty",
+    )
+
+
+@pytest.fixture(autouse=True)
+def _patch_empty_public_notices(monkeypatch):
+    async def fake_notice_search(**kwargs):
+        return _empty_notice_result()
+
+    monkeypatch.setattr(
+        everyday_safety_search,
+        "search_official_public_notices",
+        fake_notice_search,
     )
 
 
@@ -119,10 +150,11 @@ def test_everyday_safety_food_search_returns_multi_source_normalized_records(mon
     assert body["limitations"]
 
     sources_checked = body["sources_checked"]
-    assert len(sources_checked) == 2
+    assert len(sources_checked) == 3
     assert {source["source_type"] for source in sources_checked} == {
         "FDA_FOOD_ENFORCEMENT",
         "USDA_FSIS_RECALL",
+        "FDA_PUBLIC_NOTICE",
     }
 
     fda_result = body["results"][0]
@@ -187,8 +219,113 @@ def test_everyday_safety_food_search_handles_empty_multi_source_results(monkeypa
     assert body["count"] == 0
     assert body["audit"]["upstream_status"] == "empty"
     assert body["results"] == []
-    assert len(body["sources_checked"]) == 2
+    assert len(body["sources_checked"]) == 3
     assert all(source["upstream_status"] == "empty" for source in body["sources_checked"])
+
+
+def test_everyday_safety_pepperoni_returns_normalized_fda_public_notice(monkeypatch):
+    now = datetime.now(timezone.utc).isoformat()
+
+    async def fake_search_food_recalls(query, limit, request_id=None):
+        return {
+            "source_id": "openfda_food_enforcement",
+            "source_name": "openFDA Food Enforcement API",
+            "endpoint": "https://api.fda.gov/food/enforcement.json",
+            "query": query,
+            "retrieval_timestamp": now,
+            "raw": {"results": []},
+        }
+
+    async def fake_search_fsis_recalls(query, limit, request_id=None):
+        return {
+            "source_id": "usda_fsis_recall",
+            "source_name": "USDA FSIS Recall API",
+            "endpoint": "https://www.fsis.usda.gov/fsis/api/recall/v/1",
+            "query": query,
+            "retrieval_timestamp": now,
+            "raw": {"results": []},
+            "records": [],
+        }
+
+    notice = NormalizedSafetyRecord(
+        source_name="FDA Recalls, Market Withdrawals & Safety Alerts",
+        source_type="normalized official public notice",
+        source_url="https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts",
+        source_kind="normalized_public_notice",
+        category="Food & Beverages",
+        product_name="Pepperoni Rolls",
+        brand_name="Fry Pie Factory",
+        company_name="Fry Pie Factory LLC",
+        title="Fry Pie Factory - Pepperoni Rolls",
+        reason="Pepperoni Rolls were recalled due to undeclared milk.",
+        hazard_type="Undeclared milk allergen",
+        remedy="Consumers should return the product for a refund.",
+        published_date="06/10/2026",
+        recall_number=None,
+        affected_models=[],
+        affected_lots=[],
+        raw_payload_hash="pepperoni-notice-hash",
+        retrieved_at=now,
+        record_url="https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts/fry-pie-factory-pepperoni-rolls",
+        extraction_confidence="high",
+        source_text_excerpt=(
+            "Official notice excerpt used for matching. "
+            + "Navigation and page text " * 200
+        ),
+    )
+
+    async def fake_notice_search(**kwargs):
+        return SourceAdapterResult(
+            source_id="fda_recalls_market_withdrawals_safety_alerts",
+            source_name=notice.source_name,
+            source_type="public notice page",
+            source_url=notice.source_url,
+            source_kind="public_notice",
+            retrieved_at=now,
+            records=[notice],
+            raw_payload={"rows": [{"product": "Pepperoni Rolls"}]},
+            upstream_status="success",
+        )
+
+    monkeypatch.setattr(
+        everyday_safety_search.food_client,
+        "search_food_recalls",
+        fake_search_food_recalls,
+    )
+    monkeypatch.setattr(
+        everyday_safety_search.fsis_client,
+        "search_recalls",
+        fake_search_fsis_recalls,
+    )
+    monkeypatch.setattr(
+        everyday_safety_search,
+        "search_official_public_notices",
+        fake_notice_search,
+    )
+    _patch_persistence(monkeypatch)
+
+    response = client.get(
+        "/api/v1/everyday-safety/search",
+        params={"category": "food_supplement", "q": "Pepperoni", "limit": 5},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["count"] == 1
+
+    result = body["results"][0]
+    assert result["source_type"] == "FDA_NORMALIZED_PUBLIC_NOTICE"
+    assert result["source_kind"] == "normalized_public_notice"
+    assert result["product_description"] == "Pepperoni Rolls"
+    assert result["recalling_firm"] == "Fry Pie Factory LLC"
+    assert result["reason_for_recall"] == "Pepperoni Rolls were recalled due to undeclared milk."
+    assert result["remedy"] == "Consumers should return the product for a refund."
+    assert result["official_url"] == notice.record_url
+    assert result["source"]["endpoint"] == notice.record_url
+    assert result["extraction_confidence"] == "high"
+    assert len(result["reason_for_recall"]) < 200
+    assert len(result["remedy"]) < 200
+    assert result["source_text_excerpt"] != result["reason_for_recall"]
 
 
 def test_everyday_safety_returns_partial_results_when_fsis_fails(monkeypatch):

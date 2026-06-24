@@ -71,9 +71,13 @@ const cosmeticResponse: CosmeticEventSearchResponse = {
       company_name: 'Solstice Labs',
       category: 'Cosmetics',
       reason: 'Potential product quality concern',
+      remedy: 'Consumers should stop using the affected product.',
       published_date: '2026-06-02',
       record_url: 'https://www.fda.gov/safety/example-sunscreen-notice',
       source_name: 'FDA Recalls, Market Withdrawals & Safety Alerts',
+      source_kind: 'normalized_public_notice',
+      source_type: 'normalized official public notice',
+      extraction_confidence: 'high',
     },
   ],
   records: [
@@ -168,6 +172,7 @@ test('renders the Cosmetic Safety dashboard and multiple reports for Sunscreen',
   expect(
     screen.getByTitle('FDA public notice for Solstice Daily Mineral Sunscreen SPF 50'),
   ).toBeInTheDocument()
+  expect(screen.getAllByText('Normalized public notice').length).toBeGreaterThan(0)
 })
 
 test('loads normalized Cosmetic reports with limit 8', async () => {

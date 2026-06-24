@@ -148,6 +148,69 @@ const emptyFoodResponse: EverydaySafetySearchResponse = {
   },
 }
 
+const normalizedNoticeFoodResponse: EverydaySafetySearchResponse = {
+  ...emptyFoodResponse,
+  query: 'Pepperoni',
+  count: 1,
+  sources_checked: [
+    ...emptyFoodResponse.sources_checked,
+    {
+      source_id: 'fda-public-notices',
+      source_name: 'FDA Recalls, Market Withdrawals & Safety Alerts',
+      source_type: 'FDA_NORMALIZED_PUBLIC_NOTICE',
+      endpoint: 'https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts',
+      source_kind: 'normalized_public_notice',
+      record_type: 'normalized official public notice',
+      upstream_status: 'success',
+      record_count: 1,
+    },
+  ],
+  results: [
+    {
+      record_id: 'pepperoni-notice',
+      recall_number: null,
+      product_description: 'Pepperoni Rolls',
+      reason_for_recall: 'Pepperoni Rolls were recalled due to undeclared milk.',
+      classification: null,
+      status: null,
+      recall_initiation_date: '20260610',
+      report_date: '20260610',
+      distribution_pattern: null,
+      recalling_firm: 'Fry Pie Factory LLC',
+      product_quantity: null,
+      code_info: null,
+      source_type: 'FDA_NORMALIZED_PUBLIC_NOTICE',
+      source_kind: 'normalized_public_notice',
+      source_record_type: 'normalized official public notice',
+      remedy: 'Consumers should return the product for a refund.',
+      official_url: 'https://www.fda.gov/safety/notices/pepperoni-rolls',
+      affected_models: [],
+      affected_lots: [],
+      extraction_confidence: 'high',
+      source_text_excerpt: 'UNIQUE_INTERNAL_FDA_PAGE_TEXT_DO_NOT_RENDER',
+      search_strategy_used: 'intent_brand_v1',
+      risk_score: {
+        score: 32,
+        label: 'Moderate',
+        components: {
+          classification_score: 5,
+          status_score: 5,
+          recency_score: 17,
+          scope_score: 5,
+        },
+        score_version: 'everyday-safety-score-v1',
+      },
+      source: {
+        name: 'FDA Recalls, Market Withdrawals & Safety Alerts',
+        endpoint: 'https://www.fda.gov/safety/notices/pepperoni-rolls',
+        retrieval_timestamp: '2026-06-12T12:00:00Z',
+        source_kind: 'normalized_public_notice',
+        source_type: 'normalized official public notice',
+      },
+    },
+  ],
+}
+
 function renderFoodPage(initialQuery = 'Chicken') {
   return render(
     <FoodSafetyPage
@@ -176,6 +239,31 @@ test('renders the Food Safety dashboard and multiple records for Chicken', async
     screen.getAllByText('Frozen chicken and vegetable meal, 16-ounce package'),
   ).toHaveLength(2)
   expect(screen.getByText(/Showing 2 of 2 returned records/i)).toBeInTheDocument()
+})
+
+test('renders normalized FDA notices with concise fields and an official link', async () => {
+  const user = userEvent.setup()
+  mockSearchEverydaySafety.mockResolvedValue(normalizedNoticeFoodResponse)
+  renderFoodPage('Pepperoni')
+
+  expect(await screen.findByTitle('Pepperoni Rolls')).toBeInTheDocument()
+  expect(screen.getAllByText('Normalized public notice').length).toBeGreaterThan(0)
+  await user.click(screen.getByTitle('Pepperoni Rolls'))
+
+  expect(
+    screen.getByText('Pepperoni Rolls were recalled due to undeclared milk.'),
+  ).toBeInTheDocument()
+  expect(
+    screen.getByText('Consumers should return the product for a refund.'),
+  ).toBeInTheDocument()
+  expect(screen.getByText('high')).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'Open official record' })).toHaveAttribute(
+    'href',
+    'https://www.fda.gov/safety/notices/pepperoni-rolls',
+  )
+  expect(
+    screen.queryByText('UNIQUE_INTERNAL_FDA_PAGE_TEXT_DO_NOT_RENDER'),
+  ).not.toBeInTheDocument()
 })
 
 test('loads normalized Food records with the required category, limit, and priority sort', async () => {

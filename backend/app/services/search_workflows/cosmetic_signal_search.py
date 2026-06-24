@@ -6,13 +6,12 @@ from app.audit.audit_event import build_audit_event
 from app.db.audit_repository import save_audit_event
 from app.db.source_pull_repository import save_source_pull_with_snapshot
 from app.scoring import COSMETIC_SIGNAL_SCORE_VERSION
+from app.services.official_public_notice_search import search_official_public_notices
 from app.services.openfda_cosmetic_event_client import OpenFDACosmeticEventClient
-from app.services.safety_source_adapters.fda_public import FDAPublicRecallsAdapter
 from app.services.query_normalization import normalize_safety_query
 from app.sources.registry import OPENFDA_COSMETIC_EVENT
 
 client = OpenFDACosmeticEventClient()
-fda_public_adapter = FDAPublicRecallsAdapter()
 
 
 def _save_audit_event_with_request_id(audit_event, request_id: str | None):
@@ -220,9 +219,13 @@ def _normalize_recall_notice(record: Any) -> dict[str, Any]:
         "company_name": getattr(record, "company_name", None),
         "category": getattr(record, "category", None),
         "reason": getattr(record, "reason", None) or getattr(record, "hazard_type", None),
+        "remedy": getattr(record, "remedy", None),
         "published_date": getattr(record, "published_date", None),
         "record_url": getattr(record, "record_url", None),
         "source_name": getattr(record, "source_name", "FDA Recalls, Market Withdrawals & Safety Alerts"),
+        "source_kind": getattr(record, "source_kind", "public_notice"),
+        "source_type": getattr(record, "source_type", "public notice page"),
+        "extraction_confidence": getattr(record, "extraction_confidence", None),
     }
 
 
@@ -248,10 +251,11 @@ async def execute_cosmetic_signal_search(
         recall_source_error: str | None = None
 
         try:
-            recall_result = await fda_public_adapter.search(
+            recall_result = await search_official_public_notices(
                 query=search_query,
                 limit=limit,
                 request_id=request_id,
+                domain="cosmetic",
             )
             recall_source_name = recall_result.source_name
             recall_source_status = recall_result.upstream_status

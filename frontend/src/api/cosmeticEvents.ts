@@ -24,9 +24,13 @@ export type CosmeticRecallNotice = {
   company_name: string | null
   category: string | null
   reason: string | null
+  remedy?: string | null
   published_date: string | null
   record_url: string | null
   source_name: string
+  source_kind?: 'structured_api' | 'public_notice' | 'normalized_public_notice'
+  source_type?: string
+  extraction_confidence?: string | null
 }
 
 

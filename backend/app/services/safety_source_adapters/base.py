@@ -146,6 +146,7 @@ def record_matches_query(record: NormalizedSafetyRecord, query: str) -> bool:
             record.hazard_type,
             record.remedy,
             record.recall_number,
+            record.source_text_excerpt,
             " ".join(record.affected_models),
             " ".join(record.affected_lots),
         )
@@ -163,6 +164,7 @@ def match_score(record: NormalizedSafetyRecord, query: str) -> int:
         "title": record.title,
         "reason": record.reason,
         "hazard_type": record.hazard_type,
+        "source_text_excerpt": record.source_text_excerpt,
         "affected_models": " ".join(record.affected_models),
         "affected_lots": " ".join(record.affected_lots),
     }

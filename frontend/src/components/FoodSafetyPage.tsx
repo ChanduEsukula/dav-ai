@@ -37,10 +37,15 @@ function truncateText(value: string | null | undefined, maxLength = 92) {
   return `${normalizedValue.slice(0, maxLength).trim()}...`
 }
 
-function sourceTypeLabel(sourceType: EverydaySafetyRecord['source_type']) {
-  return sourceType === 'USDA_FSIS_RECALL'
-    ? 'USDA / FSIS recall'
-    : 'FDA food enforcement'
+function sourceTypeLabel(
+  sourceType: EverydaySafetyRecord['source_type'],
+  sourceKind?: EverydaySafetyRecord['source_kind'],
+) {
+  if (sourceKind === 'normalized_public_notice') return 'Normalized public notice'
+  if (sourceKind === 'public_notice') return 'Official public notice'
+  if (sourceKind === 'structured_api') return 'Official API record'
+  if (sourceType === 'FDA_NORMALIZED_PUBLIC_NOTICE') return 'Normalized public notice'
+  return sourceType === 'USDA_FSIS_RECALL' ? 'USDA / FSIS recall' : 'FDA food enforcement'
 }
 
 function recordDate(record: EverydaySafetyRecord) {
@@ -63,7 +68,9 @@ function FoodRecordRow({ record, index }: { record: EverydaySafetyRecord; index:
           </span>
           <strong title={fullProductName}>{truncateText(fullProductName)}</strong>
           <span>
-            {record.recall_number || record.record_id || sourceTypeLabel(record.source_type)}
+            {record.recall_number ||
+              record.record_id ||
+              sourceTypeLabel(record.source_type, record.source_kind)}
           </span>
         </span>
 
@@ -74,7 +81,7 @@ function FoodRecordRow({ record, index }: { record: EverydaySafetyRecord; index:
 
         <span className="pharmacy-record-row__date">
           <strong>{formatDate(recordDate(record))}</strong>
-          <span>{sourceTypeLabel(record.source_type)}</span>
+          <span>{sourceTypeLabel(record.source_type, record.source_kind)}</span>
         </span>
 
         <span className="pharmacy-record-row__arrow" aria-hidden="true">
@@ -94,6 +101,13 @@ function FoodRecordRow({ record, index }: { record: EverydaySafetyRecord; index:
           <span>Reason</span>
           <strong>{record.reason_for_recall || 'Not listed'}</strong>
         </div>
+
+        {record.remedy && (
+          <div className="pharmacy-record-details__wide">
+            <span>Remedy / action</span>
+            <strong>{record.remedy}</strong>
+          </div>
+        )}
 
         <div>
           <span>Distribution</span>
@@ -116,13 +130,33 @@ function FoodRecordRow({ record, index }: { record: EverydaySafetyRecord; index:
         </div>
 
         <div>
+          <span>Record type</span>
+          <strong>{sourceTypeLabel(record.source_type, record.source_kind)}</strong>
+        </div>
+
+        {record.extraction_confidence && (
+          <div>
+            <span>Notice extraction</span>
+            <strong>{record.extraction_confidence}</strong>
+          </div>
+        )}
+
+        <div>
           <span>Retrieved</span>
           <strong>{formatTimestamp(record.source.retrieval_timestamp)}</strong>
         </div>
 
         <div className="pharmacy-record-details__wide">
-          <span>Source endpoint</span>
-          <strong>{record.source.endpoint}</strong>
+          <span>Official source</span>
+          <strong>
+            {record.official_url ? (
+              <a href={record.official_url} target="_blank" rel="noreferrer">
+                Open official record
+              </a>
+            ) : (
+              record.source.endpoint
+            )}
+          </strong>
         </div>
       </div>
     </details>
@@ -590,7 +624,7 @@ function FoodSafetyPage({
                   <article key={source.source_id}>
                     <div>
                       <strong>{source.source_name}</strong>
-                      <span>{sourceTypeLabel(source.source_type)}</span>
+                      <span>{sourceTypeLabel(source.source_type, source.source_kind)}</span>
                     </div>
                     <dl>
                       <div>

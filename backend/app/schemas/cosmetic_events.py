@@ -27,9 +27,13 @@ class CosmeticRecallNotice(BaseModel):
     company_name: str | None = None
     category: str | None = None
     reason: str | None = None
+    remedy: str | None = None
     published_date: str | None = None
     record_url: str | None = None
     source_name: str
+    source_kind: str = "public_notice"
+    source_type: str = "public notice page"
+    extraction_confidence: str | None = None
 
 
 class CosmeticReaction(BaseModel):

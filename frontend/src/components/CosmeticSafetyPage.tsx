@@ -93,6 +93,14 @@ function getRecallNoticeTitle(notice: CosmeticRecallNotice) {
   )
 }
 
+function cosmeticNoticeSourceLabel(notice: CosmeticRecallNotice) {
+  if (notice.source_kind === 'normalized_public_notice') {
+    return 'Normalized public notice'
+  }
+  if (notice.source_kind === 'structured_api') return 'Official API record'
+  return 'Official public notice'
+}
+
 function CosmeticRecallNoticeRow({
   notice,
   index,
@@ -111,7 +119,7 @@ function CosmeticRecallNoticeRow({
         <span className="pharmacy-record-row__product">
           <span className="pharmacy-record-row__badges">
             <small>{notice.category || 'FDA notice'}</small>
-            <small>Recall / alert</small>
+            <small>{cosmeticNoticeSourceLabel(notice)}</small>
           </span>
           <strong title={title}>{truncateText(title)}</strong>
           <span>{notice.brand_name || notice.product_name || 'Product details not listed'}</span>
@@ -124,7 +132,7 @@ function CosmeticRecallNoticeRow({
 
         <span className="pharmacy-record-row__date">
           <strong>{formatDate(notice.published_date)}</strong>
-          <span>Published</span>
+          <span>{cosmeticNoticeSourceLabel(notice)}</span>
         </span>
 
         <span className="pharmacy-record-row__arrow" aria-hidden="true">
@@ -145,6 +153,13 @@ function CosmeticRecallNoticeRow({
           <strong>{notice.reason || 'Not listed'}</strong>
         </div>
 
+        {notice.remedy && (
+          <div className="pharmacy-record-details__wide">
+            <span>Remedy / action</span>
+            <strong>{notice.remedy}</strong>
+          </div>
+        )}
+
         <div>
           <span>Product</span>
           <strong>{notice.product_name || 'Not listed'}</strong>
@@ -164,6 +179,13 @@ function CosmeticRecallNoticeRow({
           <span>Source</span>
           <strong>{notice.source_name}</strong>
         </div>
+
+        {notice.extraction_confidence && (
+          <div>
+            <span>Notice extraction</span>
+            <strong>{notice.extraction_confidence}</strong>
+          </div>
+        )}
 
         {notice.record_url && (
           <div className="pharmacy-record-details__wide">

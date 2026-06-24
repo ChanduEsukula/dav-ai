@@ -16,8 +16,8 @@ from app.services.safety_source_adapters.base import (
     match_score,
     utc_now_iso,
 )
+from app.services.official_public_notice_search import search_official_public_notices
 from app.services.safety_source_adapters.cpsc import CPSCRecallsAdapter
-from app.services.safety_source_adapters.fda_public import FDAPublicRecallsAdapter
 from app.services.safety_source_adapters.openfda_food import OpenFDAFoodEnforcementAdapter
 from app.services.safety_source_adapters.openfda_drug import OpenFDADrugEnforcementAdapter
 from app.services.safety_source_adapters.rxnorm import RxNormDrugReferenceAdapter
@@ -73,7 +73,6 @@ LIMITATIONS = [
 ]
 
 cpsc_adapter = CPSCRecallsAdapter()
-fda_public_adapter = FDAPublicRecallsAdapter()
 openfda_food_adapter = OpenFDAFoodEnforcementAdapter()
 usda_fsis_adapter = USDAFSISRecallAdapter()
 openfda_drug_adapter = OpenFDADrugEnforcementAdapter()
@@ -499,7 +498,7 @@ async def execute_real_world_safety_search(
     if should_check(FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS):
         initial_calls.append(
             _run_adapter_call(
-                adapter_call=lambda: fda_public_adapter.search(
+                adapter_call=lambda: search_official_public_notices(
                     query=search_query,
                     limit=limit,
                     request_id=request_id,

@@ -865,6 +865,11 @@
   overflow-wrap: anywhere;
 }
 
+.pharmacy-record-details a {
+  color: var(--area-accent);
+  font-weight: 900;
+}
+
 .pharmacy-empty-card {
   margin: 1rem;
   padding: 1rem;

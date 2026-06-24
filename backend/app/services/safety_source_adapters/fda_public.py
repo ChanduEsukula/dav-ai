@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import logging
 import re
 from html.parser import HTMLParser
@@ -16,6 +17,7 @@ from app.services.safety_source_adapters.base import (
     first_text,
     record_matches_query,
     stable_payload_hash,
+    text_matches_query,
     utc_now_iso,
 )
 from app.sources.registry import FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS
@@ -46,49 +48,80 @@ class FDAPublicRecallsAdapter:
             html = response.text
             rows = parse_fda_recalls_table(html)
             records: list[NormalizedSafetyRecord] = []
-
-            for index, row in enumerate(rows):
-                normalized = _normalize_fda_public_row(
+            normalized_rows = [
+                _normalize_fda_public_row(
                     row=row,
                     index=index,
                     retrieved_at=retrieved_at,
                     source_name=self.source["source_name"],
                     source_url=endpoint,
                 )
+                for index, row in enumerate(rows)
+            ]
 
-                if not record_matches_query(normalized, query):
+            detail_semaphore = asyncio.Semaphore(8)
+
+            async def fetch_notice_text(record: NormalizedSafetyRecord) -> str | None:
+                if not record.record_url:
+                    return None
+                try:
+                    async with detail_semaphore:
+                        async with httpx.AsyncClient(timeout=self.timeout_seconds) as detail_client:
+                            detail_response = await detail_client.get(record.record_url)
+                    detail_response.raise_for_status()
+                    return parse_visible_text(detail_response.text)
+                except Exception:
+                    logger.info(
+                        "fda_public_notice_detail_normalization_skipped",
+                        extra={
+                            "event": "fda_public_notice_detail_normalization_skipped",
+                            "request_id": request_id,
+                            "source_id": self.source["source_id"],
+                            "record_url": record.record_url,
+                        },
+                    )
+                    return None
+
+            detail_texts = await asyncio.gather(
+                *(fetch_notice_text(record) for record in normalized_rows)
+            )
+
+            for row, normalized, notice_text in zip(
+                rows,
+                normalized_rows,
+                detail_texts,
+                strict=True,
+            ):
+                row_matches = record_matches_query(normalized, query)
+                detail_matches = bool(
+                    notice_text and text_matches_query(notice_text, query)
+                )
+                if not row_matches and not detail_matches:
                     continue
 
+                normalized = _normalize_fda_public_row(
+                    row=row,
+                    index=len(records),
+                    retrieved_at=retrieved_at,
+                    source_name=self.source["source_name"],
+                    source_url=endpoint,
+                )
+
                 enriched_record = None
-                if normalized.record_url:
-                    try:
-                        async with httpx.AsyncClient(timeout=self.timeout_seconds) as client:
-                            detail_response = await client.get(normalized.record_url)
-                        detail_response.raise_for_status()
-                        notice_text = parse_visible_text(detail_response.text)
-                        enriched_record = _normalize_notice_from_text(
-                            base_record=normalized,
-                            notice_text=notice_text,
-                            query=query,
-                            retrieved_at=retrieved_at,
-                            source_name=self.source["source_name"],
-                            source_url=endpoint,
-                            raw_payload={
-                                "row": row,
-                                "notice_text": notice_text[:5000],
-                                "record_url": normalized.record_url,
-                            },
-                        )
-                    except Exception:
-                        logger.info(
-                            "fda_public_notice_detail_normalization_skipped",
-                            extra={
-                                "event": "fda_public_notice_detail_normalization_skipped",
-                                "request_id": request_id,
-                                "source_id": self.source["source_id"],
-                                "record_url": normalized.record_url,
-                            },
-                        )
+                if notice_text:
+                    enriched_record = _normalize_notice_from_text(
+                        base_record=normalized,
+                        notice_text=notice_text,
+                        query=query,
+                        retrieved_at=retrieved_at,
+                        source_name=self.source["source_name"],
+                        source_url=endpoint,
+                        raw_payload={
+                            "row": row,
+                            "notice_text": notice_text[:5000],
+                            "record_url": normalized.record_url,
+                        },
+                    )
 
                 records.append(enriched_record or normalized)
 
@@ -311,29 +344,27 @@ def _normalize_notice_from_text(
     source_url: str,
     raw_payload: dict[str, Any],
 ) -> NormalizedSafetyRecord | None:
-    if len(notice_text) < 220:
+    if len(notice_text) < 80:
         return None
 
+    detail_reason = _first_sentence_matching(
+        notice_text,
+        (
+            "recall",
+            "recalled",
+            "because",
+            "due to",
+            "undeclared",
+            "contaminated",
+            "contamination",
+            "allergen",
+            "risk",
+            "injury",
+            "hazard",
+        ),
+    )
     reason = _clean_notice_candidate(
-        first_text(
-            base_record.reason,
-            _first_sentence_matching(
-                notice_text,
-                (
-                    "recall",
-                    "recalled",
-                    "because",
-                    "due to",
-                    "undeclared",
-                    "contaminated",
-                    "contamination",
-                    "allergen",
-                    "risk",
-                    "injury",
-                    "hazard",
-                ),
-            ),
-        )
+        first_text(detail_reason, base_record.reason)
     )
 
     remedy = _clean_notice_candidate(

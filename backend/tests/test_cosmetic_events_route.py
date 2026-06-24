@@ -1,7 +1,12 @@
 from fastapi.testclient import TestClient
+import pytest
 
 from app.main import app
 from app.services.search_workflows import cosmetic_signal_search
+from app.services.safety_source_adapters.base import (
+    NormalizedSafetyRecord,
+    SourceAdapterResult,
+)
 from app.sources.registry import OPENFDA_COSMETIC_EVENT
 
 
@@ -82,6 +87,28 @@ class MockCosmeticEventClientFailure:
         raise RuntimeError("openFDA cosmetic event unavailable")
 
 
+@pytest.fixture(autouse=True)
+def _patch_empty_public_notices(monkeypatch):
+    async def fake_notice_search(**kwargs):
+        return SourceAdapterResult(
+            source_id="fda_recalls_market_withdrawals_safety_alerts",
+            source_name="FDA Recalls, Market Withdrawals & Safety Alerts",
+            source_type="public notice page",
+            source_url="https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts",
+            source_kind="public_notice",
+            retrieved_at="2026-06-24T12:00:00Z",
+            records=[],
+            raw_payload={"rows": []},
+            upstream_status="empty",
+        )
+
+    monkeypatch.setattr(
+        cosmetic_signal_search,
+        "search_official_public_notices",
+        fake_notice_search,
+    )
+
+
 def test_search_cosmetic_events_returns_reaction_summary():
     cosmetic_signal_search.client = MockCosmeticEventClientSuccess()
 
@@ -133,6 +160,64 @@ def test_search_cosmetic_events_returns_empty_results():
     assert body["records"] == []
     assert body["signal_score"]["label"] == "Low"
     assert body["audit"]["upstream_status"] == "empty"
+
+
+def test_search_cosmetic_events_includes_normalized_public_notice(monkeypatch):
+    cosmetic_signal_search.client = MockCosmeticEventClientEmpty()
+    notice = NormalizedSafetyRecord(
+        source_name="FDA Recalls, Market Withdrawals & Safety Alerts",
+        source_type="normalized official public notice",
+        source_url="https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts",
+        source_kind="normalized_public_notice",
+        category="Cosmetics",
+        product_name="Daily Mineral Sunscreen SPF 50",
+        brand_name="Solstice",
+        company_name="Solstice Labs",
+        title="Solstice Daily Mineral Sunscreen notice",
+        reason="Potential product quality concern.",
+        hazard_type="Product quality concern",
+        remedy="Consumers should stop using the affected product.",
+        published_date="06/20/2026",
+        recall_number=None,
+        raw_payload_hash="sunscreen-notice",
+        retrieved_at="2026-06-24T12:00:00Z",
+        record_url="https://www.fda.gov/safety/notices/sunscreen-example",
+        extraction_confidence="high",
+        source_text_excerpt="Internal matching excerpt.",
+    )
+
+    async def fake_notice_search(**kwargs):
+        return SourceAdapterResult(
+            source_id="fda_recalls_market_withdrawals_safety_alerts",
+            source_name=notice.source_name,
+            source_type="public notice page",
+            source_url=notice.source_url,
+            source_kind="public_notice",
+            retrieved_at=notice.retrieved_at,
+            records=[notice],
+            raw_payload={"rows": []},
+            upstream_status="success",
+        )
+
+    monkeypatch.setattr(
+        cosmetic_signal_search,
+        "search_official_public_notices",
+        fake_notice_search,
+    )
+
+    response = TestClient(app).get(
+        "/api/v1/cosmetic-events/search",
+        params={"q": "sunscreen", "limit": 5},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["recall_count"] == 1
+    result = body["recall_notices"][0]
+    assert result["source_kind"] == "normalized_public_notice"
+    assert result["record_url"] == notice.record_url
+    assert result["remedy"] == notice.remedy
+    assert result["extraction_confidence"] == "high"
 
 
 def test_search_cosmetic_events_normalizes_hairdye_before_upstream_search():

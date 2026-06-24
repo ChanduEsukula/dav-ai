@@ -1,19 +1,31 @@
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.schemas.audit import AuditSummary
 from app.schemas.recalls import RecallRiskScore
 
 
 EverydaySafetyCategory = Literal["food_supplement"]
-EverydaySafetySourceType = Literal["FDA_FOOD_ENFORCEMENT", "USDA_FSIS_RECALL"]
+EverydaySafetySourceType = Literal[
+    "FDA_FOOD_ENFORCEMENT",
+    "USDA_FSIS_RECALL",
+    "FDA_PUBLIC_NOTICE",
+    "FDA_NORMALIZED_PUBLIC_NOTICE",
+]
+EverydaySafetySourceKind = Literal[
+    "structured_api",
+    "public_notice",
+    "normalized_public_notice",
+]
 
 
 class EverydaySafetySource(BaseModel):
     name: str
     endpoint: str
     retrieval_timestamp: str
+    source_kind: EverydaySafetySourceKind = "structured_api"
+    source_type: str = "official API record"
 
 
 class EverydaySafetyCheckedSource(BaseModel):
@@ -21,6 +33,8 @@ class EverydaySafetyCheckedSource(BaseModel):
     source_name: str
     source_type: EverydaySafetySourceType
     endpoint: str
+    source_kind: EverydaySafetySourceKind = "structured_api"
+    record_type: str = "official API record"
     upstream_status: str
     record_count: int
 
@@ -39,6 +53,18 @@ class EverydaySafetyRecord(BaseModel):
     product_quantity: str | None = None
     code_info: str | None = None
     source_type: EverydaySafetySourceType
+    source_kind: EverydaySafetySourceKind = "structured_api"
+    source_record_type: str = "official API record"
+    title: str | None = None
+    product_name: str | None = None
+    brand_name: str | None = None
+    company_name: str | None = None
+    remedy: str | None = None
+    official_url: str | None = None
+    affected_models: list[str] = Field(default_factory=list)
+    affected_lots: list[str] = Field(default_factory=list)
+    extraction_confidence: str | None = None
+    source_text_excerpt: str | None = None
     search_strategy_used: str
     risk_score: RecallRiskScore
     source: EverydaySafetySource

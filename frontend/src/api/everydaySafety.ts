@@ -3,6 +3,13 @@ import { apiClient } from './client'
 export type EverydaySafetySourceType =
   | 'FDA_FOOD_ENFORCEMENT'
   | 'USDA_FSIS_RECALL'
+  | 'FDA_PUBLIC_NOTICE'
+  | 'FDA_NORMALIZED_PUBLIC_NOTICE'
+
+export type EverydaySafetySourceKind =
+  | 'structured_api'
+  | 'public_notice'
+  | 'normalized_public_notice'
 
 export type EverydaySafetyCategory = 'food_supplement'
 export type EverydaySafetySort = 'score' | 'latest'
@@ -25,12 +32,16 @@ export type EverydaySafetySource = {
   name: string
   endpoint: string
   retrieval_timestamp: string
+  source_kind?: EverydaySafetySourceKind
+  source_type?: string
 }
 
 export type EverydaySafetyCheckedSource = {
   source_id: string
   source_name: string
   source_type: EverydaySafetySourceType
+  source_kind?: EverydaySafetySourceKind
+  record_type?: string
   endpoint: string
   upstream_status: string
   record_count: number
@@ -50,6 +61,18 @@ export type EverydaySafetyRecord = {
   product_quantity: string | null
   code_info: string | null
   source_type: EverydaySafetySourceType
+  source_kind?: EverydaySafetySourceKind
+  source_record_type?: string
+  title?: string | null
+  product_name?: string | null
+  brand_name?: string | null
+  company_name?: string | null
+  remedy?: string | null
+  official_url?: string | null
+  affected_models?: string[]
+  affected_lots?: string[]
+  extraction_confidence?: string | null
+  source_text_excerpt?: string | null
   search_strategy_used: string
   risk_score: EverydaySafetyRiskScore
   source: EverydaySafetySource

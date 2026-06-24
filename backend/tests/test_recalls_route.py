@@ -1,7 +1,12 @@
 from fastapi.testclient import TestClient
+import pytest
 
 from app.main import app
 from app.services.search_workflows import recall_search
+from app.services.safety_source_adapters.base import (
+    NormalizedSafetyRecord,
+    SourceAdapterResult,
+)
 from app.sources.registry import OPENFDA_DRUG_ENFORCEMENT
 
 
@@ -65,6 +70,28 @@ class MockOpenFDAClientFailure:
         raise RuntimeError("openFDA unavailable")
 
 
+@pytest.fixture(autouse=True)
+def _patch_empty_public_notices(monkeypatch):
+    async def fake_notice_search(**kwargs):
+        return SourceAdapterResult(
+            source_id="fda_recalls_market_withdrawals_safety_alerts",
+            source_name="FDA Recalls, Market Withdrawals & Safety Alerts",
+            source_type="public notice page",
+            source_url="https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts",
+            source_kind="public_notice",
+            retrieved_at="2026-06-24T12:00:00Z",
+            records=[],
+            raw_payload={"rows": []},
+            upstream_status="empty",
+        )
+
+    monkeypatch.setattr(
+        recall_search,
+        "search_official_public_notices",
+        fake_notice_search,
+    )
+
+
 def test_search_recalls_returns_normalized_results():
     recall_search.client = MockOpenFDAClientSuccess()
 
@@ -123,6 +150,64 @@ def test_search_recalls_returns_empty_results_for_no_matches():
     assert body["audit"]["record_count"] == 0
     assert body["audit"]["transform_version"] == "recall-transform-v0.1"
     assert body["audit"]["audit_id"]
+
+
+def test_search_recalls_includes_normalized_fda_public_notice(monkeypatch):
+    recall_search.client = MockOpenFDAClientEmpty()
+    notice = NormalizedSafetyRecord(
+        source_name="FDA Recalls, Market Withdrawals & Safety Alerts",
+        source_type="normalized official public notice",
+        source_url="https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts",
+        source_kind="normalized_public_notice",
+        category="Drugs",
+        product_name="Tylenol Extra Strength Tablets",
+        brand_name="Tylenol",
+        company_name="Example Pharma",
+        title="Tylenol Extra Strength Tablets recall",
+        reason="The product was recalled because of a labeling issue.",
+        hazard_type="Labeling issue",
+        remedy="Consumers should stop using the affected lot and contact the company.",
+        published_date="06/20/2026",
+        recall_number=None,
+        raw_payload_hash="tylenol-notice",
+        retrieved_at="2026-06-24T12:00:00Z",
+        record_url="https://www.fda.gov/safety/notices/tylenol-example",
+        extraction_confidence="high",
+        source_text_excerpt="Internal matching excerpt.",
+    )
+
+    async def fake_notice_search(**kwargs):
+        return SourceAdapterResult(
+            source_id="fda_recalls_market_withdrawals_safety_alerts",
+            source_name=notice.source_name,
+            source_type="public notice page",
+            source_url=notice.source_url,
+            source_kind="public_notice",
+            retrieved_at=notice.retrieved_at,
+            records=[notice],
+            raw_payload={"rows": []},
+            upstream_status="success",
+        )
+
+    monkeypatch.setattr(
+        recall_search,
+        "search_official_public_notices",
+        fake_notice_search,
+    )
+
+    response = TestClient(app).get(
+        "/api/v1/recalls/search",
+        params={"q": "Tylenol", "limit": 5},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["count"] == 1
+    result = body["results"][0]
+    assert result["source_kind"] == "normalized_public_notice"
+    assert result["record_url"] == notice.record_url
+    assert result["remedy"] == notice.remedy
+    assert result["extraction_confidence"] == "high"
 
 
 def test_search_recalls_normalizes_xanex_before_upstream_search():
