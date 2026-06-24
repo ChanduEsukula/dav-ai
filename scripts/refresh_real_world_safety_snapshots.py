@@ -4,11 +4,12 @@ import argparse
 import hashlib
 import json
 import sys
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -30,6 +31,22 @@ OPENFDA_DEVICE_EVENT_OUT = ROOT / "data" / "safety_sources" / "device" / "openfd
 CPSC_DAILY_PRODUCTS_OUT = ROOT / "data" / "safety_sources" / "cpsc" / "cpsc_daily_products_curated_records.json"
 USDA_FSIS_OUT = ROOT / "data" / "safety_sources" / "food" / "usda_fsis_curated_records.json"
 SNAPSHOT_REFRESH_MANIFEST_OUT = ROOT / "data" / "source_audits" / "snapshot_refresh_manifest.json"
+
+
+class SourceFetchError(RuntimeError):
+    def __init__(
+        self,
+        *,
+        source_name: str,
+        endpoint: str,
+        reason: str,
+        http_status: int | None = None,
+    ) -> None:
+        super().__init__(reason)
+        self.source_name = source_name
+        self.endpoint = endpoint
+        self.reason = reason
+        self.http_status = http_status
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -56,7 +73,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(normalized_argv)
 
 
-def fetch_json(url: str) -> dict[str, Any]:
+def fetch_json(url: str) -> Any:
     request = urllib.request.Request(
         url,
         headers={
@@ -66,6 +83,47 @@ def fetch_json(url: str) -> dict[str, Any]:
     )
     with urllib.request.urlopen(request, timeout=30) as response:
         return json.loads(response.read().decode("utf-8"))
+
+
+def fetch_source_records(
+    *,
+    source_name: str,
+    endpoint: str,
+    fetcher: Callable[[], list[dict[str, Any]]],
+) -> list[dict[str, Any]]:
+    try:
+        return fetcher()
+    except urllib.error.HTTPError as exc:
+        raise SourceFetchError(
+            source_name=source_name,
+            endpoint=exc.url or endpoint,
+            http_status=exc.code,
+            reason=str(exc.reason or exc),
+        ) from None
+    except urllib.error.URLError as exc:
+        raise SourceFetchError(
+            source_name=source_name,
+            endpoint=endpoint,
+            reason=str(exc.reason or exc),
+        ) from None
+    except (TimeoutError, json.JSONDecodeError, UnicodeDecodeError) as exc:
+        raise SourceFetchError(
+            source_name=source_name,
+            endpoint=endpoint,
+            reason=str(exc),
+        ) from None
+
+
+def print_source_fetch_error(error: SourceFetchError) -> None:
+    print(
+        "Snapshot refresh failed; no snapshot or manifest files were written.",
+        file=sys.stderr,
+    )
+    print(f"Source: {error.source_name}", file=sys.stderr)
+    print(f"Endpoint: {error.endpoint}", file=sys.stderr)
+    if error.http_status is not None:
+        print(f"HTTP status: {error.http_status}", file=sys.stderr)
+    print(f"Reason: {error.reason}", file=sys.stderr)
 
 
 def build_openfda_url(endpoint: str, query: str, limit: int = 5) -> str:
@@ -512,10 +570,14 @@ def main(argv: list[str] | None = None) -> None:
             source_name="openFDA Food Enforcement API",
             endpoint=OPENFDA_FOOD_ENDPOINT,
             snapshot_path=OPENFDA_FOOD_OUT,
-            records=fetch_openfda_records(
-                OPENFDA_FOOD_ENDPOINT,
-                food_queries,
-                max_records=10,
+            records=fetch_source_records(
+                source_name="openFDA Food Enforcement API",
+                endpoint=OPENFDA_FOOD_ENDPOINT,
+                fetcher=lambda: fetch_openfda_records(
+                    OPENFDA_FOOD_ENDPOINT,
+                    food_queries,
+                    max_records=10,
+                ),
             ),
         )
         add_snapshot(
@@ -523,10 +585,14 @@ def main(argv: list[str] | None = None) -> None:
             source_name="openFDA Drug Enforcement API",
             endpoint=OPENFDA_DRUG_ENDPOINT,
             snapshot_path=OPENFDA_DRUG_OUT,
-            records=fetch_openfda_records(
-                OPENFDA_DRUG_ENDPOINT,
-                drug_queries,
-                max_records=12,
+            records=fetch_source_records(
+                source_name="openFDA Drug Enforcement API",
+                endpoint=OPENFDA_DRUG_ENDPOINT,
+                fetcher=lambda: fetch_openfda_records(
+                    OPENFDA_DRUG_ENDPOINT,
+                    drug_queries,
+                    max_records=12,
+                ),
             ),
         )
         add_snapshot(
@@ -534,9 +600,13 @@ def main(argv: list[str] | None = None) -> None:
             source_name="openFDA Drug Label API",
             endpoint=OPENFDA_DRUG_LABEL_ENDPOINT,
             snapshot_path=OPENFDA_DRUG_LABEL_OUT,
-            records=fetch_openfda_drug_label_records(
-                drug_label_queries,
-                max_records=30,
+            records=fetch_source_records(
+                source_name="openFDA Drug Label API",
+                endpoint=OPENFDA_DRUG_LABEL_ENDPOINT,
+                fetcher=lambda: fetch_openfda_drug_label_records(
+                    drug_label_queries,
+                    max_records=30,
+                ),
             ),
         )
         add_snapshot(
@@ -544,9 +614,13 @@ def main(argv: list[str] | None = None) -> None:
             source_name="openFDA NDC Directory API",
             endpoint=OPENFDA_NDC_ENDPOINT,
             snapshot_path=OPENFDA_NDC_OUT,
-            records=fetch_openfda_ndc_records(
-                ndc_queries,
-                max_records=40,
+            records=fetch_source_records(
+                source_name="openFDA NDC Directory API",
+                endpoint=OPENFDA_NDC_ENDPOINT,
+                fetcher=lambda: fetch_openfda_ndc_records(
+                    ndc_queries,
+                    max_records=40,
+                ),
             ),
         )
         add_snapshot(
@@ -554,10 +628,14 @@ def main(argv: list[str] | None = None) -> None:
             source_name="openFDA Device Enforcement API",
             endpoint=OPENFDA_DEVICE_ENDPOINT,
             snapshot_path=OPENFDA_DEVICE_OUT,
-            records=fetch_openfda_records(
-                OPENFDA_DEVICE_ENDPOINT,
-                device_queries,
-                max_records=15,
+            records=fetch_source_records(
+                source_name="openFDA Device Enforcement API",
+                endpoint=OPENFDA_DEVICE_ENDPOINT,
+                fetcher=lambda: fetch_openfda_records(
+                    OPENFDA_DEVICE_ENDPOINT,
+                    device_queries,
+                    max_records=15,
+                ),
             ),
         )
         add_snapshot(
@@ -565,9 +643,13 @@ def main(argv: list[str] | None = None) -> None:
             source_name="openFDA Device Event API",
             endpoint=OPENFDA_DEVICE_EVENT_ENDPOINT,
             snapshot_path=OPENFDA_DEVICE_EVENT_OUT,
-            records=fetch_openfda_device_event_records(
-                device_event_queries,
-                max_records=30,
+            records=fetch_source_records(
+                source_name="openFDA Device Event API",
+                endpoint=OPENFDA_DEVICE_EVENT_ENDPOINT,
+                fetcher=lambda: fetch_openfda_device_event_records(
+                    device_event_queries,
+                    max_records=30,
+                ),
             ),
         )
 
@@ -577,7 +659,11 @@ def main(argv: list[str] | None = None) -> None:
             source_name="CPSC Recalls API",
             endpoint=CPSC_RECALLS_ENDPOINT,
             snapshot_path=CPSC_DAILY_PRODUCTS_OUT,
-            records=fetch_cpsc_daily_product_records(max_records=80),
+            records=fetch_source_records(
+                source_name="CPSC Recalls API",
+                endpoint=CPSC_RECALLS_ENDPOINT,
+                fetcher=lambda: fetch_cpsc_daily_product_records(max_records=80),
+            ),
         )
 
     if args.source in {"all", "fsis"}:
@@ -586,7 +672,11 @@ def main(argv: list[str] | None = None) -> None:
             source_name="USDA FSIS Recall API",
             endpoint=USDA_FSIS_ENDPOINT,
             snapshot_path=USDA_FSIS_OUT,
-            records=fetch_usda_fsis_records(max_records=100),
+            records=fetch_source_records(
+                source_name="USDA FSIS Recall API",
+                endpoint=USDA_FSIS_ENDPOINT,
+                fetcher=lambda: fetch_usda_fsis_records(max_records=100),
+            ),
         )
 
     if args.dry_run:
@@ -599,4 +689,8 @@ def main(argv: list[str] | None = None) -> None:
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    try:
+        main(sys.argv[1:])
+    except SourceFetchError as error:
+        print_source_fetch_error(error)
+        raise SystemExit(1) from None
