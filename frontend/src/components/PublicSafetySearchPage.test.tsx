@@ -276,7 +276,7 @@ test('renders a compact Public Safety summary, workspace, and advanced details',
   render(<PublicSafetySearchPage initialQuery="" />)
 
   await user.type(screen.getByLabelText(/Safety record search/i), 'Advil')
-  await user.click(screen.getByRole('button', { name: 'Search public records' }))
+  await user.click(screen.getByRole('button', { name: 'Search' }))
 
   await waitFor(() => {
     expect(mockSearchRealWorldSafety).toHaveBeenCalledWith('Advil', 10, 'score')
@@ -356,7 +356,7 @@ test('keeps edited draft input separate from submitted Public Safety results', a
   ).toBeInTheDocument()
   expect(new URLSearchParams(window.location.search).get('q')).toBe('air fryer')
 
-  await user.click(screen.getByRole('button', { name: 'Search public records' }))
+  await user.click(screen.getByRole('button', { name: 'Search' }))
 
   await waitFor(() => {
     expect(mockSearchRealWorldSafety).toHaveBeenLastCalledWith('refrigerator', 10, 'score')
@@ -397,7 +397,7 @@ test('shows a clarification state for ambiguous Public Safety searches', async (
   render(<PublicSafetySearchPage initialQuery="" />)
 
   await user.type(screen.getByLabelText(/Safety record search/i), 'sunscreen')
-  await user.click(screen.getByRole('button', { name: 'Search public records' }))
+  await user.click(screen.getByRole('button', { name: 'Search' }))
 
   expect(
     await screen.findByRole('heading', { name: 'Choose a safety area to continue' }),

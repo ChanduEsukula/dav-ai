@@ -22,17 +22,7 @@ type SearchOptions = {
   skipIfCompleted?: boolean
 }
 
-const exampleQueries = [
-  'tire',
-  'scooter',
-  'air fryer',
-  'car seat',
-  'battery',
-  'NDC 66715 6547',
-  'Advil',
-  'tylonal',
-  'blood sugar monitor',
-]
+const exampleQueries = ['tire', 'scooter', 'air fryer', 'battery', 'Advil', 'Tylenol']
 
 const DEFAULT_LIMIT = 10
 
@@ -972,10 +962,9 @@ function PublicSafetySearchPage({
       <section className="public-safety-hero">
         <div className="public-safety-hero__copy">
           <span className="public-safety-eyebrow">Public Safety Search</span>
-          <h1>Search public safety records with source intelligence.</h1>
+          <h1>Search public safety records</h1>
           <p>
-            Search public recall, reference, label, vehicle, device, and
-            consumer-product safety records.
+            Search recalls, labels, vehicles, devices, drugs, and consumer-product safety records.
           </p>
         </div>
 
@@ -996,13 +985,12 @@ function PublicSafetySearchPage({
                 if (helper) setHelper('')
               }}
               area="public_safety"
-              placeholder="Search: tire, air fryer, Advil, NDC 66715 6547"
+              placeholder="Search tire, scooter, Advil, NDC, VIN, or UPC"
               ariaDescribedBy="public-safety-helper"
               showWorkflow
             />
             <p id="public-safety-helper">
-              Try a product, brand, VIN, NDC, UPC, device, vehicle, or consumer-product
-              term.
+              Search a product, identifier, vehicle, drug, or device.
             </p>
           </div>
 
@@ -1018,7 +1006,7 @@ function PublicSafetySearchPage({
               <option value={25}>25</option>
             </select>
             <button type="submit" disabled={loading}>
-              {loading ? 'Checking...' : 'Search public records'}
+              {loading ? 'Checking...' : 'Search'}
             </button>
           </div>
         </form>

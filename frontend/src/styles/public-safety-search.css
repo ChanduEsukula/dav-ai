@@ -1689,3 +1689,227 @@
 .public-safety-search-form .query-typeahead__empty {
   color: rgba(226, 232, 240, 0.78);
 }
+
+/* Final Public Safety hero normalization: closer to Pharmacy/Food/Cosmetic */
+.public-safety-page {
+  width: min(1120px, calc(100% - 2rem));
+}
+
+.public-safety-hero {
+  grid-template-columns: minmax(280px, 0.78fr) minmax(420px, 1.22fr);
+  grid-template-areas:
+    'copy search'
+    'copy examples';
+  align-items: center;
+  gap: 0.5rem 1.35rem;
+  padding: 1.05rem 1.1rem;
+  border-radius: 22px;
+}
+
+.public-safety-hero__copy {
+  grid-area: copy;
+  gap: 0.44rem;
+  padding: 0.15rem 0;
+}
+
+.public-safety-hero h1 {
+  max-width: 440px;
+  font-size: clamp(1.85rem, 2.7vw, 2.45rem);
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+}
+
+.public-safety-hero p {
+  max-width: 460px;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.public-safety-search-form {
+  grid-area: search;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 92px;
+  gap: 0.45rem;
+  align-items: end;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.public-safety-search-field {
+  display: grid;
+  gap: 0.32rem;
+}
+
+.public-safety-search-field label {
+  color: rgba(226, 232, 240, 0.72);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+}
+
+.public-safety-search-field p {
+  display: none;
+}
+
+.public-safety-search-field > .query-typeahead {
+  border-radius: 16px;
+  padding: 0.34rem;
+  background:
+    radial-gradient(circle at 8% 18%, rgba(103, 232, 249, 0.1), transparent 32%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.065));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 12px 30px rgba(2, 6, 23, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(18px);
+}
+
+.public-safety-search-field input {
+  min-height: 40px;
+  border-radius: 12px;
+  padding: 0 0.82rem;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.09);
+  font-size: 0.86rem;
+  font-weight: 850;
+}
+
+.public-safety-search-field input::placeholder {
+  color: rgba(226, 232, 240, 0.5);
+}
+
+.public-safety-search-field input:focus {
+  border-color: rgba(103, 232, 249, 0.52);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 0 0 4px rgba(103, 232, 249, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.public-safety-form-actions {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.public-safety-form-actions label,
+.public-safety-form-actions select {
+  display: none;
+}
+
+.public-safety-form-actions button {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 13px;
+  font-size: 0.88rem;
+  background: linear-gradient(135deg, #2563eb, #0891b2);
+  box-shadow:
+    0 10px 24px rgba(37, 99, 235, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.public-safety-examples {
+  grid-area: examples;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.42rem;
+  padding: 0.08rem 0 0;
+}
+
+.public-safety-examples button {
+  min-height: 31px;
+  padding: 0 0.62rem;
+  border-radius: 999px;
+  color: rgba(240, 253, 250, 0.88);
+  background: rgba(255, 255, 255, 0.105);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 0.78rem;
+  font-weight: 820;
+  letter-spacing: -0.01em;
+}
+
+.public-safety-examples button:hover {
+  background: rgba(255, 255, 255, 0.17);
+  box-shadow: 0 10px 20px rgba(6, 21, 35, 0.13);
+}
+
+.public-safety-search-form .query-typeahead__menu,
+.public-safety-search-form .query-typeahead__empty {
+  border-color: rgba(255, 255, 255, 0.13);
+  background: rgba(8, 24, 42, 0.97);
+  box-shadow: 0 20px 48px rgba(2, 6, 23, 0.34);
+}
+
+.public-safety-search-form .query-typeahead__menu button {
+  color: #f8fafc;
+}
+
+.public-safety-search-form .query-typeahead__menu button:hover,
+.public-safety-search-form .query-typeahead__menu button.is-active,
+.public-safety-search-form .query-typeahead__menu button[aria-selected='true'] {
+  background: rgba(103, 232, 249, 0.12);
+}
+
+.public-safety-search-form .query-typeahead__menu small {
+  color: rgba(226, 232, 240, 0.66);
+}
+
+@media (max-width: 760px) {
+  .public-safety-hero {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'copy'
+      'search'
+      'examples';
+  }
+
+  .public-safety-search-form {
+    grid-template-columns: 1fr;
+  }
+
+  .public-safety-form-actions button {
+    width: 100%;
+  }
+}
+
+/* Final Public Safety visual tightening after hero polish */
+.public-safety-page {
+  width: min(1040px, calc(100% - 2rem));
+}
+
+.public-safety-hero {
+  padding: 1rem 1.05rem;
+}
+
+.public-safety-hero h1 {
+  max-width: 390px;
+  word-spacing: 0.02em;
+}
+
+.public-safety-examples {
+  max-width: 560px;
+}
+
+.public-safety-examples button {
+  min-height: 29px;
+  padding: 0 0.58rem;
+  font-size: 0.75rem;
+}
+
+.public-safety-empty {
+  padding: 0.95rem 1rem;
+  border-radius: 20px;
+}
+
+.public-safety-empty h2 {
+  font-size: 1.12rem;
+  line-height: 1.2;
+}
+
+.public-safety-empty p {
+  font-size: 0.86rem;
+}
