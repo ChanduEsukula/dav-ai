@@ -113,6 +113,34 @@ const publicSafetyResponse: RealWorldSafetySearchResponse = {
     caveat:
       'This summary is generated only from returned official/public records. It does not invent missing recalls, certify safety, or provide medical/legal advice.',
   },
+  identifier_check: {
+    detected: [],
+    to_verify: [
+      {
+        type: 'recall_number',
+        label: 'Recall or reference number',
+        value: '66715-6547',
+        source: 'openFDA NDC Directory API',
+        reason: 'Match this official record number before acting on the result.',
+      },
+      {
+        type: 'model',
+        label: 'Model or affected item',
+        value: 'Advil',
+        source: 'openFDA NDC Directory API',
+        reason: 'Match the affected model, item, year, package, or device identity.',
+      },
+      {
+        type: 'lot',
+        label: 'Lot, package, or product identifier',
+        value: 'ibuprofen 200 mg',
+        source: 'openFDA NDC Directory API',
+        reason: 'Match the exact lot, package, code, strength, route, or listed identifier.',
+      },
+    ],
+    user_message:
+      'Verify exact identifiers before acting on any public safety record. No returned record proves every unit is recalled or safe.',
+  },
   public_data_disclaimer:
     'Public records only. This does not certify that the product is safe.',
   limitations: ['Users must verify official source records.'],
@@ -342,6 +370,33 @@ test('renders a compact Public Safety summary, workspace, and advanced details',
   expect(
     screen.getAllByText(/Dav AI also checked "ibuprofen" because it is a known related search term/i),
   ).toHaveLength(1)
+})
+
+test('shows identifier check guidance from the public safety API response', async () => {
+  const user = userEvent.setup()
+  render(<PublicSafetySearchPage initialQuery="" />)
+
+  await user.type(screen.getByLabelText(/Safety record search/i), 'Advil')
+  await user.click(screen.getByRole('button', { name: 'Search' }))
+
+  expect(await screen.findByText('Identifier check')).toBeInTheDocument()
+  const identifierPanel = screen
+    .getByText('Identifier check')
+    .closest('.public-safety-identifier-card')
+  expect(identifierPanel).not.toBeNull()
+
+  const identifierScope = within(identifierPanel as HTMLElement)
+  expect(
+    identifierScope.getByRole('heading', { name: 'Verify the exact item before acting.' }),
+  ).toBeInTheDocument()
+  expect(identifierScope.getByText('Verify from returned records')).toBeInTheDocument()
+  expect(identifierScope.getByText('Recall or reference number')).toBeInTheDocument()
+  expect(identifierScope.getByText('66715-6547')).toBeInTheDocument()
+  expect(identifierScope.getByText('Lot, package, or product identifier')).toBeInTheDocument()
+  expect(identifierScope.getByText('ibuprofen 200 mg')).toBeInTheDocument()
+  expect(
+    identifierScope.getByText(/No returned record proves every unit is recalled or safe/i),
+  ).toBeInTheDocument()
 })
 
 test('labels curated snapshots, live APIs, and live public pages in source metadata', async () => {

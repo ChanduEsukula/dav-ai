@@ -584,6 +584,54 @@ function PublicSafetyInterpretationCard({
   )
 }
 
+function IdentifierCheckPanel({
+  data,
+}: {
+  data: RealWorldSafetySearchResponse
+}) {
+  const detectedItems = data.identifier_check.detected
+  const verifyItems = data.identifier_check.to_verify.slice(0, 6)
+
+  return (
+    <section className="pharmacy-insight-card public-safety-identifier-card">
+      <div>
+        <p className="eyebrow">Identifier check</p>
+        <h2>Verify the exact item before acting.</h2>
+      </div>
+
+      <p>{data.identifier_check.user_message}</p>
+
+      {detectedItems.length > 0 && (
+        <div className="public-safety-identifier-section">
+          <small>Detected from your search</small>
+          <div className="public-safety-identifier-list">
+            {detectedItems.map((item) => (
+              <div key={`${item.type}-${item.value}-${item.source}`}>
+                <strong>{item.label}</strong>
+                <span>{item.value ?? 'Not listed'}</span>
+                <em>{item.reason}</em>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="public-safety-identifier-section">
+        <small>Verify from returned records</small>
+        <div className="public-safety-identifier-list">
+          {verifyItems.map((item) => (
+            <div key={`${item.type}-${item.value ?? 'missing'}-${item.source}`}>
+              <strong>{item.label}</strong>
+              <span>{item.value ?? 'Check official record'}</span>
+              <em>{item.reason}</em>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function PublicSafetyBoundaryCard({
   data,
 }: {
@@ -1249,6 +1297,7 @@ function PublicSafetySearchPage({
 
             <aside className="pharmacy-insight-rail">
               <PublicSafetyDownloadCard />
+              <IdentifierCheckPanel data={data} />
               <PublicSafetyInterpretationCard data={data} />
               <PublicSafetyBoundaryCard data={data} />
             </aside>

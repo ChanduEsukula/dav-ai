@@ -102,6 +102,21 @@ export type RealWorldSafetyAuditSummary = {
   source_payload_hash: string | null
 }
 
+
+export type RealWorldSafetyIdentifierCheckItem = {
+  type: string
+  label: string
+  value: string | null
+  source: string
+  reason: string
+}
+
+export type RealWorldSafetyIdentifierCheck = {
+  detected: RealWorldSafetyIdentifierCheckItem[]
+  to_verify: RealWorldSafetyIdentifierCheckItem[]
+  user_message: string
+}
+
 export type RealWorldSafetySearchResponse = {
   query: string
   raw_query: string
@@ -118,6 +133,7 @@ export type RealWorldSafetySearchResponse = {
   total_matches: number
   no_match_explanation: string | null
   safety_intelligence_summary: RealWorldSafetyIntelligenceSummary
+  identifier_check: RealWorldSafetyIdentifierCheck
   public_data_disclaimer: string
   limitations: string[]
   source_audits: RealWorldSafetyAuditSummary[]

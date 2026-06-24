@@ -635,3 +635,59 @@
 .public-safety-vehicle-inline .public-safety-vehicle-card {
   max-width: none;
 }
+
+.public-safety-identifier-card {
+  gap: 0.9rem;
+}
+
+.public-safety-identifier-card > p {
+  color: rgba(226, 232, 240, 0.78);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.public-safety-identifier-section {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.public-safety-identifier-section > small {
+  color: rgba(148, 163, 184, 0.92);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.public-safety-identifier-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.public-safety-identifier-list > div {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.5);
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.72rem;
+}
+
+.public-safety-identifier-list strong {
+  color: #f8fafc;
+  font-size: 0.9rem;
+}
+
+.public-safety-identifier-list span {
+  color: rgba(191, 219, 254, 0.95);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+}
+
+.public-safety-identifier-list em {
+  color: rgba(226, 232, 240, 0.66);
+  font-size: 0.82rem;
+  font-style: normal;
+  line-height: 1.45;
+}
