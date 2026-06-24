@@ -35,6 +35,15 @@ const exampleQueries = [
 
 const DEFAULT_LIMIT = 10
 
+const clarificationOptions = [
+  'Consumer product recall',
+  'Drug / OTC label',
+  'Food or supplement',
+  'Cosmetic product',
+  'Medical device',
+  'Vehicle',
+]
+
 const roleOrder: RealWorldSafetySourceRole[] = [
   'recall_enforcement',
   'reference_identity',
@@ -347,14 +356,17 @@ function SearchOutcomeCard({
   submittedQuery: string
 }) {
   const summary = data.safety_intelligence_summary
-  const visibleSuggestedSteps = getVisibleSuggestedSteps(data).slice(0, 2)
+  const isClarificationRequired = data.search_plan.clarification_required
+  const visibleSuggestedSteps = isClarificationRequired
+    ? []
+    : getVisibleSuggestedSteps(data).slice(0, 2)
   const sourceIssueCount = data.sources_failed.length
 
   return (
     <section className="public-safety-panel public-safety-outcome-card">
       <div className="public-safety-section-heading">
         <span>Search outcome</span>
-        <h2>What Dav AI found in public records</h2>
+        <h2>{isClarificationRequired ? 'Choose a safety area to continue' : 'What Dav AI found in public records'}</h2>
       </div>
 
       <p className="public-safety-submitted-query">
@@ -378,7 +390,11 @@ function SearchOutcomeCard({
         />
       </div>
 
-      <p className="public-safety-summary-text">{summary.plain_language_summary}</p>
+      <p className="public-safety-summary-text">
+        {isClarificationRequired
+          ? 'This query could belong to multiple safety categories, so Dav AI did not run a broad source sweep. Choose the closest safety area to check the right official sources.'
+          : summary.plain_language_summary}
+      </p>
 
       <div className="public-safety-outcome-facts">
         <div>
@@ -387,13 +403,26 @@ function SearchOutcomeCard({
         </div>
         <div>
           <small>Sources checked</small>
-          <strong>{data.sources_checked.length}</strong>
+          <strong>{isClarificationRequired ? 'Not checked yet' : data.sources_checked.length}</strong>
         </div>
         <div className={sourceIssueCount > 0 ? 'public-safety-outcome-fact--issue' : ''}>
           <small>Source issues</small>
           <strong>{sourceIssueCount}</strong>
         </div>
       </div>
+
+      {isClarificationRequired && (
+        <div className="public-safety-list-block public-safety-clarification-options">
+          <small>Choose one category</small>
+          <div className="public-safety-chip-row">
+            {clarificationOptions.map((option) => (
+              <button key={option} type="button">
+                {option}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {visibleSuggestedSteps.length > 0 && (
         <div className="public-safety-list-block">
@@ -624,6 +653,10 @@ function ResultsList({
   roleLookup: Map<string, RealWorldSafetySourceRole>
   submittedQuery: string
 }) {
+  if (data.search_plan.clarification_required) {
+    return null
+  }
+
   if (data.total_matches === 0) {
     return (
       <section className="public-safety-panel public-safety-no-results">

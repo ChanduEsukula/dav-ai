@@ -986,3 +986,16 @@
     border-radius: 22px;
   }
 }
+
+.public-safety-clarification-options .public-safety-chip-row button {
+  border: 1px solid rgba(14, 116, 144, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  padding: 0.62rem 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.public-safety-clarification-options .public-safety-chip-row button:hover {
+  transform: translateY(-1px);
+}

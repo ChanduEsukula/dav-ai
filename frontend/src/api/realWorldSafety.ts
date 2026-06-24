@@ -63,6 +63,16 @@ export type RealWorldSafetySourceRole =
   | 'signal_report'
   | 'other'
 
+export type RealWorldSafetySearchPlan = {
+  intent: string
+  confidence: string
+  reason: string
+  primary_source_ids: string[]
+  secondary_source_ids: string[]
+  sources_to_check: string[]
+  clarification_required: boolean
+}
+
 export type RealWorldSafetyIntelligenceSummary = {
   query_type: string
   recall_or_enforcement_found: boolean
@@ -94,6 +104,7 @@ export type RealWorldSafetySearchResponse = {
   query: string
   raw_query: string
   query_understanding: RealWorldSafetyQueryUnderstanding
+  search_plan: RealWorldSafetySearchPlan
   count: number
   limit: number
   retrieval_timestamp: string

@@ -35,6 +35,21 @@ const publicSafetyResponse: RealWorldSafetySearchResponse = {
     },
     query_type_hints: ['drug'],
   },
+  search_plan: {
+    intent: 'drug',
+    confidence: 'high',
+    reason: 'The query appears to describe a drug, brand, generic ingredient, or NDC identifier.',
+    primary_source_ids: ['openfda_drug_enforcement', 'rxnorm_rxnav_api', 'openfda_ndc_directory'],
+    secondary_source_ids: ['dailymed_spl_api', 'openfda_drug_label'],
+    sources_to_check: [
+      'openfda_drug_enforcement',
+      'rxnorm_rxnav_api',
+      'dailymed_spl_api',
+      'openfda_drug_label',
+      'openfda_ndc_directory',
+    ],
+    clarification_required: false,
+  },
   count: 1,
   limit: 10,
   retrieval_timestamp: '2026-06-23T14:00:00Z',
@@ -131,11 +146,76 @@ const publicSafetyResponse: RealWorldSafetySearchResponse = {
 function createPublicSafetyResponse(
   query: string,
 ): RealWorldSafetySearchResponse {
-  if (query.toLocaleLowerCase('en-US') === 'advil') {
+  const normalizedQuery = query.toLocaleLowerCase('en-US')
+
+  if (normalizedQuery === 'advil') {
     return publicSafetyResponse
   }
 
-  const normalizedQuery = query.toLocaleLowerCase('en-US')
+  if (normalizedQuery === 'sunscreen') {
+    return {
+      ...publicSafetyResponse,
+      query,
+      raw_query: query,
+      query_understanding: {
+        ...publicSafetyResponse.query_understanding,
+        original_query: query,
+        normalized_query: normalizedQuery,
+        search_query: normalizedQuery,
+        corrections_applied: [],
+        expanded_terms: [],
+        expansion_search_terms_used: [],
+        query_type_hints: ['unknown'],
+      },
+      search_plan: {
+        intent: 'ambiguous',
+        confidence: 'low',
+        reason: 'The query could refer to more than one safety area.',
+        primary_source_ids: [],
+        secondary_source_ids: [],
+        sources_to_check: [],
+        clarification_required: true,
+      },
+      count: 0,
+      sources_checked: [],
+      sources_failed: [],
+      records_per_source: {},
+      structured_api_matches: 0,
+      public_notice_matches: 0,
+      total_matches: 0,
+      no_match_explanation:
+        'No matching public record was found in the checked U.S. sources. This does not certify that the product is safe.',
+      safety_intelligence_summary: {
+        ...publicSafetyResponse.safety_intelligence_summary,
+        query_type: 'ambiguous',
+        recall_or_enforcement_found: false,
+        reference_or_label_found: false,
+        signal_report_found: false,
+        matched_sources_by_role: {
+          recall_enforcement: [],
+          reference_identity: [],
+          label_reference: [],
+          signal_report: [],
+          other: [],
+        },
+        checked_sources_by_role: {
+          recall_enforcement: [],
+          reference_identity: [],
+          label_reference: [],
+          signal_report: [],
+          other: [],
+        },
+        top_result_titles: [],
+        expansion_explanations: [],
+        plain_language_summary:
+          'No matching public record was found in the returned results from the checked sources.',
+        suggested_next_steps: [],
+      },
+      source_audits: [],
+      results: [],
+    }
+  }
+
 
   return {
     ...publicSafetyResponse,
@@ -150,6 +230,15 @@ function createPublicSafetyResponse(
       expanded_terms: [],
       expansion_search_terms_used: [],
       query_type_hints: ['consumer_product'],
+    },
+    search_plan: {
+      intent: 'consumer_product',
+      confidence: 'high',
+      reason: 'The query appears to describe a consumer product.',
+      primary_source_ids: ['cpsc_recalls_api'],
+      secondary_source_ids: ['fda_recalls_market_withdrawals_safety_alerts'],
+      sources_to_check: ['cpsc_recalls_api', 'fda_recalls_market_withdrawals_safety_alerts'],
+      clarification_required: false,
     },
     safety_intelligence_summary: {
       ...publicSafetyResponse.safety_intelligence_summary,
@@ -289,4 +378,26 @@ test('submits Public Safety quick chips immediately and updates the URL query', 
   ).toBeInTheDocument()
   expect(screen.getByLabelText(/Safety record search/i)).toHaveValue('air fryer')
   expect(new URLSearchParams(window.location.search).get('q')).toBe('air fryer')
+})
+
+
+test('shows a clarification state for ambiguous Public Safety searches', async () => {
+  const user = userEvent.setup()
+  render(<PublicSafetySearchPage initialQuery="" />)
+
+  await user.type(screen.getByLabelText(/Safety record search/i), 'sunscreen')
+  await user.click(screen.getByRole('button', { name: 'Search public records' }))
+
+  expect(
+    await screen.findByRole('heading', { name: 'Choose a safety area to continue' }),
+  ).toBeInTheDocument()
+  expect(screen.getByText(/did not run a broad source sweep/i)).toBeInTheDocument()
+  expect(screen.getByText('Not checked yet')).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Consumer product recall' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Drug / OTC label' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Food or supplement' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Cosmetic product' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Medical device' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Vehicle' })).toBeInTheDocument()
+  expect(screen.queryByText('No returned records')).not.toBeInTheDocument()
 })
