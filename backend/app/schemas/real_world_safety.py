@@ -105,6 +105,7 @@ class RealWorldSafetyIntelligenceSummary(BaseModel):
     recall_or_enforcement_found: bool
     reference_or_label_found: bool
     signal_report_found: bool
+    outbreak_context_found: bool = False
     matched_sources_by_role: dict[str, list[str]]
     checked_sources_by_role: dict[str, list[str]]
     top_result_titles: list[str] = Field(default_factory=list)

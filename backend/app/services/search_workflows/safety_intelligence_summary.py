@@ -31,11 +31,16 @@ SIGNAL_SOURCES = {
     "CDC/VAERS Vaccine Adverse Event Reports",
 }
 
+OUTBREAK_CONTEXT_SOURCES = {
+    "CDC/FDA Foodborne Outbreak Investigation Context",
+}
+
 ROLE_ORDER = [
     "recall_enforcement",
     "reference_identity",
     "label_reference",
     "signal_report",
+    "outbreak_context",
     "other",
 ]
 
@@ -49,6 +54,8 @@ def _source_role(source_name: str) -> str:
         return "label_reference"
     if source_name in SIGNAL_SOURCES:
         return "signal_report"
+    if source_name in OUTBREAK_CONTEXT_SOURCES:
+        return "outbreak_context"
     return "other"
 
 
@@ -80,7 +87,7 @@ def _infer_query_type(query: str, records: list[NormalizedSafetyRecord]) -> str:
         return "medical_device"
     if any(term in text for term in ["vaers", "vaccine", "vaccination", "mmr", "influenza vaccine", "covid-19 vaccine"]):
         return "vaccine"
-    if any(term in text for term in ["food recall", "meat/poultry", "chicken", "beef", "poultry", "fsis", "fda food", "salmonella", "listeria"]):
+    if any(term in text for term in ["food recall", "meat/poultry", "chicken", "beef", "poultry", "fsis", "fda food", "salmonella", "listeria", "outbreak", "foodborne", "e. coli", "ecoli"]):
         return "food"
     if any(term in text for term in ["nhtsa", "vin", "vehicle recall", "honda", "toyota", "ford", "tesla", "truck"]):
         return "vehicle"
@@ -113,6 +120,7 @@ def build_safety_intelligence_summary(
         matched_sources_by_role["reference_identity"] or matched_sources_by_role["label_reference"]
     )
     signal_report_found = bool(matched_sources_by_role["signal_report"])
+    outbreak_context_found = bool(matched_sources_by_role["outbreak_context"])
 
     query_type = _infer_query_type(query, records)
 
@@ -148,6 +156,12 @@ def build_safety_intelligence_summary(
             "No matching recall/enforcement record was found in the returned results, but Dav AI found public signal-report "
             "records. Signal reports are not recalls and do not prove causation; verify details against official sources."
         )
+    elif outbreak_context_found:
+        plain_language_summary = (
+            "No matching recall/enforcement record was found in the returned results, but Dav AI found public foodborne "
+            "outbreak or investigation context. Investigation context is not automatically a recall or proof that a specific "
+            "product caused illness."
+        )
     else:
         plain_language_summary = (
             "No matching public record was found in the returned results from the checked sources. This does not certify "
@@ -179,6 +193,7 @@ def build_safety_intelligence_summary(
         "recall_or_enforcement_found": recall_or_enforcement_found,
         "reference_or_label_found": reference_or_label_found,
         "signal_report_found": signal_report_found,
+        "outbreak_context_found": outbreak_context_found,
         "matched_sources_by_role": matched_sources_by_role,
         "checked_sources_by_role": checked_sources_by_role,
         "top_result_titles": top_titles,

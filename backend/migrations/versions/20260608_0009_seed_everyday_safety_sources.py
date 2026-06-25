@@ -35,6 +35,14 @@ def upgrade() -> None:
                 'Source-dependent FDA cosmetic event updates'
             ),
             (
+                'cdc_foodborne_outbreaks',
+                'CDC/FDA Foodborne Outbreak Investigation Context',
+                'https://www.cdc.gov/foodborne-outbreaks/ + https://www.fda.gov/food/outbreaks-foodborne-illness',
+                'RealWorldSafety',
+                'CDC/FDA foodborne outbreak and investigation context records. These are public-health context records, not automatically recalls or proof of causation.',
+                'CDC/FDA outbreak investigation updates',
+            ),
+            (
                 'openfda_food_enforcement',
                 'openFDA Food Enforcement API',
                 'https://api.fda.gov/food/enforcement.json',

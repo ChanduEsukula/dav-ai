@@ -9,6 +9,7 @@ from app.main import app
 from app.services.search_workflows import real_world_safety_search
 from app.sources.registry import (
     CPSC_RECALLS_API,
+    CDC_FOODBORNE_OUTBREAKS,
     CDC_VAERS,
     DAILYMED_SPL_API,
     FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
@@ -871,6 +872,48 @@ def test_real_world_safety_vaccine_query_returns_vaers_signal_report(monkeypatch
 
     assert any(
         freshness["source_id"] == "cdc_vaers"
+        and freshness["freshness_status"] == "pulled_and_stored"
+        for freshness in body["source_freshness"]
+    )
+
+
+
+def test_real_world_safety_foodborne_outbreak_context_source(monkeypatch):
+    _patch_persistence(monkeypatch)
+    _patch_public_source_http(monkeypatch)
+
+    response = client.get(
+        "/api/v1/real-world-safety/search",
+        params={"q": "Salmonella outbreak peanut butter", "limit": 10},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+
+    assert body["search_plan"]["intent"] == "food"
+    assert "CDC/FDA Foodborne Outbreak Investigation Context" in {
+        source["source_name"] for source in body["sources_checked"]
+    }
+
+    result = next(
+        record
+        for record in body["results"]
+        if record["source_name"] == "CDC/FDA Foodborne Outbreak Investigation Context"
+    )
+
+    assert result["category"] == "Foodborne outbreak / investigation context"
+    assert result["hazard_type"] == "Salmonella"
+    assert result["recall_number"] == "CDC-FOODBORNE-DEMO-0001"
+    assert "not automatically a formal recall" in result["reason"]
+    assert "public-health investigation context only" in result["remedy"]
+
+    summary = body["safety_intelligence_summary"]
+    assert summary["query_type"] == "food"
+    assert summary["outbreak_context_found"] is True
+    assert "CDC/FDA Foodborne Outbreak Investigation Context" in summary["matched_sources_by_role"]["outbreak_context"]
+
+    assert any(
+        freshness["source_id"] == "cdc_foodborne_outbreaks"
         and freshness["freshness_status"] == "pulled_and_stored"
         for freshness in body["source_freshness"]
     )

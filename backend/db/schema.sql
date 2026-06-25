@@ -155,6 +155,14 @@ values
         'Source-dependent FDA updates'
     ),
     (
+        'cdc_foodborne_outbreaks',
+        'CDC/FDA Foodborne Outbreak Investigation Context',
+        'https://www.cdc.gov/foodborne-outbreaks/ + https://www.fda.gov/food/outbreaks-foodborne-illness',
+        'RealWorldSafety',
+        'CDC/FDA foodborne outbreak and investigation context records. These are public-health context records, not automatically recalls or proof of causation.',
+        'CDC/FDA outbreak investigation updates'
+    ),
+    (
         'usda_fsis_recall',
         'USDA FSIS Recall API',
         'https://www.fsis.usda.gov/fsis/api/recall/v/1',

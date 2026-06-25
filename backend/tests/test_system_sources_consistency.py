@@ -47,6 +47,7 @@ def test_sources_route_count_and_ids_match_shared_registry():
             "openfda_device_event",
             "openfda_udi_directory",
             "cdc_vaers",
+            "cdc_foodborne_outbreaks",
         "openfda_cosmetic_event",
         "openfda_food_enforcement",
         "usda_fsis_recall",

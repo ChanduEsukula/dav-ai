@@ -5,6 +5,7 @@ from dataclasses import asdict, dataclass
 from app.services.search_workflows.real_world_query_understanding import RealWorldQueryUnderstanding
 from app.sources.registry import (
     CPSC_RECALLS_API,
+    CDC_FOODBORNE_OUTBREAKS,
     CDC_VAERS,
     FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
     OPENFDA_DRUG_ENFORCEMENT,
@@ -56,6 +57,7 @@ DRUG_SOURCES = [
 FOOD_SOURCES = [
     _source_id(OPENFDA_FOOD_ENFORCEMENT),
     _source_id(USDA_FSIS_RECALL),
+    _source_id(CDC_FOODBORNE_OUTBREAKS),
     _source_id(FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS),
 ]
 
@@ -118,7 +120,10 @@ def plan_real_world_safety_sources(
             confidence="high",
             reason="The query appears to describe a consumer product, so Dav AI checks consumer-product recall sources first.",
             primary_source_ids=[_source_id(CPSC_RECALLS_API)],
-            secondary_source_ids=[_source_id(FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS)],
+            secondary_source_ids=[
+                _source_id(CDC_FOODBORNE_OUTBREAKS),
+                _source_id(FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS),
+            ],
             sources_to_check=CONSUMER_PRODUCT_SOURCES,
         )
 
@@ -148,7 +153,10 @@ def plan_real_world_safety_sources(
                 _source_id(OPENFDA_FOOD_ENFORCEMENT),
                 _source_id(USDA_FSIS_RECALL),
             ],
-            secondary_source_ids=[_source_id(FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS)],
+            secondary_source_ids=[
+                _source_id(CDC_FOODBORNE_OUTBREAKS),
+                _source_id(FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS),
+            ],
             sources_to_check=FOOD_SOURCES,
         )
 

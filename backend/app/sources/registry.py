@@ -118,6 +118,15 @@ OPENFDA_FOOD_ENFORCEMENT = {
     "update_cadence": "Source-dependent FDA updates",
 }
 
+CDC_FOODBORNE_OUTBREAKS = {
+    "source_id": "cdc_foodborne_outbreaks",
+    "source_name": "CDC/FDA Foodborne Outbreak Investigation Context",
+    "endpoint": "https://www.cdc.gov/foodborne-outbreaks/ + https://www.fda.gov/food/outbreaks-foodborne-illness",
+    "module": "RealWorldSafety",
+    "description": "CDC/FDA foodborne outbreak and investigation context records. These are public-health context records, not automatically recalls or proof of causation.",
+    "update_cadence": "CDC/FDA outbreak investigation updates",
+}
+
 USDA_FSIS_RECALL = {
     "source_id": "usda_fsis_recall",
     "source_name": "USDA FSIS Recall API",
@@ -211,6 +220,7 @@ REGISTERED_SOURCES = [
     CDC_VAERS,
     OPENFDA_COSMETIC_EVENT,
     OPENFDA_FOOD_ENFORCEMENT,
+    CDC_FOODBORNE_OUTBREAKS,
     USDA_FSIS_RECALL,
     FOODRADAR_MULTI_SOURCE,
     FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,

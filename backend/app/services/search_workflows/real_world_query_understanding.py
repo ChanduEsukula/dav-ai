@@ -82,6 +82,11 @@ FOOD_TERMS = {
     "fsis",
     "salmonella",
     "listeria",
+    "ecoli",
+    "e. coli",
+    "foodborne",
+    "investigation",
+    "outbreak",
     "nuggets",
 }
 

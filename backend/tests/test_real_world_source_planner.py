@@ -6,6 +6,7 @@ from app.services.search_workflows.real_world_source_planner import (
 )
 from app.sources.registry import (
     CPSC_RECALLS_API,
+    CDC_FOODBORNE_OUTBREAKS,
     CDC_VAERS,
     DAILYMED_SPL_API,
     FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
@@ -108,3 +109,12 @@ def test_vaccine_query_routes_to_vaers_signal_source():
     assert plan.intent == "vaccine"
     assert CDC_VAERS["source_id"] in plan.sources_to_check
     assert CDC_VAERS["source_id"] in plan.primary_source_ids
+
+
+def test_foodborne_outbreak_query_routes_to_outbreak_context_source():
+    query = understand_real_world_safety_query("Salmonella outbreak peanut butter")
+    plan = plan_real_world_safety_sources(query)
+
+    assert plan.intent == "food"
+    assert CDC_FOODBORNE_OUTBREAKS["source_id"] in plan.sources_to_check
+    assert CDC_FOODBORNE_OUTBREAKS["source_id"] in plan.secondary_source_ids

@@ -99,3 +99,9 @@ def test_detects_vaccine_query_as_vaccine_signal():
     result = understand_real_world_safety_query("MMR vaccine rash")
 
     assert "vaccine" in result.query_type_hints
+
+
+def test_detects_foodborne_outbreak_query_as_food():
+    result = understand_real_world_safety_query("Salmonella outbreak peanut butter")
+
+    assert "food" in result.query_type_hints

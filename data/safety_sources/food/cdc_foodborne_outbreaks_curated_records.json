@@ -1,0 +1,50 @@
+[
+  {
+    "investigation_id": "CDC-FOODBORNE-DEMO-0001",
+    "title": "CDC foodborne outbreak investigation: Salmonella linked to peanut butter",
+    "pathogen": "Salmonella",
+    "food_vehicle": "Peanut butter",
+    "agency": "CDC",
+    "status": "Investigation closed",
+    "states": ["MN", "TX", "CA"],
+    "illness_count": 21,
+    "hospitalization_count": 4,
+    "death_count": 0,
+    "investigation_start_date": "2026-01-10",
+    "last_update_date": "2026-02-05",
+    "summary": "Public demo outbreak-investigation context record involving Salmonella and peanut butter. This record is investigation context, not itself a formal recall.",
+    "source_url": "https://www.cdc.gov/foodborne-outbreaks/"
+  },
+  {
+    "investigation_id": "CDC-FOODBORNE-DEMO-0002",
+    "title": "CDC foodborne outbreak investigation: Listeria linked to packaged salad",
+    "pathogen": "Listeria",
+    "food_vehicle": "Packaged salad",
+    "agency": "CDC",
+    "status": "Investigation closed",
+    "states": ["NY", "PA", "OH"],
+    "illness_count": 12,
+    "hospitalization_count": 9,
+    "death_count": 1,
+    "investigation_start_date": "2026-02-12",
+    "last_update_date": "2026-03-01",
+    "summary": "Public demo outbreak-investigation context record involving Listeria and packaged salad. This record is investigation context, not itself a formal recall.",
+    "source_url": "https://www.cdc.gov/foodborne-outbreaks/"
+  },
+  {
+    "investigation_id": "FDA-CORE-DEMO-0003",
+    "title": "FDA CORE investigation context: E. coli linked to leafy greens",
+    "pathogen": "E. coli",
+    "food_vehicle": "Leafy greens",
+    "agency": "FDA CORE",
+    "status": "Investigation closed",
+    "states": ["WA", "OR"],
+    "illness_count": 8,
+    "hospitalization_count": 2,
+    "death_count": 0,
+    "investigation_start_date": "2026-03-04",
+    "last_update_date": "2026-03-20",
+    "summary": "Public demo outbreak-investigation context record involving E. coli and leafy greens. This record is investigation context, not itself a formal recall.",
+    "source_url": "https://www.fda.gov/food/outbreaks-foodborne-illness"
+  }
+]

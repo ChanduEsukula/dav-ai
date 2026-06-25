@@ -8,6 +8,7 @@ from typing import Any
 from app.audit.audit_event import build_audit_event
 from app.db.audit_repository import save_audit_event
 from app.db.source_pull_repository import save_source_pull_with_snapshot
+from app.services.safety_source_adapters.cdc_foodborne_outbreaks import CDCFoodborneOutbreaksAdapter
 from app.services.safety_source_adapters.base import (
     NormalizedSafetyRecord,
     SourceAdapterResult,
@@ -43,6 +44,7 @@ from app.services.safety_source_adapters.nhtsa import (
 )
 from app.sources.registry import (
     CPSC_RECALLS_API,
+    CDC_FOODBORNE_OUTBREAKS,
     CDC_VAERS,
     FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
     OPENFDA_FOOD_ENFORCEMENT,
@@ -71,7 +73,7 @@ PUBLIC_DATA_DISCLAIMER = (
     "Results are informational and should be verified against the official source pages."
 )
 LIMITATIONS = [
-    "Version 1 checks CPSC consumer product recalls, curated official openFDA Food Enforcement records, curated official openFDA Drug Enforcement records, RxNorm/RxNav drug-name reference records, DailyMed official SPL drug label records, openFDA NDC Directory drug identity/reference records, openFDA medical device enforcement records, openFDA medical device adverse-event reports, CDC/VAERS vaccine adverse-event signal reports, NHTSA vehicle recalls for VIN or make/model/year input, and the FDA public recalls page.",
+    "Version 1 checks CPSC consumer product recalls, curated official openFDA Food Enforcement records, CDC/FDA foodborne outbreak investigation context records, curated official openFDA Drug Enforcement records, RxNorm/RxNav drug-name reference records, DailyMed official SPL drug label records, openFDA NDC Directory drug identity/reference records, openFDA medical device enforcement records, openFDA medical device adverse-event reports, CDC/VAERS vaccine adverse-event signal reports, NHTSA vehicle recalls for VIN or make/model/year input, and the FDA public recalls page.",
     "No matching public record was found in the checked U.S. sources. This does not certify that the product is safe.",
     "Search results depend on source-provided product names, company names, campaign metadata, recall descriptions, and public notice table text.",
     "If one source is temporarily unavailable, Dav AI returns partial results from remaining checked sources and lists the failed source.",
@@ -92,6 +94,7 @@ openfda_udi_adapter = OpenFDAUDIDirectoryAdapter()
 vaers_adapter = VAERSVaccineSignalAdapter()
 vpic_adapter = NHTSAVPICAdapter()
 nhtsa_recalls_adapter = NHTSARecallsAdapter()
+cdc_foodborne_outbreaks_adapter = CDCFoodborneOutbreaksAdapter()
 logger = logging.getLogger("dav_ai.real_world_safety.workflow")
 
 
@@ -558,6 +561,29 @@ async def execute_real_world_safety_search(
                     request_id=request_id,
                 ),
                 source=USDA_FSIS_RECALL,
+                source_type="local curated official snapshot",
+                source_kind="structured_api",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+        )
+
+    if should_check(CDC_FOODBORNE_OUTBREAKS):
+        initial_calls.append(
+            _run_adapter_call(
+                adapter_call=lambda: cdc_foodborne_outbreaks_adapter.search(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=CDC_FOODBORNE_OUTBREAKS,
                 source_type="local curated official snapshot",
                 source_kind="structured_api",
                 query=search_query,
