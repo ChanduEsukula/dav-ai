@@ -105,3 +105,9 @@ def test_detects_foodborne_outbreak_query_as_food():
     result = understand_real_world_safety_query("Salmonella outbreak peanut butter")
 
     assert "food" in result.query_type_hints
+
+
+def test_detects_fda_safety_communication_query_as_medical_device():
+    result = understand_real_world_safety_query("FDA safety communication insulin pump")
+
+    assert "medical_device" in result.query_type_hints

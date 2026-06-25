@@ -13,6 +13,7 @@ from app.sources.registry import (
     CDC_VAERS,
     DAILYMED_SPL_API,
     FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
+    FDA_SAFETY_COMMUNICATIONS,
     OPENFDA_DRUG_ENFORCEMENT,
     OPENFDA_DRUG_LABEL,
     OPENFDA_FOOD_ENFORCEMENT,
@@ -914,6 +915,42 @@ def test_real_world_safety_foodborne_outbreak_context_source(monkeypatch):
 
     assert any(
         freshness["source_id"] == "cdc_foodborne_outbreaks"
+        and freshness["freshness_status"] == "pulled_and_stored"
+        for freshness in body["source_freshness"]
+    )
+
+
+
+def test_real_world_safety_fda_safety_communication_source(monkeypatch):
+    _patch_persistence(monkeypatch)
+    _patch_public_source_http(monkeypatch)
+
+    response = client.get(
+        "/api/v1/real-world-safety/search",
+        params={"q": "FDA safety communication insulin pump", "limit": 10},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+
+    assert body["search_plan"]["intent"] == "medical_device"
+    assert "FDA Medical Device Safety Communications" in {
+        source["source_name"] for source in body["sources_checked"]
+    }
+
+    result = next(
+        record
+        for record in body["results"]
+        if record["source_name"] == "FDA Medical Device Safety Communications"
+    )
+
+    assert result["category"] == "FDA safety communication / advisory context"
+    assert result["recall_number"] == "FDA-SAFETY-COMM-DEMO-0002"
+    assert "not automatically a recall" in result["reason"]
+    assert "official FDA safety communication" in result["remedy"]
+
+    assert any(
+        freshness["source_id"] == "fda_safety_communications"
         and freshness["freshness_status"] == "pulled_and_stored"
         for freshness in body["source_freshness"]
     )

@@ -75,6 +75,14 @@ def upgrade() -> None:
                 'Source-dependent FDA device event updates',
             ),
             (
+                'fda_safety_communications',
+                'FDA Medical Device Safety Communications',
+                'https://www.fda.gov/medical-devices/safety-communications',
+                'RealWorldSafety',
+                'FDA medical device safety communications and advisory context. These notices are not automatically recalls or proof of defect.',
+                'FDA safety communications are updated as advisory notices are posted',
+            ),
+            (
                 'openfda_udi_directory',
                 'openFDA UDI Directory API',
                 'https://api.fda.gov/device/udi.json',

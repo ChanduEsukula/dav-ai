@@ -10,6 +10,7 @@ from app.sources.registry import (
     CDC_VAERS,
     DAILYMED_SPL_API,
     FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
+    FDA_SAFETY_COMMUNICATIONS,
     NHTSA_RECALLS_API_DATASETS,
     NHTSA_VPIC_VIN_DECODER_API,
     OPENFDA_DEVICE_ENFORCEMENT,
@@ -118,3 +119,12 @@ def test_foodborne_outbreak_query_routes_to_outbreak_context_source():
     assert plan.intent == "food"
     assert CDC_FOODBORNE_OUTBREAKS["source_id"] in plan.sources_to_check
     assert CDC_FOODBORNE_OUTBREAKS["source_id"] in plan.secondary_source_ids
+
+
+def test_medical_device_query_routes_to_fda_safety_communications():
+    query = understand_real_world_safety_query("FDA safety communication insulin pump")
+    plan = plan_real_world_safety_sources(query)
+
+    assert plan.intent == "medical_device"
+    assert FDA_SAFETY_COMMUNICATIONS["source_id"] in plan.sources_to_check
+    assert FDA_SAFETY_COMMUNICATIONS["source_id"] in plan.secondary_source_ids

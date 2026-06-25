@@ -51,6 +51,7 @@ def test_registered_sources_include_current_public_source_surfaces():
             "openfda_device_enforcement",
             "openfda_device_event",
             "openfda_udi_directory",
+            "fda_safety_communications",
             "cdc_vaers",
             "cdc_foodborne_outbreaks",
         "openfda_cosmetic_event",

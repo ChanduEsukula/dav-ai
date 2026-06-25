@@ -19,6 +19,7 @@ from app.services.safety_source_adapters.base import (
 )
 from app.services.official_public_notice_search import search_official_public_notices
 from app.services.safety_source_adapters.cpsc import CPSCRecallsAdapter
+from app.services.safety_source_adapters.fda_safety_communications import FDASafetyCommunicationsAdapter
 from app.services.safety_source_adapters.openfda_food import OpenFDAFoodEnforcementAdapter
 from app.services.safety_source_adapters.openfda_drug import OpenFDADrugEnforcementAdapter
 from app.services.safety_source_adapters.rxnorm import RxNormDrugReferenceAdapter
@@ -47,6 +48,7 @@ from app.sources.registry import (
     CDC_FOODBORNE_OUTBREAKS,
     CDC_VAERS,
     FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
+    FDA_SAFETY_COMMUNICATIONS,
     OPENFDA_FOOD_ENFORCEMENT,
     OPENFDA_DRUG_ENFORCEMENT,
     OPENFDA_DRUG_LABEL,
@@ -91,6 +93,7 @@ openfda_ndc_adapter = OpenFDANDCDirectoryAdapter()
 openfda_device_adapter = OpenFDADeviceEnforcementAdapter()
 openfda_device_event_adapter = OpenFDADeviceEventAdapter()
 openfda_udi_adapter = OpenFDAUDIDirectoryAdapter()
+fda_safety_communications_adapter = FDASafetyCommunicationsAdapter()
 vaers_adapter = VAERSVaccineSignalAdapter()
 vpic_adapter = NHTSAVPICAdapter()
 nhtsa_recalls_adapter = NHTSARecallsAdapter()
@@ -699,6 +702,29 @@ async def execute_real_world_safety_search(
                     request_id=request_id,
                 ),
                 source=OPENFDA_NDC_DIRECTORY,
+                source_type="local curated official snapshot",
+                source_kind="structured_api",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+        )
+
+    if should_check(FDA_SAFETY_COMMUNICATIONS):
+        initial_calls.append(
+            _run_adapter_call(
+                adapter_call=lambda: fda_safety_communications_adapter.search(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=FDA_SAFETY_COMMUNICATIONS,
                 source_type="local curated official snapshot",
                 source_kind="structured_api",
                 query=search_query,

@@ -8,6 +8,7 @@ from app.sources.registry import (
     CDC_FOODBORNE_OUTBREAKS,
     CDC_VAERS,
     FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
+    FDA_SAFETY_COMMUNICATIONS,
     OPENFDA_DRUG_ENFORCEMENT,
     OPENFDA_DRUG_LABEL,
     OPENFDA_NDC_DIRECTORY,
@@ -65,6 +66,7 @@ MEDICAL_DEVICE_SOURCES = [
     _source_id(OPENFDA_DEVICE_ENFORCEMENT),
     _source_id(OPENFDA_DEVICE_EVENT),
     _source_id(OPENFDA_UDI_DIRECTORY),
+    _source_id(FDA_SAFETY_COMMUNICATIONS),
 ]
 
 VEHICLE_SOURCES = [
@@ -166,7 +168,11 @@ def plan_real_world_safety_sources(
             confidence="high",
             reason="The query appears to describe a medical device, so Dav AI checks device enforcement and signal-report sources.",
             primary_source_ids=[_source_id(OPENFDA_DEVICE_ENFORCEMENT)],
-            secondary_source_ids=[_source_id(OPENFDA_DEVICE_EVENT), _source_id(OPENFDA_UDI_DIRECTORY)],
+            secondary_source_ids=[
+                _source_id(OPENFDA_DEVICE_EVENT),
+                _source_id(OPENFDA_UDI_DIRECTORY),
+                _source_id(FDA_SAFETY_COMMUNICATIONS),
+            ],
             sources_to_check=MEDICAL_DEVICE_SOURCES,
         )
 

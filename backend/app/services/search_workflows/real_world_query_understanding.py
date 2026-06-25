@@ -94,6 +94,11 @@ DEVICE_TERMS = {
     "glucose meter",
     "insulin pump",
     "cpap",
+    "medical device safety",
+    "device advisory",
+    "advisory",
+    "safety communications",
+    "safety communication",
     "ventilator",
     "medical device",
 }

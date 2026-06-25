@@ -77,6 +77,15 @@ OPENFDA_DEVICE_EVENT = {
     "update_cadence": "Source-dependent FDA device event updates",
 }
 
+FDA_SAFETY_COMMUNICATIONS = {
+    "source_id": "fda_safety_communications",
+    "source_name": "FDA Medical Device Safety Communications",
+    "endpoint": "https://www.fda.gov/medical-devices/safety-communications",
+    "module": "RealWorldSafety",
+    "description": "FDA medical device safety communications and advisory context. These notices are not automatically recalls or proof of defect.",
+    "update_cadence": "FDA safety communications are updated as advisory notices are posted",
+}
+
 OPENFDA_UDI_DIRECTORY = {
     "source_id": "openfda_udi_directory",
     "source_name": "openFDA UDI Directory API",
@@ -217,6 +226,7 @@ REGISTERED_SOURCES = [
     OPENFDA_DEVICE_ENFORCEMENT,
     OPENFDA_DEVICE_EVENT,
     OPENFDA_UDI_DIRECTORY,
+    FDA_SAFETY_COMMUNICATIONS,
     CDC_VAERS,
     OPENFDA_COSMETIC_EVENT,
     OPENFDA_FOOD_ENFORCEMENT,
