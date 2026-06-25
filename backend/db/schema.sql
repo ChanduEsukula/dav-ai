@@ -131,6 +131,14 @@ values
         'FDA published updates'
     ),
     (
+        'cdc_vaers',
+        'CDC/VAERS Vaccine Adverse Event Reports',
+        'https://vaers.hhs.gov/data.html',
+        'RealWorldSafety',
+        'VAERS public vaccine adverse-event reports. Reports are signal reports and do not prove causation.',
+        'CDC/FDA VAERS public data updates'
+    ),
+    (
         'openfda_cosmetic_event',
         'openFDA Cosmetic Event API',
         'https://api.fda.gov/cosmetic/event.json',

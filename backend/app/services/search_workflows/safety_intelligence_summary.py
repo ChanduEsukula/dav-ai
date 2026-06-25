@@ -28,6 +28,7 @@ LABEL_REFERENCE_SOURCES = {
 
 SIGNAL_SOURCES = {
     "openFDA Device Event API",
+    "CDC/VAERS Vaccine Adverse Event Reports",
 }
 
 ROLE_ORDER = [
@@ -77,6 +78,8 @@ def _infer_query_type(query: str, records: list[NormalizedSafetyRecord]) -> str:
         return "drug"
     if any(term in text for term in ["medical device", "glucose meter", "insulin pump", "cpap", "openfda device"]):
         return "medical_device"
+    if any(term in text for term in ["vaers", "vaccine", "vaccination", "mmr", "influenza vaccine", "covid-19 vaccine"]):
+        return "vaccine"
     if any(term in text for term in ["food recall", "meat/poultry", "chicken", "beef", "poultry", "fsis", "fda food", "salmonella", "listeria"]):
         return "food"
     if any(term in text for term in ["nhtsa", "vin", "vehicle recall", "honda", "toyota", "ford", "tesla", "truck"]):

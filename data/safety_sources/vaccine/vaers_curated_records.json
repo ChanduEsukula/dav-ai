@@ -1,0 +1,44 @@
+[
+  {
+    "vaers_id": "VAERS-DEMO-0001",
+    "vaccine_name": "Influenza vaccine",
+    "vaccine_type": "FLU",
+    "manufacturer": "Example Vaccine Manufacturer",
+    "symptoms": ["Fever", "Fatigue", "Injection site pain"],
+    "serious": false,
+    "outcome": "Recovered",
+    "report_date": "2026-01-12",
+    "age_years": 34,
+    "sex": "F",
+    "state": "MN",
+    "narrative": "Public demo VAERS-style report mentioning fever, fatigue, and injection site pain after influenza vaccination."
+  },
+  {
+    "vaers_id": "VAERS-DEMO-0002",
+    "vaccine_name": "MMR vaccine",
+    "vaccine_type": "MMR",
+    "manufacturer": "Example Vaccine Manufacturer",
+    "symptoms": ["Rash", "Fever"],
+    "serious": false,
+    "outcome": "Unknown",
+    "report_date": "2026-02-03",
+    "age_years": 5,
+    "sex": "M",
+    "state": "CA",
+    "narrative": "Public demo VAERS-style report mentioning rash and fever after MMR vaccination."
+  },
+  {
+    "vaers_id": "VAERS-DEMO-0003",
+    "vaccine_name": "COVID-19 vaccine",
+    "vaccine_type": "COVID19",
+    "manufacturer": "Example Vaccine Manufacturer",
+    "symptoms": ["Headache", "Chills", "Myalgia"],
+    "serious": false,
+    "outcome": "Recovered",
+    "report_date": "2026-02-18",
+    "age_years": 42,
+    "sex": "F",
+    "state": "TX",
+    "narrative": "Public demo VAERS-style report mentioning headache, chills, and muscle aches after COVID-19 vaccination."
+  }
+]

@@ -9,6 +9,7 @@ from app.main import app
 from app.services.search_workflows import real_world_safety_search
 from app.sources.registry import (
     CPSC_RECALLS_API,
+    CDC_VAERS,
     DAILYMED_SPL_API,
     FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
     OPENFDA_DRUG_ENFORCEMENT,
@@ -829,6 +830,47 @@ def test_real_world_safety_udi_identifier_routes_to_device_identity(monkeypatch)
     )
     assert any(
         freshness["source_id"] == "openfda_udi_directory"
+        and freshness["freshness_status"] == "pulled_and_stored"
+        for freshness in body["source_freshness"]
+    )
+
+
+
+def test_real_world_safety_vaccine_query_returns_vaers_signal_report(monkeypatch):
+    _patch_persistence(monkeypatch)
+    _patch_public_source_http(monkeypatch)
+
+    response = client.get(
+        "/api/v1/real-world-safety/search",
+        params={"q": "MMR vaccine rash", "limit": 10},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+
+    assert body["search_plan"]["intent"] == "vaccine"
+    assert "CDC/VAERS Vaccine Adverse Event Reports" in {
+        source["source_name"] for source in body["sources_checked"]
+    }
+
+    result = next(
+        record
+        for record in body["results"]
+        if record["source_name"] == "CDC/VAERS Vaccine Adverse Event Reports"
+    )
+
+    assert result["category"] == "Vaccine adverse-event signal report"
+    assert result["hazard_type"] == "Reported adverse-event signal, not proof of causation"
+    assert result["recall_number"] == "VAERS-DEMO-0002"
+    assert "does not prove causation" in result["reason"]
+    assert "public signal reports only" in result["remedy"]
+
+    summary = body["safety_intelligence_summary"]
+    assert summary["signal_report_found"] is True
+    assert "CDC/VAERS Vaccine Adverse Event Reports" in summary["matched_sources_by_role"]["signal_report"]
+
+    assert any(
+        freshness["source_id"] == "cdc_vaers"
         and freshness["freshness_status"] == "pulled_and_stored"
         for freshness in body["source_freshness"]
     )

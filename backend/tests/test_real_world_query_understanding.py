@@ -93,3 +93,9 @@ def test_detects_udi_identifier_as_medical_device():
     assert result.detected_identifiers["udi"] == "00312345678901"
     assert result.detected_identifiers["upc"] is None
     assert "medical_device" in result.query_type_hints
+
+
+def test_detects_vaccine_query_as_vaccine_signal():
+    result = understand_real_world_safety_query("MMR vaccine rash")
+
+    assert "vaccine" in result.query_type_hints

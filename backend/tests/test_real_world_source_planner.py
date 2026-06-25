@@ -6,6 +6,7 @@ from app.services.search_workflows.real_world_source_planner import (
 )
 from app.sources.registry import (
     CPSC_RECALLS_API,
+    CDC_VAERS,
     DAILYMED_SPL_API,
     FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
     NHTSA_RECALLS_API_DATASETS,
@@ -98,3 +99,12 @@ def test_bare_sunscreen_requires_clarification_instead_of_broad_fanout():
     assert plan.intent == "ambiguous"
     assert plan.clarification_required is True
     assert plan.sources_to_check == []
+
+
+def test_vaccine_query_routes_to_vaers_signal_source():
+    query = understand_real_world_safety_query("MMR vaccine rash")
+    plan = plan_real_world_safety_sources(query)
+
+    assert plan.intent == "vaccine"
+    assert CDC_VAERS["source_id"] in plan.sources_to_check
+    assert CDC_VAERS["source_id"] in plan.primary_source_ids

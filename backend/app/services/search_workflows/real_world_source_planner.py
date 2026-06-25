@@ -5,6 +5,7 @@ from dataclasses import asdict, dataclass
 from app.services.search_workflows.real_world_query_understanding import RealWorldQueryUnderstanding
 from app.sources.registry import (
     CPSC_RECALLS_API,
+    CDC_VAERS,
     FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
     OPENFDA_DRUG_ENFORCEMENT,
     OPENFDA_DRUG_LABEL,
@@ -69,6 +70,10 @@ VEHICLE_SOURCES = [
     _source_id(NHTSA_RECALLS_API_DATASETS),
 ]
 
+VACCINE_SOURCES = [
+    _source_id(CDC_VAERS),
+]
+
 AMBIGUOUS_TERMS = {
     "sunscreen",
     "cream",
@@ -82,7 +87,7 @@ def _has_ambiguous_term(query: str) -> bool:
 
 
 def _first_supported_hint(hints: list[str]) -> str:
-    priority = ["vehicle", "medical_device", "drug", "food", "consumer_product"]
+    priority = ["vehicle", "medical_device", "vaccine", "drug", "food", "consumer_product"]
     for hint in priority:
         if hint in hints:
             return hint
@@ -155,6 +160,16 @@ def plan_real_world_safety_sources(
             primary_source_ids=[_source_id(OPENFDA_DEVICE_ENFORCEMENT)],
             secondary_source_ids=[_source_id(OPENFDA_DEVICE_EVENT), _source_id(OPENFDA_UDI_DIRECTORY)],
             sources_to_check=MEDICAL_DEVICE_SOURCES,
+        )
+
+    if intent == "vaccine":
+        return RealWorldSourcePlan(
+            intent="vaccine",
+            confidence="high",
+            reason="The query appears to describe a vaccine or vaccine adverse-event signal, so Dav AI checks VAERS signal-report data.",
+            primary_source_ids=[_source_id(CDC_VAERS)],
+            secondary_source_ids=[],
+            sources_to_check=VACCINE_SOURCES,
         )
 
     if intent == "vehicle":

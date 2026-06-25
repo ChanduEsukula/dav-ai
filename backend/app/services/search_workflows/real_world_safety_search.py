@@ -28,6 +28,7 @@ from app.services.safety_source_adapters.openfda_ndc import OpenFDANDCDirectoryA
 from app.services.safety_source_adapters.openfda_device import OpenFDADeviceEnforcementAdapter
 from app.services.safety_source_adapters.openfda_device_event import OpenFDADeviceEventAdapter
 from app.services.safety_source_adapters.openfda_udi import OpenFDAUDIDirectoryAdapter
+from app.services.safety_source_adapters.vaers import VAERSVaccineSignalAdapter
 from app.services.search_workflows.real_world_query_understanding import understand_real_world_safety_query
 from app.services.search_workflows.real_world_source_planner import plan_real_world_safety_sources
 from app.services.search_workflows.safety_intelligence_summary import build_safety_intelligence_summary
@@ -42,6 +43,7 @@ from app.services.safety_source_adapters.nhtsa import (
 )
 from app.sources.registry import (
     CPSC_RECALLS_API,
+    CDC_VAERS,
     FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
     OPENFDA_FOOD_ENFORCEMENT,
     OPENFDA_DRUG_ENFORCEMENT,
@@ -69,7 +71,7 @@ PUBLIC_DATA_DISCLAIMER = (
     "Results are informational and should be verified against the official source pages."
 )
 LIMITATIONS = [
-    "Version 1 checks CPSC consumer product recalls, curated official openFDA Food Enforcement records, curated official openFDA Drug Enforcement records, RxNorm/RxNav drug-name reference records, DailyMed official SPL drug label records, openFDA NDC Directory drug identity/reference records, openFDA medical device enforcement records, openFDA medical device adverse-event reports, NHTSA vehicle recalls for VIN or make/model/year input, and the FDA public recalls page.",
+    "Version 1 checks CPSC consumer product recalls, curated official openFDA Food Enforcement records, curated official openFDA Drug Enforcement records, RxNorm/RxNav drug-name reference records, DailyMed official SPL drug label records, openFDA NDC Directory drug identity/reference records, openFDA medical device enforcement records, openFDA medical device adverse-event reports, CDC/VAERS vaccine adverse-event signal reports, NHTSA vehicle recalls for VIN or make/model/year input, and the FDA public recalls page.",
     "No matching public record was found in the checked U.S. sources. This does not certify that the product is safe.",
     "Search results depend on source-provided product names, company names, campaign metadata, recall descriptions, and public notice table text.",
     "If one source is temporarily unavailable, Dav AI returns partial results from remaining checked sources and lists the failed source.",
@@ -87,6 +89,7 @@ openfda_ndc_adapter = OpenFDANDCDirectoryAdapter()
 openfda_device_adapter = OpenFDADeviceEnforcementAdapter()
 openfda_device_event_adapter = OpenFDADeviceEventAdapter()
 openfda_udi_adapter = OpenFDAUDIDirectoryAdapter()
+vaers_adapter = VAERSVaccineSignalAdapter()
 vpic_adapter = NHTSAVPICAdapter()
 nhtsa_recalls_adapter = NHTSARecallsAdapter()
 logger = logging.getLogger("dav_ai.real_world_safety.workflow")
@@ -739,6 +742,29 @@ async def execute_real_world_safety_search(
                     request_id=request_id,
                 ),
                 source=OPENFDA_UDI_DIRECTORY,
+                source_type="local curated official snapshot",
+                source_kind="structured_api",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+        )
+
+    if should_check(CDC_VAERS):
+        initial_calls.append(
+            _run_adapter_call(
+                adapter_call=lambda: vaers_adapter.search(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=CDC_VAERS,
                 source_type="local curated official snapshot",
                 source_kind="structured_api",
                 query=search_query,

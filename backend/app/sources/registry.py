@@ -91,6 +91,15 @@ OPENFDA_UDI_DIRECTORY = {
     "reliability_tier": 1,
 }
 
+CDC_VAERS = {
+    "source_id": "cdc_vaers",
+    "source_name": "CDC/VAERS Vaccine Adverse Event Reports",
+    "endpoint": "https://vaers.hhs.gov/data.html",
+    "module": "RealWorldSafety",
+    "description": "VAERS public vaccine adverse-event reports. Reports are signal reports and do not prove causation.",
+    "update_cadence": "CDC/FDA VAERS public data updates",
+}
+
 OPENFDA_COSMETIC_EVENT = {
     "source_id": "openfda_cosmetic_event",
     "source_name": "openFDA Cosmetic Event API",
@@ -199,6 +208,7 @@ REGISTERED_SOURCES = [
     OPENFDA_DEVICE_ENFORCEMENT,
     OPENFDA_DEVICE_EVENT,
     OPENFDA_UDI_DIRECTORY,
+    CDC_VAERS,
     OPENFDA_COSMETIC_EVENT,
     OPENFDA_FOOD_ENFORCEMENT,
     USDA_FSIS_RECALL,

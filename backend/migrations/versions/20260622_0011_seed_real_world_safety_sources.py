@@ -83,6 +83,14 @@ def upgrade() -> None:
                 'FDA published updates',
             ),
             (
+                'cdc_vaers',
+                'CDC/VAERS Vaccine Adverse Event Reports',
+                'https://vaers.hhs.gov/data.html',
+                'RealWorldSafety',
+                'VAERS public vaccine adverse-event reports. Reports are signal reports and do not prove causation.',
+                'CDC/FDA VAERS public data updates',
+            ),
+            (
                 'fda_recalls_market_withdrawals_safety_alerts',
                 'FDA Recalls, Market Withdrawals & Safety Alerts',
                 'https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts',

@@ -119,6 +119,18 @@ VEHICLE_TERMS = {
     "truck",
 }
 
+VACCINE_TERMS = {
+    "vaccine",
+    "vaccination",
+    "immunization",
+    "flu shot",
+    "influenza vaccine",
+    "mmr",
+    "covid vaccine",
+    "covid-19 vaccine",
+    "vaers",
+}
+
 
 @dataclass(frozen=True)
 class RealWorldQueryUnderstanding:
@@ -247,6 +259,8 @@ def _query_type_hints(
         _append_unique(hints, "consumer_product")
     if any(term in text for term in VEHICLE_TERMS):
         _append_unique(hints, "vehicle")
+    if any(term in text for term in VACCINE_TERMS):
+        _append_unique(hints, "vaccine")
 
     return hints or ["unknown"]
 
