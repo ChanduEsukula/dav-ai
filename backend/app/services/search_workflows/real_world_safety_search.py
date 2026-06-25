@@ -27,6 +27,7 @@ from app.services.safety_source_adapters.openfda_drug_label import OpenFDADrugLa
 from app.services.safety_source_adapters.openfda_ndc import OpenFDANDCDirectoryAdapter
 from app.services.safety_source_adapters.openfda_device import OpenFDADeviceEnforcementAdapter
 from app.services.safety_source_adapters.openfda_device_event import OpenFDADeviceEventAdapter
+from app.services.safety_source_adapters.openfda_udi import OpenFDAUDIDirectoryAdapter
 from app.services.search_workflows.real_world_query_understanding import understand_real_world_safety_query
 from app.services.search_workflows.real_world_source_planner import plan_real_world_safety_sources
 from app.services.search_workflows.safety_intelligence_summary import build_safety_intelligence_summary
@@ -51,6 +52,7 @@ from app.sources.registry import (
     DAILYMED_SPL_API,
     OPENFDA_DEVICE_ENFORCEMENT,
     OPENFDA_DEVICE_EVENT,
+    OPENFDA_UDI_DIRECTORY,
     NHTSA_RECALLS_API_DATASETS,
     NHTSA_VPIC_VIN_DECODER_API,
 )
@@ -84,6 +86,7 @@ openfda_drug_label_adapter = OpenFDADrugLabelAdapter()
 openfda_ndc_adapter = OpenFDANDCDirectoryAdapter()
 openfda_device_adapter = OpenFDADeviceEnforcementAdapter()
 openfda_device_event_adapter = OpenFDADeviceEventAdapter()
+openfda_udi_adapter = OpenFDAUDIDirectoryAdapter()
 vpic_adapter = NHTSAVPICAdapter()
 nhtsa_recalls_adapter = NHTSARecallsAdapter()
 logger = logging.getLogger("dav_ai.real_world_safety.workflow")
@@ -713,6 +716,29 @@ async def execute_real_world_safety_search(
                     request_id=request_id,
                 ),
                 source=OPENFDA_DEVICE_EVENT,
+                source_type="local curated official snapshot",
+                source_kind="structured_api",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+        )
+
+    if should_check(OPENFDA_UDI_DIRECTORY):
+        initial_calls.append(
+            _run_adapter_call(
+                adapter_call=lambda: openfda_udi_adapter.search(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=OPENFDA_UDI_DIRECTORY,
                 source_type="local curated official snapshot",
                 source_kind="structured_api",
                 query=search_query,

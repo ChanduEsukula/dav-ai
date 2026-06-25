@@ -77,6 +77,20 @@ OPENFDA_DEVICE_EVENT = {
     "update_cadence": "Source-dependent FDA device event updates",
 }
 
+OPENFDA_UDI_DIRECTORY = {
+    "source_id": "openfda_udi_directory",
+    "source_name": "openFDA UDI Directory API",
+    "department": "HHS",
+    "agency": "FDA",
+    "module": "RealWorldSafety",
+    "source_type": "structured_api",
+    "endpoint": "https://api.fda.gov/device/udi.json",
+    "description": "FDA Unique Device Identifier reference records for medical-device identity matching.",
+    "update_frequency": "FDA published updates",
+    "update_cadence": "FDA published updates",
+    "reliability_tier": 1,
+}
+
 OPENFDA_COSMETIC_EVENT = {
     "source_id": "openfda_cosmetic_event",
     "source_name": "openFDA Cosmetic Event API",
@@ -184,6 +198,7 @@ REGISTERED_SOURCES = [
     OPENFDA_NDC_DIRECTORY,
     OPENFDA_DEVICE_ENFORCEMENT,
     OPENFDA_DEVICE_EVENT,
+    OPENFDA_UDI_DIRECTORY,
     OPENFDA_COSMETIC_EVENT,
     OPENFDA_FOOD_ENFORCEMENT,
     USDA_FSIS_RECALL,

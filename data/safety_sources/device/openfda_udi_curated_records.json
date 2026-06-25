@@ -1,0 +1,50 @@
+[
+  {
+    "public_device_record_key": "udi-insulin-pump-demo-001",
+    "brand_name": "Example Insulin Pump System",
+    "version_or_model_number": "IP-2000",
+    "company_name": "Example Diabetes Devices Inc.",
+    "device_description": "Programmable insulin infusion pump for subcutaneous delivery of insulin.",
+    "gmdn_terms": [
+      {
+        "name": "Ambulatory insulin infusion pump",
+        "definition": "A battery-powered device designed to deliver insulin at selected rates."
+      }
+    ],
+    "identifiers": [
+      {
+        "id": "00312345678901",
+        "issuing_agency": "GS1",
+        "type": "Primary DI"
+      }
+    ],
+    "product_codes": ["LZG"],
+    "device_count_in_base_package": "1",
+    "commercial_distribution_status": "In Commercial Distribution",
+    "publish_date": "20260115"
+  },
+  {
+    "public_device_record_key": "udi-glucose-meter-demo-001",
+    "brand_name": "Example Blood Glucose Meter",
+    "version_or_model_number": "BGM-100",
+    "company_name": "Example Diagnostics LLC",
+    "device_description": "Portable blood glucose meter for quantitative glucose measurement.",
+    "gmdn_terms": [
+      {
+        "name": "Blood glucose meter",
+        "definition": "A device intended to measure glucose concentration in blood."
+      }
+    ],
+    "identifiers": [
+      {
+        "id": "00876543210987",
+        "issuing_agency": "GS1",
+        "type": "Primary DI"
+      }
+    ],
+    "product_codes": ["NBW"],
+    "device_count_in_base_package": "1",
+    "commercial_distribution_status": "In Commercial Distribution",
+    "publish_date": "20260120"
+  }
+]

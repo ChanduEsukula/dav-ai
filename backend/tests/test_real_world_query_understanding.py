@@ -85,3 +85,11 @@ def test_query_understanding_tracks_expansion_search_terms_used_as_empty_initial
 
     assert result.expanded_terms == ["ibuprofen"]
     assert result.expansion_search_terms_used == []
+
+
+def test_detects_udi_identifier_as_medical_device():
+    result = understand_real_world_safety_query("UDI 00312345678901")
+
+    assert result.detected_identifiers["udi"] == "00312345678901"
+    assert result.detected_identifiers["upc"] is None
+    assert "medical_device" in result.query_type_hints

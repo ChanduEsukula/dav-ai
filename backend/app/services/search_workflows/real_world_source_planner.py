@@ -11,6 +11,7 @@ from app.sources.registry import (
     OPENFDA_NDC_DIRECTORY,
     OPENFDA_DEVICE_ENFORCEMENT,
     OPENFDA_DEVICE_EVENT,
+    OPENFDA_UDI_DIRECTORY,
     OPENFDA_FOOD_ENFORCEMENT,
     RXNORM_RXNAV_API,
     USDA_FSIS_RECALL,
@@ -60,6 +61,7 @@ FOOD_SOURCES = [
 MEDICAL_DEVICE_SOURCES = [
     _source_id(OPENFDA_DEVICE_ENFORCEMENT),
     _source_id(OPENFDA_DEVICE_EVENT),
+    _source_id(OPENFDA_UDI_DIRECTORY),
 ]
 
 VEHICLE_SOURCES = [
@@ -151,7 +153,7 @@ def plan_real_world_safety_sources(
             confidence="high",
             reason="The query appears to describe a medical device, so Dav AI checks device enforcement and signal-report sources.",
             primary_source_ids=[_source_id(OPENFDA_DEVICE_ENFORCEMENT)],
-            secondary_source_ids=[_source_id(OPENFDA_DEVICE_EVENT)],
+            secondary_source_ids=[_source_id(OPENFDA_DEVICE_EVENT), _source_id(OPENFDA_UDI_DIRECTORY)],
             sources_to_check=MEDICAL_DEVICE_SOURCES,
         )
 

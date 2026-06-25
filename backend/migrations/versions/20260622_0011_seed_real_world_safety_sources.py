@@ -72,7 +72,15 @@ def upgrade() -> None:
                 'https://api.fda.gov/device/event.json',
                 'RealWorldSafety',
                 'FDA medical device adverse-event reports from openFDA. These are signal reports, not recalls or proof of causation.',
-                'Source-dependent FDA device event updates'
+                'Source-dependent FDA device event updates',
+            ),
+            (
+                'openfda_udi_directory',
+                'openFDA UDI Directory API',
+                'https://api.fda.gov/device/udi.json',
+                'RealWorldSafety',
+                'FDA Unique Device Identifier reference records for medical-device identity matching.',
+                'FDA published updates',
             ),
             (
                 'fda_recalls_market_withdrawals_safety_alerts',

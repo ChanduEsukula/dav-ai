@@ -201,11 +201,20 @@ def _detect_ndc(original_query: str) -> str | None:
 
 
 def _detect_upc(original_query: str) -> str | None:
-    if "ndc" in original_query.lower():
+    if "ndc" in original_query.lower() or "udi" in original_query.lower():
         return None
 
     digits = re.sub(r"\D", "", original_query)
     if len(digits) in {12, 13, 14}:
+        return digits
+    return None
+
+
+def _detect_udi(original_query: str) -> str | None:
+    lower = original_query.lower()
+    digits = re.sub(r"\D", "", original_query)
+
+    if "udi" in lower and 10 <= len(digits) <= 18:
         return digits
     return None
 
@@ -225,6 +234,8 @@ def _query_type_hints(
         _append_unique(hints, "drug")
     if detected_identifiers.get("upc"):
         _append_unique(hints, "consumer_product")
+    if detected_identifiers.get("udi"):
+        _append_unique(hints, "medical_device")
 
     if any(term in text for term in DRUG_TERMS):
         _append_unique(hints, "drug")
@@ -252,6 +263,7 @@ def understand_real_world_safety_query(raw_query: str) -> RealWorldQueryUndersta
         "vin": _detect_vin(raw_query),
         "ndc": _detect_ndc(raw_query),
         "upc": _detect_upc(raw_query),
+        "udi": _detect_udi(raw_query),
     }
 
     # V1 uses the corrected/normalized query for retrieval.

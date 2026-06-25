@@ -12,6 +12,7 @@ from app.sources.registry import (
     NHTSA_VPIC_VIN_DECODER_API,
     OPENFDA_DEVICE_ENFORCEMENT,
     OPENFDA_DEVICE_EVENT,
+    OPENFDA_UDI_DIRECTORY,
     OPENFDA_DRUG_ENFORCEMENT,
     OPENFDA_DRUG_LABEL,
     OPENFDA_FOOD_ENFORCEMENT,
@@ -79,6 +80,7 @@ def test_blood_sugar_monitor_routes_to_medical_device_sources():
     assert plan.intent == "medical_device"
     assert OPENFDA_DEVICE_ENFORCEMENT["source_id"] in plan.sources_to_check
     assert OPENFDA_DEVICE_EVENT["source_id"] in plan.sources_to_check
+    assert OPENFDA_UDI_DIRECTORY["source_id"] in plan.sources_to_check
     assert OPENFDA_DRUG_LABEL["source_id"] not in plan.sources_to_check
 
 

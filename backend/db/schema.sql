@@ -123,6 +123,14 @@ values
         'Source-dependent FDA device event updates'
     ),
     (
+        'openfda_udi_directory',
+        'openFDA UDI Directory API',
+        'https://api.fda.gov/device/udi.json',
+        'RealWorldSafety',
+        'FDA Unique Device Identifier reference records for medical-device identity matching.',
+        'FDA published updates'
+    ),
+    (
         'openfda_cosmetic_event',
         'openFDA Cosmetic Event API',
         'https://api.fda.gov/cosmetic/event.json',

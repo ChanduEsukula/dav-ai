@@ -202,6 +202,8 @@ def test_real_world_safety_curated_official_openfda_sources(
         ("acetaminophen", "openFDA NDC Directory API", "openFDA NDC listing"),
         ("glucose meter", "openFDA Device Enforcement API", "Blood Glucose"),
         ("insulin pump", "openFDA Device Enforcement API", "Insulin pump"),
+        ("insulin pump", "openFDA UDI Directory API", "openFDA UDI listing"),
+        ("glucose meter", "openFDA UDI Directory API", "openFDA UDI listing"),
         ("CPAP", "openFDA Device Enforcement API", "CPAP"),
     ],
 )
@@ -790,3 +792,43 @@ def test_real_world_safety_response_includes_source_freshness(monkeypatch):
     assert nhtsa_freshness[0]["source_payload_hash"] == "test-hash-nhtsa_recalls_api_datasets"
     assert nhtsa_freshness[0]["checked_at"] == body["retrieval_timestamp"]
     assert "stored audit metadata" in nhtsa_freshness[0]["explanation"]
+
+
+
+def test_real_world_safety_udi_identifier_routes_to_device_identity(monkeypatch):
+    _patch_persistence(monkeypatch)
+    _patch_public_source_http(monkeypatch)
+
+    response = client.get(
+        "/api/v1/real-world-safety/search",
+        params={"q": "UDI 00312345678901", "limit": 10},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+
+    assert body["query_understanding"]["detected_identifiers"]["udi"] == "00312345678901"
+    assert "openFDA UDI Directory API" in {source["source_name"] for source in body["sources_checked"]}
+
+    result = next(
+        record
+        for record in body["results"]
+        if record["source_name"] == "openFDA UDI Directory API"
+    )
+
+    assert result["category"] == "Medical device reference / UDI directory"
+    assert result["hazard_type"] == "Reference record, not a recall"
+    assert result["recall_number"] == "00312345678901"
+    assert "device identity/reference record" in result["reason"]
+    assert "verify the exact device" in result["remedy"]
+    assert "00312345678901" in result["affected_lots"]
+
+    assert any(
+        item["type"] == "udi" and item["value"] == "00312345678901"
+        for item in body["identifier_check"]["detected"]
+    )
+    assert any(
+        freshness["source_id"] == "openfda_udi_directory"
+        and freshness["freshness_status"] == "pulled_and_stored"
+        for freshness in body["source_freshness"]
+    )
