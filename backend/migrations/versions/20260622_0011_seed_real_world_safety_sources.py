@@ -72,7 +72,7 @@ def upgrade() -> None:
                 'https://api.fda.gov/device/event.json',
                 'RealWorldSafety',
                 'FDA medical device adverse-event reports from openFDA. These are signal reports, not recalls or proof of causation.',
-                'Source-dependent FDA device event updates',
+                'Source-dependent FDA device event updates'
             ),
             (
                 'fda_safety_communications',
@@ -80,7 +80,7 @@ def upgrade() -> None:
                 'https://www.fda.gov/medical-devices/safety-communications',
                 'RealWorldSafety',
                 'FDA medical device safety communications and advisory context. These notices are not automatically recalls or proof of defect.',
-                'FDA safety communications are updated as advisory notices are posted',
+                'FDA safety communications are updated as advisory notices are posted'
             ),
             (
                 'openfda_udi_directory',
@@ -88,7 +88,7 @@ def upgrade() -> None:
                 'https://api.fda.gov/device/udi.json',
                 'RealWorldSafety',
                 'FDA Unique Device Identifier reference records for medical-device identity matching.',
-                'FDA published updates',
+                'FDA published updates'
             ),
             (
                 'cdc_vaers',
@@ -96,7 +96,7 @@ def upgrade() -> None:
                 'https://vaers.hhs.gov/data.html',
                 'RealWorldSafety',
                 'VAERS public vaccine adverse-event reports. Reports are signal reports and do not prove causation.',
-                'CDC/FDA VAERS public data updates',
+                'CDC/FDA VAERS public data updates'
             ),
             (
                 'fda_recalls_market_withdrawals_safety_alerts',
