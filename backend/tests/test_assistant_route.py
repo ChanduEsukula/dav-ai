@@ -282,6 +282,19 @@ def test_assistant_refuses_personal_causation_question(monkeypatch):
     assert body["refusal_reason"] == "personal causation claim"
 
 
+
+def test_assistant_rejects_public_safety_without_context():
+    payload = public_safety_payload()
+    payload["page_context"].pop("public_safety")
+
+    client = TestClient(app)
+    response = client.post("/api/v1/assistant/chat", json=payload)
+
+    assert response.status_code == 400
+    detail = response.json()["detail"]
+    assert detail["code"] == "ASSISTANT_INVALID_CONTEXT"
+    assert detail["message"] == "Public Safety Search assistant context is required."
+
 def test_assistant_rejects_invalid_module():
     payload = recall_payload()
     payload["module"] = "regional_health"
