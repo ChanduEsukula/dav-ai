@@ -160,7 +160,7 @@ function getCreateErrorMessage(error: unknown): string {
     }
   }
 
-  return "Unable to create saved monitor.";
+  return "Unable to create saved search.";
 }
 
 function openAuditDetail(auditId: string) {
@@ -237,7 +237,7 @@ export default function SavedMonitorsPage() {
         loadInsightsForMonitors(data),
       ]);
     } catch {
-      setErrorMessage("Unable to load saved monitors.");
+      setErrorMessage("Unable to load saved searches.");
     } finally {
       setIsLoading(false);
     }
@@ -288,7 +288,7 @@ export default function SavedMonitorsPage() {
     setErrorMessage("");
 
     const confirmed = window.confirm(
-      "Are you sure you want to delete this saved monitor?",
+      "Are you sure you want to delete this saved search?",
     );
 
     if (!confirmed) {
@@ -311,7 +311,7 @@ export default function SavedMonitorsPage() {
         return next;
       });
     } catch {
-      setErrorMessage("Unable to delete saved monitor.");
+      setErrorMessage("Unable to delete saved search.");
     }
   }
 
@@ -331,7 +331,7 @@ export default function SavedMonitorsPage() {
         loadInsightForMonitor(monitorId),
       ]);
     } catch {
-      setErrorMessage("Unable to run saved monitor check.");
+      setErrorMessage("Unable to run saved search check.");
       await Promise.all([
         loadRunHistoryForMonitor(monitorId),
         loadInsightForMonitor(monitorId),
@@ -344,23 +344,23 @@ export default function SavedMonitorsPage() {
   return (
     <section className="saved-monitors-page" aria-labelledby="saved-monitors-title">
       <div className="saved-monitors-hero">
-        <p className="eyebrow">Saved Monitors</p>
-        <h1 id="saved-monitors-title">Saved Monitors</h1>
+        <p className="eyebrow">Saved Searches</p>
+        <h1 id="saved-monitors-title">Saved Searches</h1>
         <p>
           Save repeatable drug recall, adverse-event, or food recall
-          searches, run checks manually, compare changes over time, and review deterministic
-          monitor insights based on stored public-data history.
+          searches, check them again later, compare changes over time, and review source-aware
+          insights based on stored public-data history.
         </p>
       </div>
 
       <form className="saved-monitor-form" onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="monitor-name">Monitor name</label>
+          <label htmlFor="monitor-name">Saved search name</label>
           <input
             id="monitor-name"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            placeholder="Eye drops monitor"
+            placeholder="Eye drops search"
           />
         </div>
 
@@ -393,7 +393,7 @@ export default function SavedMonitorsPage() {
         </div>
 
         <button type="submit" disabled={isSaving}>
-          {isSaving ? "Saving..." : "Save Monitor"}
+          {isSaving ? "Saving..." : "Save Search"}
         </button>
       </form>
 
@@ -405,17 +405,17 @@ export default function SavedMonitorsPage() {
 
       <div className="saved-monitor-panel">
         <div className="saved-monitor-panel-header">
-          <h2>Monitor list</h2>
+          <h2>Saved search list</h2>
           <button type="button" onClick={loadMonitors}>
             Refresh
           </button>
         </div>
 
         {isLoading ? (
-          <p className="saved-monitor-muted">Loading saved monitors...</p>
+          <p className="saved-monitor-muted">Loading saved searches...</p>
         ) : monitors.length === 0 ? (
           <p className="saved-monitor-muted">
-            No saved monitors yet. Create one above to start the monitoring workflow.
+            No saved searches yet. Create one above to start checking changes over time.
           </p>
         ) : (
           <div className="saved-monitor-card-list">
@@ -455,8 +455,8 @@ export default function SavedMonitorsPage() {
                         disabled={runningMonitorId === monitor.id}
                       >
                         {runningMonitorId === monitor.id
-                          ? "Running..."
-                          : "Run Check"}
+                          ? "Checking..."
+                          : "Check now"}
                       </button>
 
                       <button
@@ -515,7 +515,7 @@ export default function SavedMonitorsPage() {
                   <div className="saved-monitor-card-body">
                     <section className="saved-monitor-card-section">
                       <div className="saved-monitor-section-heading">
-                        <h4>Monitor Insight</h4>
+                        <h4>Saved Search Insight</h4>
                         {insight ? (
                           <span
                             className={`change-pill change-pill-${insightTone}`}
@@ -563,7 +563,7 @@ export default function SavedMonitorsPage() {
                           </div>
 
                           <small className="monitor-insight-limitation">
-                            Based only on stored Dav AI public-data monitor history. Not medical
+                            Based only on stored Dav AI public-data search history. Not medical
                             advice or proof of causality.
                           </small>
                         </div>
@@ -587,7 +587,7 @@ export default function SavedMonitorsPage() {
                               )
                             }
                           >
-                            View Audit
+                            View source trail
                           </button>
                         ) : null}
                       </div>
@@ -638,7 +638,7 @@ export default function SavedMonitorsPage() {
                                     openAuditDetail(run.audit_id as string)
                                   }
                                 >
-                                  View run audit
+                                  View run source trail
                                 </button>
                               ) : null}
                             </div>
@@ -655,11 +655,11 @@ export default function SavedMonitorsPage() {
       </div>
 
       <div className="saved-monitor-note">
-        <strong>Current scope:</strong> Saved Monitors currently support manual run checks for
+        <strong>Current scope:</strong> Saved Searches currently support manual checks for
         RecallRadar, DrugSignal, FoodRadar, Supabase persistence,
         latest/previous result comparison, run history, change indicators, duplicate prevention,
-        audit linking, deterministic monitor insights, and backend scheduler-lock protection.
-        Cosmetic monitor creation, production Cron, alert notifications, and public scheduling UI
+        source-trail linking, deterministic saved-search insights, and backend scheduler-lock protection.
+        Cosmetic saved-search creation, production Cron, alert notifications, and public scheduling UI
         are not enabled yet.
       </div>
     </section>
