@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
+  buildFoodAssistantContext,
+  type AssistantChatContext,
+} from '../api/assistant'
+import {
   searchEverydaySafety,
   type EverydaySafetyRecord,
   type EverydaySafetySearchResponse,
@@ -23,6 +27,7 @@ type FoodSafetyPageProps = {
   initialQuery: string
   initialRawQuery?: string
   goToPage: (page: ActivePage, query?: string, rawQuery?: string) => void
+  setAssistantContext?: (context: AssistantChatContext | null) => void
 }
 
 type FoodSearchOptions = {
@@ -173,6 +178,7 @@ function FoodSafetyPage({
   initialQuery,
   initialRawQuery,
   goToPage,
+  setAssistantContext,
 }: FoodSafetyPageProps) {
   const initialNormalization = normalizeSafetyQuery(
     initialRawQuery || initialQuery,
@@ -210,7 +216,10 @@ function FoodSafetyPage({
     ) => {
       const normalization = normalizeSafetyQuery(nextQuery, 'food')
       const cleanQuery = normalization.normalizedQuery
-      if (!cleanQuery) return
+      if (!cleanQuery) {
+        setAssistantContext?.(null)
+        return
+      }
 
       const requestKey = `${getSearchComparisonKey(cleanQuery)}::${nextSort}`
       if (inFlightKeyRef.current === requestKey) return
@@ -236,6 +245,7 @@ function FoodSafetyPage({
       setLoading(true)
       setError('')
       setHelper('')
+      setAssistantContext?.(null)
 
       if (options.updateUrl) {
         writeSafetyQueryToUrl(
@@ -257,9 +267,15 @@ function FoodSafetyPage({
         if (!isMountedRef.current || requestId !== requestIdRef.current) return
 
         setData(response)
+        if (response.count > 0) {
+          setAssistantContext?.(buildFoodAssistantContext(response))
+        } else {
+          setAssistantContext?.(null)
+        }
         completedKeyRef.current = requestKey
       } catch {
         if (isMountedRef.current && requestId === requestIdRef.current) {
+          setAssistantContext?.(null)
           setError('Unable to load public records. Check backend/source availability.')
         }
       } finally {
@@ -269,7 +285,7 @@ function FoodSafetyPage({
         }
       }
     },
-    [],
+    [setAssistantContext],
   )
 
   useEffect(() => {
@@ -296,6 +312,7 @@ function FoodSafetyPage({
         setLoading(false)
         setError('')
         setHelper('')
+        setAssistantContext?.(null)
         return
       }
 
@@ -317,7 +334,7 @@ function FoodSafetyPage({
     return () => {
       isCurrentEffect = false
     }
-  }, [initialQuery, initialRawQuery, loadFoodRecords])
+  }, [initialQuery, initialRawQuery, loadFoodRecords, setAssistantContext])
 
   function handleSearch() {
     const cleanInput = normalizeSearchTerm(query)
@@ -325,6 +342,7 @@ function FoodSafetyPage({
 
     if (!cleanInput && !cleanSubmittedQuery) {
       setError('')
+      setAssistantContext?.(null)
       setHelper(
         'Enter a food, supplement, brand, ingredient, or product wording to search public records.',
       )

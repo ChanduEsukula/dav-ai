@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
+  buildCosmeticAssistantContext,
+  type AssistantChatContext,
+} from '../api/assistant'
+import {
   searchCosmeticEvents,
   type CosmeticEventRecord,
   type CosmeticEventSearchResponse,
@@ -22,6 +26,7 @@ type CosmeticSafetyPageProps = {
   initialQuery: string
   initialRawQuery?: string
   goToPage: (page: ActivePage, query?: string, rawQuery?: string) => void
+  setAssistantContext?: (context: AssistantChatContext | null) => void
 }
 
 type CosmeticSearchOptions = {
@@ -327,6 +332,7 @@ function CosmeticSafetyPage({
   initialQuery,
   initialRawQuery,
   goToPage,
+  setAssistantContext,
 }: CosmeticSafetyPageProps) {
   const initialNormalization = normalizeSafetyQuery(
     initialRawQuery || initialQuery,
@@ -360,7 +366,10 @@ function CosmeticSafetyPage({
     async (nextQuery: string, options: CosmeticSearchOptions = {}) => {
       const normalization = normalizeSafetyQuery(nextQuery, 'cosmetic')
       const cleanQuery = normalization.normalizedQuery
-      if (!cleanQuery) return
+      if (!cleanQuery) {
+        setAssistantContext?.(null)
+        return
+      }
 
       const requestKey = getSearchComparisonKey(cleanQuery)
       if (inFlightKeyRef.current === requestKey) return
@@ -386,6 +395,7 @@ function CosmeticSafetyPage({
       setLoading(true)
       setError('')
       setHelper('')
+      setAssistantContext?.(null)
 
       if (options.updateUrl) {
         writeSafetyQueryToUrl(
@@ -402,9 +412,15 @@ function CosmeticSafetyPage({
         if (!isMountedRef.current || requestId !== requestIdRef.current) return
 
         setData(response)
+        if (response.count > 0) {
+          setAssistantContext?.(buildCosmeticAssistantContext(response))
+        } else {
+          setAssistantContext?.(null)
+        }
         completedKeyRef.current = requestKey
       } catch {
         if (isMountedRef.current && requestId === requestIdRef.current) {
+          setAssistantContext?.(null)
           setError('Unable to load public records. Check backend/source availability.')
         }
       } finally {
@@ -414,7 +430,7 @@ function CosmeticSafetyPage({
         }
       }
     },
-    [],
+    [setAssistantContext],
   )
 
   useEffect(() => {
@@ -440,6 +456,7 @@ function CosmeticSafetyPage({
         setLoading(false)
         setError('')
         setHelper('')
+        setAssistantContext?.(null)
         return
       }
 
@@ -458,7 +475,7 @@ function CosmeticSafetyPage({
     return () => {
       isCurrentEffect = false
     }
-  }, [initialQuery, initialRawQuery, loadCosmeticReports])
+  }, [initialQuery, initialRawQuery, loadCosmeticReports, setAssistantContext])
 
   function handleSearch() {
     const cleanInput = normalizeSearchTerm(query)
@@ -466,6 +483,7 @@ function CosmeticSafetyPage({
 
     if (!cleanInput && !cleanSubmittedQuery) {
       setError('')
+      setAssistantContext?.(null)
       setHelper(
         'Enter a cosmetic, brand, ingredient, or personal-care product to search public reports.',
       )

@@ -117,7 +117,8 @@ function App() {
   const [rawSafetyQuery, setRawSafetyQuery] = useState(
     () => getInitialSafetyQuery().rawQuery,
   )
-  const assistantContext: AssistantChatContext | null = null
+  const [assistantContext, setAssistantContext] =
+    useState<AssistantChatContext | null>(null)
 
   useEffect(() => {
     function handlePopState() {
@@ -125,6 +126,7 @@ function App() {
       const nextQuery = getInitialSafetyQuery()
       setSafetyQuery(nextQuery.query)
       setRawSafetyQuery(nextQuery.rawQuery)
+      setAssistantContext(null)
     }
 
     window.addEventListener('popstate', handlePopState)
@@ -138,6 +140,7 @@ function App() {
     setActivePage(PAGE_IDS.HOME)
     setSafetyQuery('')
     setRawSafetyQuery('')
+    setAssistantContext(null)
     updatePageInUrl(PAGE_IDS.HOME)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -146,6 +149,7 @@ function App() {
     setActivePage(PAGE_IDS.PHARMACY_SAFETY)
     setSafetyQuery('')
     setRawSafetyQuery('')
+    setAssistantContext(null)
     updatePageInUrl(PAGE_IDS.PHARMACY_SAFETY)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -154,6 +158,7 @@ function App() {
     setActivePage(PAGE_IDS.FOOD_SAFETY)
     setSafetyQuery('')
     setRawSafetyQuery('')
+    setAssistantContext(null)
     updatePageInUrl(PAGE_IDS.FOOD_SAFETY)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -162,6 +167,7 @@ function App() {
     setActivePage(PAGE_IDS.COSMETIC_SAFETY)
     setSafetyQuery('')
     setRawSafetyQuery('')
+    setAssistantContext(null)
     updatePageInUrl(PAGE_IDS.COSMETIC_SAFETY)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -172,6 +178,7 @@ function App() {
     setActivePage(page)
     setSafetyQuery(normalizedQuery)
     setRawSafetyQuery(normalizedRawQuery)
+    setAssistantContext(null)
     updatePageInUrl(page, normalizedQuery, normalizedRawQuery)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -222,6 +229,7 @@ function App() {
           initialQuery={safetyQuery}
           initialRawQuery={rawSafetyQuery}
           goToPage={goToPage}
+          setAssistantContext={setAssistantContext}
         />
       )}
 
@@ -230,6 +238,7 @@ function App() {
           initialQuery={safetyQuery}
           initialRawQuery={rawSafetyQuery}
           goToPage={goToPage}
+          setAssistantContext={setAssistantContext}
         />
       )}
 
@@ -238,6 +247,7 @@ function App() {
           initialQuery={safetyQuery}
           initialRawQuery={rawSafetyQuery}
           goToPage={goToPage}
+          setAssistantContext={setAssistantContext}
         />
       )}
 

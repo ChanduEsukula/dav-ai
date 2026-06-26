@@ -1,4 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  buildDrugEventAssistantContext,
+  buildRecallAssistantContext,
+  type AssistantChatContext,
+} from '../api/assistant'
 import { searchDrugEvents, type DrugEventSearchResponse } from '../api/drugEvents'
 import {
   searchRecalls,
@@ -22,6 +27,7 @@ type PharmacySafetyPageProps = {
   initialQuery: string
   initialRawQuery?: string
   goToPage: (page: ActivePage, query?: string, rawQuery?: string) => void
+  setAssistantContext?: (context: AssistantChatContext | null) => void
 }
 
 type PharmacySource = 'recall' | 'drug'
@@ -150,6 +156,7 @@ function PharmacySafetyPage({
   initialQuery,
   initialRawQuery,
   goToPage,
+  setAssistantContext,
 }: PharmacySafetyPageProps) {
   const initialNormalization = normalizeSafetyQuery(
     initialRawQuery || initialQuery,
@@ -190,7 +197,10 @@ function PharmacySafetyPage({
     ) => {
       const normalization = normalizeSafetyQuery(nextQuery, 'pharmacy')
       const cleanQuery = normalization.normalizedQuery
-      if (!cleanQuery) return
+      if (!cleanQuery) {
+        setAssistantContext?.(null)
+        return
+      }
 
       const requestKey = `${getSearchComparisonKey(cleanQuery)}::${nextSort}`
 
@@ -220,6 +230,7 @@ function PharmacySafetyPage({
       setError('')
       setHelper('')
       setNotice('')
+      setAssistantContext?.(null)
 
       if (options.updateUrl) {
         writeSafetyQueryToUrl(
@@ -249,6 +260,7 @@ function PharmacySafetyPage({
       setFailedSources(nextFailedSources)
 
       if (!nextRecallData && !nextDrugData) {
+        setAssistantContext?.(null)
         setError('Unable to load public records. Check backend/source availability.')
       } else if (nextFailedSources.length > 0) {
         setNotice(
@@ -258,10 +270,18 @@ function PharmacySafetyPage({
         completedKeyRef.current = requestKey
       }
 
+      if (nextDrugData && nextDrugData.count > 0) {
+        setAssistantContext?.(buildDrugEventAssistantContext(nextDrugData))
+      } else if (nextRecallData && nextRecallData.count > 0) {
+        setAssistantContext?.(buildRecallAssistantContext(nextRecallData))
+      } else {
+        setAssistantContext?.(null)
+      }
+
       inFlightKeyRef.current = ''
       setLoading(false)
     },
-    [],
+    [setAssistantContext],
   )
 
   useEffect(() => {
@@ -291,6 +311,7 @@ function PharmacySafetyPage({
         setHelper('')
         setNotice('')
         setFailedSources([])
+        setAssistantContext?.(null)
         return
       }
 
@@ -312,7 +333,7 @@ function PharmacySafetyPage({
     return () => {
       isCurrentEffect = false
     }
-  }, [initialQuery, initialRawQuery, loadPharmacyPreview])
+  }, [initialQuery, initialRawQuery, loadPharmacyPreview, setAssistantContext])
 
   function handleSearch() {
     const cleanInput = normalizeSearchTerm(query)
@@ -321,6 +342,7 @@ function PharmacySafetyPage({
     if (!cleanInput && !cleanSubmittedQuery) {
       setError('')
       setNotice('')
+      setAssistantContext?.(null)
       setHelper(
         'Enter a drug, brand, active ingredient, or product wording to search public records.',
       )
