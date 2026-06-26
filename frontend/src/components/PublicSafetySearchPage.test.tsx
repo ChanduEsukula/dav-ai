@@ -357,8 +357,8 @@ test('renders a compact Public Safety summary, workspace, and advanced details',
   expect(screen.getByRole('button', { name: 'Download Excel' })).toBeDisabled()
   expect(screen.getByText('Advanced source details')).toBeVisible()
   expect(screen.getByText('Query understanding')).not.toBeVisible()
-  expect(screen.getByText('Matched sources by evidence type')).not.toBeVisible()
-  expect(screen.getByText('Sources checked for this search')).not.toBeVisible()
+  expect(screen.getByText('Evidence types found')).not.toBeVisible()
+  expect(screen.getByText('Sources checked and verification links')).not.toBeVisible()
 
   expect(screen.getByText(/Official openFDA NDC Directory drug listing/i)).toBeInTheDocument()
   expect(screen.getByText(/UNIQUE_FULL_LABEL_WARNING_TAIL/i)).not.toBeVisible()
@@ -376,8 +376,8 @@ test('renders a compact Public Safety summary, workspace, and advanced details',
 
   await user.click(screen.getByText('Advanced source details'))
   expect(screen.getByText('Query understanding')).toBeVisible()
-  expect(screen.getByText('Matched sources by evidence type')).toBeVisible()
-  expect(screen.getByText('Sources checked for this search')).toBeVisible()
+  expect(screen.getByText('Evidence types found')).toBeVisible()
+  expect(screen.getByText('Sources checked and verification links')).toBeVisible()
   expect(screen.getAllByText('Source freshness').length).toBeGreaterThan(0)
   expect(screen.getByText('Pulled and stored')).toBeInTheDocument()
   expect(screen.getByText('Snapshot: stored')).toBeInTheDocument()

@@ -465,8 +465,8 @@ function SourceRolesPanel({
 
   return (
     <CollapsiblePanel
-      eyebrow="Source roles"
-      title="Matched sources by evidence type"
+      eyebrow="Evidence types"
+      title="Evidence types found"
       className="public-safety-source-roles"
     >
       <div className="public-safety-role-grid">
@@ -540,8 +540,8 @@ function SourceCoveragePanel({
 
   return (
     <CollapsiblePanel
-      eyebrow="Source coverage"
-      title="Sources checked for this search"
+      eyebrow="How this search was run"
+      title="Sources checked and verification links"
       className="public-safety-source-coverage"
     >
       <div className="public-safety-coverage-grid">
