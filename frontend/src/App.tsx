@@ -43,7 +43,6 @@ import DataSourcesPage from './components/DataSourcesPage'
 import AuditHistoryPage from './components/AuditHistoryPage'
 import SystemStatusPage from './components/SystemStatusPage'
 import SavedMonitorsPage from './components/SavedMonitorsPage'
-import RegionalHealthPulse from './components/RegionalHealthPulse'
 import FaqPage from './components/FaqPage'
 import AboutPage from './components/AboutPage'
 import InfoPage from './components/InfoPage'
@@ -262,7 +261,6 @@ function App() {
 
       {activePage === PAGE_IDS.SAVED_MONITORS && <SavedMonitorsPage />}
 
-      {activePage === PAGE_IDS.REGIONAL_HEALTH && <RegionalHealthPulse />}
 
       {activePage === PAGE_IDS.ABOUT && <AboutPage />}
 
