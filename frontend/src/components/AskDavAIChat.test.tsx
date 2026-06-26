@@ -194,34 +194,34 @@ describe('AskDavAIChat', () => {
   it('renders as a collapsed floating button', () => {
     render(<AskDavAIChat context={recallContext} />)
 
-    expect(screen.getByRole('button', { name: /Ask DAV AI/i })).toBeInTheDocument()
-    expect(screen.queryByRole('dialog', { name: /Ask DAV AI/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Explain These Results/i })).toBeInTheDocument()
+    expect(screen.queryByRole('dialog', { name: /Explain These Results/i })).not.toBeInTheDocument()
   })
 
   it('opens the drawer on click', () => {
     render(<AskDavAIChat context={recallContext} />)
 
-    fireEvent.click(screen.getByRole('button', { name: /Ask DAV AI/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Explain These Results/i }))
 
-    expect(screen.getByRole('dialog', { name: /Ask DAV AI/i })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: /Explain These Results/i })).toBeInTheDocument()
     expect(screen.getByText(/RecallRadar result context/i)).toBeInTheDocument()
-    expect(screen.getByText(/Source-grounded safety assistant/i)).toBeInTheDocument()
-    expect(screen.getByText(/Answers stay inside the current module result, source metadata, audit context, and safety limitations/i)).toBeInTheDocument()
+    expect(screen.getByText(/Source-grounded result explanation/i)).toBeInTheDocument()
+    expect(screen.getByText(/Explanations stay inside the current result, source metadata, audit context, and safety limitations/i)).toBeInTheDocument()
   })
 
   it('does not render a visible entry point without result context', () => {
     render(<AskDavAIChat context={null} />)
 
-    expect(screen.queryByRole('button', { name: /Ask DAV AI/i })).not.toBeInTheDocument()
-    expect(screen.queryByRole('dialog', { name: /Ask DAV AI/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Explain These Results/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('dialog', { name: /Explain These Results/i })).not.toBeInTheDocument()
   })
 
   it('sends sanitized context when asking a prompt', async () => {
     mockAskDavAI.mockResolvedValue(answer)
     render(<AskDavAIChat context={recallContext} />)
 
-    fireEvent.click(screen.getByRole('button', { name: /Ask DAV AI/i }))
-    fireEvent.click(screen.getByRole('button', { name: /Explain these results/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Explain These Results/i }))
+    fireEvent.click(screen.getByRole('button', { name: /^Explain these results$/ }))
 
     await waitFor(() => expect(mockAskDavAI).toHaveBeenCalledTimes(1))
 
@@ -236,11 +236,11 @@ describe('AskDavAIChat', () => {
     mockAskDavAI.mockResolvedValue(answer)
     render(<AskDavAIChat context={recallContext} />)
 
-    fireEvent.click(screen.getByRole('button', { name: /Ask DAV AI/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Explain These Results/i }))
     fireEvent.change(screen.getByLabelText(/Ask about the current public-data result/i), {
       target: { value: 'Where did this data come from?' },
     })
-    fireEvent.click(screen.getByRole('button', { name: /^Ask$/i }))
+    fireEvent.click(screen.getByRole('button', { name: /^Explain$/i }))
 
     expect(await screen.findByText(/public-data review context/i)).toBeInTheDocument()
     expect(screen.getByText(/Audit ID: audit-recall-1/i)).toBeInTheDocument()
@@ -251,7 +251,7 @@ describe('AskDavAIChat', () => {
     mockAskDavAI.mockResolvedValue(answer)
     render(<AskDavAIChat context={publicSafetyContext} />)
 
-    fireEvent.click(screen.getByRole('button', { name: /Ask DAV AI/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Explain These Results/i }))
 
     expect(screen.getByText(/Public Safety Search result context/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /What evidence types were found/i })).toBeInTheDocument()
@@ -272,7 +272,7 @@ describe('AskDavAIChat', () => {
     mockAskDavAI.mockResolvedValue(refusalAnswer)
     render(<AskDavAIChat context={drugContext} />)
 
-    fireEvent.click(screen.getByRole('button', { name: /Ask DAV AI/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Explain These Results/i }))
     fireEvent.click(screen.getByRole('button', { name: /What does FAERS not prove/i }))
 
     expect(await screen.findByText(/Request refused safely/i)).toBeInTheDocument()

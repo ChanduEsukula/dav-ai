@@ -136,7 +136,7 @@ test('renders Dav AI landing page', () => {
   expect(screen.queryByText('98%')).not.toBeInTheDocument()
   expect(screen.getByText('Public source records')).toBeInTheDocument()
   expect(screen.getByText('Source + retrieval context')).toBeInTheDocument()
-  expect(screen.queryByRole('button', { name: /Ask DAV AI/i })).not.toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: /Explain These Results/i })).not.toBeInTheDocument()
 })
 
 test('does not expose placeholder account pages in the main demo navigation', () => {

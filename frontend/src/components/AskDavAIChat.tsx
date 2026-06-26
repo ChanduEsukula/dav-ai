@@ -135,7 +135,7 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
       setQuestion('')
       setError('')
     } catch {
-      setError('Ask DAV AI is unavailable. Try again after the backend is running.')
+      setError('Result explanation is unavailable. Try again after the backend is running.')
     } finally {
       setLoading(false)
     }
@@ -146,29 +146,29 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
   }
 
   return (
-    <section className="ask-dav-ai-chat" aria-label="Ask DAV AI chatbot">
+    <section className="ask-dav-ai-chat" aria-label="Explain These Results panel">
       <button
         type="button"
         className="ask-dav-ai-chat__toggle"
         onClick={() => setIsOpen((current) => !current)}
         aria-expanded={isOpen}
       >
-        Ask DAV AI
+        Explain These Results
       </button>
 
       {isOpen && (
-        <div className="ask-dav-ai-chat__drawer" role="dialog" aria-label="Ask DAV AI">
+        <div className="ask-dav-ai-chat__drawer" role="dialog" aria-label="Explain These Results">
           <div className="ask-dav-ai-chat__header">
             <div>
-              <p className="eyebrow">Ask DAV AI</p>
-              <h2>Source-grounded safety assistant</h2>
+              <p className="eyebrow">Explain These Results</p>
+              <h2>Source-grounded result explanation</h2>
               <p>
-                Answers stay inside the current module result, source metadata, audit context, and
+                Explanations stay inside the current result, source metadata, audit context, and
                 safety limitations.
               </p>
             </div>
 
-            <button type="button" onClick={() => setIsOpen(false)} aria-label="Close Ask DAV AI">
+            <button type="button" onClick={() => setIsOpen(false)} aria-label="Close explanation panel">
               Close
             </button>
           </div>
@@ -207,7 +207,7 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
                 placeholder="Example: What should I verify?"
               />
               <button type="submit" disabled={loading || !question.trim()}>
-                {loading ? 'Asking...' : 'Ask'}
+                {loading ? 'Explaining...' : 'Explain'}
               </button>
             </div>
           </form>
@@ -226,7 +226,7 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
               aria-live="polite"
             >
               <div className="ask-dav-ai-chat__answer-header">
-                <span>{answer.refused ? 'Safety boundary' : 'DAV AI answer'}</span>
+                <span>{answer.refused ? 'Safety boundary' : 'Result explanation'}</span>
                 <small>{answer.model_info.provider} · {answer.model_info.model}</small>
               </div>
 
