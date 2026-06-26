@@ -147,27 +147,35 @@ test('does not expose placeholder account pages in the main demo navigation', ()
   expect(screen.queryByRole('button', { name: /Sign Up/i })).not.toBeInTheDocument()
 })
 
-test('renders the current main navigation labels', () => {
+test('renders simplified navigation with advanced workflows still available', () => {
   render(<App />)
 
   const mainNav = screen.getByRole('navigation', { name: /Main navigation/i })
+  const mainPages = within(screen.getByLabelText('Main pages'))
+  const advancedWorkflows = within(screen.getByLabelText('Advanced workflows'))
+  const informationPages = within(screen.getByLabelText('Information pages'))
+
+  for (const label of ['Home', 'Search', 'Saved Searches', 'About']) {
+    expect(mainPages.getByRole('button', { name: label })).toBeInTheDocument()
+  }
 
   for (const label of [
-    'Home',
-    'Public Safety',
     'Pharmacy Safety',
     'Food Safety',
     'Cosmetic Safety',
-    'Monitors',
     'Audit',
     'Sources',
     'System',
-    'About',
-    'FAQ',
-    'Help',
   ]) {
-    expect(within(mainNav).getByRole('button', { name: label })).toBeInTheDocument()
+    expect(advancedWorkflows.getByRole('button', { name: label })).toBeInTheDocument()
   }
+
+  for (const label of ['FAQ', 'Help']) {
+    expect(informationPages.getByRole('button', { name: label })).toBeInTheDocument()
+  }
+
+  expect(within(mainNav).queryByRole('button', { name: 'Public Safety' })).not.toBeInTheDocument()
+  expect(within(mainNav).queryByRole('button', { name: 'Monitors' })).not.toBeInTheDocument()
 })
 
 test('opens ProductScan from the homepage experiment entry without adding primary nav', () => {
@@ -187,22 +195,35 @@ test('opens ProductScan from the homepage experiment entry without adding primar
 test('renders focused navigation groups in the pill nav', () => {
   render(<App />)
 
-  expect(screen.getByRole('button', { name: 'About' }).closest('.nav-links')).toBeInTheDocument()
-  expect(screen.getByRole('button', { name: 'About' }).closest('.nav-actions')).not.toBeInTheDocument()
+  for (const label of ['Home', 'Search', 'Saved Searches', 'About']) {
+    const navButton = screen.getByRole('button', { name: label })
+
+    expect(navButton.closest('.nav-links')).toBeInTheDocument()
+    expect(navButton.closest('.nav-links-secondary')).not.toBeInTheDocument()
+    expect(navButton.closest('.nav-actions')).not.toBeInTheDocument()
+  }
+
+  for (const label of [
+    'Pharmacy Safety',
+    'Food Safety',
+    'Cosmetic Safety',
+    'Audit',
+    'Sources',
+    'System',
+  ]) {
+    const navButton = screen.getByRole('button', { name: label })
+
+    expect(navButton.closest('.nav-links-secondary')).toBeInTheDocument()
+  }
 
   for (const label of ['FAQ', 'Help']) {
     const navButton = screen.getByRole('button', { name: label })
 
     expect(navButton.closest('.nav-actions')).toBeInTheDocument()
-    expect(navButton.closest('.nav-links')).toBeInTheDocument()
   }
 
-  for (const label of ['Monitors', 'Audit', 'Sources', 'System']) {
-    const navButton = screen.getByRole('button', { name: label })
-
-    expect(navButton.closest('.nav-links-secondary')).toBeInTheDocument()
-    expect(navButton.closest('.nav-links')).toBeInTheDocument()
-  }
+  expect(screen.queryByRole('button', { name: 'Public Safety' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: 'Monitors' })).not.toBeInTheDocument()
 })
 
 test('shows Help Docs Search on the Help page', () => {

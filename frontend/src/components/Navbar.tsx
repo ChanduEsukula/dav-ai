@@ -64,7 +64,7 @@ function Navbar({
         {primaryNavItems.map(renderNavItem)}
       </div>
 
-      <div className="nav-links nav-links-secondary" aria-label="Advanced operations">
+      <div className="nav-links nav-links-secondary" aria-label="Advanced workflows">
         {operationsNavItems.map(renderNavItem)}
       </div>
 
