@@ -46,6 +46,7 @@ function contextLabel(context: AssistantChatContext | null) {
     drug_event: 'DrugSignal result context',
     food: 'FoodRadar result context',
     cosmetic: 'CosmeticSignal result context',
+    public_safety: 'Public Safety Search result context',
   }
 
   return labels[context.module]
@@ -59,6 +60,7 @@ function contextBadge(context: AssistantChatContext | null) {
     drug_event: 'DrugSignal',
     food: 'FoodRadar',
     cosmetic: 'CosmeticSignal',
+    public_safety: 'Public Safety Search',
   }
 
   return badges[context.module]

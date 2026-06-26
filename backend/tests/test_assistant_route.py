@@ -92,6 +92,84 @@ def drug_payload(question: str = "Explain these reports") -> dict:
     }
 
 
+def public_safety_payload(question: str = "Explain these public safety results") -> dict:
+    return {
+        "module": "public_safety",
+        "question": question,
+        "page_context": {
+            "query": "air fryer",
+            "count": 1,
+            "source_name": "DavAI Public Safety Search",
+            "endpoint": "/api/v1/real-world-safety/search",
+            "retrieval_timestamp": "2026-06-02T18:00:00Z",
+            "audit_id": "audit-public-safety-1",
+            "limitations": [
+                "Public data only. Verify exact product identifiers with the official source."
+            ],
+            "public_safety": {
+                "summary": {
+                    "query_type": "consumer_product",
+                    "recall_or_enforcement_found": True,
+                    "reference_or_label_found": False,
+                    "signal_report_found": False,
+                    "plain_language_summary": "An official public safety record matched this search.",
+                    "suggested_next_steps": [
+                        "Verify the exact model and recall number.",
+                        "Open the official source record.",
+                    ],
+                    "caveat": "No result or partial result is not a safety guarantee.",
+                },
+                "identifier_check": {
+                    "user_message": "Verify model, lot, UPC, NDC, UDI, VIN, or recall number when available.",
+                    "detected": [],
+                    "to_verify": [
+                        {
+                            "type": "model",
+                            "label": "Model number",
+                            "value": "AF-100",
+                            "source": "public safety result",
+                            "reason": "Model numbers determine whether a specific unit is affected.",
+                        }
+                    ],
+                },
+                "sources_checked": [
+                    {
+                        "source_id": "cpsc_recalls",
+                        "source_name": "CPSC Recalls",
+                        "source_type": "consumer_product_recall",
+                        "source_kind": "structured_api",
+                        "upstream_status": "ok",
+                        "record_count": 1,
+                    }
+                ],
+                "sources_failed": [],
+                "top_records": [
+                    {
+                        "title": "Example Air Fryer Recall",
+                        "product_name": "Example Air Fryer",
+                        "brand_name": "ExampleBrand",
+                        "company_name": "Example Company",
+                        "source_name": "CPSC Recalls",
+                        "source_type": "consumer_product_recall",
+                        "source_kind": "structured_api",
+                        "category": "consumer_product",
+                        "reason": "Fire and burn hazard",
+                        "hazard_type": "fire",
+                        "remedy": "Stop use and contact firm for remedy.",
+                        "published_date": "2026-06-01",
+                        "recall_number": "26-123",
+                        "affected_models": ["AF-100"],
+                        "affected_lots": [],
+                        "record_url": "https://www.cpsc.gov/example",
+                        "extraction_confidence": None,
+                        "source_text_excerpt": "Example official recall excerpt.",
+                    }
+                ],
+            },
+        },
+    }
+
+
 def test_assistant_returns_safe_recall_answer(monkeypatch):
     monkeypatch.setattr(
         "app.services.assistant_service.get_assistant_provider",
@@ -128,6 +206,26 @@ def test_assistant_returns_safe_drugsignal_answer(monkeypatch):
     assert "Gait disturbance" in " ".join(body["bullets"])
     assert "do not prove causation" in " ".join(body["limitations"])
 
+
+
+def test_assistant_returns_safe_public_safety_answer(monkeypatch):
+    monkeypatch.setattr(
+        "app.services.assistant_service.get_assistant_provider",
+        lambda: SafeFakeProvider(),
+    )
+
+    client = TestClient(app)
+    response = client.post("/api/v1/assistant/chat", json=public_safety_payload())
+
+    assert response.status_code == 200
+
+    body = response.json()
+    assert body["refused"] is False
+    assert body["model_info"] == {"provider": "fake", "model": "safe-test-model"}
+    assert "audit-public-safety-1" in str(body["source_citations"])
+    assert "Example Air Fryer Recall" in " ".join(body["bullets"])
+    assert "not medical advice" in " ".join(body["limitations"]).lower()
+    assert "safety guarantee" in " ".join(body["limitations"]).lower()
 
 def test_assistant_refuses_medication_guidance(monkeypatch):
     def fail_if_called():

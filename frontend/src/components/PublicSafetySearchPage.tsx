@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import {
+  buildPublicSafetyAssistantContext,
+  type AssistantChatContext,
+} from '../api/assistant'
+import {
   searchRealWorldSafety,
   type RealWorldSafetyRecord,
   type RealWorldSafetySearchResponse,
@@ -17,6 +21,7 @@ import SourceDetailsDisclosure from './SourceDetailsDisclosure'
 type PublicSafetySearchPageProps = {
   initialQuery: string
   initialRawQuery?: string
+  setAssistantContext?: (context: AssistantChatContext | null) => void
 }
 
 type SearchOptions = {
@@ -1056,6 +1061,7 @@ function ResultsList({
 function PublicSafetySearchPage({
   initialQuery,
   initialRawQuery,
+  setAssistantContext,
 }: PublicSafetySearchPageProps) {
   const initialSearchTerm = normalizeSearchTerm(initialRawQuery || initialQuery)
   const [query, setQuery] = useState(initialSearchTerm)
@@ -1092,6 +1098,7 @@ function PublicSafetySearchPage({
           'Enter a product, vehicle, NDC, UPC, VIN, drug, device, or consumer product to search public safety records.',
         )
         setError('')
+        setAssistantContext?.(null)
         return
       }
 
@@ -1104,6 +1111,7 @@ function PublicSafetySearchPage({
         setSubmittedQuery(cleanQuery)
         setError('')
         setHelper('')
+        setAssistantContext?.(null)
         return
       }
 
@@ -1115,6 +1123,7 @@ function PublicSafetySearchPage({
       setQuery(cleanQuery)
       setSubmittedQuery(cleanQuery)
       setData(null)
+      setAssistantContext?.(null)
       setLoading(true)
       setError('')
       setHelper('')
@@ -1129,9 +1138,15 @@ function PublicSafetySearchPage({
         if (!isMountedRef.current || requestId !== requestIdRef.current) return
 
         setData(response)
+        if (response.total_matches > 0) {
+          setAssistantContext?.(buildPublicSafetyAssistantContext(response))
+        } else {
+          setAssistantContext?.(null)
+        }
         completedKeyRef.current = requestKey
       } catch {
         if (isMountedRef.current && requestId === requestIdRef.current) {
+          setAssistantContext?.(null)
           setError(
             'Unable to load public safety records. Check backend/source availability and try again.',
           )
@@ -1143,7 +1158,7 @@ function PublicSafetySearchPage({
         }
       }
     },
-    [],
+    [setAssistantContext],
   )
 
   useEffect(() => {
@@ -1161,6 +1176,7 @@ function PublicSafetySearchPage({
         setQuery('')
         setSubmittedQuery('')
         setData(null)
+        setAssistantContext?.(null)
         setLoading(false)
         setError('')
         setHelper('')

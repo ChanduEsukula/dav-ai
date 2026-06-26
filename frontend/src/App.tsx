@@ -221,6 +221,7 @@ function App() {
         <PublicSafetySearchPage
           initialQuery={safetyQuery}
           initialRawQuery={rawSafetyQuery}
+          setAssistantContext={setAssistantContext}
         />
       )}
 
