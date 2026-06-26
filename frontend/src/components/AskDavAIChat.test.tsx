@@ -81,6 +81,78 @@ const drugContext: AssistantChatContext = {
   },
 }
 
+const publicSafetyContext: AssistantChatContext = {
+  module: 'public_safety',
+  page_context: {
+    query: 'air fryer',
+    count: 1,
+    source_name: 'DavAI Public Safety Search',
+    endpoint: '/api/v1/real-world-safety/search',
+    retrieval_timestamp: '2026-06-02T18:00:00Z',
+    audit_id: 'audit-public-safety-1',
+    limitations: [
+      'Public data only. Verify exact product identifiers with the official source.',
+    ],
+    public_safety: {
+      summary: {
+        query_type: 'consumer_product',
+        recall_or_enforcement_found: true,
+        reference_or_label_found: false,
+        signal_report_found: false,
+        plain_language_summary: 'An official public safety record matched this search.',
+        suggested_next_steps: ['Verify the exact model and recall number.'],
+        caveat: 'No result or partial result is not a safety guarantee.',
+      },
+      identifier_check: {
+        user_message: 'Verify exact identifiers before acting.',
+        detected: [],
+        to_verify: [
+          {
+            type: 'model',
+            label: 'Model number',
+            value: 'AF-100',
+            source: 'public safety result',
+            reason: 'Model numbers determine whether a specific unit is affected.',
+          },
+        ],
+      },
+      sources_checked: [
+        {
+          source_id: 'cpsc_recalls',
+          source_name: 'CPSC Recalls',
+          source_type: 'consumer_product_recall',
+          source_kind: 'structured_api',
+          upstream_status: 'ok',
+          record_count: 1,
+        },
+      ],
+      sources_failed: [],
+      top_records: [
+        {
+          title: 'Example Air Fryer Recall',
+          product_name: 'Example Air Fryer',
+          brand_name: 'ExampleBrand',
+          company_name: 'Example Company',
+          source_name: 'CPSC Recalls',
+          source_type: 'consumer_product_recall',
+          source_kind: 'structured_api',
+          category: 'consumer_product',
+          reason: 'Fire and burn hazard',
+          hazard_type: 'fire',
+          remedy: 'Stop use and contact firm for remedy.',
+          published_date: '2026-06-01',
+          recall_number: '26-123',
+          affected_models: ['AF-100'],
+          affected_lots: [],
+          record_url: 'https://www.cpsc.gov/example',
+          extraction_confidence: null,
+          source_text_excerpt: 'Example official recall excerpt.',
+        },
+      ],
+    },
+  },
+}
+
 const answer: AssistantChatResponse = {
   answer: 'DAV AI can explain the public-data review context for this result.',
   bullets: ['Verify the source details.', 'Use the audit ID for traceability.'],
@@ -173,6 +245,27 @@ describe('AskDavAIChat', () => {
     expect(await screen.findByText(/public-data review context/i)).toBeInTheDocument()
     expect(screen.getByText(/Audit ID: audit-recall-1/i)).toBeInTheDocument()
     expect(screen.getAllByText(/Not medical advice/i).length).toBeGreaterThan(0)
+  })
+
+  it('renders Public Safety-specific suggested prompts and sends the selected question', async () => {
+    mockAskDavAI.mockResolvedValue(answer)
+    render(<AskDavAIChat context={publicSafetyContext} />)
+
+    fireEvent.click(screen.getByRole('button', { name: /Ask DAV AI/i }))
+
+    expect(screen.getByText(/Public Safety Search result context/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /What evidence types were found/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Which sources were checked/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /What identifiers should I verify/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Is this a recall or reference record/i })).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /What evidence types were found/i }))
+
+    await waitFor(() => expect(mockAskDavAI).toHaveBeenCalledTimes(1))
+    expect(mockAskDavAI).toHaveBeenCalledWith({
+      ...publicSafetyContext,
+      question: 'What evidence types were found in this Public Safety Search?',
+    })
   })
 
   it('displays a refusal state', async () => {

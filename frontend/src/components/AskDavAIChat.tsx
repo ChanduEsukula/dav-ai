@@ -38,6 +38,25 @@ const drugSignalPrompt: PromptChip = {
   question: 'What does FAERS not prove from these reports?',
 }
 
+const publicSafetyPrompts: PromptChip[] = [
+  {
+    label: 'What evidence types were found?',
+    question: 'What evidence types were found in this Public Safety Search?',
+  },
+  {
+    label: 'Which sources were checked?',
+    question: 'Which public safety sources were checked for this search?',
+  },
+  {
+    label: 'What identifiers should I verify?',
+    question: 'What identifiers should I verify before acting on these public safety results?',
+  },
+  {
+    label: 'Is this a recall or reference record?',
+    question: 'Does this Public Safety Search show a recall, a reference record, an adverse-event signal, or another evidence type?',
+  },
+]
+
 function contextLabel(context: AssistantChatContext | null) {
   if (!context) return 'No result context'
 
@@ -90,6 +109,10 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
   const prompts = useMemo(() => {
     if (context?.module === 'drug_event') {
       return [...basePrompts, drugSignalPrompt]
+    }
+
+    if (context?.module === 'public_safety') {
+      return [...publicSafetyPrompts, ...basePrompts]
     }
 
     return basePrompts
