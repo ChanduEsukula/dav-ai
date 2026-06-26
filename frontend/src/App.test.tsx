@@ -118,10 +118,6 @@ test('renders Dav AI landing page', () => {
   ).toBeInTheDocument()
 
   expect(
-    screen.getByRole('heading', { name: /Public-data intelligence at a glance/i }),
-  ).toBeInTheDocument()
-
-  expect(
     screen.queryByRole('heading', { name: /Search public FDA recall signals/i }),
   ).not.toBeInTheDocument()
 

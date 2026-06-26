@@ -37,8 +37,6 @@ import ProductScanPage from './components/ProductScanPage'
 import ProductScanTeaser from './components/ProductScanTeaser'
 import Hero from './components/Hero'
 import SafetyWorkspace from './components/SafetyWorkspace'
-import OperationalOverview from './components/OperationalOverview'
-import Signals from './components/Signals'
 import DataSourcesPage from './components/DataSourcesPage'
 import AuditHistoryPage from './components/AuditHistoryPage'
 import SystemStatusPage from './components/SystemStatusPage'
@@ -210,9 +208,6 @@ function App() {
 
           <ProductScanTeaser openProductScan={() => goToPage(PAGE_IDS.PRODUCT_SCAN)} />
 
-          <OperationalOverview goToPharmacySafety={goToPharmacySafety} />
-
-          <Signals />
         </>
       )}
 
