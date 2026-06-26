@@ -200,6 +200,8 @@ function App() {
             goToAbout={() => goToPage(PAGE_IDS.ABOUT)}
           />
 
+          <UniversalSafetySearch goToPage={goToPage} />
+
           <SafetyWorkspace
             goToPharmacySafety={goToPharmacySafety}
             goToFoodSafety={goToFoodSafety}
@@ -207,8 +209,6 @@ function App() {
           />
 
           <ProductScanTeaser openProductScan={() => goToPage(PAGE_IDS.PRODUCT_SCAN)} />
-
-          <UniversalSafetySearch goToPage={goToPage} />
 
           <OperationalOverview goToPharmacySafety={goToPharmacySafety} />
 

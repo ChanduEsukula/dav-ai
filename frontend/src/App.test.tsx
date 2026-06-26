@@ -110,11 +110,11 @@ test('renders Dav AI landing page', () => {
   expect(screen.getByRole('button', { name: /How it works/i })).toBeInTheDocument()
 
   expect(
-    screen.getByRole('heading', { name: /Choose a safety lens/i }),
+    screen.getByRole('heading', { name: /Safety Record Search/i }),
   ).toBeInTheDocument()
 
   expect(
-    screen.getByRole('heading', { name: /Search across Dav AI records/i }),
+    screen.getByRole('heading', { name: /Choose a safety lens/i }),
   ).toBeInTheDocument()
 
   expect(

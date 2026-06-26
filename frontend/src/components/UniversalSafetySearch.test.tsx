@@ -72,10 +72,10 @@ test('shows quiet guidance for an empty universal search', async () => {
   const user = userEvent.setup()
   render(<UniversalSafetySearch goToPage={mockGoToPage} />)
 
-  await user.click(screen.getByRole('button', { name: 'Analyze' }))
+  await user.click(screen.getByRole('button', { name: 'Search records' }))
 
   expect(screen.getByRole('status')).toHaveTextContent(
-    /Enter a product, vehicle, drug, brand, food, supplement, cosmetic, identifier, or ingredient/i,
+    /Enter a product, drug, food, vehicle, device, brand, identifier, or ingredient/i,
   )
   expect(mockSearchRecalls).not.toHaveBeenCalled()
 })
@@ -88,7 +88,7 @@ test('normalizes universal search whitespace before API and route navigation', a
     screen.getByLabelText(/Safety search/i),
     '   xanax   xr  ',
   )
-  await user.click(screen.getByRole('button', { name: 'Analyze' }))
+  await user.click(screen.getByRole('button', { name: 'Search records' }))
 
   await waitFor(() => {
     expect(mockSearchRecalls).toHaveBeenCalledWith('xanax xr', 3)
@@ -101,7 +101,7 @@ test('normalizes universal search whitespace before API and route navigation', a
 
 test.each([
   ['XANAX', 'pharmacy', 'looks like a drug or medication search'],
-  ['Chicken', 'food', 'looks like a food or supplement search'],
+  ['strawberry', 'food', 'looks like a food or supplement search'],
   ['Sunscreen SPF 50', 'cosmetic', 'looks like a cosmetic or personal-care search'],
 ] as const)(
   'routes the obvious %s example to %s predictably',
@@ -110,7 +110,7 @@ test.each([
     render(<UniversalSafetySearch goToPage={mockGoToPage} />)
 
     await user.type(screen.getByLabelText(/Safety search/i), query)
-    await user.click(screen.getByRole('button', { name: 'Analyze' }))
+    await user.click(screen.getByRole('button', { name: 'Search records' }))
 
     expect(await screen.findByText(new RegExp(previewText, 'i'))).toBeInTheDocument()
 
@@ -139,22 +139,22 @@ test.each([
   'Advil',
   'tylonal',
   'blood sugar monitor',
-] as const)('routes %s to Public Safety Search from universal search', async (query) => {
+] as const)('routes %s to Safety Record Search from universal search', async (query) => {
   const user = userEvent.setup()
   render(<UniversalSafetySearch goToPage={mockGoToPage} />)
 
   await user.type(screen.getByLabelText(/Safety search/i), query)
-  await user.click(screen.getByRole('button', { name: 'Analyze' }))
+  await user.click(screen.getByRole('button', { name: 'Search records' }))
 
   expect(
-    await screen.findByText(new RegExp(`${query} belongs in Public Safety Search`, 'i')),
+    await screen.findByText(new RegExp(`${query} belongs in Safety Record Search`, 'i')),
   ).toBeInTheDocument()
   expect(mockSearchRecalls).not.toHaveBeenCalled()
   expect(mockSearchDrugEvents).not.toHaveBeenCalled()
   expect(mockSearchEverydaySafety).not.toHaveBeenCalled()
   expect(mockSearchCosmeticEvents).not.toHaveBeenCalled()
 
-  await user.click(screen.getByRole('button', { name: 'Open Public Safety Search' }))
+  await user.click(screen.getByRole('button', { name: 'Open Safety Record Search' }))
   expect(mockGoToPage).toHaveBeenCalledWith('public-safety', query)
 })
 
@@ -164,12 +164,12 @@ test('does not repeat a completed equivalent universal search', async () => {
 
   const input = screen.getByLabelText(/Safety search/i)
   await user.type(input, 'Xanax')
-  await user.click(screen.getByRole('button', { name: 'Analyze' }))
+  await user.click(screen.getByRole('button', { name: 'Search records' }))
   await screen.findByText(/3 possible public records found/i)
 
   await user.clear(input)
   await user.type(input, '  XANAX  ')
-  await user.click(screen.getByRole('button', { name: 'Analyze' }))
+  await user.click(screen.getByRole('button', { name: 'Search records' }))
 
   expect(mockSearchRecalls).toHaveBeenCalledTimes(1)
   expect(mockSearchDrugEvents).toHaveBeenCalledTimes(1)
@@ -180,15 +180,15 @@ test('example chips clear previous universal search guidance', async () => {
   const user = userEvent.setup()
   render(<UniversalSafetySearch goToPage={mockGoToPage} />)
 
-  await user.click(screen.getByRole('button', { name: 'Analyze' }))
+  await user.click(screen.getByRole('button', { name: 'Search records' }))
   expect(screen.getByRole('status')).toHaveTextContent(
-    /Enter a product, vehicle, drug, brand, food, supplement, cosmetic, identifier, or ingredient/i,
+    /Enter a product, drug, food, vehicle, device, brand, identifier, or ingredient/i,
   )
 
-  await user.click(screen.getByRole('button', { name: 'Chicken' }))
+  await user.click(screen.getByRole('button', { name: 'Toyota Camry' }))
 
   expect(
-    await screen.findByText(/Chicken looks like a food or supplement search/i),
+    await screen.findByText(/Toyota Camry belongs in Safety Record Search/i),
   ).toBeInTheDocument()
   expect(
     screen.queryByText(
@@ -203,7 +203,7 @@ test('normalizes an approved homepage alias and preserves the original route que
 
   const input = screen.getByLabelText(/Safety search/i)
   await user.type(input, 'strawberries')
-  await user.click(screen.getByRole('button', { name: 'Analyze' }))
+  await user.click(screen.getByRole('button', { name: 'Search records' }))
 
   await waitFor(() => {
     expect(mockSearchEverydaySafety).toHaveBeenCalledWith('strawberry', 5)
