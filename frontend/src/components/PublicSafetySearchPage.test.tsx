@@ -614,3 +614,108 @@ test('shows a clarification state for ambiguous Public Safety searches', async (
   expect(screen.getByRole('button', { name: 'Vehicle' })).toBeInTheDocument()
   expect(screen.queryByText('No returned records')).not.toBeInTheDocument()
 })
+
+
+test('sets Public Safety assistant context after a successful search', async () => {
+  const user = userEvent.setup()
+  const setAssistantContext = vi.fn()
+
+  render(
+    <PublicSafetySearchPage
+      initialQuery=""
+      setAssistantContext={setAssistantContext}
+    />,
+  )
+
+  await user.type(screen.getByLabelText(/Safety record search/i), 'Advil')
+  await user.click(screen.getByRole('button', { name: 'Search' }))
+
+  await waitFor(() => {
+    expect(setAssistantContext).toHaveBeenCalledWith(
+      expect.objectContaining({
+        module: 'public_safety',
+        page_context: expect.objectContaining({
+          query: 'Advil',
+          count: 1,
+          source_name: 'DavAI Public Safety Search',
+          endpoint: '/api/v1/real-world-safety/search',
+          audit_id: 'audit-openfda-ndc',
+          public_safety: expect.objectContaining({
+            summary: expect.objectContaining({
+              query_type: 'drug',
+              reference_or_label_found: true,
+            }),
+            top_records: expect.arrayContaining([
+              expect.objectContaining({
+                title: 'openFDA NDC listing: Advil (ibuprofen)',
+                source_name: 'openFDA NDC Directory API',
+                product_name: 'Advil',
+              }),
+            ]),
+          }),
+        }),
+      }),
+    )
+  })
+
+  const latestContextCall = setAssistantContext.mock.calls
+    .map((call) => call[0])
+    .filter(Boolean)
+    .at(-1)
+
+  expect(JSON.stringify(latestContextCall)).not.toContain('raw_payload_hash')
+  expect(JSON.stringify(latestContextCall)).not.toContain('hash-advil')
+})
+
+test('clears Public Safety assistant context when a search returns no matches', async () => {
+  const user = userEvent.setup()
+  const setAssistantContext = vi.fn()
+
+  render(
+    <PublicSafetySearchPage
+      initialQuery=""
+      setAssistantContext={setAssistantContext}
+    />,
+  )
+
+  await user.type(screen.getByLabelText(/Safety record search/i), 'sunscreen')
+  await user.click(screen.getByRole('button', { name: 'Search' }))
+
+  await waitFor(() => {
+    expect(mockSearchRealWorldSafety).toHaveBeenCalledWith('sunscreen', 10, 'score')
+  })
+
+  await waitFor(() => {
+    expect(setAssistantContext).toHaveBeenLastCalledWith(null)
+  })
+
+  expect(await screen.findByText(/No matching public record was found/i)).toBeInTheDocument()
+})
+
+test('clears Public Safety assistant context when a search fails', async () => {
+  const user = userEvent.setup()
+  const setAssistantContext = vi.fn()
+  mockSearchRealWorldSafety.mockRejectedValueOnce(new Error('source unavailable'))
+
+  render(
+    <PublicSafetySearchPage
+      initialQuery=""
+      setAssistantContext={setAssistantContext}
+    />,
+  )
+
+  await user.type(screen.getByLabelText(/Safety record search/i), 'battery')
+  await user.click(screen.getByRole('button', { name: 'Search' }))
+
+  await waitFor(() => {
+    expect(mockSearchRealWorldSafety).toHaveBeenCalledWith('battery', 10, 'score')
+  })
+
+  await waitFor(() => {
+    expect(setAssistantContext).toHaveBeenLastCalledWith(null)
+  })
+
+  expect(
+    await screen.findByText(/Unable to load public safety records/i),
+  ).toBeInTheDocument()
+})
