@@ -7,7 +7,7 @@ import {
 } from '../api/auditEvents'
 import { PAGE_IDS } from '../types/navigation'
 
-type ModuleFilter = 'all' | 'RecallRadar' | 'DrugSignal' | 'FoodRadar' | 'RegionalHealthPulse'
+type ModuleFilter = 'all' | 'RecallRadar' | 'DrugSignal' | 'FoodRadar'
 type StatusFilter = 'all' | 'success' | 'empty' | 'error'
 type AuditDetailViewMode = 'basic' | 'technical'
 
@@ -448,7 +448,6 @@ export default function AuditHistoryPage() {
                 <option value="RecallRadar">RecallRadar</option>
                 <option value="DrugSignal">DrugSignal</option>
                 <option value="FoodRadar">FoodRadar</option>
-                <option value="RegionalHealthPulse">Regional Health Pulse</option>
               </select>
             </label>
 

@@ -8,7 +8,7 @@ function AboutPage() {
           Dav AI is a full-stack public safety intelligence platform that turns
           fragmented recall, adverse-event, and scaffolded public-health signal data
           into clear, source-aware review workflows. The current MVP includes RecallRadar,
-          DrugSignal, Regional Health Pulse, deterministic safety briefings, Audit History,
+          DrugSignal, deterministic safety briefings, Audit History,
           Data Sources, System/Data Quality, and Saved Monitors.
         </p>
       </div>
@@ -19,7 +19,7 @@ function AboutPage() {
           <h3>What the app does</h3>
           <p>
             Dav AI helps users search public FDA recall records, explore FAERS
-            adverse-event reporting patterns, review Regional Health Pulse scaffold
+            adverse-event reporting patterns, and review saved public-data monitors
             signals, inspect source metadata, save repeatable monitors, and generate
             role-based safety briefings grounded in structured public data.
           </p>
@@ -41,7 +41,7 @@ function AboutPage() {
           <h3>Data source transparency</h3>
           <p>
             Current workflows use public openFDA Drug Enforcement data, public openFDA
-            Drug Event data, and a clearly labeled Regional Health Pulse MVP scaffold.
+            Drug Event data, and clearly labeled public-data limitations.
             Each result keeps source details visible, including retrieval timestamp,
             source name, endpoint, audit ID, transform version, and technical audit context.
           </p>
@@ -66,7 +66,7 @@ function AboutPage() {
         <p>
           Dav AI is designed for users who need to review public safety information
           without manually searching multiple government portals. The current system includes
-          RecallRadar, DrugSignal, Regional Health Pulse MVP scaffold, role-based briefings,
+          RecallRadar, DrugSignal, role-based briefings,
           source transparency, audit persistence, data-quality visibility, and Saved Monitors
           for repeatable public-data searches. Future phases may add production Cron activation,
           alert delivery, authentication/RBAC, deployment hardening, live CDC/HHS-backed
@@ -98,7 +98,7 @@ function AboutPage() {
         <span>
           Dav AI is not FDA approved, not medical advice, and not a replacement for FDA,
           CDC, clinician, pharmacist, or emergency guidance. FAERS reports are safety signals
-          only and do not prove causation. Regional Health Pulse is currently an MVP scaffold,
+          only and do not prove causation. Some advanced modules are intentionally labeled as public-data review workflows,
           not live CDC/HHS surveillance.
         </span>
       </div>

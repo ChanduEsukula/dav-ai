@@ -55,9 +55,9 @@ const checkedMonitor: SavedMonitor = {
 const healthPulseMonitor: SavedMonitor = {
   ...baseMonitor,
   id: 'monitor-health-pulse',
-  name: 'Minnesota respiratory monitor',
+  name: 'Food recall monitor',
   query: 'MN respiratory',
-  module: 'regional_health_pulse',
+  module: 'foodradar',
   latest_audit_id: '33333333-3333-3333-3333-333333333333',
   latest_score: 46,
   previous_score: 32,
@@ -177,7 +177,7 @@ describe('SavedMonitorsPage', () => {
     })
   })
 
-  it('renders Regional Health Pulse saved monitors', async () => {
+  it('renders food saved monitors without exposing retired Pulse branding', async () => {
     vi.mocked(listSavedMonitors).mockResolvedValue([healthPulseMonitor])
     vi.mocked(getSavedMonitorInsight).mockResolvedValue({
       ...baseInsight,
@@ -193,10 +193,10 @@ describe('SavedMonitorsPage', () => {
     render(<SavedMonitorsPage />)
 
     await waitFor(() => {
-      expect(screen.getByText('Minnesota respiratory monitor')).toBeInTheDocument()
+      expect(screen.getByText('Food recall monitor')).toBeInTheDocument()
       expectTextContent(/Query:\s*MN respiratory/i)
-      expect(screen.getAllByText('Regional Health Pulse').length).toBeGreaterThan(0)
-      expectTextContent(/Regional Health Pulse\s*·\s*checked/i)
+      expect(screen.queryByText('Regional Health Pulse')).not.toBeInTheDocument()
+      expectTextContent(/FoodRadar\s*·\s*checked/i)
       expect(screen.getByText('46')).toBeInTheDocument()
       expectTextContent(/Previous:\s*32/i)
       expect(screen.getByText('Score +14')).toBeInTheDocument()
@@ -397,74 +397,15 @@ describe('SavedMonitorsPage', () => {
     expect(screen.getByText(/Cosmetic monitor creation/i)).toBeInTheDocument()
   })
 
-  it('creates a Regional Health Pulse saved monitor with query guidance', async () => {
-    vi.mocked(listSavedMonitors).mockResolvedValue([])
-    vi.mocked(createSavedMonitor).mockResolvedValue({
-      ...healthPulseMonitor,
-      id: 'monitor-created-health-pulse',
-    })
-    vi.mocked(getSavedMonitorInsight).mockResolvedValue({
-      ...baseInsight,
-      monitor_id: 'monitor-created-health-pulse',
-      label: 'insufficient_history',
-      headline: 'Insufficient history',
-      latest_record_count: null,
-      previous_record_count: null,
-      record_count_delta: null,
-      percent_change: null,
-      latest_score: null,
-      previous_score: null,
-      score_delta: null,
-      confidence: 'low',
-    })
-
-    render(<SavedMonitorsPage />)
-
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          'No saved monitors yet. Create one above to start the monitoring workflow.',
-        ),
-      ).toBeInTheDocument()
-    })
-
-    fireEvent.change(screen.getByLabelText('Module'), {
-      target: { value: 'regional_health_pulse' },
-    })
-
-    expect(
-      screen.getByText(/Use format: MN respiratory/i),
-    ).toBeInTheDocument()
-
-    fireEvent.change(screen.getByLabelText('Monitor name'), {
-      target: { value: 'Minnesota respiratory monitor' },
-    })
-    fireEvent.change(screen.getByLabelText('Search query'), {
-      target: { value: 'MN respiratory' },
-    })
-
-    fireEvent.click(screen.getByRole('button', { name: 'Save Monitor' }))
-
-    await waitFor(() => {
-      expect(createSavedMonitor).toHaveBeenCalledWith({
-        name: 'Minnesota respiratory monitor',
-        query: 'MN respiratory',
-        module: 'regional_health_pulse',
-      })
-      expect(screen.getByText('Minnesota respiratory monitor')).toBeInTheDocument()
-      expect(screen.getAllByText('Regional Health Pulse').length).toBeGreaterThan(0)
-      expect(screen.getByText('Insufficient history')).toBeInTheDocument()
-    })
-  })
 
   it('trims leading and trailing spaces but preserves internal query spaces', async () => {
     vi.mocked(listSavedMonitors).mockResolvedValue([])
     vi.mocked(createSavedMonitor).mockResolvedValue({
       ...healthPulseMonitor,
       id: 'monitor-spaces',
-      name: 'Minnesota respiratory monitor',
-      query: 'MN hospital pressure',
-      module: 'regional_health_pulse',
+      name: 'Food recall monitor',
+      query: 'organic spinach recall',
+      module: 'foodradar',
     })
     vi.mocked(getSavedMonitorInsight).mockResolvedValue({
       ...baseInsight,
@@ -492,22 +433,22 @@ describe('SavedMonitorsPage', () => {
     })
 
     fireEvent.change(screen.getByLabelText('Module'), {
-      target: { value: 'regional_health_pulse' },
+      target: { value: 'foodradar' },
     })
     fireEvent.change(screen.getByLabelText('Monitor name'), {
-      target: { value: '  Minnesota respiratory monitor  ' },
+      target: { value: '  Food recall monitor  ' },
     })
     fireEvent.change(screen.getByLabelText('Search query'), {
-      target: { value: '  MN hospital pressure  ' },
+      target: { value: '  organic spinach recall  ' },
     })
 
     fireEvent.click(screen.getByRole('button', { name: 'Save Monitor' }))
 
     await waitFor(() => {
       expect(createSavedMonitor).toHaveBeenCalledWith({
-        name: 'Minnesota respiratory monitor',
-        query: 'MN hospital pressure',
-        module: 'regional_health_pulse',
+        name: 'Food recall monitor',
+        query: 'organic spinach recall',
+        module: 'foodradar',
       })
     })
   })
