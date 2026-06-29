@@ -3,6 +3,11 @@ from __future__ import annotations
 import re
 from dataclasses import asdict, dataclass
 
+from app.services.search_workflows.product_category_classifier import (
+    ProductCategoryClassification,
+    classify_product_category,
+)
+
 
 TYPO_CORRECTIONS = {
     "tylonal": "tylenol",
@@ -152,6 +157,7 @@ class RealWorldQueryUnderstanding:
     expansion_search_terms_used: list[str]
     detected_identifiers: dict[str, str | None]
     query_type_hints: list[str]
+    category_classification: ProductCategoryClassification
 
     def as_response_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -246,9 +252,15 @@ def _query_type_hints(
     normalized_query: str,
     expanded_terms: list[str],
     detected_identifiers: dict[str, str | None],
+    category_classification: ProductCategoryClassification,
 ) -> list[str]:
     text = " ".join([normalized_query, *expanded_terms])
     hints: list[str] = []
+
+    if category_classification.primary_category != "unknown":
+        _append_unique(hints, category_classification.primary_category)
+    for category in category_classification.secondary_categories:
+        _append_unique(hints, category)
 
     if detected_identifiers.get("vin"):
         _append_unique(hints, "vehicle")
@@ -289,6 +301,10 @@ def understand_real_world_safety_query(raw_query: str) -> RealWorldQueryUndersta
         "upc": _detect_upc(raw_query),
         "udi": _detect_udi(raw_query),
     }
+    category_classification = classify_product_category(
+        " ".join([normalized, *expanded]),
+        detected_identifiers=detected_identifiers,
+    )
 
     # V1 uses the corrected/normalized query for retrieval.
     # Expanded terms are exposed to the response for UI/fusion use but are not allowed to create records.
@@ -306,5 +322,7 @@ def understand_real_world_safety_query(raw_query: str) -> RealWorldQueryUndersta
             normalized_query=normalized,
             expanded_terms=expanded,
             detected_identifiers=detected_identifiers,
+            category_classification=category_classification,
         ),
+        category_classification=category_classification,
     )

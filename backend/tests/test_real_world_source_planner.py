@@ -95,12 +95,64 @@ def test_chicken_routes_to_food_sources():
     assert USDA_FSIS_RECALL["source_id"] in plan.sources_to_check
 
 
-def test_bare_sunscreen_requires_clarification_instead_of_broad_fanout():
+def test_food_examples_route_to_food_context_sources():
+    for query in ["chicken broth", "protein bar", "baby formula", "frozen chicken"]:
+        plan = _plan(query)
+
+        assert plan.intent == "food"
+        assert OPENFDA_FOOD_ENFORCEMENT["source_id"] in plan.sources_to_check
+        assert CDC_FOODBORNE_OUTBREAKS["source_id"] in plan.sources_to_check
+        assert FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS["source_id"] in plan.sources_to_check
+
+    assert USDA_FSIS_RECALL["source_id"] in _plan("chicken broth").sources_to_check
+    assert USDA_FSIS_RECALL["source_id"] in _plan("frozen chicken").sources_to_check
+
+
+def test_sunscreen_routes_to_drug_with_cosmetic_context_instead_of_clarification():
     plan = _plan("sunscreen")
 
-    assert plan.intent == "ambiguous"
-    assert plan.clarification_required is True
-    assert plan.sources_to_check == []
+    assert plan.intent == "drug"
+    assert plan.clarification_required is False
+    assert OPENFDA_DRUG_ENFORCEMENT["source_id"] in plan.sources_to_check
+    assert FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS["source_id"] in plan.sources_to_check
+    assert CPSC_RECALLS_API["source_id"] not in plan.sources_to_check
+
+
+def test_common_drug_device_consumer_and_vehicle_examples_route_correctly():
+    for query in ["eye drops", "metformin", "ibuprofen"]:
+        plan = _plan(query)
+        assert plan.intent == "drug"
+        assert OPENFDA_DRUG_ENFORCEMENT["source_id"] in plan.sources_to_check
+
+    for query in ["CPAP", "insulin pump"]:
+        plan = _plan(query)
+        assert plan.intent == "medical_device"
+        assert OPENFDA_DEVICE_ENFORCEMENT["source_id"] in plan.sources_to_check
+
+    for query in ["air fryer", "stroller"]:
+        plan = _plan(query)
+        assert plan.intent == "consumer_product"
+        assert CPSC_RECALLS_API["source_id"] in plan.sources_to_check
+
+    for query in ["Toyota Camry", "BMW X3"]:
+        plan = _plan(query)
+        assert plan.intent == "vehicle"
+        assert NHTSA_RECALLS_API_DATASETS["source_id"] in plan.sources_to_check
+
+
+def test_unknown_query_uses_broad_public_fallback_without_vehicle_sources():
+    plan = _plan("florble snargle")
+
+    assert plan.intent == "unknown"
+    assert plan.confidence == "low"
+    assert {
+        FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS["source_id"],
+        CPSC_RECALLS_API["source_id"],
+        OPENFDA_FOOD_ENFORCEMENT["source_id"],
+        OPENFDA_DRUG_ENFORCEMENT["source_id"],
+        OPENFDA_DEVICE_ENFORCEMENT["source_id"],
+    }.issubset(set(plan.sources_to_check))
+    assert NHTSA_RECALLS_API_DATASETS["source_id"] not in plan.sources_to_check
 
 
 def test_vaccine_query_routes_to_vaers_signal_source():

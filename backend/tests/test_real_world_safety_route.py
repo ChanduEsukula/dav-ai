@@ -16,6 +16,7 @@ from app.sources.registry import (
     FDA_SAFETY_COMMUNICATIONS,
     OPENFDA_DRUG_ENFORCEMENT,
     OPENFDA_DRUG_LABEL,
+    OPENFDA_DEVICE_ENFORCEMENT,
     OPENFDA_FOOD_ENFORCEMENT,
     OPENFDA_NDC_DIRECTORY,
     RXNORM_RXNAV_API,
@@ -495,6 +496,9 @@ def test_real_world_safety_no_match_response_does_not_certify_safety(monkeypatch
     assert set(body["search_plan"]["sources_to_check"]) == {
         CPSC_RECALLS_API["source_id"],
         FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS["source_id"],
+        OPENFDA_FOOD_ENFORCEMENT["source_id"],
+        OPENFDA_DRUG_ENFORCEMENT["source_id"],
+        OPENFDA_DEVICE_ENFORCEMENT["source_id"],
     }
     assert {source["source_id"] for source in body["sources_checked"]} == set(
         body["search_plan"]["sources_to_check"]
@@ -742,26 +746,27 @@ def test_real_world_safety_chicken_checks_food_sources_without_drug_label(monkey
     assert OPENFDA_DRUG_LABEL["source_id"] not in checked_source_ids
 
 
-def test_real_world_safety_sunscreen_requires_clarification_without_adapter_calls(monkeypatch):
-    async def unexpected_adapter_call(**kwargs):
-        raise AssertionError("Ambiguous queries must not execute source adapters.")
-
-    monkeypatch.setattr(real_world_safety_search, "_run_adapter_call", unexpected_adapter_call)
+def test_real_world_safety_sunscreen_routes_to_drug_with_cosmetic_context(monkeypatch):
+    _patch_persistence(monkeypatch)
+    _patch_public_source_http(monkeypatch)
 
     response = client.get("/api/v1/real-world-safety/search", params={"q": "sunscreen", "limit": 5})
 
     assert response.status_code == 200
     body = response.json()
 
-    assert body["search_plan"]["intent"] == "ambiguous"
-    assert body["search_plan"]["clarification_required"] is True
-    assert body["search_plan"]["sources_to_check"] == []
-    assert body["sources_checked"] == []
+    assert body["search_plan"]["intent"] == "drug"
+    assert body["search_plan"]["clarification_required"] is False
+    assert OPENFDA_DRUG_ENFORCEMENT["source_id"] in body["search_plan"]["sources_to_check"]
+    assert FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS["source_id"] in body["search_plan"]["sources_to_check"]
+    assert body["query_understanding"]["category_classification"]["primary_category"] == "drug"
+    assert "cosmetic" in body["query_understanding"]["category_classification"]["secondary_categories"]
+    assert body["query_understanding"]["category_classification"]["flags"]["cosmetic_possible"] is True
+
+    checked_source_ids = {source["source_id"] for source in body["sources_checked"]}
+    assert OPENFDA_DRUG_ENFORCEMENT["source_id"] in checked_source_ids
+    assert FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS["source_id"] in checked_source_ids
     assert body["sources_failed"] == []
-    assert body["source_audits"] == []
-    assert body["results"] == []
-    assert body["total_matches"] == 0
-    assert body["no_match_explanation"] == NO_MATCH_EXPLANATION
     assert body["public_data_disclaimer"] == real_world_safety_search.PUBLIC_DATA_DISCLAIMER
     assert body["limitations"] == real_world_safety_search.LIMITATIONS
 

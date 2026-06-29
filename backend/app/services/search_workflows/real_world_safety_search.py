@@ -33,6 +33,7 @@ from app.services.safety_source_adapters.openfda_udi import OpenFDAUDIDirectoryA
 from app.services.safety_source_adapters.vaers import VAERSVaccineSignalAdapter
 from app.services.search_workflows.real_world_query_understanding import understand_real_world_safety_query
 from app.services.search_workflows.real_world_source_planner import plan_real_world_safety_sources
+from app.services.search_workflows.product_category_classifier import BROAD_PUBLIC_FALLBACK_SOURCE_IDS
 from app.services.search_workflows.safety_intelligence_summary import build_safety_intelligence_summary
 from app.services.search_workflows.identifier_check import build_identifier_check
 from app.services.search_workflows.source_freshness import build_source_freshness
@@ -1043,6 +1044,134 @@ async def execute_real_world_safety_search(
                     source_audits=source_audits,
                 )
 
+    async def run_broadening_source(source_id: str) -> None:
+        if source_id == CPSC_RECALLS_API["source_id"]:
+            await _run_adapter_call(
+                adapter_call=lambda: cpsc_adapter.search(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=CPSC_RECALLS_API,
+                source_type="API",
+                source_kind="structured_api",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+            return
+
+        if source_id == FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS["source_id"]:
+            await _run_adapter_call(
+                adapter_call=lambda: search_official_public_notices(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
+                source_type="public notice page",
+                source_kind="public_notice",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+            return
+
+        if source_id == OPENFDA_FOOD_ENFORCEMENT["source_id"]:
+            await _run_adapter_call(
+                adapter_call=lambda: openfda_food_adapter.search(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=OPENFDA_FOOD_ENFORCEMENT,
+                source_type="local official snapshot",
+                source_kind="structured_api",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+            return
+
+        if source_id == OPENFDA_DRUG_ENFORCEMENT["source_id"]:
+            await _run_adapter_call(
+                adapter_call=lambda: openfda_drug_adapter.search(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=OPENFDA_DRUG_ENFORCEMENT,
+                source_type="local curated official snapshot",
+                source_kind="structured_api",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+            return
+
+        if source_id == OPENFDA_DEVICE_ENFORCEMENT["source_id"]:
+            await _run_adapter_call(
+                adapter_call=lambda: openfda_device_adapter.search(
+                    query=search_query,
+                    limit=limit,
+                    request_id=request_id,
+                ),
+                source=OPENFDA_DEVICE_ENFORCEMENT,
+                source_type="local curated official snapshot",
+                source_kind="structured_api",
+                query=search_query,
+                raw_query=raw_query,
+                limit=limit,
+                sort=sort,
+                request_id=request_id,
+                results=records,
+                sources_checked=sources_checked,
+                sources_failed=sources_failed,
+                source_audits=source_audits,
+            )
+
+    if not records and source_plan.intent == "unknown":
+        attempted_source_ids = {
+            source["source_id"]
+            for source in [*sources_checked, *sources_failed]
+        }
+        broadening_source_ids = [
+            source_id
+            for source_id in BROAD_PUBLIC_FALLBACK_SOURCE_IDS
+            if source_id not in attempted_source_ids
+        ]
+        if broadening_source_ids:
+            await asyncio.gather(
+                *[
+                    run_broadening_source(source_id)
+                    for source_id in broadening_source_ids
+                ]
+            )
+
     records = dedupe_records(records)
 
     records_per_source: dict[str, int] = {}
@@ -1059,6 +1188,10 @@ async def execute_real_world_safety_search(
         sort=sort,
     )
 
+    query_understanding_response = query_understanding.as_response_dict()
+    category_classification = query_understanding_response.get("category_classification") or {}
+    summary_query_type_hint = category_classification.get("primary_category")
+
     safety_intelligence_summary = build_safety_intelligence_summary(
         query=search_query,
         records=records,
@@ -1066,6 +1199,7 @@ async def execute_real_world_safety_search(
         sources_checked=sources_checked,
         sources_failed=sources_failed,
         expansion_search_terms_used=query_understanding.expansion_search_terms_used,
+        query_type_hint=summary_query_type_hint,
     )
     identifier_check = build_identifier_check(
         detected_identifiers=query_understanding.detected_identifiers,
@@ -1081,7 +1215,7 @@ async def execute_real_world_safety_search(
     response = {
         "query": response_query,
         "raw_query": raw_query,
-        "query_understanding": query_understanding.as_response_dict(),
+        "query_understanding": query_understanding_response,
         "search_plan": source_plan.as_response_dict(),
         "count": len(ranked_records),
         "limit": limit,

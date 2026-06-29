@@ -105,9 +105,21 @@ def test_detects_foodborne_outbreak_query_as_food():
     result = understand_real_world_safety_query("Salmonella outbreak peanut butter")
 
     assert "food" in result.query_type_hints
+    assert result.category_classification.primary_category == "food"
+    assert result.category_classification.flags["allergen_relevant"] is True
 
 
 def test_detects_fda_safety_communication_query_as_medical_device():
     result = understand_real_world_safety_query("FDA safety communication insulin pump")
 
     assert "medical_device" in result.query_type_hints
+    assert result.category_classification.primary_category == "medical_device"
+
+
+def test_query_understanding_exposes_drug_cosmetic_classifier_context():
+    result = understand_real_world_safety_query("sunscreen")
+
+    assert result.query_type_hints[:2] == ["drug", "cosmetic"]
+    assert result.category_classification.primary_category == "drug"
+    assert "cosmetic" in result.category_classification.secondary_categories
+    assert result.category_classification.flags["cosmetic_possible"] is True

@@ -81,18 +81,98 @@ def _infer_query_type(query: str, records: list[NormalizedSafetyRecord]) -> str:
     ).lower()
 
     # Prefer specific source/category evidence over broad keyword guessing.
-    if any(term in text for term in ["drug reference", "drug label", "ndc", "rxnorm", "dailymed", "tylenol", "acetaminophen", "ibuprofen", "metformin", "albuterol"]):
+    if any(
+        term in text
+        for term in [
+            "drug reference",
+            "drug label",
+            "ndc",
+            "rxnorm",
+            "dailymed",
+            "tylenol",
+            "acetaminophen",
+            "ibuprofen",
+            "metformin",
+            "albuterol",
+        ]
+    ):
         return "drug"
-    if any(term in text for term in ["medical device", "glucose meter", "insulin pump", "cpap", "openfda device"]):
+
+    if any(
+        term in text
+        for term in [
+            "medical device",
+            "glucose meter",
+            "insulin pump",
+            "cpap",
+            "openfda device",
+        ]
+    ):
         return "medical_device"
-    if any(term in text for term in ["vaers", "vaccine", "vaccination", "mmr", "influenza vaccine", "covid-19 vaccine"]):
+
+    if any(
+        term in text
+        for term in [
+            "vaers",
+            "vaccine",
+            "vaccination",
+            "mmr",
+            "influenza vaccine",
+            "covid-19 vaccine",
+        ]
+    ):
         return "vaccine"
-    if any(term in text for term in ["food recall", "meat/poultry", "chicken", "beef", "poultry", "fsis", "fda food", "salmonella", "listeria", "outbreak", "foodborne", "e. coli", "ecoli"]):
+
+    if any(
+        term in text
+        for term in [
+            "food recall",
+            "meat/poultry",
+            "chicken",
+            "beef",
+            "poultry",
+            "fsis",
+            "fda food",
+            "salmonella",
+            "listeria",
+            "outbreak",
+            "foodborne",
+            "e. coli",
+            "ecoli",
+        ]
+    ):
         return "food"
-    if any(term in text for term in ["nhtsa", "vin", "vehicle recall", "honda", "toyota", "ford", "tesla", "truck"]):
+
+    if any(
+        term in text
+        for term in [
+            "nhtsa",
+            "vin",
+            "vehicle recall",
+            "honda",
+            "toyota",
+            "ford",
+            "tesla",
+            "truck",
+        ]
+    ):
         return "vehicle"
-    if any(term in text for term in ["cpsc", "consumer product", "scooter", "air fryer", "battery", "toy", "crib", "stroller"]):
+
+    if any(
+        term in text
+        for term in [
+            "cpsc",
+            "consumer product",
+            "scooter",
+            "air fryer",
+            "battery",
+            "toy",
+            "crib",
+            "stroller",
+        ]
+    ):
         return "consumer_product"
+
     return "unknown"
 
 
@@ -104,6 +184,7 @@ def build_safety_intelligence_summary(
     sources_checked: list[dict[str, Any]],
     sources_failed: list[dict[str, Any]],
     expansion_search_terms_used: list[str] | None = None,
+    query_type_hint: str | None = None,
 ) -> dict[str, Any]:
     matched_sources_by_role = _empty_role_map()
     checked_sources_by_role = _empty_role_map()
@@ -123,6 +204,8 @@ def build_safety_intelligence_summary(
     outbreak_context_found = bool(matched_sources_by_role["outbreak_context"])
 
     query_type = _infer_query_type(query, records)
+    if query_type == "unknown" and query_type_hint and query_type_hint != "unknown":
+        query_type = query_type_hint
 
     top_titles: list[str] = []
     for record in ranked_records[:3]:
@@ -169,8 +252,10 @@ def build_safety_intelligence_summary(
         )
 
     suggested_next_steps: list[str] = []
+
     if expansion_explanations:
         suggested_next_steps.extend(expansion_explanations)
+
     if recall_or_enforcement_found:
         suggested_next_steps.extend(
             [
@@ -178,6 +263,7 @@ def build_safety_intelligence_summary(
                 "Open the official source URL before following any recall remedy or disposal instruction.",
             ]
         )
+
     if reference_or_label_found and not recall_or_enforcement_found:
         suggested_next_steps.extend(
             [
@@ -185,8 +271,11 @@ def build_safety_intelligence_summary(
                 "For drugs, compare active ingredient, NDC, labeler, dosage form, and route against the product package.",
             ]
         )
+
     if sources_failed:
-        suggested_next_steps.append("Some sources failed or timed out, so recheck later or verify directly with official source pages.")
+        suggested_next_steps.append(
+            "Some sources failed or timed out, so recheck later or verify directly with official source pages."
+        )
 
     return {
         "query_type": query_type,
@@ -200,5 +289,8 @@ def build_safety_intelligence_summary(
         "expansion_explanations": expansion_explanations,
         "plain_language_summary": plain_language_summary,
         "suggested_next_steps": suggested_next_steps,
-        "caveat": "This summary is generated only from returned official/public records. It does not invent missing recalls, certify safety, or provide medical/legal advice.",
+        "caveat": (
+            "This summary is generated only from returned official/public records. It does not invent missing recalls, "
+            "certify safety, or provide medical/legal advice."
+        ),
     }

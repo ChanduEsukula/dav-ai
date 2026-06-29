@@ -3,6 +3,9 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 
 from app.services.search_workflows.real_world_query_understanding import RealWorldQueryUnderstanding
+from app.services.search_workflows.product_category_classifier import (
+    BROAD_PUBLIC_FALLBACK_SOURCE_IDS,
+)
 from app.sources.registry import (
     CPSC_RECALLS_API,
     CDC_FOODBORNE_OUTBREAKS,
@@ -78,17 +81,6 @@ VACCINE_SOURCES = [
     _source_id(CDC_VAERS),
 ]
 
-AMBIGUOUS_TERMS = {
-    "sunscreen",
-    "cream",
-    "gel",
-    "spray",
-}
-
-
-def _has_ambiguous_term(query: str) -> bool:
-    return any(term in query for term in AMBIGUOUS_TERMS)
-
 
 def _first_supported_hint(hints: list[str]) -> str:
     priority = ["vehicle", "medical_device", "vaccine", "drug", "food", "consumer_product"]
@@ -98,22 +90,82 @@ def _first_supported_hint(hints: list[str]) -> str:
     return "unknown"
 
 
+def _dedupe(values: list[str]) -> list[str]:
+    deduped: list[str] = []
+    for value in values:
+        if value and value not in deduped:
+            deduped.append(value)
+    return deduped
+
+
+def _split_source_priority(intent: str, source_ids: list[str]) -> tuple[list[str], list[str]]:
+    source_ids = _dedupe(source_ids)
+
+    if intent == "consumer_product":
+        primary = [_source_id(CPSC_RECALLS_API)]
+        return primary, [source_id for source_id in source_ids if source_id not in primary]
+
+    if intent == "drug":
+        primary = [
+            _source_id(OPENFDA_DRUG_ENFORCEMENT),
+            _source_id(RXNORM_RXNAV_API),
+            _source_id(OPENFDA_NDC_DIRECTORY),
+        ]
+        primary = [source_id for source_id in primary if source_id in source_ids]
+        return primary, [source_id for source_id in source_ids if source_id not in primary]
+
+    if intent == "food":
+        primary = [
+            _source_id(OPENFDA_FOOD_ENFORCEMENT),
+            _source_id(USDA_FSIS_RECALL),
+        ]
+        primary = [source_id for source_id in primary if source_id in source_ids]
+        return primary, [source_id for source_id in source_ids if source_id not in primary]
+
+    if intent == "medical_device":
+        primary = [_source_id(OPENFDA_DEVICE_ENFORCEMENT)]
+        return primary, [source_id for source_id in source_ids if source_id not in primary]
+
+    if intent == "vaccine":
+        primary = [_source_id(CDC_VAERS)]
+        return primary, [source_id for source_id in source_ids if source_id not in primary]
+
+    if intent == "vehicle":
+        primary = [_source_id(NHTSA_RECALLS_API_DATASETS)]
+        primary = [source_id for source_id in primary if source_id in source_ids]
+        return primary, [source_id for source_id in source_ids if source_id not in primary]
+
+    if intent == "cosmetic":
+        primary = [_source_id(FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS)]
+        return primary, [source_id for source_id in source_ids if source_id not in primary]
+
+    primary = [
+        _source_id(FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS),
+        _source_id(CPSC_RECALLS_API),
+    ]
+    primary = [source_id for source_id in primary if source_id in source_ids]
+    return primary, [source_id for source_id in source_ids if source_id not in primary]
+
+
 def plan_real_world_safety_sources(
     query_understanding: RealWorldQueryUnderstanding,
 ) -> RealWorldSourcePlan:
-    normalized_query = query_understanding.normalized_query
     hints = query_understanding.query_type_hints
-    intent = _first_supported_hint(hints)
+    classification = query_understanding.category_classification
+    intent = classification.primary_category
+    if intent == "unknown":
+        intent = _first_supported_hint(hints)
 
-    if _has_ambiguous_term(normalized_query) and intent == "unknown":
+    classifier_source_ids = _dedupe(classification.suggested_source_ids)
+    if classifier_source_ids:
+        primary_source_ids, secondary_source_ids = _split_source_priority(intent, classifier_source_ids)
         return RealWorldSourcePlan(
-            intent="ambiguous",
-            confidence="low",
-            reason="The query could refer to more than one safety area. Ask for category context before running a broad source sweep.",
-            primary_source_ids=[],
-            secondary_source_ids=[],
-            sources_to_check=[],
-            clarification_required=True,
+            intent=intent,
+            confidence=classification.confidence,
+            reason=classification.reason,
+            primary_source_ids=primary_source_ids,
+            secondary_source_ids=secondary_source_ids,
+            sources_to_check=classifier_source_ids,
         )
 
     if intent == "consumer_product":
@@ -199,8 +251,19 @@ def plan_real_world_safety_sources(
     return RealWorldSourcePlan(
         intent="unknown",
         confidence="low",
-        reason="The query type is unclear, so Dav AI uses a limited recall-oriented fallback instead of checking every source.",
-        primary_source_ids=[_source_id(CPSC_RECALLS_API)],
-        secondary_source_ids=[_source_id(FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS)],
-        sources_to_check=CONSUMER_PRODUCT_SOURCES,
+        reason="The query type is unclear, so Dav AI uses a broad public-source fallback without assuming a single domain.",
+        primary_source_ids=[
+            _source_id(FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS),
+            _source_id(CPSC_RECALLS_API),
+        ],
+        secondary_source_ids=[
+            source_id
+            for source_id in BROAD_PUBLIC_FALLBACK_SOURCE_IDS
+            if source_id
+            not in {
+                _source_id(FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS),
+                _source_id(CPSC_RECALLS_API),
+            }
+        ],
+        sources_to_check=BROAD_PUBLIC_FALLBACK_SOURCE_IDS,
     )

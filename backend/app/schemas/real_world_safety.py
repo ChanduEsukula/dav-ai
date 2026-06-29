@@ -79,6 +79,16 @@ class RealWorldSafetySourceFreshness(BaseModel):
     checked_at: str
 
 
+class RealWorldSafetyCategoryClassification(BaseModel):
+    primary_category: str
+    secondary_categories: list[str] = Field(default_factory=list)
+    confidence: str
+    matched_terms: list[str] = Field(default_factory=list)
+    reason: str
+    suggested_source_ids: list[str] = Field(default_factory=list)
+    flags: dict[str, bool] = Field(default_factory=dict)
+
+
 class RealWorldSafetyQueryUnderstanding(BaseModel):
     original_query: str
     normalized_query: str
@@ -88,6 +98,7 @@ class RealWorldSafetyQueryUnderstanding(BaseModel):
     expansion_search_terms_used: list[str] = Field(default_factory=list)
     detected_identifiers: dict[str, str | None]
     query_type_hints: list[str] = Field(default_factory=list)
+    category_classification: RealWorldSafetyCategoryClassification
 
 
 class RealWorldSafetySearchPlan(BaseModel):
