@@ -5,6 +5,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from app.services.openfda_food_enforcement_client import OpenFDAFoodEnforcementClient
 from app.services.safety_source_adapters.base import (
     NormalizedSafetyRecord,
     SafetySourceAdapterError,
@@ -26,7 +27,9 @@ DEMO_RECORDS_PATH = REPO_ROOT / "data" / "safety_sources" / "food" / "openfda_fo
 class OpenFDAFoodEnforcementAdapter:
     def __init__(self):
         self.source = OPENFDA_FOOD_ENFORCEMENT
-        self.endpoint = "local:data/safety_sources/food/openfda_food_curated_records.json"
+        self.endpoint = self.source["endpoint"]
+        self.snapshot_endpoint = "local:data/safety_sources/food/openfda_food_curated_records.json"
+        self.live_client = OpenFDAFoodEnforcementClient(timeout_seconds=4.5)
 
     async def search(
         self,
@@ -34,6 +37,92 @@ class OpenFDAFoodEnforcementAdapter:
         query: str,
         limit: int,
         request_id: str | None = None,
+    ) -> SourceAdapterResult:
+        try:
+            return await self._search_live(
+                query=query,
+                limit=limit,
+                request_id=request_id,
+            )
+        except Exception as exc:
+            logger.warning(
+                "openfda_food_live_search_failed_using_snapshot_fallback",
+                extra={
+                    "event": "openfda_food_live_search_failed_using_snapshot_fallback",
+                    "request_id": request_id,
+                    "source_id": self.source["source_id"],
+                    "query": query,
+                    "error_type": exc.__class__.__name__,
+                },
+            )
+            return await self._search_snapshot_fallback(
+                query=query,
+                limit=limit,
+                request_id=request_id,
+                fallback_reason=str(exc) or exc.__class__.__name__,
+            )
+
+    async def _search_live(
+        self,
+        *,
+        query: str,
+        limit: int,
+        request_id: str | None = None,
+    ) -> SourceAdapterResult:
+        payload = await self.live_client.search_food_recalls(
+            query=query,
+            limit=limit,
+            request_id=request_id,
+        )
+
+        retrieved_at = payload["retrieval_timestamp"]
+        raw_results = payload.get("raw", {}).get("results", [])
+
+        records: list[NormalizedSafetyRecord] = []
+        for raw_record in raw_results:
+            if not isinstance(raw_record, dict):
+                continue
+
+            normalized = _normalize_openfda_food_record(
+                record=raw_record,
+                retrieved_at=retrieved_at,
+                source_name=self.source["source_name"],
+                source_url=self.source["endpoint"],
+                source_type="live public API request",
+            )
+
+            if record_matches_query(normalized, query):
+                records.append(normalized)
+
+        records = dedupe_records(records)[:limit]
+
+        return SourceAdapterResult(
+            source_id=self.source["source_id"],
+            source_name=self.source["source_name"],
+            source_type="live public API request",
+            source_url=self.source["endpoint"],
+            source_kind="structured_api",
+            retrieved_at=retrieved_at,
+            records=records,
+            raw_payload={
+                "mode": "live_public_api_request",
+                "endpoint": self.source["endpoint"],
+                "query": query,
+                "raw": payload.get("raw", {}),
+            },
+            upstream_status="success" if records else "empty",
+            context={
+                "fallback_used": False,
+            },
+        )
+
+    async def _search_snapshot_fallback(
+        self,
+        *,
+        query: str,
+        limit: int,
+        request_id: str | None = None,
+        fallback_reason: str | None = None,
     ) -> SourceAdapterResult:
         retrieved_at = utc_now_iso()
 
@@ -56,6 +145,7 @@ class OpenFDAFoodEnforcementAdapter:
                     retrieved_at=retrieved_at,
                     source_name=self.source["source_name"],
                     source_url=self.source["endpoint"],
+                    source_type="local curated official snapshot",
                 )
 
                 if record_matches_query(normalized, query) or is_match:
@@ -67,25 +157,31 @@ class OpenFDAFoodEnforcementAdapter:
                 source_id=self.source["source_id"],
                 source_name=self.source["source_name"],
                 source_type="local curated official snapshot",
-                source_url=self.endpoint,
+                source_url=self.snapshot_endpoint,
                 source_kind="structured_api",
                 retrieved_at=retrieved_at,
                 records=records,
                 raw_payload={
-                    "mode": "local_curated_official_snapshot",
+                    "mode": "curated_official_source_snapshot_fallback",
                     "path": str(DEMO_RECORDS_PATH.relative_to(REPO_ROOT)),
                     "records_loaded": len(demo_records),
                     "query": query,
+                    "fallback_reason": fallback_reason,
                 },
                 upstream_status="success" if records else "empty",
+                context={
+                    "fallback_used": True,
+                    "fallback_reason": fallback_reason,
+                    "live_endpoint": self.source["endpoint"],
+                },
             )
 
         except FileNotFoundError as exc:
-            message = f"openFDA food demo snapshot file not found: {DEMO_RECORDS_PATH}"
+            message = f"openFDA food curated snapshot file not found: {DEMO_RECORDS_PATH}"
             logger.warning(
-                "openfda_food_demo_snapshot_missing",
+                "openfda_food_snapshot_fallback_missing",
                 extra={
-                    "event": "openfda_food_demo_snapshot_missing",
+                    "event": "openfda_food_snapshot_fallback_missing",
                     "request_id": request_id,
                     "source_id": self.source["source_id"],
                     "query": query,
@@ -94,9 +190,9 @@ class OpenFDAFoodEnforcementAdapter:
             raise SafetySourceAdapterError(message, error_type="missing_snapshot") from exc
         except Exception as exc:
             logger.exception(
-                "openfda_food_demo_snapshot_search_failed",
+                "openfda_food_snapshot_fallback_search_failed",
                 extra={
-                    "event": "openfda_food_demo_snapshot_search_failed",
+                    "event": "openfda_food_snapshot_fallback_search_failed",
                     "request_id": request_id,
                     "source_id": self.source["source_id"],
                     "query": query,
@@ -121,6 +217,7 @@ def _normalize_openfda_food_record(
     retrieved_at: str,
     source_name: str,
     source_url: str,
+    source_type: str,
 ) -> NormalizedSafetyRecord:
     product_description = first_text(record.get("product_description"), record.get("product_name"))
     recalling_firm = first_text(record.get("recalling_firm"), record.get("company_name"))
@@ -172,7 +269,7 @@ def _normalize_openfda_food_record(
 
     return NormalizedSafetyRecord(
         source_name=source_name,
-        source_type="local curated official snapshot",
+        source_type=source_type,
         source_url=source_url,
         source_kind="structured_api",
         category=first_text(record.get("category"), "Food recall"),
