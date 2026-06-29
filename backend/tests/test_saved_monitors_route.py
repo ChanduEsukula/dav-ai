@@ -3,9 +3,81 @@
 from fastapi.testclient import TestClient
 
 from app.db.saved_monitor_repository import saved_monitor_repository
+from app.db.user_repository import user_repository
 from app.main import app
 
-client = TestClient(app)
+raw_client = TestClient(app)
+
+_DEFAULT_AUTH_TOKEN: str | None = None
+
+
+def _signup_user(
+    *,
+    full_name: str = "Saved Search User",
+    email: str = "saved-search-user@example.com",
+    password: str = "safe-demo-password-123",
+) -> dict:
+    response = raw_client.post(
+        "/api/v1/auth/signup",
+        json={
+            "full_name": full_name,
+            "email": email,
+            "password": password,
+        },
+    )
+
+    assert response.status_code == 201
+    return response.json()
+
+
+def _auth_headers(token: str) -> dict[str, str]:
+    return {"Authorization": f"Bearer {token}"}
+
+
+def _default_auth_headers() -> dict[str, str]:
+    global _DEFAULT_AUTH_TOKEN
+
+    if _DEFAULT_AUTH_TOKEN is None:
+        signup_data = _signup_user()
+        _DEFAULT_AUTH_TOKEN = signup_data["access_token"]
+
+    return _auth_headers(_DEFAULT_AUTH_TOKEN)
+
+
+class AuthenticatedTestClient:
+    """Small test helper that keeps existing saved-monitor regression tests readable."""
+
+    def __init__(self, test_client: TestClient) -> None:
+        self._test_client = test_client
+
+    def _headers(
+        self,
+        headers: dict[str, str] | None,
+        *,
+        auth: bool,
+    ) -> dict[str, str] | None:
+        if not auth:
+            return headers
+
+        merged_headers = dict(headers or {})
+        if "Authorization" not in merged_headers:
+            merged_headers.update(_default_auth_headers())
+        return merged_headers
+
+    def get(self, url: str, *, auth: bool = True, **kwargs):
+        kwargs["headers"] = self._headers(kwargs.get("headers"), auth=auth)
+        return self._test_client.get(url, **kwargs)
+
+    def post(self, url: str, *, auth: bool = True, **kwargs):
+        kwargs["headers"] = self._headers(kwargs.get("headers"), auth=auth)
+        return self._test_client.post(url, **kwargs)
+
+    def delete(self, url: str, *, auth: bool = True, **kwargs):
+        kwargs["headers"] = self._headers(kwargs.get("headers"), auth=auth)
+        return self._test_client.delete(url, **kwargs)
+
+
+client = AuthenticatedTestClient(raw_client)
 
 
 RECALL_AUDIT_ID = "11111111-1111-1111-1111-111111111111"
@@ -15,7 +87,209 @@ SECOND_AUDIT_ID = "44444444-4444-4444-4444-444444444444"
 
 
 def setup_function() -> None:
+    global _DEFAULT_AUTH_TOKEN
+
+    _DEFAULT_AUTH_TOKEN = None
     saved_monitor_repository.clear()
+    user_repository.clear()
+
+
+def test_list_saved_monitors_requires_bearer_token() -> None:
+    response = client.get("/api/v1/saved-monitors", auth=False)
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Authentication required."
+
+
+def test_create_saved_monitor_requires_bearer_token() -> None:
+    response = client.post(
+        "/api/v1/saved-monitors",
+        auth=False,
+        json={
+            "name": "Eye drops monitor",
+            "query": "eye drops",
+            "module": "recallradar",
+        },
+    )
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Authentication required."
+
+
+def test_saved_monitor_actions_require_bearer_token() -> None:
+    create_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Eye drops monitor",
+            "query": "eye drops",
+            "module": "recallradar",
+        },
+    )
+    monitor_id = create_response.json()["id"]
+
+    assert (
+        client.post(
+            f"/api/v1/saved-monitors/{monitor_id}/run",
+            auth=False,
+        ).status_code
+        == 401
+    )
+    assert (
+        client.get(
+            f"/api/v1/saved-monitors/{monitor_id}/runs",
+            auth=False,
+        ).status_code
+        == 401
+    )
+    assert (
+        client.get(
+            f"/api/v1/saved-monitors/{monitor_id}/insights",
+            auth=False,
+        ).status_code
+        == 401
+    )
+    assert (
+        client.delete(
+            f"/api/v1/saved-monitors/{monitor_id}",
+            auth=False,
+        ).status_code
+        == 401
+    )
+
+
+def test_saved_monitor_list_is_scoped_to_authenticated_user() -> None:
+    user_a = _signup_user(email="user-a@example.com")
+    user_b = _signup_user(email="user-b@example.com")
+    user_a_headers = _auth_headers(user_a["access_token"])
+    user_b_headers = _auth_headers(user_b["access_token"])
+
+    user_a_create = client.post(
+        "/api/v1/saved-monitors",
+        headers=user_a_headers,
+        json={
+            "name": "User A insulin pump monitor",
+            "query": "insulin pump",
+            "module": "recallradar",
+        },
+    )
+    user_b_create = client.post(
+        "/api/v1/saved-monitors",
+        headers=user_b_headers,
+        json={
+            "name": "User B glucose meter monitor",
+            "query": "glucose meter",
+            "module": "recallradar",
+        },
+    )
+
+    assert user_a_create.status_code == 201
+    assert user_b_create.status_code == 201
+
+    user_a_list = client.get("/api/v1/saved-monitors", headers=user_a_headers)
+    user_b_list = client.get("/api/v1/saved-monitors", headers=user_b_headers)
+
+    assert user_a_list.status_code == 200
+    assert user_b_list.status_code == 200
+    assert [monitor["name"] for monitor in user_a_list.json()] == [
+        "User A insulin pump monitor"
+    ]
+    assert [monitor["name"] for monitor in user_b_list.json()] == [
+        "User B glucose meter monitor"
+    ]
+    assert user_a_list.json()[0]["user_id"] == user_a["user"]["id"]
+    assert user_b_list.json()[0]["user_id"] == user_b["user"]["id"]
+
+
+def test_saved_monitor_actions_cannot_cross_user_boundaries(monkeypatch) -> None:
+    async def fake_search_recalls(
+        query: str,
+        limit: int,
+        request_id: str | None = None,
+    ):
+        return {
+            "query": query,
+            "count": 1,
+            "audit": {"audit_id": RECALL_AUDIT_ID},
+            "results": [{"risk_score": {"score": 52, "label": "Medium"}}],
+        }
+
+    monkeypatch.setattr(
+        "app.routes.saved_monitors.execute_recall_search",
+        fake_search_recalls,
+    )
+
+    user_a = _signup_user(email="cross-user-a@example.com")
+    user_b = _signup_user(email="cross-user-b@example.com")
+    user_a_headers = _auth_headers(user_a["access_token"])
+    user_b_headers = _auth_headers(user_b["access_token"])
+
+    create_response = client.post(
+        "/api/v1/saved-monitors",
+        headers=user_a_headers,
+        json={
+            "name": "User A CPAP monitor",
+            "query": "CPAP",
+            "module": "recallradar",
+        },
+    )
+    monitor_id = create_response.json()["id"]
+
+    run_response = client.post(
+        f"/api/v1/saved-monitors/{monitor_id}/run",
+        headers=user_b_headers,
+    )
+    runs_response = client.get(
+        f"/api/v1/saved-monitors/{monitor_id}/runs",
+        headers=user_b_headers,
+    )
+    insights_response = client.get(
+        f"/api/v1/saved-monitors/{monitor_id}/insights",
+        headers=user_b_headers,
+    )
+    delete_response = client.delete(
+        f"/api/v1/saved-monitors/{monitor_id}",
+        headers=user_b_headers,
+    )
+
+    assert run_response.status_code == 404
+    assert runs_response.status_code == 404
+    assert insights_response.status_code == 404
+    assert delete_response.status_code == 404
+
+    owner_list = client.get("/api/v1/saved-monitors", headers=user_a_headers)
+    assert owner_list.status_code == 200
+    assert [monitor["id"] for monitor in owner_list.json()] == [monitor_id]
+
+
+def test_different_users_can_save_same_module_and_query() -> None:
+    user_a = _signup_user(email="duplicate-user-a@example.com")
+    user_b = _signup_user(email="duplicate-user-b@example.com")
+    user_a_headers = _auth_headers(user_a["access_token"])
+    user_b_headers = _auth_headers(user_b["access_token"])
+
+    first_response = client.post(
+        "/api/v1/saved-monitors",
+        headers=user_a_headers,
+        json={
+            "name": "User A insulin pump monitor",
+            "query": "insulin pump",
+            "module": "recallradar",
+        },
+    )
+    second_response = client.post(
+        "/api/v1/saved-monitors",
+        headers=user_b_headers,
+        json={
+            "name": "User B insulin pump monitor",
+            "query": "  Insulin Pump  ",
+            "module": "recallradar",
+        },
+    )
+
+    assert first_response.status_code == 201
+    assert second_response.status_code == 201
+    assert first_response.json()["user_id"] == user_a["user"]["id"]
+    assert second_response.json()["user_id"] == user_b["user"]["id"]
 
 
 def test_create_saved_monitor() -> None:

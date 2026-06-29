@@ -74,6 +74,7 @@ class SavedMonitor(BaseModel):
     """Saved monitor response model."""
 
     id: UUID
+    user_id: Optional[UUID] = None
     name: str
     query: str
     module: SavedMonitorModule

@@ -9,10 +9,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routes import saved_monitors
 from app.routes.assistant import router as assistant_router
 from app.routes.audit_events import router as audit_events_router
+from app.routes.auth import router as auth_router
 from app.routes.cosmetic_events import router as cosmetic_events_router
 from app.routes.docs import router as docs_router
 from app.routes.drug_events import router as drug_events_router
 from app.routes.everyday_safety import router as everyday_safety_router
+from app.routes.profile import router as profile_router
 from app.routes.real_world_safety import router as real_world_safety_router
 from app.routes.recalls import router as recalls_router
 from app.routes.regional_health import router as regional_health_router
@@ -125,6 +127,8 @@ app.include_router(sources_router, prefix="/api/v1/sources", tags=["Sources"])
 app.include_router(docs_router, prefix="/api/v1/docs", tags=["Documentation"])
 app.include_router(audit_events_router, tags=["Audit History"])
 app.include_router(system_router, tags=["System"])
+app.include_router(auth_router)
+app.include_router(profile_router)
 app.include_router(saved_monitors.router)
 app.include_router(reports_router)
 app.include_router(regional_health_router, prefix="/api/v1/regional-health", tags=["Regional Health Pulse"])
@@ -150,6 +154,8 @@ def root():
             "Real-World Safety",
             "Sources",
             "Audit History",
+            "Auth",
+            "Profile",
             "Saved Monitors",
             "Reports",
             "Regional Health Pulse",

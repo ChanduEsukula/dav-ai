@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { searchDrugEvents } from './api/drugEvents'
 import { searchRecalls } from './api/recalls'
+import { clearStoredAuthToken } from './api/client'
 import App from './App'
 import { PAGE_IDS } from './types/navigation'
 
@@ -18,6 +19,7 @@ const mockSearchRecalls = vi.mocked(searchRecalls)
 const mockSearchDrugEvents = vi.mocked(searchDrugEvents)
 
 beforeEach(() => {
+  clearStoredAuthToken()
   mockSearchRecalls.mockReset()
   mockSearchDrugEvents.mockReset()
   mockSearchRecalls.mockResolvedValue({
@@ -135,12 +137,14 @@ test('renders Dav AI landing page', () => {
   expect(screen.queryByRole('button', { name: /Explain These Results/i })).not.toBeInTheDocument()
 })
 
-test('does not expose placeholder account pages in the main demo navigation', () => {
+test('exposes auth actions without rendering old placeholder account pages', () => {
   render(<App />)
 
   expect(screen.queryByRole('button', { name: /Profile/i })).not.toBeInTheDocument()
 
-  expect(screen.queryByRole('button', { name: /Sign Up/i })).not.toBeInTheDocument()
+  expect(screen.getByRole('button', { name: /Log in/i })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: /Sign up/i })).toBeInTheDocument()
+  expect(screen.queryByText(/Early access placeholder/i)).not.toBeInTheDocument()
 })
 
 test('renders simplified navigation with advanced workflows still available', () => {
@@ -148,8 +152,7 @@ test('renders simplified navigation with advanced workflows still available', ()
 
   const mainNav = screen.getByRole('navigation', { name: /Main navigation/i })
   const mainPages = within(screen.getByLabelText('Main pages'))
-  const advancedWorkflows = within(screen.getByLabelText('Advanced workflows'))
-  const informationPages = within(screen.getByLabelText('Information pages'))
+  const accountActions = within(screen.getByLabelText('Account actions'))
 
   for (const label of ['Home', 'Search', 'Saved Searches', 'About']) {
     expect(mainPages.getByRole('button', { name: label })).toBeInTheDocument()
@@ -159,15 +162,37 @@ test('renders simplified navigation with advanced workflows still available', ()
     'Pharmacy Safety',
     'Food Safety',
     'Cosmetic Safety',
+    'ProductScan beta',
+    'Regional Health Pulse',
     'Audit',
     'Sources',
     'System',
+    'FAQ',
+    'Help',
   ]) {
-    expect(advancedWorkflows.getByRole('button', { name: label })).toBeInTheDocument()
+    expect(mainPages.queryByRole('button', { name: label })).not.toBeInTheDocument()
   }
 
-  for (const label of ['FAQ', 'Help']) {
-    expect(informationPages.getByRole('button', { name: label })).toBeInTheDocument()
+  expect(accountActions.getByRole('button', { name: 'Log in' })).toBeInTheDocument()
+  expect(accountActions.getByRole('button', { name: 'Sign up' })).toBeInTheDocument()
+  expect(screen.getByText('Advanced')).toBeInTheDocument()
+
+  fireEvent.click(screen.getByText('Advanced'))
+  const advancedPages = within(screen.getByLabelText('Advanced pages'))
+
+  for (const label of [
+    'Pharmacy Safety',
+    'Food Safety',
+    'Cosmetic Safety',
+    'ProductScan beta',
+    'Regional Health Pulse',
+    'Audit',
+    'Sources',
+    'System',
+    'FAQ',
+    'Help',
+  ]) {
+    expect(advancedPages.getByRole('button', { name: label })).toBeInTheDocument()
   }
 
   expect(within(mainNav).queryByRole('button', { name: 'Public Safety' })).not.toBeInTheDocument()
@@ -177,8 +202,11 @@ test('renders simplified navigation with advanced workflows still available', ()
 test('opens ProductScan from the homepage experiment entry without adding primary nav', () => {
   render(<App />)
 
-  const mainNav = screen.getByRole('navigation', { name: /Main navigation/i })
-  expect(within(mainNav).queryByRole('button', { name: /ProductScan/i })).not.toBeInTheDocument()
+  expect(
+    within(screen.getByLabelText('Main pages')).queryByRole('button', {
+      name: /ProductScan/i,
+    }),
+  ).not.toBeInTheDocument()
 
   fireEvent.click(screen.getByRole('button', { name: /Open ProductScan/i }))
 
@@ -195,27 +223,28 @@ test('renders focused navigation groups in the pill nav', () => {
     const navButton = screen.getByRole('button', { name: label })
 
     expect(navButton.closest('.nav-links')).toBeInTheDocument()
-    expect(navButton.closest('.nav-links-secondary')).not.toBeInTheDocument()
+    expect(navButton.closest('.nav-advanced-menu')).not.toBeInTheDocument()
     expect(navButton.closest('.nav-actions')).not.toBeInTheDocument()
   }
+
+  fireEvent.click(screen.getByText('Advanced'))
+  const advancedPages = within(screen.getByLabelText('Advanced pages'))
 
   for (const label of [
     'Pharmacy Safety',
     'Food Safety',
     'Cosmetic Safety',
+    'ProductScan beta',
+    'Regional Health Pulse',
     'Audit',
     'Sources',
     'System',
+    'FAQ',
+    'Help',
   ]) {
-    const navButton = screen.getByRole('button', { name: label })
+    const navButton = advancedPages.getByRole('button', { name: label })
 
-    expect(navButton.closest('.nav-links-secondary')).toBeInTheDocument()
-  }
-
-  for (const label of ['FAQ', 'Help']) {
-    const navButton = screen.getByRole('button', { name: label })
-
-    expect(navButton.closest('.nav-actions')).toBeInTheDocument()
+    expect(navButton.closest('.nav-advanced-menu')).toBeInTheDocument()
   }
 
   expect(screen.queryByRole('button', { name: 'Public Safety' })).not.toBeInTheDocument()
@@ -262,14 +291,29 @@ test('does not show Help Docs Search on the FAQ page', () => {
   ).not.toBeInTheDocument()
 })
 
-test('ignores old placeholder account page URLs', () => {
+test('renders signup page from URL state', async () => {
   window.history.replaceState(null, '', '/?page=signup')
 
   render(<App />)
 
-  expect(screen.getByRole('heading', { name: /Public safety/i })).toBeInTheDocument()
+  expect(
+    await screen.findByRole('heading', {
+      name: /Create your public safety intelligence workspace/i,
+    }),
+  ).toBeInTheDocument()
+})
 
-  expect(screen.queryByText(/Early access placeholder/i)).not.toBeInTheDocument()
+test('redirects protected profile page to login when signed out', async () => {
+  window.history.replaceState(null, '', '/?page=profile')
+
+  render(<App />)
+
+  expect(
+    await screen.findByRole('heading', {
+      name: /Sign in to your saved safety workspace/i,
+    }),
+  ).toBeInTheDocument()
+  expect(new URLSearchParams(window.location.search).get('page')).toBe(PAGE_IDS.LOGIN)
 })
 
 test('falls back to the home page for unknown page query values', () => {

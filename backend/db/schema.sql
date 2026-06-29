@@ -234,12 +234,87 @@ on conflict (source_id) do update set
     update_cadence = excluded.update_cadence,
     updated_at = now();
 
+-- Portfolio-demo auth and profile foundation
+-- Stores application account metadata only. Do not store PHI in profile fields.
+
+create table if not exists users (
+    id uuid primary key,
+    full_name text not null,
+    email text not null,
+    password_hash text not null,
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now(),
+
+    constraint users_full_name_length_check
+        check (length(trim(full_name)) >= 2),
+
+    constraint users_email_format_check
+        check (position('@' in email) > 1),
+
+    constraint users_password_hash_present_check
+        check (length(trim(password_hash)) > 0)
+);
+
+create unique index if not exists idx_users_email
+    on users(email);
+
+create index if not exists idx_users_created_at
+    on users(created_at);
+
+create table if not exists user_profiles (
+    user_id uuid primary key references users(id) on delete cascade,
+    role text,
+    state text,
+    zip_code text,
+    alert_interests jsonb not null default '[]'::jsonb,
+    alert_frequency text,
+    report_style text,
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now(),
+
+    constraint user_profiles_role_check
+        check (
+            role is null or role in (
+                'consumer',
+                'pharmacy',
+                'clinic',
+                'public_health_analyst',
+                'student_researcher'
+            )
+        ),
+
+    constraint user_profiles_alert_frequency_check
+        check (
+            alert_frequency is null or alert_frequency in (
+                'none',
+                'weekly',
+                'monthly'
+            )
+        ),
+
+    constraint user_profiles_report_style_check
+        check (
+            report_style is null or report_style in (
+                'simple',
+                'technical',
+                'pharmacy_clinic'
+            )
+        )
+);
+
+create index if not exists idx_user_profiles_role
+    on user_profiles(role);
+
+create index if not exists idx_user_profiles_state
+    on user_profiles(state);
+
 -- Saved Monitors v2
 -- Stores repeatable public-data monitor definitions and latest manual run state.
 -- No personal health information should be stored in this table.
 
 create table if not exists saved_monitors (
     id uuid primary key,
+    user_id uuid references users(id) on delete cascade,
     name text not null,
     query text not null,
     module text not null,
@@ -287,6 +362,13 @@ create table if not exists saved_monitors (
 
 create index if not exists idx_saved_monitors_module
     on saved_monitors(module);
+
+create index if not exists idx_saved_monitors_user_id
+    on saved_monitors(user_id);
+
+create unique index if not exists idx_saved_monitors_user_module_normalized_query
+    on saved_monitors(user_id, module, lower(trim(query)))
+    where user_id is not null;
 
 create index if not exists idx_saved_monitors_status
     on saved_monitors(status);

@@ -26,7 +26,10 @@ import './styles/productscan.css'
 import './styles/public-safety-search.css'
 import './styles/source-integration-badge.css'
 import './styles/source-details-disclosure.css'
+import './styles/auth.css'
 import type { AssistantChatContext } from './api/assistant'
+import { isProfileComplete } from './api/profile'
+import { AuthProvider, useAuth } from './auth/AuthContext'
 import Navbar from './components/Navbar'
 import UniversalSafetySearch from './components/UniversalSafetySearch'
 import PublicSafetySearchPage from './components/PublicSafetySearchPage'
@@ -35,12 +38,17 @@ import FoodSafetyPage from './components/FoodSafetyPage'
 import CosmeticSafetyPage from './components/CosmeticSafetyPage'
 import ProductScanPage from './components/ProductScanPage'
 import ProductScanTeaser from './components/ProductScanTeaser'
+import RegionalHealthPulse from './components/RegionalHealthPulse'
 import Hero from './components/Hero'
 import SafetyWorkspace from './components/SafetyWorkspace'
 import DataSourcesPage from './components/DataSourcesPage'
 import AuditHistoryPage from './components/AuditHistoryPage'
 import SystemStatusPage from './components/SystemStatusPage'
 import SavedMonitorsPage from './components/SavedMonitorsPage'
+import SignupPage from './components/SignupPage'
+import LoginPage from './components/LoginPage'
+import OnboardingPage from './components/OnboardingPage'
+import ProfilePage from './components/ProfilePage'
 import FaqPage from './components/FaqPage'
 import AboutPage from './components/AboutPage'
 import InfoPage from './components/InfoPage'
@@ -108,7 +116,18 @@ function updatePageInUrl(page: ActivePage, safetyQuery?: string, rawSafetyQuery?
   }
 }
 
-function App() {
+const PROTECTED_AUTH_PAGES: ActivePage[] = [
+  PAGE_IDS.ONBOARDING,
+  PAGE_IDS.PROFILE,
+]
+
+const PUBLIC_AUTH_PAGES: ActivePage[] = [
+  PAGE_IDS.SIGNUP,
+  PAGE_IDS.LOGIN,
+]
+
+function AppContent() {
+  const auth = useAuth()
   const [activePage, setActivePage] = useState<ActivePage>(() => getInitialPage())
   const [safetyQuery, setSafetyQuery] = useState(() => getInitialSafetyQuery().query)
   const [rawSafetyQuery, setRawSafetyQuery] = useState(
@@ -180,6 +199,26 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  useEffect(() => {
+    if (auth.isLoading) {
+      return
+    }
+
+    if (PROTECTED_AUTH_PAGES.includes(activePage) && !auth.token) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      goToPage(PAGE_IDS.LOGIN)
+      return
+    }
+
+    if (PUBLIC_AUTH_PAGES.includes(activePage) && auth.currentUser) {
+      goToPage(isProfileComplete(auth.profile) ? PAGE_IDS.PROFILE : PAGE_IDS.ONBOARDING)
+    }
+  }, [activePage, auth.currentUser, auth.isLoading, auth.profile, auth.token])
+
+  const isAuthShellLoading =
+    auth.isLoading &&
+    [...PROTECTED_AUTH_PAGES, ...PUBLIC_AUTH_PAGES].includes(activePage)
+
   return (
     <main className="app">
       <Navbar
@@ -248,6 +287,8 @@ function App() {
 
       {activePage === PAGE_IDS.PRODUCT_SCAN && <ProductScanPage goToPage={goToPage} />}
 
+      {activePage === PAGE_IDS.REGIONAL_HEALTH && <RegionalHealthPulse />}
+
       {activePage === PAGE_IDS.SOURCES && <DataSourcesPage />}
 
       {activePage === PAGE_IDS.AUDIT && <AuditHistoryPage />}
@@ -256,6 +297,48 @@ function App() {
 
       {activePage === PAGE_IDS.SAVED_MONITORS && <SavedMonitorsPage />}
 
+      {isAuthShellLoading && (
+        <section className="auth-page auth-page-compact" aria-live="polite">
+          <div className="auth-card">
+            <div className="auth-card-header">
+              <p className="eyebrow">Account</p>
+              <h2>Loading account…</h2>
+              <p>Checking your signed-in DavAI session.</p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {!isAuthShellLoading && activePage === PAGE_IDS.SIGNUP && (
+        <SignupPage
+          onSignedUp={() => goToPage(PAGE_IDS.ONBOARDING)}
+          goToLogin={() => goToPage(PAGE_IDS.LOGIN)}
+        />
+      )}
+
+      {!isAuthShellLoading && activePage === PAGE_IDS.LOGIN && (
+        <LoginPage
+          onSignedIn={(destination) =>
+            goToPage(
+              destination === 'profile'
+                ? PAGE_IDS.PROFILE
+                : PAGE_IDS.ONBOARDING,
+            )
+          }
+          goToSignup={() => goToPage(PAGE_IDS.SIGNUP)}
+        />
+      )}
+
+      {!isAuthShellLoading && activePage === PAGE_IDS.ONBOARDING && auth.token && (
+        <OnboardingPage onComplete={() => goToPage(PAGE_IDS.PROFILE)} />
+      )}
+
+      {!isAuthShellLoading && activePage === PAGE_IDS.PROFILE && auth.token && (
+        <ProfilePage
+          onLogout={() => goToPage(PAGE_IDS.LOGIN)}
+          goToOnboarding={() => goToPage(PAGE_IDS.ONBOARDING)}
+        />
+      )}
 
       {activePage === PAGE_IDS.ABOUT && <AboutPage />}
 
@@ -267,6 +350,14 @@ function App() {
 
       {assistantContext && <AskDavAIChat context={assistantContext} />}
     </main>
+  )
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   )
 }
 

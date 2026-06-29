@@ -1,11 +1,12 @@
 import {
-  INFORMATION_NAV_PAGE_IDS,
-  OPERATIONS_NAV_PAGE_IDS,
+  ADVANCED_NAV_PAGE_IDS,
   PAGE_IDS,
   PAGE_METADATA,
   PRIMARY_NAV_PAGE_IDS,
   type ActivePage,
 } from '../types/navigation'
+import { useAuth } from '../auth/AuthContext'
+import { useState } from 'react'
 
 type NavbarProps = {
   activePage: ActivePage
@@ -25,6 +26,9 @@ function Navbar({
   goHome,
   goToPage,
 }: NavbarProps) {
+  const { currentUser, logout } = useAuth()
+  const [advancedOpen, setAdvancedOpen] = useState(false)
+
   const createNavItems = (pageIds: readonly ActivePage[]): NavItem[] =>
     pageIds.map((pageId) => ({
       id: pageId,
@@ -34,8 +38,13 @@ function Navbar({
     }))
 
   const primaryNavItems = createNavItems(PRIMARY_NAV_PAGE_IDS)
-  const operationsNavItems = createNavItems(OPERATIONS_NAV_PAGE_IDS)
-  const secondaryNavItems = createNavItems(INFORMATION_NAV_PAGE_IDS)
+  const advancedNavItems = createNavItems(ADVANCED_NAV_PAGE_IDS)
+  const advancedPageIsActive = advancedNavItems.some((item) => item.isActive)
+
+  function handleLogout() {
+    logout()
+    goToPage(PAGE_IDS.LOGIN)
+  }
 
   const renderNavItem = (item: NavItem) => (
     <button
@@ -46,6 +55,21 @@ function Navbar({
       onClick={item.onClick}
     >
       {item.label}
+    </button>
+  )
+
+  const renderAdvancedNavItem = (item: NavItem) => (
+    <button
+      key={item.id}
+      type="button"
+      className={item.isActive ? 'active' : ''}
+      aria-current={item.isActive ? 'page' : undefined}
+      onClick={() => {
+        item.onClick()
+        setAdvancedOpen(false)
+      }}
+    >
+      {item.id === PAGE_IDS.PRODUCT_SCAN ? 'ProductScan beta' : item.label}
     </button>
   )
 
@@ -64,12 +88,51 @@ function Navbar({
         {primaryNavItems.map(renderNavItem)}
       </div>
 
-      <div className="nav-links nav-links-secondary" aria-label="Advanced workflows">
-        {operationsNavItems.map(renderNavItem)}
-      </div>
+      <details
+        className="nav-advanced"
+        open={advancedOpen || advancedPageIsActive}
+        onToggle={(event) => setAdvancedOpen(event.currentTarget.open)}
+      >
+        <summary
+          className={advancedPageIsActive ? 'active' : ''}
+          aria-current={advancedPageIsActive ? 'page' : undefined}
+        >
+          Advanced
+        </summary>
+        <div className="nav-advanced-menu" aria-label="Advanced pages">
+          {advancedNavItems.map(renderAdvancedNavItem)}
+        </div>
+      </details>
 
-      <div className="nav-links nav-actions" aria-label="Information pages">
-        {secondaryNavItems.map(renderNavItem)}
+      <div className="nav-links nav-actions" aria-label="Account actions">
+        {currentUser ? (
+          <>
+            {renderNavItem({
+              id: PAGE_IDS.PROFILE,
+              label: 'Profile',
+              isActive: activePage === PAGE_IDS.PROFILE,
+              onClick: () => goToPage(PAGE_IDS.PROFILE),
+            })}
+            <button type="button" className="nav-logout-button" onClick={handleLogout}>
+              Log out
+            </button>
+          </>
+        ) : (
+          <>
+            {renderNavItem({
+              id: PAGE_IDS.LOGIN,
+              label: 'Log in',
+              isActive: activePage === PAGE_IDS.LOGIN,
+              onClick: () => goToPage(PAGE_IDS.LOGIN),
+            })}
+            {renderNavItem({
+              id: PAGE_IDS.SIGNUP,
+              label: 'Sign up',
+              isActive: activePage === PAGE_IDS.SIGNUP,
+              onClick: () => goToPage(PAGE_IDS.SIGNUP),
+            })}
+          </>
+        )}
       </div>
     </nav>
   )

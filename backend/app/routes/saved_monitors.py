@@ -4,7 +4,7 @@ from dataclasses import asdict
 from typing import Any
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Query, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
 from app.analytics.monitor_insights import build_monitor_insight
 from app.db.saved_monitor_repository import saved_monitor_repository
@@ -22,6 +22,7 @@ from app.scoring.source_freshness import (
     classify_payload_change,
     payload_change_result_to_dict,
 )
+from app.services.auth_context import AuthenticatedUser, get_current_user
 from app.services.search_workflows.drug_signal_search import execute_drug_signal_search
 from app.services.search_workflows.everyday_safety_search import execute_everyday_safety_search
 from app.services.search_workflows.recall_search import execute_recall_search
@@ -189,9 +190,11 @@ def _runs_with_payload_change(
 
 
 @router.get("", response_model=list[SavedMonitor])
-def list_saved_monitors() -> list[SavedMonitor]:
+def list_saved_monitors(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> list[SavedMonitor]:
     """List saved monitors."""
-    return saved_monitor_repository.list()
+    return saved_monitor_repository.list_saved_monitors(current_user.id)
 
 
 @router.get("/{monitor_id}/runs", response_model=list[SavedMonitorRun])
@@ -199,9 +202,10 @@ def list_saved_monitor_runs(
     monitor_id: UUID,
     request: Request,
     limit: int = Query(default=10, ge=1, le=50),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> list[SavedMonitorRun]:
     """List recent manual run-history rows for one saved monitor."""
-    monitor = saved_monitor_repository.get(monitor_id)
+    monitor = saved_monitor_repository.get_saved_monitor(current_user.id, monitor_id)
     if monitor is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -209,26 +213,37 @@ def list_saved_monitor_runs(
         )
 
     request_id = getattr(request.state, "request_id", None)
-    runs = saved_monitor_repository.list_runs(monitor_id, limit=limit)
+    runs = saved_monitor_repository.list_runs(
+        monitor_id,
+        limit=limit,
+        user_id=current_user.id,
+    )
     return _runs_with_payload_change(runs, request_id=request_id)
 
 
 @router.get("/{monitor_id}/insights", response_model=MonitorInsightResponse)
-def get_saved_monitor_insight(monitor_id: UUID) -> MonitorInsightResponse:
+def get_saved_monitor_insight(
+    monitor_id: UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> MonitorInsightResponse:
     """Return deterministic AI Monitor Insight for one saved monitor.
 
     This insight is based only on stored Dav AI public-data monitor history.
     It is not medical advice, diagnosis, treatment guidance, clinical decision
     support, or proof of causality.
     """
-    monitor = saved_monitor_repository.get(monitor_id)
+    monitor = saved_monitor_repository.get_saved_monitor(current_user.id, monitor_id)
     if monitor is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Saved monitor not found",
         )
 
-    runs = saved_monitor_repository.list_runs(monitor_id, limit=10)
+    runs = saved_monitor_repository.list_runs(
+        monitor_id,
+        limit=10,
+        user_id=current_user.id,
+    )
     insight = build_monitor_insight(monitor=monitor, runs=runs)
     return MonitorInsightResponse(**asdict(insight))
 
@@ -238,7 +253,10 @@ def get_saved_monitor_insight(monitor_id: UUID) -> MonitorInsightResponse:
     response_model=SavedMonitor,
     status_code=status.HTTP_201_CREATED,
 )
-def create_saved_monitor(payload: SavedMonitorCreate) -> SavedMonitor:
+def create_saved_monitor(
+    payload: SavedMonitorCreate,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> SavedMonitor:
     """Create a saved monitor.
 
     Saved monitors are unique by module and normalized query so users do not
@@ -256,6 +274,7 @@ def create_saved_monitor(payload: SavedMonitorCreate) -> SavedMonitor:
     duplicate_exists = saved_monitor_repository.exists_by_module_and_query(
         module=payload.module,
         query=payload.query,
+        user_id=current_user.id,
     )
 
     if duplicate_exists:
@@ -264,13 +283,17 @@ def create_saved_monitor(payload: SavedMonitorCreate) -> SavedMonitor:
             detail="A saved monitor already exists for this module and query.",
         )
 
-    return saved_monitor_repository.create(payload)
+    return saved_monitor_repository.create_saved_monitor(current_user.id, payload)
 
 
 @router.post("/{monitor_id}/run", response_model=SavedMonitor)
-async def run_saved_monitor(monitor_id: UUID, request: Request) -> SavedMonitor:
+async def run_saved_monitor(
+    monitor_id: UUID,
+    request: Request,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> SavedMonitor:
     """Run one saved monitor manually and update its latest result fields."""
-    monitor = saved_monitor_repository.get(monitor_id)
+    monitor = saved_monitor_repository.get_saved_monitor(current_user.id, monitor_id)
     if monitor is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -326,6 +349,7 @@ async def run_saved_monitor(monitor_id: UUID, request: Request) -> SavedMonitor:
 
         updated = saved_monitor_repository.update_after_run(
             monitor_id,
+            user_id=current_user.id,
             latest_audit_id=latest_audit_id,
             latest_score=latest_score,
             latest_record_count=latest_record_count,
@@ -348,7 +372,7 @@ async def run_saved_monitor(monitor_id: UUID, request: Request) -> SavedMonitor:
         return updated
 
     except HTTPException as exc:
-        saved_monitor_repository.mark_error(monitor_id)
+        saved_monitor_repository.mark_error(monitor_id, user_id=current_user.id)
         saved_monitor_repository.create_run(
             monitor,
             status=SavedMonitorRunStatus.ERROR,
@@ -358,7 +382,7 @@ async def run_saved_monitor(monitor_id: UUID, request: Request) -> SavedMonitor:
         raise
 
     except Exception as exc:
-        saved_monitor_repository.mark_error(monitor_id)
+        saved_monitor_repository.mark_error(monitor_id, user_id=current_user.id)
         saved_monitor_repository.create_run(
             monitor,
             status=SavedMonitorRunStatus.ERROR,
@@ -375,9 +399,12 @@ async def run_saved_monitor(monitor_id: UUID, request: Request) -> SavedMonitor:
 
 
 @router.delete("/{monitor_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_saved_monitor(monitor_id: UUID) -> None:
+def delete_saved_monitor(
+    monitor_id: UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> None:
     """Delete a saved monitor by ID."""
-    deleted = saved_monitor_repository.delete(monitor_id)
+    deleted = saved_monitor_repository.delete_saved_monitor(current_user.id, monitor_id)
 
     if not deleted:
         raise HTTPException(
