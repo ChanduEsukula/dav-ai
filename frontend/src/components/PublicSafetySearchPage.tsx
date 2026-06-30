@@ -428,6 +428,14 @@ function PublicSafetySummaryStrip({
           <dt>Source issues</dt>
           <dd>{data.sources_failed.length}</dd>
         </div>
+        <div className={data.source_health?.contract_status === 'warning' ? 'has-issues' : ''}>
+          <dt>Source metadata</dt>
+          <dd>
+            {data.source_health?.contract_status === 'warning'
+              ? 'Warning'
+              : 'Verified'}
+          </dd>
+        </div>
       </dl>
     </section>
   )

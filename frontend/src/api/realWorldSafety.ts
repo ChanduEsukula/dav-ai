@@ -145,6 +145,11 @@ export type RealWorldSafetyIdentifierCheck = {
   user_message: string
 }
 
+export type RealWorldSafetySourceHealth = {
+  contract_status: 'passed' | 'warning'
+  contract_error_count: number
+}
+
 export type RealWorldSafetySearchResponse = {
   query: string
   raw_query: string
@@ -166,6 +171,7 @@ export type RealWorldSafetySearchResponse = {
   limitations: string[]
   source_audits: RealWorldSafetyAuditSummary[]
   source_freshness?: RealWorldSafetySourceFreshness[]
+  source_health?: RealWorldSafetySourceHealth
   results: RealWorldSafetyRecord[]
 }
 
