@@ -7,15 +7,14 @@ function ProductScanTeaser({ openProductScan }: ProductScanTeaserProps) {
     <section className="productscan-teaser" aria-label="Experimental ProductScan">
       <div>
         <p className="eyebrow">Experimental ProductScan</p>
-        <h2>Turn visible label text into a search starting point.</h2>
+        <h2>Turn label text into a safer search handoff.</h2>
         <p>
-          Upload a local label image for preview, paste readable text, review deterministic
-          candidate terms, then choose the existing Dav AI workflow to search.
+          Preview a label locally, review extracted or pasted text, choose a confirmed term, then hand it off to DrugSignal, FoodSignal, or Personal Care Signals.
         </p>
       </div>
 
       <button type="button" onClick={openProductScan}>
-        Open ProductScan
+        Open Scan beta
       </button>
     </section>
   )

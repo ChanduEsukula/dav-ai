@@ -105,7 +105,7 @@ function buildPreview(
       eyebrow: 'Safety record preview',
       title: `${query} looks like a food or supplement search.`,
       detail:
-        'Dav AI checked food and supplement safety records for possible public matches. Use the full food safety workflow to review product names, firms, dates, and recall reasons.',
+        'Dav AI checked food and supplement safety records for possible public matches. Use the full FoodSignal workflow to review product names, firms, dates, outbreak context, and recall reasons.',
       countLabel:
         foodCount > 0
           ? formatRecordLabel(foodCount)
@@ -151,7 +151,7 @@ function buildPreview(
     checklist: [
       'Use Safety Record Search for vehicles, consumer products, NDC/UPC/VIN, and cross-source checks.',
       'Use DrugSignal for drugs and medications.',
-      'Use Food & Supplement Safety for food, supplements, meat, poultry, and egg products.',
+      'Use FoodSignal for food, supplements, meat, poultry, and egg products.',
       'Use Personal Care Signals for cosmetics and personal-care products.',
     ],
     disclaimer:

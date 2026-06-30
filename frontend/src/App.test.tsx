@@ -93,19 +93,19 @@ test('renders Dav AI landing page', () => {
 
   expect(
     screen.getByRole('button', {
-      name: /DrugSignal.*Recalls \+ adverse-event patterns/i,
+      name: /DrugSignal.*Recalls \+ adverse-event signals/i,
     }),
   ).toBeInTheDocument()
 
   expect(
     screen.getByRole('button', {
-      name: /FoodSignal.*Food & supplement recalls/i,
+      name: /FoodSignal.*Recalls \+ outbreak context/i,
     }),
   ).toBeInTheDocument()
 
   expect(
     screen.getByRole('button', {
-      name: /Personal Care Signals.*Public cosmetic-event reports/i,
+      name: /Personal Care Signals.*Personal-care event signals/i,
     }),
   ).toBeInTheDocument()
 
@@ -208,7 +208,7 @@ test('opens ProductScan from the homepage experiment entry without adding primar
     }),
   ).not.toBeInTheDocument()
 
-  fireEvent.click(screen.getByRole('button', { name: /Open ProductScan/i }))
+  fireEvent.click(screen.getByRole('button', { name: /Open Scan beta/i }))
 
   expect(
     screen.getByRole('heading', { name: /Review label text before searching public records/i }),
