@@ -121,7 +121,7 @@ test.each([
       expect(
         screen.getByText(/No result does not prove that a product is safe/i),
       ).toBeInTheDocument()
-      expect(screen.getAllByText('Curated official snapshot').length).toBeGreaterThan(0)
+      expect(screen.getAllByText('Live public API').length).toBeGreaterThan(0)
     } else {
       expect(mockSearchCosmeticEvents).toHaveBeenCalledWith(query, 5)
       expect(screen.getByText(/public reporting signals/i)).toBeInTheDocument()

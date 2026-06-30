@@ -239,7 +239,7 @@ test('renders the Food Safety dashboard and multiple records for Chicken', async
     screen.getAllByText('Frozen chicken and vegetable meal, 16-ounce package'),
   ).toHaveLength(2)
   expect(screen.getByText(/Showing 2 of 2 returned records/i)).toBeInTheDocument()
-  expect(screen.getAllByText('Curated official snapshot').length).toBeGreaterThan(0)
+  expect(screen.getAllByText('Live public API').length).toBeGreaterThan(0)
 })
 
 test('renders normalized FDA notices with concise fields and an official link', async () => {
