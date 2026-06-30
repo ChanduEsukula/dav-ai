@@ -352,7 +352,7 @@ test('example search clears previous empty-search guidance', async () => {
 
 test.each([
   ['chicken', 'Food & Supplement Safety', 'food-safety'],
-  ['sunscreen', 'Cosmetic Safety', 'cosmetic-safety'],
+  ['sunscreen', 'Personal Care Signals', 'cosmetic-safety'],
 ] as const)(
   'suggests %s searches use the correct safety page',
   async (query, label, page) => {

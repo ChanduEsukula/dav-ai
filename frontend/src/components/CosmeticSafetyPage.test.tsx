@@ -153,7 +153,7 @@ beforeEach(() => {
   window.history.replaceState(null, '', '?page=cosmetic-safety&q=Sunscreen')
 })
 
-test('renders the Cosmetic Safety dashboard and multiple reports for Sunscreen', async () => {
+test('renders the Personal Care Signals dashboard and multiple reports for Sunscreen', async () => {
   renderCosmeticPage()
 
   expect(
@@ -245,7 +245,7 @@ test('an example chip runs a new Cosmetic search and clears guidance', async () 
   expect(screen.queryByText(/Enter a cosmetic, brand, ingredient/i)).not.toBeInTheDocument()
 })
 
-test('a Xanax Cosmetic search suggests Pharmacy Safety', async () => {
+test('a Xanax Cosmetic search suggests DrugSignal', async () => {
   const user = userEvent.setup()
   window.history.replaceState(null, '', '?page=cosmetic-safety')
   renderCosmeticPage('')
@@ -254,9 +254,9 @@ test('a Xanax Cosmetic search suggests Pharmacy Safety', async () => {
   await user.click(screen.getByRole('button', { name: 'Search' }))
 
   expect(
-    await screen.findByText(/This looks more like a Pharmacy Safety search/i),
+    await screen.findByText(/This looks more like a DrugSignal search/i),
   ).toBeInTheDocument()
-  await user.click(screen.getByRole('button', { name: 'Open Pharmacy Safety' }))
+  await user.click(screen.getByRole('button', { name: 'Open DrugSignal' }))
   expect(mockGoToPage).toHaveBeenCalledWith('pharmacy-safety', 'Xanax')
 })
 

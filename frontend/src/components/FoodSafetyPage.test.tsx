@@ -227,7 +227,7 @@ beforeEach(() => {
   window.history.replaceState(null, '', '?page=food-safety&q=Chicken')
 })
 
-test('renders the Food Safety dashboard and multiple records for Chicken', async () => {
+test('renders the FoodSignal dashboard and multiple records for Chicken', async () => {
   renderFoodPage()
 
   expect(
@@ -383,7 +383,7 @@ test('Latest sort reloads the submitted query with latest ordering', async () =>
   )
 })
 
-test('a Xanax Food search suggests Pharmacy Safety', async () => {
+test('a Xanax Food search suggests DrugSignal', async () => {
   const user = userEvent.setup()
   mockSearchEverydaySafety.mockResolvedValue(emptyFoodResponse)
   window.history.replaceState(null, '', '?page=food-safety')
@@ -393,7 +393,7 @@ test('a Xanax Food search suggests Pharmacy Safety', async () => {
   await user.click(screen.getByRole('button', { name: 'Search' }))
 
   const suggestion = await screen.findByText(
-    /This looks more like a Pharmacy Safety search/i,
+    /This looks more like a DrugSignal search/i,
   )
   const suggestionBox = suggestion.closest('.safety-route-suggestion')
   const examples = screen.getByLabelText('Example food safety searches')
@@ -401,15 +401,15 @@ test('a Xanax Food search suggests Pharmacy Safety', async () => {
   expect(
     suggestionBox!.compareDocumentPosition(examples) & Node.DOCUMENT_POSITION_FOLLOWING,
   ).not.toBe(0)
-  expect(screen.getByText(/This looks better suited for Pharmacy Safety/i)).toBeInTheDocument()
+  expect(screen.getByText(/This looks better suited for DrugSignal/i)).toBeInTheDocument()
   expect(
     screen.queryByText(/No public records returned for this exact search/i),
   ).not.toBeInTheDocument()
-  await user.click(screen.getByRole('button', { name: 'Open Pharmacy Safety' }))
+  await user.click(screen.getByRole('button', { name: 'Open DrugSignal' }))
   expect(mockGoToPage).toHaveBeenCalledWith('pharmacy-safety', 'Xanax')
 })
 
-test('a Sunscreen Food search suggests Cosmetic Safety', async () => {
+test('a Sunscreen Food search suggests Personal Care Signals', async () => {
   const user = userEvent.setup()
   window.history.replaceState(null, '', '?page=food-safety')
   renderFoodPage('')
@@ -418,9 +418,9 @@ test('a Sunscreen Food search suggests Cosmetic Safety', async () => {
   await user.click(screen.getByRole('button', { name: 'Search' }))
 
   expect(
-    await screen.findByText(/This looks more like a Cosmetic Safety search/i),
+    await screen.findByText(/This looks more like a Personal Care Signals search/i),
   ).toBeInTheDocument()
-  await user.click(screen.getByRole('button', { name: 'Open Cosmetic Safety' }))
+  await user.click(screen.getByRole('button', { name: 'Open Personal Care Signals' }))
   expect(mockGoToPage).toHaveBeenCalledWith('cosmetic-safety', 'Sunscreen')
 })
 

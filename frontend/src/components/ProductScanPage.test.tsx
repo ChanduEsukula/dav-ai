@@ -231,7 +231,7 @@ test('requires workflow selection and routes confirmed query to an existing safe
   const submitButton = screen.getByRole('button', { name: /Open selected workflow/i })
   expect(submitButton).toBeDisabled()
 
-  await user.click(screen.getByLabelText('Food Safety'))
+  await user.click(screen.getByLabelText('FoodSignal'))
   await user.click(submitButton)
 
   expect(mockGoToPage).toHaveBeenCalledWith('food-safety', 'Mango Coconut Water')
@@ -253,7 +253,7 @@ test('allows the user to edit OCR text before routing', async () => {
   await user.clear(textField)
   await user.type(textField, 'Product Name: Mango Juice')
   await user.click(screen.getByRole('button', { name: /Use Mango Juice as search term/i }))
-  await user.click(screen.getByLabelText('Food Safety'))
+  await user.click(screen.getByLabelText('FoodSignal'))
   await user.click(screen.getByRole('button', { name: /Open selected workflow/i }))
 
   expect(mockGoToPage).toHaveBeenCalledWith('food-safety', 'Mango Juice')
@@ -264,7 +264,7 @@ test('allows a typed confirmed query when no candidate is selected', async () =>
   renderProductScanPage()
 
   await user.type(screen.getByLabelText(/Confirmed search term/i), 'Sunscreen SPF 50')
-  await user.click(screen.getByLabelText('Cosmetic Safety'))
+  await user.click(screen.getByLabelText('Personal Care Signals'))
   await user.click(screen.getByRole('button', { name: /Open selected workflow/i }))
 
   expect(mockGoToPage).toHaveBeenCalledWith('cosmetic-safety', 'Sunscreen SPF 50')
