@@ -262,15 +262,6 @@ def create_saved_monitor(
     Saved monitors are unique by module and normalized query so users do not
     accidentally create duplicate monitors for the same public-data workflow.
     """
-    if payload.module == SavedMonitorModule.COSMETICSIGNAL:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
-            detail=(
-                "Cosmetic Safety monitor creation is unavailable until persistence "
-                "and manual-run support are aligned."
-            ),
-        )
-
     duplicate_exists = saved_monitor_repository.exists_by_module_and_query(
         module=payload.module,
         query=payload.query,

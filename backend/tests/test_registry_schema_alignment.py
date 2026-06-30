@@ -81,7 +81,7 @@ def test_schema_snapshot_includes_regional_health_source_and_monitor_constraints
     assert "'Regional Health Pulse MVP scaffold'" in schema_sql
     assert "saved_monitors_module_check" in schema_sql
     assert "saved_monitor_runs_module_check" in schema_sql
-    assert "check (module in ('recallradar', 'drugsignal', 'foodradar', 'regional_health_pulse'))" in schema_sql
+    assert "check (module in ('recallradar', 'drugsignal', 'foodradar', 'cosmeticsignal', 'regional_health_pulse'))" in schema_sql
 
 
 def test_regional_health_alignment_migration_covers_seed_and_constraints():

@@ -319,7 +319,7 @@ def test_create_saved_monitor() -> None:
     assert data["status"] == "not_checked"
 
 
-def test_reject_cosmetic_saved_monitor_until_manual_run_and_schema_parity() -> None:
+def test_create_cosmetic_saved_monitor() -> None:
     response = client.post(
         "/api/v1/saved-monitors",
         json={
@@ -329,8 +329,35 @@ def test_reject_cosmetic_saved_monitor_until_manual_run_and_schema_parity() -> N
         },
     )
 
-    assert response.status_code == 422
-    assert "Cosmetic Safety monitor creation is unavailable" in response.json()["detail"]
+    assert response.status_code == 201
+    data = response.json()
+
+    assert data["id"]
+    assert data["name"] == "Sunscreen monitor"
+    assert data["query"] == "sunscreen"
+    assert data["module"] == "cosmeticsignal"
+    assert data["status"] == "not_checked"
+    assert data["last_checked_at"] is None
+    assert data["latest_audit_id"] is None
+
+
+def test_run_cosmetic_saved_monitor_returns_unsupported_until_runner_exists() -> None:
+    create_response = client.post(
+        "/api/v1/saved-monitors",
+        json={
+            "name": "Sunscreen monitor",
+            "query": "sunscreen",
+            "module": "cosmeticsignal",
+        },
+    )
+
+    assert create_response.status_code == 201
+    monitor_id = create_response.json()["id"]
+
+    run_response = client.post(f"/api/v1/saved-monitors/{monitor_id}/run")
+
+    assert run_response.status_code == 422
+    assert run_response.json()["detail"] == "Unsupported saved monitor module"
 
 
 def test_reject_duplicate_saved_monitor_same_module_and_query() -> None:
