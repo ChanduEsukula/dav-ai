@@ -35,6 +35,79 @@ NO_MATCH_EXPLANATION = (
 )
 
 
+SOURCE_KIND_VALUES = {"structured_api", "public_notice", "normalized_public_notice"}
+
+
+def _assert_checked_source_contract(source):
+    assert source["source_id"]
+    assert source["source_name"]
+    assert source["source_type"]
+    assert source["source_url"]
+    assert source["source_kind"] in SOURCE_KIND_VALUES
+    assert source["upstream_status"]
+    assert isinstance(source["record_count"], int)
+    assert source["record_count"] >= 0
+
+
+def _assert_failed_source_contract(source):
+    assert source["source_id"]
+    assert source["source_name"]
+    assert source["source_type"]
+    assert source["source_url"]
+    assert source["source_kind"] in SOURCE_KIND_VALUES
+    assert source["error_type"]
+    assert source["reason"]
+
+
+def _assert_source_audit_contract(audit):
+    assert audit["audit_id"]
+    assert audit["source_id"]
+    assert audit["source_name"]
+    assert audit["module"] == "RealWorldSafety"
+    assert audit["upstream_status"]
+    assert isinstance(audit["record_count"], int)
+    assert audit["record_count"] >= 0
+    assert audit["transform_version"]
+
+
+def _assert_source_freshness_contract(freshness, *, expected_checked_at):
+    assert freshness["source_id"]
+    assert freshness["source_name"]
+    assert freshness["source_type"]
+    assert freshness["source_kind"] in SOURCE_KIND_VALUES
+    assert freshness["upstream_status"]
+    assert isinstance(freshness["record_count"], int)
+    assert freshness["record_count"] >= 0
+    assert freshness["freshness_status"]
+    assert freshness["user_label"]
+    assert freshness["explanation"]
+    assert freshness["checked_at"] == expected_checked_at
+
+
+def _assert_real_world_source_health_contract(body):
+    checked_source_ids = {source["source_id"] for source in body["sources_checked"]}
+    failed_source_ids = {source["source_id"] for source in body["sources_failed"]}
+    freshness_source_ids = {freshness["source_id"] for freshness in body["source_freshness"]}
+
+    assert checked_source_ids or failed_source_ids
+    assert freshness_source_ids == checked_source_ids | failed_source_ids
+
+    for source in body["sources_checked"]:
+        _assert_checked_source_contract(source)
+
+    for source in body["sources_failed"]:
+        _assert_failed_source_contract(source)
+
+    for audit in body["source_audits"]:
+        _assert_source_audit_contract(audit)
+
+    for freshness in body["source_freshness"]:
+        _assert_source_freshness_contract(
+            freshness,
+            expected_checked_at=body["retrieval_timestamp"],
+        )
+
+
 def _load_json(name: str):
     return json.loads((FIXTURE_ROOT / name).read_text())
 
@@ -264,6 +337,83 @@ def test_real_world_safety_drug_reference_and_device_sources(
     assert expected_text.lower() in searchable.lower()
     assert all(record["source_kind"] == "structured_api" for record in matching_results)
     assert all(record["source_type"] == "local curated official snapshot" for record in matching_results)
+
+
+
+def test_real_world_safety_source_health_contract_accepts_failed_sources():
+    body = {
+        "retrieval_timestamp": "2026-06-30T18:00:00Z",
+        "sources_checked": [
+            {
+                "source_id": "cpsc_recalls_api",
+                "source_name": "CPSC Recalls API",
+                "source_type": "live official API",
+                "source_url": "https://www.saferproducts.gov/RestWebServices/Recall",
+                "source_kind": "structured_api",
+                "upstream_status": "success",
+                "record_count": 1,
+            }
+        ],
+        "sources_failed": [
+            {
+                "source_id": "fda_recalls_market_withdrawals_safety_alerts",
+                "source_name": "FDA Recalls, Market Withdrawals & Safety Alerts",
+                "source_type": "live official public page",
+                "source_url": "https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts",
+                "source_kind": "public_notice",
+                "error_type": "upstream_unavailable",
+                "reason": "Temporary upstream source issue.",
+            }
+        ],
+        "source_audits": [
+            {
+                "audit_id": "audit-cpsc",
+                "source_id": "cpsc_recalls_api",
+                "source_name": "CPSC Recalls API",
+                "module": "RealWorldSafety",
+                "upstream_status": "success",
+                "record_count": 1,
+                "transform_version": "real-world-safety-v0.1",
+                "source_snapshot_status": "stored",
+                "source_pull_id": "pull-cpsc",
+                "source_payload_hash": "hash-cpsc",
+            }
+        ],
+        "source_freshness": [
+            {
+                "source_id": "cpsc_recalls_api",
+                "source_name": "CPSC Recalls API",
+                "source_type": "live official API",
+                "source_kind": "structured_api",
+                "upstream_status": "success",
+                "record_count": 1,
+                "freshness_status": "pulled_and_stored",
+                "user_label": "Pulled and stored",
+                "explanation": "DavAI checked this public source and stored audit metadata.",
+                "source_snapshot_status": "stored",
+                "source_pull_id": "pull-cpsc",
+                "source_payload_hash": "hash-cpsc",
+                "checked_at": "2026-06-30T18:00:00Z",
+            },
+            {
+                "source_id": "fda_recalls_market_withdrawals_safety_alerts",
+                "source_name": "FDA Recalls, Market Withdrawals & Safety Alerts",
+                "source_type": "live official public page",
+                "source_kind": "public_notice",
+                "upstream_status": "error",
+                "record_count": 0,
+                "freshness_status": "source_issue_reported",
+                "user_label": "Source issue reported",
+                "explanation": "Temporary upstream source issue.",
+                "source_snapshot_status": None,
+                "source_pull_id": None,
+                "source_payload_hash": None,
+                "checked_at": "2026-06-30T18:00:00Z",
+            },
+        ],
+    }
+
+    _assert_real_world_source_health_contract(body)
 
 
 @pytest.mark.parametrize(
@@ -504,6 +654,7 @@ def test_real_world_safety_no_match_response_does_not_certify_safety(monkeypatch
     assert {source["source_id"] for source in body["sources_checked"]} == set(
         body["search_plan"]["sources_to_check"]
     )
+    _assert_real_world_source_health_contract(body)
 
 
 def old_test_real_world_safety_returns_partial_results_when_one_source_fails(monkeypatch):
@@ -537,6 +688,7 @@ def old_test_real_world_safety_returns_partial_results_when_one_source_fails(mon
         source["source_name"] for source in body["sources_checked"]
     }
     assert any(audit["source_id"] == "cpsc_recalls_api" for audit in body["source_audits"])
+    _assert_real_world_source_health_contract(body)
 
 
 @pytest.mark.parametrize(
@@ -801,6 +953,7 @@ def test_real_world_safety_response_includes_source_freshness(monkeypatch):
     assert nhtsa_freshness[0]["source_payload_hash"] == "test-hash-nhtsa_recalls_api_datasets"
     assert nhtsa_freshness[0]["checked_at"] == body["retrieval_timestamp"]
     assert "stored audit metadata" in nhtsa_freshness[0]["explanation"]
+    _assert_real_world_source_health_contract(body)
 
 
 def test_real_world_safety_udi_identifier_routes_to_device_identity(monkeypatch):
