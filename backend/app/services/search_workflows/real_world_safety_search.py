@@ -76,11 +76,37 @@ PUBLIC_DATA_DISCLAIMER = (
     "Results are informational and should be verified against the official source pages."
 )
 LIMITATIONS = [
-    "Version 1 checks CPSC consumer product recalls, curated official openFDA Food Enforcement records, CDC/FDA foodborne outbreak investigation context records, curated official openFDA Drug Enforcement records, RxNorm/RxNav drug-name reference records, DailyMed official SPL drug label records, openFDA NDC Directory drug identity/reference records, openFDA medical device enforcement records, openFDA medical device adverse-event reports, CDC/VAERS vaccine adverse-event signal reports, NHTSA vehicle recalls for VIN or make/model/year input, and the FDA public recalls page.",
-    "No matching public record was found in the checked U.S. sources. This does not certify that the product is safe.",
-    "Search results depend on source-provided product names, company names, campaign metadata, recall descriptions, and public notice table text.",
-    "If one source is temporarily unavailable, Dav AI returns partial results from remaining checked sources and lists the failed source.",
-    "This is not medical advice, legal advice, a drug interaction checker, ingredient scoring, or a replacement for official recall instructions.",
+    (
+        "Version 1 checks selected U.S. public safety sources across consumer "
+        "product recalls, food enforcement, foodborne outbreak investigation "
+        "context, drug enforcement, drug identity/reference records, DailyMed "
+        "SPL drug labels, NDC directory records, medical device enforcement, "
+        "medical device adverse-event reports, vaccine adverse-event signal "
+        "reports, vehicle recall sources, and FDA public recall notices."
+    ),
+    (
+        "Source modes vary by adapter. Some sources are live public API requests, "
+        "some are live public-page ingestion, and some are curated official-source "
+        "snapshots or fallback snapshots. Check each source's freshness/status "
+        "before acting."
+    ),
+    (
+        "No matching public record was found in the checked U.S. sources. "
+        "This does not certify that the product is safe."
+    ),
+    (
+        "Search results depend on source-provided product names, company names, "
+        "campaign metadata, recall descriptions, identifiers, and public notice "
+        "table text."
+    ),
+    (
+        "If one source is temporarily unavailable, Dav AI returns partial results "
+        "from remaining checked sources and lists the failed source."
+    ),
+    (
+        "This is not medical advice, legal advice, a drug interaction checker, "
+        "ingredient scoring, or a replacement for official recall instructions."
+    ),
 ]
 
 cpsc_adapter = CPSCRecallsAdapter()
