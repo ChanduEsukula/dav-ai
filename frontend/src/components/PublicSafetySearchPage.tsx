@@ -649,7 +649,12 @@ function SourceCoveragePanel({
 
       {data.sources_failed.length > 0 && (
         <div className="public-safety-failed-sources">
-          <small>Sources with issues</small>
+          <small>Some sources could not be checked</small>
+          <p>
+            Results may be incomplete because one or more public sources had an issue
+            during this search. Use returned records as a starting point, retry later,
+            and verify directly with official source links.
+          </p>
           {data.sources_failed.map((source) => (
             <p key={`${source.source_id}-${source.reason}`}>
               <strong>{source.source_name}:</strong> {source.reason}
