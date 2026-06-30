@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.services.search_workflows import real_world_safety_search
+from app.services.search_workflows.source_health_contract import validate_real_world_source_health_contract
 from app.services.safety_source_adapters import cpsc as cpsc_adapter
 from app.sources.registry import (
     CPSC_RECALLS_API,
@@ -35,77 +36,10 @@ NO_MATCH_EXPLANATION = (
 )
 
 
-SOURCE_KIND_VALUES = {"structured_api", "public_notice", "normalized_public_notice"}
-
-
-def _assert_checked_source_contract(source):
-    assert source["source_id"]
-    assert source["source_name"]
-    assert source["source_type"]
-    assert source["source_url"]
-    assert source["source_kind"] in SOURCE_KIND_VALUES
-    assert source["upstream_status"]
-    assert isinstance(source["record_count"], int)
-    assert source["record_count"] >= 0
-
-
-def _assert_failed_source_contract(source):
-    assert source["source_id"]
-    assert source["source_name"]
-    assert source["source_type"]
-    assert source["source_url"]
-    assert source["source_kind"] in SOURCE_KIND_VALUES
-    assert source["error_type"]
-    assert source["reason"]
-
-
-def _assert_source_audit_contract(audit):
-    assert audit["audit_id"]
-    assert audit["source_id"]
-    assert audit["source_name"]
-    assert audit["module"] == "RealWorldSafety"
-    assert audit["upstream_status"]
-    assert isinstance(audit["record_count"], int)
-    assert audit["record_count"] >= 0
-    assert audit["transform_version"]
-
-
-def _assert_source_freshness_contract(freshness, *, expected_checked_at):
-    assert freshness["source_id"]
-    assert freshness["source_name"]
-    assert freshness["source_type"]
-    assert freshness["source_kind"] in SOURCE_KIND_VALUES
-    assert freshness["upstream_status"]
-    assert isinstance(freshness["record_count"], int)
-    assert freshness["record_count"] >= 0
-    assert freshness["freshness_status"]
-    assert freshness["user_label"]
-    assert freshness["explanation"]
-    assert freshness["checked_at"] == expected_checked_at
-
-
 def _assert_real_world_source_health_contract(body):
-    checked_source_ids = {source["source_id"] for source in body["sources_checked"]}
-    failed_source_ids = {source["source_id"] for source in body["sources_failed"]}
-    freshness_source_ids = {freshness["source_id"] for freshness in body["source_freshness"]}
+    errors = validate_real_world_source_health_contract(body)
+    assert errors == []
 
-    assert checked_source_ids or failed_source_ids
-    assert freshness_source_ids == checked_source_ids | failed_source_ids
-
-    for source in body["sources_checked"]:
-        _assert_checked_source_contract(source)
-
-    for source in body["sources_failed"]:
-        _assert_failed_source_contract(source)
-
-    for audit in body["source_audits"]:
-        _assert_source_audit_contract(audit)
-
-    for freshness in body["source_freshness"]:
-        _assert_source_freshness_contract(
-            freshness,
-            expected_checked_at=body["retrieval_timestamp"],
-        )
 
 
 def _load_json(name: str):
