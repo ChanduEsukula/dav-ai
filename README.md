@@ -1,6 +1,6 @@
 # DavAI
 
-DavAI is a full-stack public-record safety intelligence prototype that helps people search selected public recall, label, reference, vehicle, food, drug, cosmetic, and consumer-product safety records with source links and clear verification boundaries.
+DavAI is a full-stack public safety intelligence prototype that routes product, drug, food, vehicle, device, supplement, and personal-care queries across selected public safety sources with source links, provenance, source-mode context, and clear verification boundaries.
 
 The project is designed for portfolio and interview review. It demonstrates modern full-stack engineering, source-aware search orchestration, auditability, source provenance, and a bounded AI-assisted explanation layer without claiming to be production healthcare, legal, or regulatory software.
 
@@ -27,7 +27,7 @@ Public safety information is fragmented across agency websites, APIs, labels, re
 DavAI makes those records easier to search, interpret, and verify while preserving source context. The product goal is not to produce a safety verdict. The goal is:
 
 ```text
-Search public records -> identify evidence types -> verify exact source records -> explain results within clear limits
+Search public records -> identify evidence lanes -> verify exact source records -> explain results within clear limits
 ```
 
 ## Main Demo Flow
@@ -43,7 +43,7 @@ Home
   -> Review evidence types found
   -> Open source verification links
   -> Click Explain These Results
-  -> Save or review a repeatable Saved Search
+  -> Save or review a repeatable Monitor
 ```
 
 Recommended demo queries:
@@ -62,11 +62,11 @@ Recommended demo queries:
 | Evidence type summary | Shows whether recall/enforcement, reference/identity, label, signal, outbreak, advisory, or other public records were found. |
 | Source verification links | Keeps official or public source links visible so users can verify the exact record. |
 | Query understanding | Normalizes selected terms, detects identifiers such as NDC, UPC, VIN, and UDI, and exposes how the query was interpreted. |
-| Pharmacy Safety | Focused drug recall and public adverse-event reporting workflow using openFDA-style data. |
-| Food Safety | Focused food, supplement, meat, poultry, and egg-product recall/public-health-alert workflow. |
-| Cosmetic Safety | Focused cosmetic adverse-event report workflow with causation boundaries. |
+| DrugSignal | Focused drug recall, public adverse-event signal, label, NDC, RxNorm, and DailyMed-oriented workflow where supported. |
+| FoodSignal | Focused food, supplement, meat, poultry, egg-product, outbreak-context, and public-health-alert workflow where supported. |
+| Personal Care Signals | Focused cosmetic and personal-care adverse-event report workflow with strong non-causation boundaries. |
 | Explain These Results | A bounded assistant entry point that answers using only the current visible result context, source metadata, audit ID, scores, and limitations. |
-| Saved Searches | Repeatable public-record checks with manual run history, change context, and audit links. |
+| Monitors | Repeatable public-record checks with manual run history, change context, and audit links. |
 | Audit and Sources | Engineering credibility surfaces for provenance, source registry details, source-pull metadata, payload hashes, and system status. |
 | ProductScan beta | Experimental label-text input helper. It is not a production OCR safety decision system. |
 
@@ -91,7 +91,7 @@ Important source-mode language:
 | openFDA Drug Label, NDC, Device Enforcement, Device Event, UDI | Source-specific adapters; some flows use live APIs and some use curated official-source snapshots or fallback data | Used for reference, label, device, signal, and identity context depending on query and adapter. |
 | RxNorm/RxNav and DailyMed | Public reference APIs | Used for drug-name, RXCUI, label, and reference context. |
 | FDA public recall notices and safety communications | Public-page ingestion or curated official context | Used for official FDA page context where structured APIs are limited. |
-| USDA FSIS recalls/public health alerts | Live public API in Food Safety flows; curated official-source snapshot or fallback in some cross-source flows | Used for meat, poultry, and egg-product recall/public-health-alert context. |
+| USDA FSIS recalls/public health alerts | Live public API in FoodSignal flows; curated official-source snapshot or fallback in some cross-source flows | Used for meat, poultry, and egg-product recall/public-health-alert context. |
 | CPSC consumer-product recalls | Curated official-source snapshot in this prototype | Live automated refresh is not enabled yet. Demo CPSC records should not be used in runtime search. |
 | NHTSA vPIC and recalls | Live public APIs | Vehicle decoding and recall lookup paths. |
 | CDC/VAERS and CDC/FDA foodborne outbreak context | Public-data signal/context adapters; some flows may use curated official-source snapshots | Signal and investigation context only; not causation or safety verdicts. |
@@ -242,11 +242,11 @@ Current full local validation checkpoint:
 Recent product polish:
 
 - made Safety Record Search the homepage primary action
-- simplified navigation around Search and Saved Searches
+- simplified navigation around Safety Search and Monitors
 - reduced duplicate homepage sections
 - renamed the assistant entry point to **Explain These Results**
 - improved Public Safety result hierarchy with **Evidence types found** and **Sources checked and verification links**
-- changed user-facing Monitor language to **Saved Searches**
+- changed user-facing saved-search language to **Monitors**
 - removed Regional Health Pulse from normal user-facing routing/copy
 
 ## Known Limitations
@@ -255,7 +255,7 @@ Recent product polish:
 - Some sources are curated official-source snapshots for deterministic demos, tests, or fallback search, not continuously refreshed live integrations.
 - Source coverage is selected and incomplete.
 - Public sources may be incomplete, delayed, duplicated, unavailable, or difficult to match without exact identifiers.
-- Saved Searches support repeatable/manual checks and backend scheduling foundations, but production alerting is not enabled.
+- Monitors support repeatable/manual checks and backend scheduling foundations, but production alerting is not enabled.
 - ProductScan is experimental label-text assistance, not production OCR verification.
 - Explain These Results is bounded to current structured context. It is not a production RAG system, not a web-browsing assistant, and not a source of medical or legal advice.
 - Empty search results are not safety guarantees. They only mean DavAI did not find a matching record in the selected sources checked for that query.

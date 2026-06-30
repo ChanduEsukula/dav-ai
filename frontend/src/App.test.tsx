@@ -270,7 +270,7 @@ test('does not show Help Docs Search on the About page', () => {
 
   render(<App />)
 
-  expect(screen.getByRole('heading', { name: /Healthcare safety intelligence/i })).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: /Public safety intelligence with source boundaries/i })).toBeInTheDocument()
   expect(screen.queryByLabelText(/Search Dav AI docs/i)).not.toBeInTheDocument()
   expect(
     screen.queryByRole('heading', { name: /Find cited snippets from Dav AI docs/i }),
