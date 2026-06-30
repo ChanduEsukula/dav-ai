@@ -2,7 +2,7 @@
 
 DavAI is a full-stack public-record safety intelligence prototype that helps people search selected public recall, label, reference, vehicle, food, drug, cosmetic, and consumer-product safety records with source links and clear verification boundaries.
 
-The project is designed for portfolio and interview review. It demonstrates modern full-stack engineering, source-aware search orchestration, auditability, and a bounded AI-assisted explanation layer without claiming to be production healthcare software.
+The project is designed for portfolio and interview review. It demonstrates modern full-stack engineering, source-aware search orchestration, auditability, source provenance, and a bounded AI-assisted explanation layer without claiming to be production healthcare, legal, or regulatory software.
 
 DavAI does not decide whether a product, drug, food, vehicle, device, or cosmetic is safe or unsafe. It is not medical advice, legal advice, clinical decision support, emergency guidance, or a replacement for official source instructions.
 
@@ -15,7 +15,7 @@ DavAI does not decide whether a product, drug, food, vehicle, device, or cosmeti
 
 ## Problem
 
-Public safety information is fragmented across agency websites, APIs, labels, reference databases, and curated public records. The same search term can mean different things depending on context:
+Public safety information is fragmented across agency websites, APIs, labels, reference databases, and official public records. The same search term can mean different things depending on context:
 
 - a formal recall or enforcement action
 - a drug label or NDC reference record
@@ -58,7 +58,7 @@ Recommended demo queries:
 
 | Feature | What it does |
 |---|---|
-| Safety Record Search | Routes a query across selected public safety sources and separates evidence types such as recall, reference, label, and signal records. |
+| Safety Record Search | Routes a query across selected public safety sources and separates evidence types such as recall, reference, label, outbreak context, and signal records. |
 | Evidence type summary | Shows whether recall/enforcement, reference/identity, label, signal, outbreak, advisory, or other public records were found. |
 | Source verification links | Keeps official or public source links visible so users can verify the exact record. |
 | Query understanding | Normalizes selected terms, detects identifiers such as NDC, UPC, VIN, and UDI, and exposes how the query was interpreted. |
@@ -70,9 +70,17 @@ Recommended demo queries:
 | Audit and Sources | Engineering credibility surfaces for provenance, source registry details, source-pull metadata, payload hashes, and system status. |
 | ProductScan beta | Experimental label-text input helper. It is not a production OCR safety decision system. |
 
-## Data Sources
+## Data Sources and Source Modes
 
 DavAI uses a mix of live public APIs, public-page ingestion, curated official-source snapshots, and prototype scaffolds. The UI and docs should keep those modes visible because they affect what users can honestly infer from a result.
+
+Important source-mode language:
+
+- **Live public API** means DavAI queries an official/public API at request time.
+- **Live public-page ingestion** means DavAI reads a public source page or table at request time.
+- **Curated official-source snapshot** means DavAI searches a local cache created from official/public source records.
+- **Fallback snapshot** means a cached official-source record may be used when a live source is unavailable or not yet integrated.
+- **Scaffold/experimental** means the workflow exists for portfolio/product direction but should not be presented as production surveillance or safety verification.
 
 | Source family | Current mode | Notes |
 |---|---|---|
@@ -80,14 +88,14 @@ DavAI uses a mix of live public APIs, public-page ingestion, curated official-so
 | openFDA Drug Event | Live public API | FAERS-style public adverse-event reports; not proof of causation or incidence. |
 | openFDA Food Enforcement | Live public API | Food and supplement recall/enforcement records. |
 | openFDA Cosmetic Event | Live public API | Cosmetic adverse-event reports; not proof of causation. |
-| openFDA Drug Label, NDC, Device Enforcement, Device Event, UDI | Source-specific adapters; some flows use live APIs and some curated/demo snapshots | Used for reference, label, device, signal, and identity context depending on query and adapter. |
+| openFDA Drug Label, NDC, Device Enforcement, Device Event, UDI | Source-specific adapters; some flows use live APIs and some use curated official-source snapshots or fallback data | Used for reference, label, device, signal, and identity context depending on query and adapter. |
 | RxNorm/RxNav and DailyMed | Public reference APIs | Used for drug-name, RXCUI, label, and reference context. |
-| FDA public recall notices and safety communications | Public page or curated official context | Used for official FDA page context where structured APIs are limited. |
-| USDA FSIS recalls/public health alerts | Curated official-source snapshot in this prototype | Live automated refresh is not enabled yet. |
-| CPSC consumer-product recalls | Curated official-source snapshot in this prototype | Live automated refresh is not enabled yet. |
+| FDA public recall notices and safety communications | Public-page ingestion or curated official context | Used for official FDA page context where structured APIs are limited. |
+| USDA FSIS recalls/public health alerts | Live public API in Food Safety flows; curated official-source snapshot or fallback in some cross-source flows | Used for meat, poultry, and egg-product recall/public-health-alert context. |
+| CPSC consumer-product recalls | Curated official-source snapshot in this prototype | Live automated refresh is not enabled yet. Demo CPSC records should not be used in runtime search. |
 | NHTSA vPIC and recalls | Live public APIs | Vehicle decoding and recall lookup paths. |
-| CDC/VAERS and CDC/FDA foodborne outbreak context | Curated/demo public-data snapshots in current source-expansion flows | Signal and investigation context only; not causation or safety verdicts. |
-| Regional Health Pulse | Backend scaffold only, removed from normal user-facing routing/copy | Not live CDC/HHS surveillance. |
+| CDC/VAERS and CDC/FDA foodborne outbreak context | Public-data signal/context adapters; some flows may use curated official-source snapshots | Signal and investigation context only; not causation or safety verdicts. |
+| Regional Health Pulse | Backend scaffold / experimental workflow | Not live CDC/HHS surveillance and should remain outside normal consumer routing unless clearly labeled experimental. |
 
 ## Safety and Limitation Boundaries
 
@@ -150,13 +158,15 @@ The right portfolio wording is:
 
 ### Backend
 
+From the repository root:
+
 ```bash
 cd backend
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
-uvicorn app.main:app --reload
+PYTHONPATH=. uvicorn app.main:app --reload
 ```
 
 The backend defaults to `http://127.0.0.1:8000`.
@@ -197,10 +207,10 @@ docker compose up --build
 
 ## Run Tests
 
-Backend:
+Run backend tests from the repository root:
 
 ```bash
-pytest
+PYTHONPATH=backend python3 -m pytest backend/tests -q
 ```
 
 Frontend:
@@ -208,7 +218,7 @@ Frontend:
 ```bash
 cd frontend
 npm run build
-npm test
+npm test -- --run
 npm run lint
 npm run test:e2e
 ```
@@ -218,11 +228,16 @@ Focused portfolio checkpoint validation reported for `portfolio-ui-polish-v1`:
 - App, UniversalSafetySearch, PublicSafetySearchPage, and SavedMonitorsPage focused frontend tests: 63 passed
 - Frontend production build: passed
 
+Current full local validation checkpoint:
+
+- Backend tests: 463 passed
+- Frontend tests: 31 files, 265 tests passed
+- Frontend production build: passed
+
 ## Current Status
 
 - Checkpoint: `portfolio-ui-polish-v1`
-- Latest commit at checkpoint: `3c873f7 Polish Saved Searches user language`
-- Branch during documentation update: `docs/source-expansion-checkpoint`
+- Current cleanup focus: truthfulness, source-mode clarity, removal of demo-looking runtime data, and DrugSignal-quality parity across modules.
 
 Recent product polish:
 
@@ -237,15 +252,17 @@ Recent product polish:
 ## Known Limitations
 
 - DavAI is a portfolio prototype, not production healthcare, legal, or regulatory software.
-- Some sources are curated official-source snapshots for deterministic demos and tests, not continuously refreshed live integrations.
+- Some sources are curated official-source snapshots for deterministic demos, tests, or fallback search, not continuously refreshed live integrations.
 - Source coverage is selected and incomplete.
 - Public sources may be incomplete, delayed, duplicated, unavailable, or difficult to match without exact identifiers.
 - Saved Searches support repeatable/manual checks and backend scheduling foundations, but production alerting is not enabled.
 - ProductScan is experimental label-text assistance, not production OCR verification.
 - Explain These Results is bounded to current structured context. It is not a production RAG system, not a web-browsing assistant, and not a source of medical or legal advice.
+- Empty search results are not safety guarantees. They only mean DavAI did not find a matching record in the selected sources checked for that query.
 
 ## Portfolio Docs
 
+- [Repository Audit 2026](docs/DAVAI_REPOSITORY_AUDIT_2026.md)
 - [Portfolio UI Polish v1 Checkpoint](docs/portfolio_ui_polish_v1_checkpoint.md)
 - [5-Minute Portfolio Demo Script](docs/demo_script_portfolio_ui_polish_v1.md)
 - [Architecture Overview](docs/architecture_overview.md)

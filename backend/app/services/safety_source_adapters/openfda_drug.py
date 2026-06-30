@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 from pathlib import Path
 from typing import Any
 
+from app.services.openfda_client import OpenFDAClient
 from app.services.safety_source_adapters.base import (
     NormalizedSafetyRecord,
     SafetySourceAdapterError,
@@ -26,7 +28,9 @@ CURATED_RECORDS_PATH = REPO_ROOT / "data" / "safety_sources" / "drug" / "openfda
 class OpenFDADrugEnforcementAdapter:
     def __init__(self):
         self.source = OPENFDA_DRUG_ENFORCEMENT
-        self.endpoint = "local:data/safety_sources/drug/openfda_drug_curated_records.json"
+        self.endpoint = self.source["endpoint"]
+        self.snapshot_endpoint = "local:data/safety_sources/drug/openfda_drug_curated_records.json"
+        self.live_client = OpenFDAClient(timeout_seconds=1.0)
 
     async def search(
         self,
@@ -34,6 +38,98 @@ class OpenFDADrugEnforcementAdapter:
         query: str,
         limit: int,
         request_id: str | None = None,
+    ) -> SourceAdapterResult:
+        try:
+            return await self._search_live(
+                query=query,
+                limit=limit,
+                request_id=request_id,
+            )
+        except Exception as exc:
+            logger.warning(
+                "openfda_drug_live_search_failed_using_snapshot_fallback",
+                extra={
+                    "event": "openfda_drug_live_search_failed_using_snapshot_fallback",
+                    "request_id": request_id,
+                    "source_id": self.source["source_id"],
+                    "query": query,
+                    "error_type": exc.__class__.__name__,
+                },
+            )
+            return await self._search_snapshot_fallback(
+                query=query,
+                limit=limit,
+                request_id=request_id,
+                fallback_reason=str(exc) or exc.__class__.__name__,
+            )
+
+    async def _search_live(
+        self,
+        *,
+        query: str,
+        limit: int,
+        request_id: str | None,
+    ) -> SourceAdapterResult:
+        payload = await asyncio.wait_for(
+            self.live_client.search_drug_recalls(
+                query=query,
+                limit=limit,
+                request_id=request_id,
+            ),
+            timeout=1.5,
+        )
+
+        retrieved_at = str(payload.get("retrieval_timestamp") or utc_now_iso())
+        raw_results = payload.get("raw", {}).get("results", [])
+        if not isinstance(raw_results, list):
+            raw_results = []
+
+        records: list[NormalizedSafetyRecord] = []
+        for source_record in raw_results:
+            if not isinstance(source_record, dict):
+                continue
+
+            normalized = _normalize_openfda_drug_record(
+                record=source_record,
+                retrieved_at=retrieved_at,
+                source_name=self.source["source_name"],
+                source_url=self.source["endpoint"],
+                source_type="live public API request",
+            )
+
+            if record_matches_query(normalized, query):
+                records.append(normalized)
+
+        records = dedupe_records(records)[:limit]
+
+        return SourceAdapterResult(
+            source_id=self.source["source_id"],
+            source_name=self.source["source_name"],
+            source_type="live public API request",
+            source_url=self.source["endpoint"],
+            source_kind="structured_api",
+            retrieved_at=retrieved_at,
+            records=records,
+            raw_payload={
+                "mode": "live_public_api_request",
+                "endpoint": self.source["endpoint"],
+                "query": query,
+                "raw": payload.get("raw", {}),
+            },
+            upstream_status="success" if records else "empty",
+            context={
+                "fallback_used": False,
+                "live_endpoint": self.source["endpoint"],
+            },
+        )
+
+    async def _search_snapshot_fallback(
+        self,
+        *,
+        query: str,
+        limit: int,
+        request_id: str | None,
+        fallback_reason: str,
     ) -> SourceAdapterResult:
         retrieved_at = utc_now_iso()
 
@@ -55,7 +151,8 @@ class OpenFDADrugEnforcementAdapter:
                     record=source_record,
                     retrieved_at=retrieved_at,
                     source_name=self.source["source_name"],
-                    source_url=self.source["endpoint"],
+                    source_url=self.snapshot_endpoint,
+                    source_type="local curated official snapshot",
                 )
 
                 if record_matches_query(normalized, query) or is_match:
@@ -67,24 +164,39 @@ class OpenFDADrugEnforcementAdapter:
                 source_id=self.source["source_id"],
                 source_name=self.source["source_name"],
                 source_type="local curated official snapshot",
-                source_url=self.endpoint,
+                source_url=self.snapshot_endpoint,
                 source_kind="structured_api",
                 retrieved_at=retrieved_at,
                 records=records,
                 raw_payload={
-                    "mode": "local_curated_official_snapshot",
+                    "mode": "curated_official_source_snapshot_fallback",
                     "path": str(CURATED_RECORDS_PATH.relative_to(REPO_ROOT)),
                     "records_loaded": len(curated_records),
                     "query": query,
+                    "fallback_reason": fallback_reason,
+                    "live_endpoint": self.source["endpoint"],
                 },
                 upstream_status="success" if records else "empty",
+                context={
+                    "fallback_used": True,
+                    "fallback_reason": fallback_reason,
+                    "live_endpoint": self.source["endpoint"],
+                },
             )
 
         except FileNotFoundError as exc:
             message = f"openFDA drug curated snapshot file not found: {CURATED_RECORDS_PATH}"
             raise SafetySourceAdapterError(message, error_type="missing_snapshot") from exc
         except Exception as exc:
-            logger.exception("openfda_drug_curated_snapshot_search_failed")
+            logger.exception(
+                "openfda_drug_snapshot_fallback_search_failed",
+                extra={
+                    "event": "openfda_drug_snapshot_fallback_search_failed",
+                    "request_id": request_id,
+                    "source_id": self.source["source_id"],
+                    "query": query,
+                },
+            )
             raise SafetySourceAdapterError(str(exc), error_type="adapter_error") from exc
 
 
@@ -104,6 +216,7 @@ def _normalize_openfda_drug_record(
     retrieved_at: str,
     source_name: str,
     source_url: str,
+    source_type: str,
 ) -> NormalizedSafetyRecord:
     product_description = first_text(record.get("product_description"))
     recalling_firm = first_text(record.get("recalling_firm"))
@@ -148,7 +261,7 @@ def _normalize_openfda_drug_record(
 
     return NormalizedSafetyRecord(
         source_name=source_name,
-        source_type="local curated official snapshot",
+        source_type=source_type,
         source_url=source_url,
         source_kind="structured_api",
         category="Drug recall",

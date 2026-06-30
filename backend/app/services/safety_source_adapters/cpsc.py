@@ -22,7 +22,6 @@ logger = logging.getLogger("dav_ai.real_world_safety.cpsc")
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 DAILY_RECORDS_PATH = REPO_ROOT / "data" / "safety_sources" / "cpsc" / "cpsc_daily_products_curated_records.json"
-DEMO_RECORDS_PATH = REPO_ROOT / "data" / "safety_sources" / "cpsc" / "cpsc_demo_records.json"
 
 
 class CPSCRecallsAdapter:
@@ -44,8 +43,8 @@ class CPSCRecallsAdapter:
             cpsc_records = _load_cpsc_records()
             records: list[NormalizedSafetyRecord] = []
 
-            for demo_record in cpsc_records:
-                search_blob = json.dumps(demo_record, ensure_ascii=False).lower()
+            for cpsc_record in cpsc_records:
+                search_blob = json.dumps(cpsc_record, ensure_ascii=False).lower()
                 query_text = query.lower().strip()
                 query_terms = [term for term in query_text.split() if term]
 
@@ -53,13 +52,13 @@ class CPSCRecallsAdapter:
                 if not is_match:
                     continue
 
-                raw_record = demo_record.get("raw_record") or demo_record
+                raw_record = cpsc_record.get("raw_record") or cpsc_record
 
                 normalized = _normalize_cpsc_record(
                     record=raw_record,
                     retrieved_at=retrieved_at,
                     source_name=self.source["source_name"],
-                    source_url=first_text(demo_record.get("source_url"), raw_record.get("URL"), self.endpoint),
+                    source_url=first_text(cpsc_record.get("source_url"), raw_record.get("URL"), self.endpoint),
                 )
 
                 if record_matches_query(normalized, query) or is_match:
@@ -78,7 +77,6 @@ class CPSCRecallsAdapter:
                 raw_payload={
                     "mode": "local_curated_official_snapshot",
                     "path": str(DAILY_RECORDS_PATH.relative_to(REPO_ROOT)),
-                    "fallback_path": str(DEMO_RECORDS_PATH.relative_to(REPO_ROOT)),
                     "records_loaded": len(cpsc_records),
                     "query": query,
                 },
@@ -113,11 +111,8 @@ class CPSCRecallsAdapter:
 def _load_cpsc_records() -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
 
-    for path in (DAILY_RECORDS_PATH, DEMO_RECORDS_PATH):
-        if not path.exists():
-            continue
-
-        with path.open("r", encoding="utf-8") as file:
+    if DAILY_RECORDS_PATH.exists():
+        with DAILY_RECORDS_PATH.open("r", encoding="utf-8") as file:
             payload = json.load(file)
 
         if isinstance(payload, list):

@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.services.search_workflows import real_world_safety_search
+from app.services.safety_source_adapters import cpsc as cpsc_adapter
 from app.sources.registry import (
     CPSC_RECALLS_API,
     CDC_FOODBORNE_OUTBREAKS,
@@ -26,6 +27,8 @@ from app.sources.registry import (
 
 client = TestClient(app)
 FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "real_world_safety"
+TEST_FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
+CPSC_RECALL_SEARCH_FIXTURE_PATH = TEST_FIXTURES_DIR / "cpsc_recall_search_fixture.json"
 NO_MATCH_EXPLANATION = (
     "No matching public record was found in the checked U.S. sources. "
     "This does not certify that the product is safe."
@@ -63,6 +66,8 @@ def _patch_persistence(monkeypatch):
 
 
 def _patch_public_source_http(monkeypatch):
+    monkeypatch.setattr(cpsc_adapter, "DAILY_RECORDS_PATH", CPSC_RECALL_SEARCH_FIXTURE_PATH)
+
     cpsc_payload = _load_json("cpsc_recalls.json")
     fda_html = _load_text("fda_public_recalls.html")
     nhtsa_payload = _load_json("nhtsa_recalls.json")
@@ -142,7 +147,6 @@ def test_real_world_safety_product_and_fda_public_notice_searches(
         assert result["source_kind"] == "structured_api"
 
 
-
 @pytest.mark.parametrize(
     ("query", "expected_source", "expected_text"),
     [
@@ -195,8 +199,8 @@ def test_real_world_safety_curated_official_openfda_sources(
     assert result["record_url"] in {
         "https://api.fda.gov/food/enforcement.json",
         "https://api.fda.gov/drug/enforcement.json",
+        "local:data/safety_sources/drug/openfda_drug_curated_records.json",
     }
-
 
 
 @pytest.mark.parametrize(
@@ -260,8 +264,6 @@ def test_real_world_safety_drug_reference_and_device_sources(
     assert expected_text.lower() in searchable.lower()
     assert all(record["source_kind"] == "structured_api" for record in matching_results)
     assert all(record["source_type"] == "local curated official snapshot" for record in matching_results)
-
-
 
 
 @pytest.mark.parametrize(
@@ -382,7 +384,6 @@ def test_real_world_safety_device_event_source(
     assert "not recalls or proof of causation" in searchable.lower()
     assert all(record["source_kind"] == "structured_api" for record in matching_results)
     assert all(record["source_type"] == "local curated official snapshot" for record in matching_results)
-
 
 
 def test_real_world_safety_vehicle_query_uses_nhtsa_recalls(monkeypatch):
@@ -802,7 +803,6 @@ def test_real_world_safety_response_includes_source_freshness(monkeypatch):
     assert "stored audit metadata" in nhtsa_freshness[0]["explanation"]
 
 
-
 def test_real_world_safety_udi_identifier_routes_to_device_identity(monkeypatch):
     _patch_persistence(monkeypatch)
     _patch_public_source_http(monkeypatch)
@@ -840,7 +840,6 @@ def test_real_world_safety_udi_identifier_routes_to_device_identity(monkeypatch)
         and freshness["freshness_status"] == "pulled_and_stored"
         for freshness in body["source_freshness"]
     )
-
 
 
 def test_real_world_safety_vaccine_query_returns_vaers_signal_report(monkeypatch):
@@ -883,7 +882,6 @@ def test_real_world_safety_vaccine_query_returns_vaers_signal_report(monkeypatch
     )
 
 
-
 def test_real_world_safety_foodborne_outbreak_context_source(monkeypatch):
     _patch_persistence(monkeypatch)
     _patch_public_source_http(monkeypatch)
@@ -923,7 +921,6 @@ def test_real_world_safety_foodborne_outbreak_context_source(monkeypatch):
         and freshness["freshness_status"] == "pulled_and_stored"
         for freshness in body["source_freshness"]
     )
-
 
 
 def test_real_world_safety_fda_safety_communication_source(monkeypatch):
