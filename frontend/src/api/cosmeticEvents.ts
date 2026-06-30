@@ -16,6 +16,24 @@ export type CosmeticEventRecord = {
   products: CosmeticProduct[]
 }
 
+
+export type CosmeticRecallNotice = {
+  title: string | null
+  product_name: string | null
+  brand_name: string | null
+  company_name: string | null
+  category: string | null
+  reason: string | null
+  remedy?: string | null
+  published_date: string | null
+  record_url: string | null
+  source_name: string
+  source_kind?: 'structured_api' | 'public_notice' | 'normalized_public_notice'
+  source_type?: string
+  extraction_confidence?: string | null
+}
+
+
 export type CosmeticReaction = {
   reaction: string
   count: number
@@ -60,6 +78,11 @@ export type CosmeticEventSearchResponse = {
   signal_score: CosmeticSignalScore
   top_reactions: CosmeticReaction[]
   records: CosmeticEventRecord[]
+  recall_count?: number
+  recall_source_name?: string | null
+  recall_source_status?: string | null
+  recall_source_error?: string | null
+  recall_notices?: CosmeticRecallNotice[]
 }
 
 export async function searchCosmeticEvents(

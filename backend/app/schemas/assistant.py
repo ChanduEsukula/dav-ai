@@ -3,7 +3,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 
-AssistantModule = Literal["recall", "drug_event", "food", "cosmetic"]
+AssistantModule = Literal["recall", "drug_event", "food", "cosmetic", "public_safety"]
 
 
 class AssistantSourceCitation(BaseModel):
@@ -140,6 +140,88 @@ class AssistantDrugEventContext(BaseModel):
     faers_disclaimer: str
 
 
+
+class AssistantPublicSafetySummaryContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    query_type: str
+    recall_or_enforcement_found: bool
+    reference_or_label_found: bool
+    signal_report_found: bool
+    plain_language_summary: str
+    suggested_next_steps: list[str] = Field(default_factory=list, max_length=6)
+    caveat: str
+
+
+class AssistantPublicSafetyIdentifierItemContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    type: str
+    label: str
+    value: str | None = None
+    source: str
+    reason: str
+
+
+class AssistantPublicSafetyIdentifierCheckContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    user_message: str
+    detected: list[AssistantPublicSafetyIdentifierItemContext] = Field(default_factory=list, max_length=8)
+    to_verify: list[AssistantPublicSafetyIdentifierItemContext] = Field(default_factory=list, max_length=8)
+
+
+class AssistantPublicSafetyCheckedSourceContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    source_id: str
+    source_name: str
+    source_type: str
+    source_kind: str
+    upstream_status: str
+    record_count: int
+
+
+class AssistantPublicSafetyFailedSourceContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    source_id: str
+    source_name: str
+    reason: str
+
+
+class AssistantPublicSafetyRecordContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    title: str | None = None
+    product_name: str | None = None
+    brand_name: str | None = None
+    company_name: str | None = None
+    source_name: str
+    source_type: str
+    source_kind: str
+    category: str | None = None
+    reason: str | None = None
+    hazard_type: str | None = None
+    remedy: str | None = None
+    published_date: str | None = None
+    recall_number: str | None = None
+    affected_models: list[str] = Field(default_factory=list, max_length=10)
+    affected_lots: list[str] = Field(default_factory=list, max_length=10)
+    record_url: str | None = None
+    extraction_confidence: str | None = None
+    source_text_excerpt: str | None = None
+
+
+class AssistantPublicSafetyContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    summary: AssistantPublicSafetySummaryContext
+    identifier_check: AssistantPublicSafetyIdentifierCheckContext
+    sources_checked: list[AssistantPublicSafetyCheckedSourceContext] = Field(default_factory=list, max_length=12)
+    sources_failed: list[AssistantPublicSafetyFailedSourceContext] = Field(default_factory=list, max_length=8)
+    top_records: list[AssistantPublicSafetyRecordContext] = Field(default_factory=list, max_length=8)
+
 class AssistantPageContext(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -154,6 +236,7 @@ class AssistantPageContext(BaseModel):
     drug_event: AssistantDrugEventContext | None = None
     food: AssistantFoodContext | None = None
     cosmetic: AssistantCosmeticContext | None = None
+    public_safety: AssistantPublicSafetyContext | None = None
 
 
 class AssistantChatRequest(BaseModel):

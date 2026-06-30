@@ -6,6 +6,7 @@ from app.audit.audit_event import build_audit_event
 from app.db.audit_repository import save_audit_event
 from app.db.source_pull_repository import save_source_pull_with_snapshot
 from app.scoring import COSMETIC_SIGNAL_SCORE_VERSION
+from app.services.official_public_notice_search import search_official_public_notices
 from app.services.openfda_cosmetic_event_client import OpenFDACosmeticEventClient
 from app.services.query_normalization import normalize_safety_query
 from app.sources.registry import OPENFDA_COSMETIC_EVENT
@@ -210,6 +211,24 @@ def _calculate_cosmetic_signal_score(
     }
 
 
+def _normalize_recall_notice(record: Any) -> dict[str, Any]:
+    return {
+        "title": getattr(record, "title", None),
+        "product_name": getattr(record, "product_name", None),
+        "brand_name": getattr(record, "brand_name", None),
+        "company_name": getattr(record, "company_name", None),
+        "category": getattr(record, "category", None),
+        "reason": getattr(record, "reason", None) or getattr(record, "hazard_type", None),
+        "remedy": getattr(record, "remedy", None),
+        "published_date": getattr(record, "published_date", None),
+        "record_url": getattr(record, "record_url", None),
+        "source_name": getattr(record, "source_name", "FDA Recalls, Market Withdrawals & Safety Alerts"),
+        "source_kind": getattr(record, "source_kind", "public_notice"),
+        "source_type": getattr(record, "source_type", "public notice page"),
+        "extraction_confidence": getattr(record, "extraction_confidence", None),
+    }
+
+
 async def execute_cosmetic_signal_search(
     *,
     query: str,
@@ -225,6 +244,28 @@ async def execute_cosmetic_signal_search(
             limit=25,
             request_id=request_id,
         )
+
+        recall_notices: list[dict[str, Any]] = []
+        recall_source_name: str | None = None
+        recall_source_status: str | None = None
+        recall_source_error: str | None = None
+
+        try:
+            recall_result = await search_official_public_notices(
+                query=search_query,
+                limit=limit,
+                request_id=request_id,
+                domain="cosmetic",
+            )
+            recall_source_name = recall_result.source_name
+            recall_source_status = recall_result.upstream_status
+            recall_notices = [
+                _normalize_recall_notice(record)
+                for record in recall_result.records
+            ]
+        except Exception as exc:
+            recall_source_status = "error"
+            recall_source_error = str(exc)
 
         raw_results = payload["raw"].get("results", [])
         upstream_status = "empty" if not raw_results else "success"
@@ -307,6 +348,11 @@ async def execute_cosmetic_signal_search(
             "signal_score": signal_score,
             "top_reactions": top_reactions,
             "records": normalized_records[:limit],
+            "recall_count": len(recall_notices),
+            "recall_source_name": recall_source_name,
+            "recall_source_status": recall_source_status,
+            "recall_source_error": recall_source_error,
+            "recall_notices": recall_notices,
         }
 
     except Exception as exc:

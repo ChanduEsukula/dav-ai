@@ -3,8 +3,9 @@ import type { DrugEventSearchResponse } from './drugEvents'
 import type { RecallSearchResponse } from './recalls'
 import type { EverydaySafetySearchResponse } from './everydaySafety'
 import type { CosmeticEventSearchResponse } from './cosmeticEvents'
+import type { RealWorldSafetySearchResponse } from './realWorldSafety'
 
-export type AssistantModule = 'recall' | 'drug_event' | 'food' | 'cosmetic'
+export type AssistantModule = 'recall' | 'drug_event' | 'food' | 'cosmetic' | 'public_safety'
 
 export type AssistantSourceCitation = {
   label: string
@@ -94,6 +95,68 @@ export type AssistantCosmeticContext = {
   cosmetic_disclaimer: string
 }
 
+export type AssistantPublicSafetyContext = {
+  summary: {
+    query_type: string
+    recall_or_enforcement_found: boolean
+    reference_or_label_found: boolean
+    signal_report_found: boolean
+    plain_language_summary: string
+    suggested_next_steps: string[]
+    caveat: string
+  }
+  identifier_check: {
+    user_message: string
+    detected: {
+      type: string
+      label: string
+      value: string | null
+      source: string
+      reason: string
+    }[]
+    to_verify: {
+      type: string
+      label: string
+      value: string | null
+      source: string
+      reason: string
+    }[]
+  }
+  sources_checked: {
+    source_id: string
+    source_name: string
+    source_type: string
+    source_kind: string
+    upstream_status: string
+    record_count: number
+  }[]
+  sources_failed: {
+    source_id: string
+    source_name: string
+    reason: string
+  }[]
+  top_records: {
+    title: string | null
+    product_name: string | null
+    brand_name: string | null
+    company_name: string | null
+    source_name: string
+    source_type: string
+    source_kind: string
+    category: string | null
+    reason: string | null
+    hazard_type: string | null
+    remedy: string | null
+    published_date: string | null
+    recall_number: string | null
+    affected_models: string[]
+    affected_lots: string[]
+    record_url: string | null
+    extraction_confidence: string | null
+    source_text_excerpt: string | null
+  }[]
+}
+
 export type AssistantPageContext = {
   query: string
   count: number
@@ -106,6 +169,7 @@ export type AssistantPageContext = {
   drug_event?: AssistantDrugEventContext
   food?: AssistantFoodContext
   cosmetic?: AssistantCosmeticContext
+  public_safety?: AssistantPublicSafetyContext
 }
 
 export type AssistantChatContext = {
@@ -265,6 +329,91 @@ export function buildDrugEventAssistantContext(data: DrugEventSearchResponse): A
     },
   }
 }
+
+export function buildPublicSafetyAssistantContext(
+  data: RealWorldSafetySearchResponse,
+): AssistantChatContext {
+  const firstAudit = data.source_audits[0]
+
+  return {
+    module: 'public_safety',
+    page_context: {
+      query: data.query,
+      count: data.total_matches,
+      source_name: 'DavAI Public Safety Search',
+      endpoint: '/api/v1/real-world-safety/search',
+      retrieval_timestamp: data.retrieval_timestamp,
+      audit_id: firstAudit?.audit_id ?? 'not recorded',
+      limitations: [...data.limitations, data.public_data_disclaimer].filter(Boolean).slice(0, 8),
+      public_safety: {
+        summary: {
+          query_type: data.safety_intelligence_summary.query_type,
+          recall_or_enforcement_found:
+            data.safety_intelligence_summary.recall_or_enforcement_found,
+          reference_or_label_found:
+            data.safety_intelligence_summary.reference_or_label_found,
+          signal_report_found: data.safety_intelligence_summary.signal_report_found,
+          plain_language_summary:
+            data.safety_intelligence_summary.plain_language_summary,
+          suggested_next_steps:
+            data.safety_intelligence_summary.suggested_next_steps.slice(0, 6),
+          caveat: data.safety_intelligence_summary.caveat,
+        },
+        identifier_check: {
+          user_message: data.identifier_check.user_message,
+          detected: data.identifier_check.detected.slice(0, 8).map((item) => ({
+            type: item.type,
+            label: item.label,
+            value: item.value,
+            source: item.source,
+            reason: item.reason,
+          })),
+          to_verify: data.identifier_check.to_verify.slice(0, 8).map((item) => ({
+            type: item.type,
+            label: item.label,
+            value: item.value,
+            source: item.source,
+            reason: item.reason,
+          })),
+        },
+        sources_checked: data.sources_checked.slice(0, 12).map((source) => ({
+          source_id: source.source_id,
+          source_name: source.source_name,
+          source_type: source.source_type,
+          source_kind: source.source_kind,
+          upstream_status: source.upstream_status,
+          record_count: source.record_count,
+        })),
+        sources_failed: data.sources_failed.slice(0, 8).map((source) => ({
+          source_id: source.source_id,
+          source_name: source.source_name,
+          reason: source.reason,
+        })),
+        top_records: data.results.slice(0, 8).map((record) => ({
+          title: record.title,
+          product_name: record.product_name,
+          brand_name: record.brand_name,
+          company_name: record.company_name,
+          source_name: record.source_name,
+          source_type: record.source_type,
+          source_kind: record.source_kind,
+          category: record.category,
+          reason: record.reason,
+          hazard_type: record.hazard_type,
+          remedy: record.remedy,
+          published_date: record.published_date,
+          recall_number: record.recall_number,
+          affected_models: record.affected_models.slice(0, 10),
+          affected_lots: record.affected_lots.slice(0, 10),
+          record_url: record.record_url,
+          extraction_confidence: record.extraction_confidence ?? null,
+          source_text_excerpt: record.source_text_excerpt ?? null,
+        })),
+      },
+    },
+  }
+}
+
 
 export async function askDavAI(request: AssistantChatRequest) {
   const response = await apiClient.post<AssistantChatResponse>('/api/v1/assistant/chat', request)

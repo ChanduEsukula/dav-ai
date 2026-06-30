@@ -1,0 +1,182 @@
+from app.services.search_workflows.real_world_query_understanding import (
+    understand_real_world_safety_query,
+)
+from app.services.search_workflows.real_world_source_planner import (
+    plan_real_world_safety_sources,
+)
+from app.sources.registry import (
+    CPSC_RECALLS_API,
+    CDC_FOODBORNE_OUTBREAKS,
+    CDC_VAERS,
+    DAILYMED_SPL_API,
+    FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
+    FDA_SAFETY_COMMUNICATIONS,
+    NHTSA_RECALLS_API_DATASETS,
+    NHTSA_VPIC_VIN_DECODER_API,
+    OPENFDA_DEVICE_ENFORCEMENT,
+    OPENFDA_DEVICE_EVENT,
+    OPENFDA_UDI_DIRECTORY,
+    OPENFDA_DRUG_ENFORCEMENT,
+    OPENFDA_DRUG_LABEL,
+    OPENFDA_FOOD_ENFORCEMENT,
+    OPENFDA_NDC_DIRECTORY,
+    RXNORM_RXNAV_API,
+    USDA_FSIS_RECALL,
+)
+
+
+def _plan(query: str):
+    return plan_real_world_safety_sources(understand_real_world_safety_query(query))
+
+
+def test_microwave_routes_to_consumer_product_sources_without_drug_sources():
+    plan = _plan("microwave")
+
+    assert plan.intent == "consumer_product"
+    assert CPSC_RECALLS_API["source_id"] in plan.sources_to_check
+    assert FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS["source_id"] in plan.sources_to_check
+
+    assert OPENFDA_DRUG_LABEL["source_id"] not in plan.sources_to_check
+    assert OPENFDA_NDC_DIRECTORY["source_id"] not in plan.sources_to_check
+    assert RXNORM_RXNAV_API["source_id"] not in plan.sources_to_check
+    assert DAILYMED_SPL_API["source_id"] not in plan.sources_to_check
+
+
+def test_air_fryer_routes_to_consumer_product_sources():
+    plan = _plan("air fryer")
+
+    assert plan.intent == "consumer_product"
+    assert plan.primary_source_ids == [CPSC_RECALLS_API["source_id"]]
+
+
+def test_advil_routes_to_drug_sources():
+    plan = _plan("Advil")
+
+    assert plan.intent == "drug"
+    assert OPENFDA_DRUG_ENFORCEMENT["source_id"] in plan.sources_to_check
+    assert RXNORM_RXNAV_API["source_id"] in plan.sources_to_check
+    assert OPENFDA_NDC_DIRECTORY["source_id"] in plan.sources_to_check
+    assert OPENFDA_DRUG_LABEL["source_id"] in plan.sources_to_check
+
+    assert CPSC_RECALLS_API["source_id"] not in plan.sources_to_check
+
+
+def test_tylonal_routes_to_drug_sources_after_correction():
+    plan = _plan("tylonal")
+
+    assert plan.intent == "drug"
+    assert OPENFDA_DRUG_LABEL["source_id"] in plan.sources_to_check
+
+
+def test_toyota_camry_routes_to_vehicle_sources_only():
+    plan = _plan("2020 Toyota Camry")
+
+    assert plan.intent == "vehicle"
+    assert NHTSA_RECALLS_API_DATASETS["source_id"] in plan.sources_to_check
+    assert NHTSA_VPIC_VIN_DECODER_API["source_id"] in plan.sources_to_check
+    assert OPENFDA_DRUG_LABEL["source_id"] not in plan.sources_to_check
+
+
+def test_blood_sugar_monitor_routes_to_medical_device_sources():
+    plan = _plan("blood sugar monitor")
+
+    assert plan.intent == "medical_device"
+    assert OPENFDA_DEVICE_ENFORCEMENT["source_id"] in plan.sources_to_check
+    assert OPENFDA_DEVICE_EVENT["source_id"] in plan.sources_to_check
+    assert OPENFDA_UDI_DIRECTORY["source_id"] in plan.sources_to_check
+    assert OPENFDA_DRUG_LABEL["source_id"] not in plan.sources_to_check
+
+
+def test_chicken_routes_to_food_sources():
+    plan = _plan("chicken")
+
+    assert plan.intent == "food"
+    assert OPENFDA_FOOD_ENFORCEMENT["source_id"] in plan.sources_to_check
+    assert USDA_FSIS_RECALL["source_id"] in plan.sources_to_check
+
+
+def test_food_examples_route_to_food_context_sources():
+    for query in ["chicken broth", "protein bar", "baby formula", "frozen chicken"]:
+        plan = _plan(query)
+
+        assert plan.intent == "food"
+        assert OPENFDA_FOOD_ENFORCEMENT["source_id"] in plan.sources_to_check
+        assert CDC_FOODBORNE_OUTBREAKS["source_id"] in plan.sources_to_check
+        assert FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS["source_id"] in plan.sources_to_check
+
+    assert USDA_FSIS_RECALL["source_id"] in _plan("chicken broth").sources_to_check
+    assert USDA_FSIS_RECALL["source_id"] in _plan("frozen chicken").sources_to_check
+
+
+def test_sunscreen_routes_to_drug_with_cosmetic_context_instead_of_clarification():
+    plan = _plan("sunscreen")
+
+    assert plan.intent == "drug"
+    assert plan.clarification_required is False
+    assert OPENFDA_DRUG_ENFORCEMENT["source_id"] in plan.sources_to_check
+    assert FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS["source_id"] in plan.sources_to_check
+    assert CPSC_RECALLS_API["source_id"] not in plan.sources_to_check
+
+
+def test_common_drug_device_consumer_and_vehicle_examples_route_correctly():
+    for query in ["eye drops", "metformin", "ibuprofen"]:
+        plan = _plan(query)
+        assert plan.intent == "drug"
+        assert OPENFDA_DRUG_ENFORCEMENT["source_id"] in plan.sources_to_check
+
+    for query in ["CPAP", "insulin pump"]:
+        plan = _plan(query)
+        assert plan.intent == "medical_device"
+        assert OPENFDA_DEVICE_ENFORCEMENT["source_id"] in plan.sources_to_check
+
+    for query in ["air fryer", "stroller"]:
+        plan = _plan(query)
+        assert plan.intent == "consumer_product"
+        assert CPSC_RECALLS_API["source_id"] in plan.sources_to_check
+
+    for query in ["Toyota Camry", "BMW X3"]:
+        plan = _plan(query)
+        assert plan.intent == "vehicle"
+        assert NHTSA_RECALLS_API_DATASETS["source_id"] in plan.sources_to_check
+
+
+def test_unknown_query_uses_broad_public_fallback_without_vehicle_sources():
+    plan = _plan("florble snargle")
+
+    assert plan.intent == "unknown"
+    assert plan.confidence == "low"
+    assert {
+        FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS["source_id"],
+        CPSC_RECALLS_API["source_id"],
+        OPENFDA_FOOD_ENFORCEMENT["source_id"],
+        OPENFDA_DRUG_ENFORCEMENT["source_id"],
+        OPENFDA_DEVICE_ENFORCEMENT["source_id"],
+    }.issubset(set(plan.sources_to_check))
+    assert NHTSA_RECALLS_API_DATASETS["source_id"] not in plan.sources_to_check
+
+
+def test_vaccine_query_routes_to_vaers_signal_source():
+    query = understand_real_world_safety_query("MMR vaccine rash")
+    plan = plan_real_world_safety_sources(query)
+
+    assert plan.intent == "vaccine"
+    assert CDC_VAERS["source_id"] in plan.sources_to_check
+    assert CDC_VAERS["source_id"] in plan.primary_source_ids
+
+
+def test_foodborne_outbreak_query_routes_to_outbreak_context_source():
+    query = understand_real_world_safety_query("Salmonella outbreak peanut butter")
+    plan = plan_real_world_safety_sources(query)
+
+    assert plan.intent == "food"
+    assert CDC_FOODBORNE_OUTBREAKS["source_id"] in plan.sources_to_check
+    assert CDC_FOODBORNE_OUTBREAKS["source_id"] in plan.secondary_source_ids
+
+
+def test_medical_device_query_routes_to_fda_safety_communications():
+    query = understand_real_world_safety_query("FDA safety communication insulin pump")
+    plan = plan_real_world_safety_sources(query)
+
+    assert plan.intent == "medical_device"
+    assert FDA_SAFETY_COMMUNICATIONS["source_id"] in plan.sources_to_check
+    assert FDA_SAFETY_COMMUNICATIONS["source_id"] in plan.secondary_source_ids

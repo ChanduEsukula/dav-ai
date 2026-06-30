@@ -30,6 +30,7 @@ You may answer only using the DAV AI context provided in this request:
 - current DrugSignal results
 - current FoodRadar results
 - current CosmeticSignal results
+- current Public Safety Search results
 - source metadata
 - audit ID
 - scores
@@ -75,6 +76,9 @@ def _validate_request(request: AssistantChatRequest) -> None:
 
     if request.module == "cosmetic" and request.page_context.cosmetic is None:
         raise AssistantRequestError("CosmeticSignal assistant context is required.")
+
+    if request.module == "public_safety" and request.page_context.public_safety is None:
+        raise AssistantRequestError("Public Safety Search assistant context is required.")
 
 
 def _source_citations(request: AssistantChatRequest) -> list[AssistantSourceCitation]:
@@ -129,6 +133,15 @@ def _limitations(request: AssistantChatRequest) -> list[str]:
         if cosmetic_limit not in limitations:
             limitations.append(cosmetic_limit)
 
+    if request.module == "public_safety":
+        public_safety_limit = (
+            "Public Safety Search uses public official-source records and curated public-data context. "
+            "Results are for review and verification only; they are not medical advice, legal advice, "
+            "a causation finding, or a safety guarantee."
+        )
+        if public_safety_limit not in limitations:
+            limitations.append(public_safety_limit)
+
     return limitations
 
 
@@ -149,6 +162,11 @@ def _context_for_prompt(request: AssistantChatRequest) -> dict:
     if "cosmetic" in context:
         context["cosmetic"]["top_reactions"] = context["cosmetic"].get("top_reactions", [])[:max_results]
         context["cosmetic"]["records"] = context["cosmetic"].get("records", [])[:max_results]
+
+    if "public_safety" in context:
+        context["public_safety"]["top_records"] = context["public_safety"].get("top_records", [])[:max_results]
+        context["public_safety"]["sources_checked"] = context["public_safety"].get("sources_checked", [])[:12]
+        context["public_safety"]["sources_failed"] = context["public_safety"].get("sources_failed", [])[:8]
 
     return {
         "module": request.module,
@@ -249,6 +267,28 @@ def _bullets(request: AssistantChatRequest) -> list[str]:
                 2,
                 f"Top reported reaction term: {top_reaction.reaction} ({top_reaction.count} mention(s)).",
             )
+
+        return bullets
+
+    if request.module == "public_safety" and context.public_safety:
+        summary = context.public_safety.summary
+        top_record = context.public_safety.top_records[0] if context.public_safety.top_records else None
+        bullets = [
+            f"{context.count} public safety record(s) or context item(s) matched this search.",
+            summary.plain_language_summary,
+            "Verify exact identifiers such as lot, UPC, NDC, UDI, model, recall number, or VIN when available.",
+            "Adverse-event reports, complaints, and investigation context are public-data signals, not proof of causation.",
+        ]
+
+        if top_record:
+            title = top_record.title or top_record.product_name or "Untitled public safety record"
+            bullets.insert(
+                1,
+                f"Top record: {title}; source: {top_record.source_name}; type: {top_record.source_type}.",
+            )
+
+        if summary.caveat:
+            bullets.append(summary.caveat)
 
         return bullets
 

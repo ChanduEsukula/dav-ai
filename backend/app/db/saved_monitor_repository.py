@@ -42,6 +42,7 @@ class SavedMonitorRepository:
     def _row_to_monitor(self, row) -> SavedMonitor:
         return SavedMonitor(
             id=row["id"],
+            user_id=row.get("user_id"),
             name=row["name"],
             query=row["query"],
             module=SavedMonitorModule(row["module"]),
@@ -82,6 +83,7 @@ class SavedMonitorRepository:
     def _monitor_select_columns(self) -> str:
         return """
             id,
+            user_id,
             name,
             query,
             module,
@@ -100,9 +102,22 @@ class SavedMonitorRepository:
             last_scheduled_status
         """
 
-    def _list_memory(self) -> list[SavedMonitor]:
+    def _monitor_belongs_to_user(
+        self,
+        monitor: SavedMonitor,
+        user_id: UUID | None,
+    ) -> bool:
+        if user_id is None:
+            return True
+        return monitor.user_id == user_id
+
+    def _list_memory(self, user_id: UUID | None = None) -> list[SavedMonitor]:
         return sorted(
-            self._items.values(),
+            [
+                monitor
+                for monitor in self._items.values()
+                if self._monitor_belongs_to_user(monitor, user_id)
+            ],
             key=lambda monitor: monitor.created_at,
             reverse=True,
         )
@@ -114,24 +129,36 @@ class SavedMonitorRepository:
             reverse=True,
         )
 
-    def list(self) -> list[SavedMonitor]:
+    def list(self, user_id: UUID | None = None) -> list[SavedMonitor]:
         """Return saved monitors sorted by newest first."""
 
         database_url = self._database_url()
         if not database_url:
-            return self._list_memory()
+            return self._list_memory(user_id)
 
         try:
             with psycopg.connect(database_url, row_factory=dict_row) as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute(
-                        f"""
-                        select
-                            {self._monitor_select_columns()}
-                        from saved_monitors
-                        order by created_at desc
-                        """
-                    )
+                    if user_id is None:
+                        cursor.execute(
+                            f"""
+                            select
+                                {self._monitor_select_columns()}
+                            from saved_monitors
+                            order by created_at desc
+                            """
+                        )
+                    else:
+                        cursor.execute(
+                            f"""
+                            select
+                                {self._monitor_select_columns()}
+                            from saved_monitors
+                            where user_id = %(user_id)s
+                            order by created_at desc
+                            """,
+                            {"user_id": user_id},
+                        )
                     rows = cursor.fetchall()
 
             return [self._row_to_monitor(row) for row in rows]
@@ -141,27 +168,55 @@ class SavedMonitorRepository:
                 "saved_monitor_list_failed",
                 extra={"event": "saved_monitor_list_failed"},
             )
-            return self._list_memory()
+            return self._list_memory(user_id)
 
-    def get(self, monitor_id: UUID) -> SavedMonitor | None:
+    def list_saved_monitors(self, user_id: UUID) -> list[SavedMonitor]:
+        """Return saved monitors owned by one authenticated user."""
+
+        return self.list(user_id=user_id)
+
+    def get(
+        self,
+        monitor_id: UUID,
+        *,
+        user_id: UUID | None = None,
+    ) -> SavedMonitor | None:
         """Return one saved monitor by ID."""
 
         database_url = self._database_url()
         if not database_url:
-            return self._items.get(monitor_id)
+            monitor = self._items.get(monitor_id)
+            if monitor is None or not self._monitor_belongs_to_user(monitor, user_id):
+                return None
+            return monitor
 
         try:
             with psycopg.connect(database_url, row_factory=dict_row) as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute(
-                        f"""
-                        select
-                            {self._monitor_select_columns()}
-                        from saved_monitors
-                        where id = %(id)s
-                        """,
-                        {"id": monitor_id},
-                    )
+                    if user_id is None:
+                        cursor.execute(
+                            f"""
+                            select
+                                {self._monitor_select_columns()}
+                            from saved_monitors
+                            where id = %(id)s
+                            """,
+                            {"id": monitor_id},
+                        )
+                    else:
+                        cursor.execute(
+                            f"""
+                            select
+                                {self._monitor_select_columns()}
+                            from saved_monitors
+                            where id = %(id)s
+                              and user_id = %(user_id)s
+                            """,
+                            {
+                                "id": monitor_id,
+                                "user_id": user_id,
+                            },
+                        )
                     row = cursor.fetchone()
 
             if row is None:
@@ -177,13 +232,26 @@ class SavedMonitorRepository:
                     "monitor_id": str(monitor_id),
                 },
             )
-            return self._items.get(monitor_id)
+            monitor = self._items.get(monitor_id)
+            if monitor is None or not self._monitor_belongs_to_user(monitor, user_id):
+                return None
+            return monitor
+
+    def get_saved_monitor(
+        self,
+        user_id: UUID,
+        monitor_id: UUID,
+    ) -> SavedMonitor | None:
+        """Return one saved monitor only when owned by the user."""
+
+        return self.get(monitor_id, user_id=user_id)
 
     def exists_by_module_and_query(
         self,
         *,
         module: SavedMonitorModule,
         query: str,
+        user_id: UUID | None = None,
     ) -> bool:
         """Return True when a saved monitor already exists for module/query."""
 
@@ -194,25 +262,43 @@ class SavedMonitorRepository:
             return any(
                 monitor.module == module
                 and monitor.query.strip().lower() == normalized_query
+                and self._monitor_belongs_to_user(monitor, user_id)
                 for monitor in self._items.values()
             )
 
         try:
             with psycopg.connect(database_url, row_factory=dict_row) as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute(
-                        """
-                        select 1
-                        from saved_monitors
-                        where module = %(module)s
-                          and lower(trim(query)) = %(query)s
-                        limit 1
-                        """,
-                        {
-                            "module": module.value,
-                            "query": normalized_query,
-                        },
-                    )
+                    if user_id is None:
+                        cursor.execute(
+                            """
+                            select 1
+                            from saved_monitors
+                            where module = %(module)s
+                              and lower(trim(query)) = %(query)s
+                            limit 1
+                            """,
+                            {
+                                "module": module.value,
+                                "query": normalized_query,
+                            },
+                        )
+                    else:
+                        cursor.execute(
+                            """
+                            select 1
+                            from saved_monitors
+                            where user_id = %(user_id)s
+                              and module = %(module)s
+                              and lower(trim(query)) = %(query)s
+                            limit 1
+                            """,
+                            {
+                                "user_id": user_id,
+                                "module": module.value,
+                                "query": normalized_query,
+                            },
+                        )
                     row = cursor.fetchone()
 
             return row is not None
@@ -225,14 +311,21 @@ class SavedMonitorRepository:
             return any(
                 monitor.module == module
                 and monitor.query.strip().lower() == normalized_query
+                and self._monitor_belongs_to_user(monitor, user_id)
                 for monitor in self._items.values()
             )
 
-    def create(self, payload: SavedMonitorCreate) -> SavedMonitor:
+    def create(
+        self,
+        payload: SavedMonitorCreate,
+        *,
+        user_id: UUID | None = None,
+    ) -> SavedMonitor:
         """Create a saved monitor with default not-checked state."""
 
         monitor = SavedMonitor(
             id=uuid4(),
+            user_id=user_id,
             name=payload.name,
             query=payload.query,
             module=payload.module,
@@ -263,6 +356,7 @@ class SavedMonitorRepository:
                         """
                         insert into saved_monitors (
                             id,
+                            user_id,
                             name,
                             query,
                             module,
@@ -282,6 +376,7 @@ class SavedMonitorRepository:
                         )
                         values (
                             %(id)s,
+                            %(user_id)s,
                             %(name)s,
                             %(query)s,
                             %(module)s,
@@ -302,6 +397,7 @@ class SavedMonitorRepository:
                         """,
                         {
                             "id": monitor.id,
+                            "user_id": monitor.user_id,
                             "name": monitor.name,
                             "query": monitor.query,
                             "module": monitor.module.value,
@@ -334,6 +430,15 @@ class SavedMonitorRepository:
             )
             self._items[monitor.id] = monitor
             return monitor
+
+    def create_saved_monitor(
+        self,
+        user_id: UUID,
+        payload: SavedMonitorCreate,
+    ) -> SavedMonitor:
+        """Create a saved monitor owned by one authenticated user."""
+
+        return self.create(payload, user_id=user_id)
 
     def list_due_for_refresh(
         self,
@@ -465,13 +570,14 @@ class SavedMonitorRepository:
         self,
         monitor_id: UUID,
         *,
+        user_id: UUID | None = None,
         latest_audit_id: str | None,
         latest_score: int | None,
         latest_record_count: int | None,
     ) -> SavedMonitor | None:
         """Update a saved monitor after a manual or scheduled run check."""
 
-        existing = self.get(monitor_id)
+        existing = self.get(monitor_id, user_id=user_id)
         if existing is None:
             return None
 
@@ -495,8 +601,24 @@ class SavedMonitorRepository:
         try:
             with psycopg.connect(database_url, row_factory=dict_row) as connection:
                 with connection.cursor() as cursor:
+                    params = {
+                        "id": monitor_id,
+                        "user_id": user_id,
+                        "previous_score": updated.previous_score,
+                        "previous_record_count": updated.previous_record_count,
+                        "latest_audit_id": updated.latest_audit_id,
+                        "latest_score": updated.latest_score,
+                        "latest_record_count": updated.latest_record_count,
+                        "last_checked_at": updated.last_checked_at,
+                        "status": updated.status.value,
+                    }
+                    user_filter = (
+                        "and user_id = %(user_id)s"
+                        if user_id is not None
+                        else ""
+                    )
                     cursor.execute(
-                        """
+                        f"""
                         update saved_monitors
                         set
                             previous_score = %(previous_score)s,
@@ -507,17 +629,9 @@ class SavedMonitorRepository:
                             last_checked_at = %(last_checked_at)s,
                             status = %(status)s
                         where id = %(id)s
+                        {user_filter}
                         """,
-                        {
-                            "id": monitor_id,
-                            "previous_score": updated.previous_score,
-                            "previous_record_count": updated.previous_record_count,
-                            "latest_audit_id": updated.latest_audit_id,
-                            "latest_score": updated.latest_score,
-                            "latest_record_count": updated.latest_record_count,
-                            "last_checked_at": updated.last_checked_at,
-                            "status": updated.status.value,
-                        },
+                        params,
                     )
 
             return updated
@@ -625,10 +739,48 @@ class SavedMonitorRepository:
             self._runs.setdefault(monitor.id, []).append(run)
             return run
 
-    def list_runs(self, monitor_id: UUID, limit: int = 10) -> list[SavedMonitorRun]:
+    def record_run(
+        self,
+        user_id: UUID,
+        monitor_id: UUID,
+        *,
+        status: SavedMonitorRunStatus,
+        record_count: int | None = None,
+        score: int | None = None,
+        score_label: str | None = None,
+        audit_id: str | None = None,
+        error_message: str | None = None,
+    ) -> SavedMonitorRun | None:
+        """Persist one run-history row only when the user owns the monitor."""
+
+        monitor = self.get_saved_monitor(user_id, monitor_id)
+        if monitor is None:
+            return None
+
+        return self.create_run(
+            monitor,
+            status=status,
+            record_count=record_count,
+            score=score,
+            score_label=score_label,
+            audit_id=audit_id,
+            error_message=error_message,
+        )
+
+    def list_runs(
+        self,
+        monitor_id: UUID,
+        limit: int = 10,
+        *,
+        user_id: UUID | None = None,
+    ) -> list[SavedMonitorRun]:
         """Return recent run-history rows for one saved monitor."""
 
         safe_limit = max(1, min(limit, 50))
+
+        if user_id is not None and self.get(monitor_id, user_id=user_id) is None:
+            return []
+
         database_url = self._database_url()
         if not database_url:
             return self._list_runs_memory(monitor_id)[:safe_limit]
@@ -674,10 +826,15 @@ class SavedMonitorRepository:
             )
             return self._list_runs_memory(monitor_id)[:safe_limit]
 
-    def mark_error(self, monitor_id: UUID) -> SavedMonitor | None:
+    def mark_error(
+        self,
+        monitor_id: UUID,
+        *,
+        user_id: UUID | None = None,
+    ) -> SavedMonitor | None:
         """Mark a saved monitor run as failed."""
 
-        existing = self.get(monitor_id)
+        existing = self.get(monitor_id, user_id=user_id)
         if existing is None:
             return None
 
@@ -696,19 +853,27 @@ class SavedMonitorRepository:
         try:
             with psycopg.connect(database_url, row_factory=dict_row) as connection:
                 with connection.cursor() as cursor:
+                    params = {
+                        "id": monitor_id,
+                        "user_id": user_id,
+                        "last_checked_at": updated.last_checked_at,
+                        "status": updated.status.value,
+                    }
+                    user_filter = (
+                        "and user_id = %(user_id)s"
+                        if user_id is not None
+                        else ""
+                    )
                     cursor.execute(
-                        """
+                        f"""
                         update saved_monitors
                         set
                             last_checked_at = %(last_checked_at)s,
                             status = %(status)s
                         where id = %(id)s
+                        {user_filter}
                         """,
-                        {
-                            "id": monitor_id,
-                            "last_checked_at": updated.last_checked_at,
-                            "status": updated.status.value,
-                        },
+                        params,
                     )
 
             return updated
@@ -724,12 +889,18 @@ class SavedMonitorRepository:
             self._items[monitor_id] = updated
             return updated
 
-    def delete(self, monitor_id: UUID) -> bool:
+    def delete(
+        self,
+        monitor_id: UUID,
+        *,
+        user_id: UUID | None = None,
+    ) -> bool:
         """Delete a saved monitor. Returns True when deleted."""
 
         database_url = self._database_url()
         if not database_url:
-            if monitor_id not in self._items:
+            monitor = self._items.get(monitor_id)
+            if monitor is None or not self._monitor_belongs_to_user(monitor, user_id):
                 return False
 
             del self._items[monitor_id]
@@ -739,13 +910,26 @@ class SavedMonitorRepository:
         try:
             with psycopg.connect(database_url, row_factory=dict_row) as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute(
-                        """
-                        delete from saved_monitors
-                        where id = %(id)s
-                        """,
-                        {"id": monitor_id},
-                    )
+                    if user_id is None:
+                        cursor.execute(
+                            """
+                            delete from saved_monitors
+                            where id = %(id)s
+                            """,
+                            {"id": monitor_id},
+                        )
+                    else:
+                        cursor.execute(
+                            """
+                            delete from saved_monitors
+                            where id = %(id)s
+                              and user_id = %(user_id)s
+                            """,
+                            {
+                                "id": monitor_id,
+                                "user_id": user_id,
+                            },
+                        )
                     deleted = cursor.rowcount > 0
 
             if deleted:
@@ -763,12 +947,18 @@ class SavedMonitorRepository:
                 },
             )
 
-            if monitor_id not in self._items:
+            monitor = self._items.get(monitor_id)
+            if monitor is None or not self._monitor_belongs_to_user(monitor, user_id):
                 return False
 
             del self._items[monitor_id]
             self._runs.pop(monitor_id, None)
             return True
+
+    def delete_saved_monitor(self, user_id: UUID, monitor_id: UUID) -> bool:
+        """Delete one saved monitor only when owned by the user."""
+
+        return self.delete(monitor_id, user_id=user_id)
 
     def clear(self) -> None:
         """Clear all saved monitors. Used by tests."""

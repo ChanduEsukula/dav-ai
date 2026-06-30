@@ -55,9 +55,9 @@ const checkedMonitor: SavedMonitor = {
 const healthPulseMonitor: SavedMonitor = {
   ...baseMonitor,
   id: 'monitor-health-pulse',
-  name: 'Minnesota respiratory monitor',
+  name: 'Food recall monitor',
   query: 'MN respiratory',
-  module: 'regional_health_pulse',
+  module: 'foodradar',
   latest_audit_id: '33333333-3333-3333-3333-333333333333',
   latest_score: 46,
   previous_score: 32,
@@ -138,12 +138,12 @@ describe('SavedMonitorsPage', () => {
 
     render(<SavedMonitorsPage />)
 
-    expect(screen.getByText('Loading saved monitors...')).toBeInTheDocument()
+    expect(screen.getByText('Loading saved searches...')).toBeInTheDocument()
 
     await waitFor(() => {
       expect(
         screen.getByText(
-          'No saved monitors yet. Create one above to start the monitoring workflow.',
+          'No saved searches yet. Create one above to start checking changes over time.',
         ),
       ).toBeInTheDocument()
     })
@@ -167,17 +167,17 @@ describe('SavedMonitorsPage', () => {
       expectTextContent(/Previous:\s*3/i)
       expect(screen.getByText('Score +6')).toBeInTheDocument()
       expect(screen.getByText('Records +2')).toBeInTheDocument()
-      expect(screen.getByText('Monitor Insight')).toBeInTheDocument()
+      expect(screen.getByText('Saved Search Insight')).toBeInTheDocument()
       expect(screen.getByText('Stable')).toBeInTheDocument()
       expect(screen.getByText('Stable public-data activity')).toBeInTheDocument()
       expect(screen.getByText('monitor-insight-v0.1')).toBeInTheDocument()
       expect(screen.getByText(/not medical advice/i)).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'View Audit' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'View source trail' })).toBeInTheDocument()
       expect(screen.getByText('No manual run history yet.')).toBeInTheDocument()
     })
   })
 
-  it('renders Regional Health Pulse saved monitors', async () => {
+  it('renders food saved monitors without exposing retired Pulse branding', async () => {
     vi.mocked(listSavedMonitors).mockResolvedValue([healthPulseMonitor])
     vi.mocked(getSavedMonitorInsight).mockResolvedValue({
       ...baseInsight,
@@ -193,14 +193,14 @@ describe('SavedMonitorsPage', () => {
     render(<SavedMonitorsPage />)
 
     await waitFor(() => {
-      expect(screen.getByText('Minnesota respiratory monitor')).toBeInTheDocument()
+      expect(screen.getByText('Food recall monitor')).toBeInTheDocument()
       expectTextContent(/Query:\s*MN respiratory/i)
-      expect(screen.getAllByText('Regional Health Pulse').length).toBeGreaterThan(0)
-      expectTextContent(/Regional Health Pulse\s*·\s*checked/i)
+      expect(screen.queryByText('Regional Health Pulse')).not.toBeInTheDocument()
+      expectTextContent(/FoodRadar\s*·\s*checked/i)
       expect(screen.getByText('46')).toBeInTheDocument()
       expectTextContent(/Previous:\s*32/i)
       expect(screen.getByText('Score +14')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'View Audit' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'View source trail' })).toBeInTheDocument()
     })
   })
 
@@ -226,7 +226,7 @@ describe('SavedMonitorsPage', () => {
       expect(
         screen.getByText('Latest payload hash differs from the previous payload hash.'),
       ).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'View run audit' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'View run source trail' })).toBeInTheDocument()
     })
   })
 
@@ -251,10 +251,10 @@ describe('SavedMonitorsPage', () => {
     render(<SavedMonitorsPage />)
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'View run audit' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'View run source trail' })).toBeInTheDocument()
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'View run audit' }))
+    fireEvent.click(screen.getByRole('button', { name: 'View run source trail' }))
 
     expect(window.location.search).toContain('page=audit')
     expect(window.location.search).toContain(
@@ -348,12 +348,12 @@ describe('SavedMonitorsPage', () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          'No saved monitors yet. Create one above to start the monitoring workflow.',
+          'No saved searches yet. Create one above to start checking changes over time.',
         ),
       ).toBeInTheDocument()
     })
 
-    fireEvent.change(screen.getByLabelText('Monitor name'), {
+    fireEvent.change(screen.getByLabelText('Saved search name'), {
       target: { value: 'Metformin monitor' },
     })
     fireEvent.change(screen.getByLabelText('Search query'), {
@@ -363,7 +363,7 @@ describe('SavedMonitorsPage', () => {
       target: { value: 'drugsignal' },
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Save Monitor' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save Search' }))
 
     await waitFor(() => {
       expect(createSavedMonitor).toHaveBeenCalledWith({
@@ -388,83 +388,24 @@ describe('SavedMonitorsPage', () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          'No saved monitors yet. Create one above to start the monitoring workflow.',
+          'No saved searches yet. Create one above to start checking changes over time.',
         ),
       ).toBeInTheDocument()
     })
 
     expect(screen.queryByRole('option', { name: 'CosmeticSignal' })).not.toBeInTheDocument()
-    expect(screen.getByText(/Cosmetic monitor creation/i)).toBeInTheDocument()
+    expect(screen.getByText(/Cosmetic saved-search creation/i)).toBeInTheDocument()
   })
 
-  it('creates a Regional Health Pulse saved monitor with query guidance', async () => {
-    vi.mocked(listSavedMonitors).mockResolvedValue([])
-    vi.mocked(createSavedMonitor).mockResolvedValue({
-      ...healthPulseMonitor,
-      id: 'monitor-created-health-pulse',
-    })
-    vi.mocked(getSavedMonitorInsight).mockResolvedValue({
-      ...baseInsight,
-      monitor_id: 'monitor-created-health-pulse',
-      label: 'insufficient_history',
-      headline: 'Insufficient history',
-      latest_record_count: null,
-      previous_record_count: null,
-      record_count_delta: null,
-      percent_change: null,
-      latest_score: null,
-      previous_score: null,
-      score_delta: null,
-      confidence: 'low',
-    })
-
-    render(<SavedMonitorsPage />)
-
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          'No saved monitors yet. Create one above to start the monitoring workflow.',
-        ),
-      ).toBeInTheDocument()
-    })
-
-    fireEvent.change(screen.getByLabelText('Module'), {
-      target: { value: 'regional_health_pulse' },
-    })
-
-    expect(
-      screen.getByText(/Use format: MN respiratory/i),
-    ).toBeInTheDocument()
-
-    fireEvent.change(screen.getByLabelText('Monitor name'), {
-      target: { value: 'Minnesota respiratory monitor' },
-    })
-    fireEvent.change(screen.getByLabelText('Search query'), {
-      target: { value: 'MN respiratory' },
-    })
-
-    fireEvent.click(screen.getByRole('button', { name: 'Save Monitor' }))
-
-    await waitFor(() => {
-      expect(createSavedMonitor).toHaveBeenCalledWith({
-        name: 'Minnesota respiratory monitor',
-        query: 'MN respiratory',
-        module: 'regional_health_pulse',
-      })
-      expect(screen.getByText('Minnesota respiratory monitor')).toBeInTheDocument()
-      expect(screen.getAllByText('Regional Health Pulse').length).toBeGreaterThan(0)
-      expect(screen.getByText('Insufficient history')).toBeInTheDocument()
-    })
-  })
 
   it('trims leading and trailing spaces but preserves internal query spaces', async () => {
     vi.mocked(listSavedMonitors).mockResolvedValue([])
     vi.mocked(createSavedMonitor).mockResolvedValue({
       ...healthPulseMonitor,
       id: 'monitor-spaces',
-      name: 'Minnesota respiratory monitor',
-      query: 'MN hospital pressure',
-      module: 'regional_health_pulse',
+      name: 'Food recall monitor',
+      query: 'organic spinach recall',
+      module: 'foodradar',
     })
     vi.mocked(getSavedMonitorInsight).mockResolvedValue({
       ...baseInsight,
@@ -486,28 +427,28 @@ describe('SavedMonitorsPage', () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          'No saved monitors yet. Create one above to start the monitoring workflow.',
+          'No saved searches yet. Create one above to start checking changes over time.',
         ),
       ).toBeInTheDocument()
     })
 
     fireEvent.change(screen.getByLabelText('Module'), {
-      target: { value: 'regional_health_pulse' },
+      target: { value: 'foodradar' },
     })
-    fireEvent.change(screen.getByLabelText('Monitor name'), {
-      target: { value: '  Minnesota respiratory monitor  ' },
+    fireEvent.change(screen.getByLabelText('Saved search name'), {
+      target: { value: '  Food recall monitor  ' },
     })
     fireEvent.change(screen.getByLabelText('Search query'), {
-      target: { value: '  MN hospital pressure  ' },
+      target: { value: '  organic spinach recall  ' },
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Save Monitor' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save Search' }))
 
     await waitFor(() => {
       expect(createSavedMonitor).toHaveBeenCalledWith({
-        name: 'Minnesota respiratory monitor',
-        query: 'MN hospital pressure',
-        module: 'regional_health_pulse',
+        name: 'Food recall monitor',
+        query: 'organic spinach recall',
+        module: 'foodradar',
       })
     })
   })
@@ -539,19 +480,19 @@ describe('SavedMonitorsPage', () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          'No saved monitors yet. Create one above to start the monitoring workflow.',
+          'No saved searches yet. Create one above to start checking changes over time.',
         ),
       ).toBeInTheDocument()
     })
 
-    fireEvent.change(screen.getByLabelText('Monitor name'), {
+    fireEvent.change(screen.getByLabelText('Saved search name'), {
       target: { value: 'Eye drops duplicate' },
     })
     fireEvent.change(screen.getByLabelText('Search query'), {
       target: { value: 'eye drops' },
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Save Monitor' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save Search' }))
 
     await waitFor(() => {
       expect(
@@ -568,19 +509,19 @@ describe('SavedMonitorsPage', () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          'No saved monitors yet. Create one above to start the monitoring workflow.',
+          'No saved searches yet. Create one above to start checking changes over time.',
         ),
       ).toBeInTheDocument()
     })
 
-    fireEvent.change(screen.getByLabelText('Monitor name'), {
+    fireEvent.change(screen.getByLabelText('Saved search name'), {
       target: { value: 'x' },
     })
     fireEvent.change(screen.getByLabelText('Search query'), {
       target: { value: 'y' },
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Save Monitor' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save Search' }))
 
     expect(
       screen.getByText('Name and query must each be at least 2 characters.'),
@@ -623,10 +564,10 @@ describe('SavedMonitorsPage', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Eye drops monitor')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Run Check' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Check now' })).toBeInTheDocument()
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Run Check' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Check now' }))
 
     await waitFor(() => {
       expect(runSavedMonitor).toHaveBeenCalledWith('monitor-1')
@@ -639,7 +580,7 @@ describe('SavedMonitorsPage', () => {
       expectTextContent(/Previous:\s*8/i)
       expect(screen.getByText('Score +18')).toBeInTheDocument()
       expect(screen.getByText('Records +4')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'View Audit' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'View source trail' })).toBeInTheDocument()
       expect(screen.getByText('Stable public-data activity')).toBeInTheDocument()
     })
   })
@@ -659,7 +600,7 @@ describe('SavedMonitorsPage', () => {
 
     await waitFor(() => {
       expect(confirmSpy).toHaveBeenCalledWith(
-        'Are you sure you want to delete this saved monitor?',
+        'Are you sure you want to delete this saved search?',
       )
       expect(deleteSavedMonitor).toHaveBeenCalledWith('monitor-1')
       expect(screen.queryByText('Eye drops monitor')).not.toBeInTheDocument()
@@ -680,13 +621,13 @@ describe('SavedMonitorsPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
 
     expect(confirmSpy).toHaveBeenCalledWith(
-      'Are you sure you want to delete this saved monitor?',
+      'Are you sure you want to delete this saved search?',
     )
     expect(deleteSavedMonitor).not.toHaveBeenCalled()
     expect(screen.getByText('Eye drops monitor')).toBeInTheDocument()
   })
 
-  it('opens Audit History URL state from View Audit button', async () => {
+  it('opens Audit History URL state from View source trail button', async () => {
     vi.mocked(listSavedMonitors).mockResolvedValue([
       {
         ...baseMonitor,
@@ -700,10 +641,10 @@ describe('SavedMonitorsPage', () => {
     render(<SavedMonitorsPage />)
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'View Audit' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'View source trail' })).toBeInTheDocument()
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'View Audit' }))
+    fireEvent.click(screen.getByRole('button', { name: 'View source trail' }))
 
     expect(window.location.search).toContain('page=audit')
     expect(window.location.search).toContain(
@@ -722,7 +663,7 @@ describe('SavedMonitorsPage', () => {
     render(<SavedMonitorsPage />)
 
     await waitFor(() => {
-      expect(screen.getByText('Unable to load saved monitors.')).toBeInTheDocument()
+      expect(screen.getByText('Unable to load saved searches.')).toBeInTheDocument()
     })
   })
 
@@ -734,13 +675,13 @@ describe('SavedMonitorsPage', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Eye drops monitor')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Run Check' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Check now' })).toBeInTheDocument()
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Run Check' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Check now' }))
 
     await waitFor(() => {
-      expect(screen.getByText('Unable to run saved monitor check.')).toBeInTheDocument()
+      expect(screen.getByText('Unable to run saved search check.')).toBeInTheDocument()
     })
   })
 })

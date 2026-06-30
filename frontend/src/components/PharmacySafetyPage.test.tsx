@@ -141,6 +141,37 @@ const emptyDrugResponse: DrugEventSearchResponse = {
   },
 }
 
+const normalizedNoticeRecallResponse: RecallSearchResponse = {
+  ...emptyRecallResponse,
+  query: 'Tylenol',
+  count: 1,
+  results: [
+    {
+      ...recallResponse.results[0],
+      recall_number: null,
+      product_description: 'Tylenol Extra Strength Tablets',
+      reason_for_recall: 'The product was recalled because of a labeling issue.',
+      classification: null,
+      status: null,
+      recalling_firm: 'Example Pharma',
+      source_type: 'FDA_NORMALIZED_PUBLIC_NOTICE',
+      source_kind: 'normalized_public_notice',
+      source_record_type: 'normalized official public notice',
+      remedy: 'Consumers should stop using the affected lot.',
+      record_url: 'https://www.fda.gov/safety/notices/tylenol-example',
+      extraction_confidence: 'high',
+      source_text_excerpt: 'UNIQUE_INTERNAL_NOTICE_TEXT',
+      source: {
+        name: 'FDA Recalls, Market Withdrawals & Safety Alerts',
+        endpoint: 'https://www.fda.gov/safety/notices/tylenol-example',
+        retrieval_timestamp: '2026-06-12T12:00:00Z',
+        source_kind: 'normalized_public_notice',
+        source_type: 'normalized official public notice',
+      },
+    },
+  ],
+}
+
 function renderPharmacyPage(initialQuery = 'Xanax') {
   return render(
     <PharmacySafetyPage initialQuery={initialQuery} goToPage={mockGoToPage} />,
@@ -173,6 +204,26 @@ test('renders a compact pharmacy dashboard with collapsed recall details', async
   const productSummary = screen.getByTitle(longProductName)
   expect(productSummary.textContent).toMatch(/\.\.\.$/)
   expect(productSummary.closest('details')).not.toHaveAttribute('open')
+})
+
+test('renders normalized pharmacy notices without raw source excerpts', async () => {
+  const user = userEvent.setup()
+  mockSearchRecalls.mockResolvedValue(normalizedNoticeRecallResponse)
+  renderPharmacyPage('Tylenol')
+
+  const title = await screen.findByTitle('Tylenol Extra Strength Tablets')
+  expect(screen.getAllByText('Normalized public notice').length).toBeGreaterThan(0)
+  expect(screen.getByText('Notice extraction: high')).toBeInTheDocument()
+  await user.click(title)
+
+  expect(
+    screen.getByText('Consumers should stop using the affected lot.'),
+  ).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'Open official record' })).toHaveAttribute(
+    'href',
+    'https://www.fda.gov/safety/notices/tylenol-example',
+  )
+  expect(screen.queryByText('UNIQUE_INTERNAL_NOTICE_TEXT')).not.toBeInTheDocument()
 })
 
 test('loads the selected recall sort once', async () => {
@@ -301,7 +352,7 @@ test('example search clears previous empty-search guidance', async () => {
 
 test.each([
   ['chicken', 'Food & Supplement Safety', 'food-safety'],
-  ['sunscreen', 'Cosmetic Safety', 'cosmetic-safety'],
+  ['sunscreen', 'Personal Care Signals', 'cosmetic-safety'],
 ] as const)(
   'suggests %s searches use the correct safety page',
   async (query, label, page) => {

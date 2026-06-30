@@ -117,7 +117,7 @@ describe('AuditHistoryPage', () => {
     expect(screen.getAllByText('recall-risk-v0.1').length).toBeGreaterThan(0)
   })
 
-  test('renders FoodRadar and Regional Health Pulse module filter options', async () => {
+  test('renders FoodRadar module filter option without retired Regional Health filter', async () => {
     mockedGetAuditEvents.mockResolvedValue({
       status: 'ok',
       persistence_available: true,
@@ -130,8 +130,8 @@ describe('AuditHistoryPage', () => {
     expect(await screen.findByText('Audit History')).toBeInTheDocument()
     expect(screen.getByRole('option', { name: 'FoodRadar' })).toBeInTheDocument()
     expect(
-      screen.getByRole('option', { name: 'Regional Health Pulse' }),
-    ).toBeInTheDocument()
+      screen.queryByRole('option', { name: 'Regional Health Pulse' }),
+    ).not.toBeInTheDocument()
   })
 
   test('selects the first audit event by default', async () => {

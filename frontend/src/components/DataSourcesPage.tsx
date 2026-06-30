@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getSources, type SourceRecord, type SourceRegistryResponse } from '../api/sources'
+import SourceIntegrationBadge from './SourceIntegrationBadge'
+import SourceDetailsDisclosure from './SourceDetailsDisclosure'
 
 function formatTimestamp(value: string | null) {
   if (!value) {
@@ -91,6 +93,10 @@ function DataSourcesPage() {
             </div>
 
             <h3>{source.source_name}</h3>
+            <SourceIntegrationBadge
+              sourceId={source.source_id}
+              sourceName={source.source_name}
+            />
             <p>{source.description}</p>
 
             <div className="source-freshness-panel">
@@ -144,6 +150,15 @@ function DataSourcesPage() {
                 <span>{source.update_cadence}</span>
               </div>
             </div>
+
+            <SourceDetailsDisclosure
+              sourceId={source.source_id}
+              sourceName={source.source_name}
+              endpoint={source.endpoint}
+              updateCadence={source.update_cadence}
+              recordCount={source.last_record_count}
+              retrievedAt={source.last_successful_retrieval_at}
+            />
           </article>
         ))}
       </div>

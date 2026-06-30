@@ -8,9 +8,17 @@ from app.scoring import RECALL_REVIEW_SCORE_VERSION
 from app.scoring.recall_score import calculate_recall_risk_score
 from app.services.foodradar_query_normalization import normalize_foodradar_query
 from app.services.foodradar_search_intent import FoodRadarSearchIntent, classify_foodradar_search_intent
+from app.services.official_public_notice_search import (
+    official_notice_source_metadata,
+    search_official_public_notices,
+)
 from app.services.openfda_food_enforcement_client import OpenFDAFoodEnforcementClient
 from app.services.usda_fsis_recall_client import USDAFSISRecallClient
-from app.sources.registry import OPENFDA_FOOD_ENFORCEMENT, USDA_FSIS_RECALL
+from app.sources.registry import (
+    FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS,
+    OPENFDA_FOOD_ENFORCEMENT,
+    USDA_FSIS_RECALL,
+)
 
 food_client = OpenFDAFoodEnforcementClient()
 fsis_client = USDAFSISRecallClient()
@@ -122,12 +130,26 @@ def _normalize_fda_record(
         "product_quantity": record.get("product_quantity"),
         "code_info": record.get("code_info"),
         "source_type": "FDA_FOOD_ENFORCEMENT",
+        "source_kind": "structured_api",
+        "source_record_type": "official API record",
+        "title": None,
+        "product_name": record.get("product_description"),
+        "brand_name": None,
+        "company_name": record.get("recalling_firm"),
+        "remedy": None,
+        "official_url": payload["endpoint"],
+        "affected_models": [],
+        "affected_lots": [],
+        "extraction_confidence": None,
+        "source_text_excerpt": None,
         "search_strategy_used": search_strategy_used,
         "risk_score": risk,
         "source": {
             "name": payload["source_name"],
             "endpoint": payload["endpoint"],
             "retrieval_timestamp": payload["retrieval_timestamp"],
+            "source_kind": "structured_api",
+            "source_type": "official API record",
         },
     }
 
@@ -252,12 +274,97 @@ def _normalize_fsis_record(
             ("field_labels", "labels", "field_product_labels", "code_info"),
         ),
         "source_type": "USDA_FSIS_RECALL",
+        "source_kind": "structured_api",
+        "source_record_type": "official API record",
+        "title": _get_first_value(
+            record,
+            ("title", "recall_title", "field_title"),
+        ),
+        "product_name": product_description,
+        "brand_name": None,
+        "company_name": _get_first_value(
+            record,
+            (
+                "field_establishment",
+                "establishment",
+                "field_company",
+                "company",
+                "recalling_firm",
+            ),
+        ),
+        "remedy": None,
+        "official_url": payload["endpoint"],
+        "affected_models": [],
+        "affected_lots": [],
+        "extraction_confidence": None,
+        "source_text_excerpt": None,
         "search_strategy_used": search_strategy_used,
         "risk_score": risk,
         "source": {
             "name": payload["source_name"],
             "endpoint": payload["endpoint"],
             "retrieval_timestamp": payload["retrieval_timestamp"],
+            "source_kind": "structured_api",
+            "source_type": "official API record",
+        },
+    }
+
+
+def _normalize_public_notice_record(
+    *,
+    record,
+    index: int,
+    search_strategy_used: str,
+) -> dict[str, Any]:
+    published_date = record.published_date
+    risk = calculate_recall_risk_score(
+        {
+            "classification": None,
+            "status": None,
+            "recall_initiation_date": published_date,
+            "distribution_pattern": "",
+        }
+    )
+    product_description = record.product_name or record.title
+
+    return {
+        "record_id": record.raw_payload_hash or f"fda-notice-{index}",
+        "recall_number": record.recall_number,
+        "product_description": product_description,
+        "reason_for_recall": record.reason or record.hazard_type,
+        "classification": None,
+        "status": None,
+        "recall_initiation_date": published_date,
+        "report_date": published_date,
+        "distribution_pattern": None,
+        "recalling_firm": record.company_name,
+        "product_quantity": None,
+        "code_info": ", ".join(record.affected_lots) or None,
+        "source_type": (
+            "FDA_NORMALIZED_PUBLIC_NOTICE"
+            if record.source_kind == "normalized_public_notice"
+            else "FDA_PUBLIC_NOTICE"
+        ),
+        "source_kind": record.source_kind,
+        "source_record_type": record.source_type,
+        "title": record.title,
+        "product_name": record.product_name,
+        "brand_name": record.brand_name,
+        "company_name": record.company_name,
+        "remedy": record.remedy,
+        "official_url": record.record_url,
+        "affected_models": record.affected_models,
+        "affected_lots": record.affected_lots,
+        "extraction_confidence": record.extraction_confidence,
+        "source_text_excerpt": record.source_text_excerpt,
+        "search_strategy_used": search_strategy_used,
+        "risk_score": risk,
+        "source": {
+            "name": record.source_name,
+            "endpoint": record.record_url or record.source_url,
+            "retrieval_timestamp": record.retrieved_at,
+            "source_kind": record.source_kind,
+            "source_type": record.source_type,
         },
     }
 
@@ -287,6 +394,12 @@ def _record_search_text(record: dict[str, Any]) -> str:
         record.get("product_description"),
         record.get("reason_for_recall"),
         record.get("recalling_firm"),
+        record.get("title"),
+        record.get("product_name"),
+        record.get("brand_name"),
+        record.get("company_name"),
+        record.get("remedy"),
+        record.get("source_text_excerpt"),
     ]
     source = record.get("source") or {}
     parts.append(source.get("name"))
@@ -426,8 +539,21 @@ async def execute_everyday_safety_search(
                 "upstream_status": "error",
             }
 
+        notice_error_message = None
+        try:
+            notice_result = await search_official_public_notices(
+                query=search_query,
+                limit=25,
+                request_id=request_id,
+                domain="food",
+            )
+        except Exception as exc:
+            notice_error_message = str(exc)
+            notice_result = None
+
         fda_raw_results = fda_payload["raw"].get("results", [])
         fsis_raw_results = fsis_payload.get("records", [])
+        notice_records = notice_result.records if notice_result else []
 
         normalized_results: list[dict[str, Any]] = []
 
@@ -447,6 +573,15 @@ async def execute_everyday_safety_search(
                     record=record,
                     index=index,
                     payload=fsis_payload,
+                    search_strategy_used=search_strategy_used,
+                )
+            )
+
+        for index, record in enumerate(notice_records):
+            normalized_results.append(
+                _normalize_public_notice_record(
+                    record=record,
+                    index=index,
                     search_strategy_used=search_strategy_used,
                 )
             )
@@ -471,6 +606,21 @@ async def execute_everyday_safety_search(
                 record_count=len(fsis_raw_results),
             ),
         ]
+        if notice_result:
+            sources_checked.append(official_notice_source_metadata(notice_result))
+        else:
+            sources_checked.append(
+                {
+                    "source_id": FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS["source_id"],
+                    "source_name": FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS["source_name"],
+                    "source_type": "FDA_PUBLIC_NOTICE",
+                    "endpoint": FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS["endpoint"],
+                    "source_kind": "public_notice",
+                    "record_type": "public notice page",
+                    "upstream_status": "error",
+                    "record_count": 0,
+                }
+            )
 
         retrieval_timestamp = datetime.now(timezone.utc).isoformat()
 
@@ -492,6 +642,7 @@ async def execute_everyday_safety_search(
                 "sources_checked": [
                     OPENFDA_FOOD_ENFORCEMENT["source_id"],
                     USDA_FSIS_RECALL["source_id"],
+                    FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS["source_id"],
                 ],
                 "search_strategy_used": search_strategy_used,
                 "intent_type": intent.intent_type,
@@ -512,6 +663,9 @@ async def execute_everyday_safety_search(
             raw_payload={
                 "openfda_food_enforcement": fda_payload.get("raw", {}),
                 "usda_fsis_recall": fsis_payload.get("raw", {}),
+                "fda_public_notices": notice_result.raw_payload if notice_result else {
+                    "error": notice_error_message,
+                },
             },
             request_id=request_id,
         )
@@ -541,6 +695,7 @@ async def execute_everyday_safety_search(
             "limitations": [
                 "openFDA Food Enforcement covers FDA-regulated food, supplement, grocery, and packaged-food enforcement records.",
                 "USDA FSIS Recall API covers meat, poultry, and egg-product recalls and public health alerts.",
+                "FDA public recall and safety notice pages are matched against concise normalized fields and official notice text.",
                 "If one public source is temporarily unavailable, DAV AI may return partial results from the available source and mark the unavailable source as error.",
                 "Search results depend on product descriptions, recalling firm names, recall reason text, and source-specific metadata.",
                 "Users should verify exact product names, lot numbers, establishment numbers, package sizes, and official FDA/USDA recall notices before taking action.",

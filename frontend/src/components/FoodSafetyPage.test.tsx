@@ -148,6 +148,69 @@ const emptyFoodResponse: EverydaySafetySearchResponse = {
   },
 }
 
+const normalizedNoticeFoodResponse: EverydaySafetySearchResponse = {
+  ...emptyFoodResponse,
+  query: 'Pepperoni',
+  count: 1,
+  sources_checked: [
+    ...emptyFoodResponse.sources_checked,
+    {
+      source_id: 'fda-public-notices',
+      source_name: 'FDA Recalls, Market Withdrawals & Safety Alerts',
+      source_type: 'FDA_NORMALIZED_PUBLIC_NOTICE',
+      endpoint: 'https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts',
+      source_kind: 'normalized_public_notice',
+      record_type: 'normalized official public notice',
+      upstream_status: 'success',
+      record_count: 1,
+    },
+  ],
+  results: [
+    {
+      record_id: 'pepperoni-notice',
+      recall_number: null,
+      product_description: 'Pepperoni Rolls',
+      reason_for_recall: 'Pepperoni Rolls were recalled due to undeclared milk.',
+      classification: null,
+      status: null,
+      recall_initiation_date: '20260610',
+      report_date: '20260610',
+      distribution_pattern: null,
+      recalling_firm: 'Fry Pie Factory LLC',
+      product_quantity: null,
+      code_info: null,
+      source_type: 'FDA_NORMALIZED_PUBLIC_NOTICE',
+      source_kind: 'normalized_public_notice',
+      source_record_type: 'normalized official public notice',
+      remedy: 'Consumers should return the product for a refund.',
+      official_url: 'https://www.fda.gov/safety/notices/pepperoni-rolls',
+      affected_models: [],
+      affected_lots: [],
+      extraction_confidence: 'high',
+      source_text_excerpt: 'UNIQUE_INTERNAL_FDA_PAGE_TEXT_DO_NOT_RENDER',
+      search_strategy_used: 'intent_brand_v1',
+      risk_score: {
+        score: 32,
+        label: 'Moderate',
+        components: {
+          classification_score: 5,
+          status_score: 5,
+          recency_score: 17,
+          scope_score: 5,
+        },
+        score_version: 'everyday-safety-score-v1',
+      },
+      source: {
+        name: 'FDA Recalls, Market Withdrawals & Safety Alerts',
+        endpoint: 'https://www.fda.gov/safety/notices/pepperoni-rolls',
+        retrieval_timestamp: '2026-06-12T12:00:00Z',
+        source_kind: 'normalized_public_notice',
+        source_type: 'normalized official public notice',
+      },
+    },
+  ],
+}
+
 function renderFoodPage(initialQuery = 'Chicken') {
   return render(
     <FoodSafetyPage
@@ -164,7 +227,7 @@ beforeEach(() => {
   window.history.replaceState(null, '', '?page=food-safety&q=Chicken')
 })
 
-test('renders the Food Safety dashboard and multiple records for Chicken', async () => {
+test('renders the FoodSignal dashboard and multiple records for Chicken', async () => {
   renderFoodPage()
 
   expect(
@@ -176,6 +239,33 @@ test('renders the Food Safety dashboard and multiple records for Chicken', async
     screen.getAllByText('Frozen chicken and vegetable meal, 16-ounce package'),
   ).toHaveLength(2)
   expect(screen.getByText(/Showing 2 of 2 returned records/i)).toBeInTheDocument()
+  expect(screen.getAllByText('Live public API').length).toBeGreaterThan(0)
+})
+
+test('renders normalized FDA notices with concise fields and an official link', async () => {
+  const user = userEvent.setup()
+  mockSearchEverydaySafety.mockResolvedValue(normalizedNoticeFoodResponse)
+  renderFoodPage('Pepperoni')
+
+  expect(await screen.findByTitle('Pepperoni Rolls')).toBeInTheDocument()
+  expect(screen.getAllByText('Normalized public notice').length).toBeGreaterThan(0)
+  expect(screen.getAllByText('Live public page').length).toBeGreaterThan(0)
+  await user.click(screen.getByTitle('Pepperoni Rolls'))
+
+  expect(
+    screen.getByText('Pepperoni Rolls were recalled due to undeclared milk.'),
+  ).toBeInTheDocument()
+  expect(
+    screen.getByText('Consumers should return the product for a refund.'),
+  ).toBeInTheDocument()
+  expect(screen.getByText('high')).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'Open official record' })).toHaveAttribute(
+    'href',
+    'https://www.fda.gov/safety/notices/pepperoni-rolls',
+  )
+  expect(
+    screen.queryByText('UNIQUE_INTERNAL_FDA_PAGE_TEXT_DO_NOT_RENDER'),
+  ).not.toBeInTheDocument()
 })
 
 test('loads normalized Food records with the required category, limit, and priority sort', async () => {
@@ -293,7 +383,7 @@ test('Latest sort reloads the submitted query with latest ordering', async () =>
   )
 })
 
-test('a Xanax Food search suggests Pharmacy Safety', async () => {
+test('a Xanax Food search suggests DrugSignal', async () => {
   const user = userEvent.setup()
   mockSearchEverydaySafety.mockResolvedValue(emptyFoodResponse)
   window.history.replaceState(null, '', '?page=food-safety')
@@ -303,7 +393,7 @@ test('a Xanax Food search suggests Pharmacy Safety', async () => {
   await user.click(screen.getByRole('button', { name: 'Search' }))
 
   const suggestion = await screen.findByText(
-    /This looks more like a Pharmacy Safety search/i,
+    /This looks more like a DrugSignal search/i,
   )
   const suggestionBox = suggestion.closest('.safety-route-suggestion')
   const examples = screen.getByLabelText('Example food safety searches')
@@ -311,15 +401,15 @@ test('a Xanax Food search suggests Pharmacy Safety', async () => {
   expect(
     suggestionBox!.compareDocumentPosition(examples) & Node.DOCUMENT_POSITION_FOLLOWING,
   ).not.toBe(0)
-  expect(screen.getByText(/This looks better suited for Pharmacy Safety/i)).toBeInTheDocument()
+  expect(screen.getByText(/This looks better suited for DrugSignal/i)).toBeInTheDocument()
   expect(
     screen.queryByText(/No public records returned for this exact search/i),
   ).not.toBeInTheDocument()
-  await user.click(screen.getByRole('button', { name: 'Open Pharmacy Safety' }))
+  await user.click(screen.getByRole('button', { name: 'Open DrugSignal' }))
   expect(mockGoToPage).toHaveBeenCalledWith('pharmacy-safety', 'Xanax')
 })
 
-test('a Sunscreen Food search suggests Cosmetic Safety', async () => {
+test('a Sunscreen Food search suggests Personal Care Signals', async () => {
   const user = userEvent.setup()
   window.history.replaceState(null, '', '?page=food-safety')
   renderFoodPage('')
@@ -328,9 +418,9 @@ test('a Sunscreen Food search suggests Cosmetic Safety', async () => {
   await user.click(screen.getByRole('button', { name: 'Search' }))
 
   expect(
-    await screen.findByText(/This looks more like a Cosmetic Safety search/i),
+    await screen.findByText(/This looks more like a Personal Care Signals search/i),
   ).toBeInTheDocument()
-  await user.click(screen.getByRole('button', { name: 'Open Cosmetic Safety' }))
+  await user.click(screen.getByRole('button', { name: 'Open Personal Care Signals' }))
   expect(mockGoToPage).toHaveBeenCalledWith('cosmetic-safety', 'Sunscreen')
 })
 

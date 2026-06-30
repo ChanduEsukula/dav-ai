@@ -1,0 +1,47 @@
+[
+  {
+    "communication_id": "FDA-SAFETY-COMM-DEMO-0001",
+    "title": "FDA safety communication: CPAP device safety advisory context",
+    "product_area": "Medical device",
+    "product_name": "CPAP device",
+    "device_type": "Respiratory device",
+    "manufacturer": "Example respiratory device manufacturer",
+    "communication_type": "Safety communication",
+    "status": "Public advisory context",
+    "published_date": "2026-01-15",
+    "summary": "Public FDA safety communication demo record for CPAP device safety context. This is advisory context and is not automatically a recall.",
+    "risk_context": "Possible device safety concern requiring official FDA review.",
+    "recommended_action": "Review the official FDA safety communication and compare the exact device model, manufacturer, and advisory details before taking action.",
+    "source_url": "https://www.fda.gov/medical-devices/safety-communications"
+  },
+  {
+    "communication_id": "FDA-SAFETY-COMM-DEMO-0002",
+    "title": "FDA safety communication: insulin pump cybersecurity advisory context",
+    "product_area": "Medical device",
+    "product_name": "Insulin pump",
+    "device_type": "Diabetes device",
+    "manufacturer": "Example diabetes device manufacturer",
+    "communication_type": "Safety communication",
+    "status": "Public advisory context",
+    "published_date": "2026-02-10",
+    "summary": "Public FDA safety communication demo record for insulin pump cybersecurity context. This is advisory context and is not automatically a recall.",
+    "risk_context": "Possible cybersecurity or device-use safety concern requiring official FDA review.",
+    "recommended_action": "Review the official FDA safety communication and compare the exact pump model, software version, manufacturer, and advisory details before taking action.",
+    "source_url": "https://www.fda.gov/medical-devices/safety-communications"
+  },
+  {
+    "communication_id": "FDA-SAFETY-COMM-DEMO-0003",
+    "title": "FDA safety communication: glucose meter accuracy advisory context",
+    "product_area": "Medical device",
+    "product_name": "Glucose meter",
+    "device_type": "Diabetes device",
+    "manufacturer": "Example glucose monitoring manufacturer",
+    "communication_type": "Safety communication",
+    "status": "Public advisory context",
+    "published_date": "2026-03-05",
+    "summary": "Public FDA safety communication demo record for glucose meter accuracy context. This is advisory context and is not automatically a recall.",
+    "risk_context": "Possible device accuracy concern requiring official FDA review.",
+    "recommended_action": "Review the official FDA safety communication and compare the exact meter model, test strip, lot, manufacturer, and advisory details before taking action.",
+    "source_url": "https://www.fda.gov/medical-devices/safety-communications"
+  }
+]

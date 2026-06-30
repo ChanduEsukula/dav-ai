@@ -1,0 +1,200 @@
+[
+  {
+    "query": "acetaminophen",
+    "setid": "51175d3e-e1c3-4e4d-ad32-61600e87568c",
+    "title": "SEVERE SINUS CONGESTION RELIEF MAXIMUM STRENGTH (ACETAMINOPHEN, GUAIFENESIN, PHENYLEPHRINE HCL) TABLET, FILM COATED [RITE AID CORPORATION]",
+    "spl_version": 16,
+    "published_date": "Jun 19, 2026",
+    "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=51175d3e-e1c3-4e4d-ad32-61600e87568c",
+    "api_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?drug_name=acetaminophen",
+    "source_name": "DailyMed SPL API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "acetaminophen",
+    "setid": "544ee7bd-0c95-2485-e063-6294a90a98c7",
+    "title": "DESENFRIOL-ITO PLUS (ACETAMINOPHEN) SYRUP [OPMX LLC]",
+    "spl_version": 1,
+    "published_date": "Jun 19, 2026",
+    "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=544ee7bd-0c95-2485-e063-6294a90a98c7",
+    "api_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?drug_name=acetaminophen",
+    "source_name": "DailyMed SPL API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "acetaminophen",
+    "setid": "5464188d-0137-033e-e063-6294a90ace66",
+    "title": "MEJORALITO CHILDREN (ACETAMINOPHEN) SYRUP [OPMX LLC]",
+    "spl_version": 1,
+    "published_date": "Jun 19, 2026",
+    "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=5464188d-0137-033e-e063-6294a90ace66",
+    "api_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?drug_name=acetaminophen",
+    "source_name": "DailyMed SPL API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "ibuprofen",
+    "setid": "06dd551b-6e13-425c-8d64-8d3177adc6bc",
+    "title": "IBUPROFEN AND PSEUDOEPHEDRINE HCL CAPSULE, LIQUID FILLED [CARDINAL HEALTH 110, LLC. DBA LEADER]",
+    "spl_version": 3,
+    "published_date": "Jun 18, 2026",
+    "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=06dd551b-6e13-425c-8d64-8d3177adc6bc",
+    "api_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?drug_name=ibuprofen",
+    "source_name": "DailyMed SPL API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "ibuprofen",
+    "setid": "2cf2f35b-5d66-e3ff-e063-6294a90a9b45",
+    "title": "CHILDRENS IBUPROFEN BUBBLEGUM DYE FREE (IBUPROFEN) SUSPENSION/ DROPS [CVS]",
+    "spl_version": 2,
+    "published_date": "Jun 18, 2026",
+    "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=2cf2f35b-5d66-e3ff-e063-6294a90a9b45",
+    "api_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?drug_name=ibuprofen",
+    "source_name": "DailyMed SPL API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "ibuprofen",
+    "setid": "01f8fe3a-8810-4b38-8860-d95e05d37709",
+    "title": "IBUPROFEN TABLET, FILM COATED [ARMY AND AIR FORCE EXCHANGE SERVICE]",
+    "spl_version": 16,
+    "published_date": "Jun 17, 2026",
+    "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=01f8fe3a-8810-4b38-8860-d95e05d37709",
+    "api_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?drug_name=ibuprofen",
+    "source_name": "DailyMed SPL API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "metformin",
+    "setid": "104b5f5b-cc83-450d-82ec-1fd20c4f7119",
+    "title": "METFORMIN HYDROCHLORIDE TABLET, EXTENDED RELEASE [REMEDYREPACK INC.]",
+    "spl_version": 1,
+    "published_date": "Jun 18, 2026",
+    "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=104b5f5b-cc83-450d-82ec-1fd20c4f7119",
+    "api_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?drug_name=metformin",
+    "source_name": "DailyMed SPL API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "metformin",
+    "setid": "11d52559-bfde-4c2a-9602-f18fb3187617",
+    "title": "METFORMIN HYDROCHLORIDE TABLET, EXTENDED RELEASE [BRYANT RANCH PREPACK]",
+    "spl_version": 102,
+    "published_date": "Jun 18, 2026",
+    "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=11d52559-bfde-4c2a-9602-f18fb3187617",
+    "api_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?drug_name=metformin",
+    "source_name": "DailyMed SPL API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "metformin",
+    "setid": "2387a618-24d8-4813-aa83-9114edb35374",
+    "title": "METFORMIN HYDROCHLORIDE TABLET [GRANULES PHARMACEUTICALS INC.]",
+    "spl_version": 7,
+    "published_date": "Jun 18, 2026",
+    "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=2387a618-24d8-4813-aa83-9114edb35374",
+    "api_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?drug_name=metformin",
+    "source_name": "DailyMed SPL API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "cetirizine",
+    "setid": "6e5bdf93-d96b-19bc-e053-2a91aa0ad94d",
+    "title": "CETIRIZINE HYDROCHLORIDE TABLET, COATED [GRANULES INDIA LTD]",
+    "spl_version": 4,
+    "published_date": "Jun 18, 2026",
+    "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=6e5bdf93-d96b-19bc-e053-2a91aa0ad94d",
+    "api_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?drug_name=cetirizine",
+    "source_name": "DailyMed SPL API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "cetirizine",
+    "setid": "6efd5a60-e281-43f9-a52c-a95f46fbcbfc",
+    "title": "CETIRIZINE HYDROCHLORIDE TABLET, COATED [GRANULES INDIA LTD]",
+    "spl_version": 11,
+    "published_date": "Jun 18, 2026",
+    "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=6efd5a60-e281-43f9-a52c-a95f46fbcbfc",
+    "api_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?drug_name=cetirizine",
+    "source_name": "DailyMed SPL API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "cetirizine",
+    "setid": "30cbaa91-2216-efd2-e063-6294a90aaaed",
+    "title": "CHILDRENS CETIRIZINE HYDROCHLORIDE (CETIRIZINE HYDROCHLORIDE) SOLUTION [SUN PHARMACEUTICAL INDUSTRIES, INC.]",
+    "spl_version": 3,
+    "published_date": "Jun 15, 2026",
+    "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=30cbaa91-2216-efd2-e063-6294a90aaaed",
+    "api_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?drug_name=cetirizine",
+    "source_name": "DailyMed SPL API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "Tylenol",
+    "setid": "3162733b-9382-39f1-e063-6294a90ac420",
+    "title": "CHILDRENS TYLENOL (ACETAMINOPHEN) SUSPENSION [KENVUE BRANDS LLC]",
+    "spl_version": 3,
+    "published_date": "Jun 16, 2026",
+    "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=3162733b-9382-39f1-e063-6294a90ac420",
+    "api_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?drug_name=Tylenol",
+    "source_name": "DailyMed SPL API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "Tylenol",
+    "setid": "52291746-2bbf-8f3f-e063-6294a90adcfc",
+    "title": "EXTRA STRENGTH TYLENOL COLD PLUS FLU MULTI-SYMPTOM DAYTIME (ACETAMINOPHEN, DEXTROMETHORPHAN HYDROBROMIDE) LIQUID [KENVUE BRANDS LLC]",
+    "spl_version": 1,
+    "published_date": "Jun 15, 2026",
+    "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=52291746-2bbf-8f3f-e063-6294a90adcfc",
+    "api_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?drug_name=Tylenol",
+    "source_name": "DailyMed SPL API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "Tylenol",
+    "setid": "68b0be18-198e-48c7-a7a2-e81cbcf0fbe8",
+    "title": "TYLENOL EXTRA STRENGTH (ACETAMINOPHEN) TABLET, FILM COATED [JC WORLD BELL WHOLESALE CO., INC.]",
+    "spl_version": 6,
+    "published_date": "Jun 15, 2026",
+    "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=68b0be18-198e-48c7-a7a2-e81cbcf0fbe8",
+    "api_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?drug_name=Tylenol",
+    "source_name": "DailyMed SPL API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "Advil",
+    "setid": "4feee16b-43be-bb71-e063-6394a90af959",
+    "title": "SURVIVEX TRAVEL MED KIT (CONVENIENCE KIT) KIT [INTENT BRANDS LLC]",
+    "spl_version": 1,
+    "published_date": "May 20, 2026",
+    "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=4feee16b-43be-bb71-e063-6394a90af959",
+    "api_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?drug_name=Advil",
+    "source_name": "DailyMed SPL API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "Advil",
+    "setid": "4a64522f-b7d8-47f7-bf07-c9e8f1086425",
+    "title": "ADVIL (IBUPROFEN) TABLET, COATED [NAVAJO MANUFACTURING COMPANY INC.]",
+    "spl_version": 5,
+    "published_date": "Apr 09, 2026",
+    "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=4a64522f-b7d8-47f7-bf07-c9e8f1086425",
+    "api_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?drug_name=Advil",
+    "source_name": "DailyMed SPL API",
+    "source_type": "real government API curated snapshot"
+  },
+  {
+    "query": "Advil",
+    "setid": "a3c30dd2-75f3-4f8b-88d7-4a63dea5bad7",
+    "title": "ADVIL PM (DIPHENHYDRAMINE CITRATE, IBUPROFEN) TABLET, COATED [NAVAJO MANUFACTURING COMPANY INC.]",
+    "spl_version": 3,
+    "published_date": "Apr 09, 2026",
+    "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=a3c30dd2-75f3-4f8b-88d7-4a63dea5bad7",
+    "api_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?drug_name=Advil",
+    "source_name": "DailyMed SPL API",
+    "source_type": "real government API curated snapshot"
+  }
+]

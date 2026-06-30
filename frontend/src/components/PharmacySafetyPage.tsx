@@ -1,4 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  buildDrugEventAssistantContext,
+  buildRecallAssistantContext,
+  type AssistantChatContext,
+} from '../api/assistant'
 import { searchDrugEvents, type DrugEventSearchResponse } from '../api/drugEvents'
 import {
   searchRecalls,
@@ -22,6 +27,7 @@ type PharmacySafetyPageProps = {
   initialQuery: string
   initialRawQuery?: string
   goToPage: (page: ActivePage, query?: string, rawQuery?: string) => void
+  setAssistantContext?: (context: AssistantChatContext | null) => void
 }
 
 type PharmacySource = 'recall' | 'drug'
@@ -48,8 +54,21 @@ function compactProductName(value: string | null | undefined) {
   return truncateText(primaryDescription || normalizedValue)
 }
 
+function recallSourceLabel(record: RecallResult) {
+  if (record.source_kind === 'normalized_public_notice') {
+    return 'Normalized public notice'
+  }
+  if (record.source_kind === 'public_notice') {
+    return 'Official public notice'
+  }
+  return 'Official API record'
+}
+
 function PharmacyRecallRow({ record, index }: { record: RecallResult; index: number }) {
   const fullProductName = record.product_description || 'Product description unavailable'
+  const noticeConfidence = record.extraction_confidence
+    ? `Notice extraction: ${record.extraction_confidence}`
+    : null
 
   return (
     <details
@@ -59,8 +78,8 @@ function PharmacyRecallRow({ record, index }: { record: RecallResult; index: num
       <summary>
         <span className="pharmacy-record-row__product">
           <span className="pharmacy-record-row__badges">
-            <small>{record.classification || 'Unclassified'}</small>
-            <small>{record.risk_score.label} review signal</small>
+            <small>{record.classification || recallSourceLabel(record)}</small>
+            <small>{noticeConfidence || `${record.risk_score.label} review signal`}</small>
           </span>
           <strong title={fullProductName}>{compactProductName(fullProductName)}</strong>
           <span>{record.recall_number || 'Recall number not listed'}</span>
@@ -73,7 +92,7 @@ function PharmacyRecallRow({ record, index }: { record: RecallResult; index: num
 
         <span className="pharmacy-record-row__date">
           <strong>{formatDate(record.recall_initiation_date)}</strong>
-          <span>Initiated</span>
+          <span>{recallSourceLabel(record)}</span>
         </span>
 
         <span className="pharmacy-record-row__arrow" aria-hidden="true">
@@ -94,6 +113,13 @@ function PharmacyRecallRow({ record, index }: { record: RecallResult; index: num
           <strong>{record.reason_for_recall || 'Not listed'}</strong>
         </div>
 
+        {record.remedy && (
+          <div className="pharmacy-record-details__wide">
+            <span>Remedy / action</span>
+            <strong>{record.remedy}</strong>
+          </div>
+        )}
+
         <div>
           <span>Distribution</span>
           <strong>{record.distribution_pattern || 'Not listed'}</strong>
@@ -105,6 +131,22 @@ function PharmacyRecallRow({ record, index }: { record: RecallResult; index: num
             {record.risk_score.label} ({record.risk_score.score})
           </strong>
         </div>
+
+        <div>
+          <span>Record type</span>
+          <strong>{recallSourceLabel(record)}</strong>
+        </div>
+
+        {record.record_url && (
+          <div className="pharmacy-record-details__wide">
+            <span>Official source</span>
+            <strong>
+              <a href={record.record_url} target="_blank" rel="noreferrer">
+                Open official record
+              </a>
+            </strong>
+          </div>
+        )}
       </div>
     </details>
   )
@@ -114,6 +156,7 @@ function PharmacySafetyPage({
   initialQuery,
   initialRawQuery,
   goToPage,
+  setAssistantContext,
 }: PharmacySafetyPageProps) {
   const initialNormalization = normalizeSafetyQuery(
     initialRawQuery || initialQuery,
@@ -154,7 +197,10 @@ function PharmacySafetyPage({
     ) => {
       const normalization = normalizeSafetyQuery(nextQuery, 'pharmacy')
       const cleanQuery = normalization.normalizedQuery
-      if (!cleanQuery) return
+      if (!cleanQuery) {
+        setAssistantContext?.(null)
+        return
+      }
 
       const requestKey = `${getSearchComparisonKey(cleanQuery)}::${nextSort}`
 
@@ -184,6 +230,7 @@ function PharmacySafetyPage({
       setError('')
       setHelper('')
       setNotice('')
+      setAssistantContext?.(null)
 
       if (options.updateUrl) {
         writeSafetyQueryToUrl(
@@ -213,6 +260,7 @@ function PharmacySafetyPage({
       setFailedSources(nextFailedSources)
 
       if (!nextRecallData && !nextDrugData) {
+        setAssistantContext?.(null)
         setError('Unable to load public records. Check backend/source availability.')
       } else if (nextFailedSources.length > 0) {
         setNotice(
@@ -222,10 +270,18 @@ function PharmacySafetyPage({
         completedKeyRef.current = requestKey
       }
 
+      if (nextDrugData && nextDrugData.count > 0) {
+        setAssistantContext?.(buildDrugEventAssistantContext(nextDrugData))
+      } else if (nextRecallData && nextRecallData.count > 0) {
+        setAssistantContext?.(buildRecallAssistantContext(nextRecallData))
+      } else {
+        setAssistantContext?.(null)
+      }
+
       inFlightKeyRef.current = ''
       setLoading(false)
     },
-    [],
+    [setAssistantContext],
   )
 
   useEffect(() => {
@@ -255,6 +311,7 @@ function PharmacySafetyPage({
         setHelper('')
         setNotice('')
         setFailedSources([])
+        setAssistantContext?.(null)
         return
       }
 
@@ -276,7 +333,7 @@ function PharmacySafetyPage({
     return () => {
       isCurrentEffect = false
     }
-  }, [initialQuery, initialRawQuery, loadPharmacyPreview])
+  }, [initialQuery, initialRawQuery, loadPharmacyPreview, setAssistantContext])
 
   function handleSearch() {
     const cleanInput = normalizeSearchTerm(query)
@@ -285,6 +342,7 @@ function PharmacySafetyPage({
     if (!cleanInput && !cleanSubmittedQuery) {
       setError('')
       setNotice('')
+      setAssistantContext?.(null)
       setHelper(
         'Enter a drug, brand, active ingredient, or product wording to search public records.',
       )
@@ -333,8 +391,14 @@ function PharmacySafetyPage({
     [submittedQuery],
   )
   const hasWrongCategoryOnly = Boolean(wrongCategorySuggestion && hasZeroResults)
-  const loadedSourceNames = [recallData?.source_name, drugData?.source_name].filter(
-    (sourceName): sourceName is string => Boolean(sourceName),
+  const loadedSourceNames = Array.from(
+    new Set(
+      [
+        ...(recallData?.sources_checked?.map((source) => source.source_name) ?? []),
+        recallData?.source_name,
+        drugData?.source_name,
+      ].filter((sourceName): sourceName is string => Boolean(sourceName)),
+    ),
   )
   const sourceLabel =
     loadedSourceNames.length > 0
@@ -346,7 +410,7 @@ function PharmacySafetyPage({
     <section className="safety-area-page safety-area-page--pharmacy pharmacy-detail-page">
       <header className="pharmacy-overview">
         <div className="pharmacy-overview__main">
-          <p className="eyebrow">Pharmacy Safety</p>
+          <p className="eyebrow">DrugSignal</p>
 
           <h1>
             {submittedQuery ? (

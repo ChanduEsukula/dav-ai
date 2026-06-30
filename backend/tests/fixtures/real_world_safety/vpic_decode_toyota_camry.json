@@ -1,0 +1,12 @@
+{
+  "Count": 1,
+  "Message": "Results returned successfully",
+  "Results": [
+    {
+      "VIN": "4T1B11HK5JU000001",
+      "Make": "TOYOTA",
+      "Model": "CAMRY",
+      "ModelYear": "2018"
+    }
+  ]
+}

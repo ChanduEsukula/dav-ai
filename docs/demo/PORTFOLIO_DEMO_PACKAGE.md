@@ -1,142 +1,162 @@
-# Dav AI Portfolio Demo Package — June 2026
+# Dav AI Portfolio Demo Package — Public Safety v1
 
 ## Stable demo version
 
-- Recommended tag: `demo-polished-query-june-2026`
-- Current main checkpoint: `7fe23d3`
-- ProductScan planning checkpoint: `productscan-ocr-v2-plan-june-2026`
-- ProductScan experimental intake checkpoint: browser-side OCR scaffold
+Recommended current checkpoint:
+
+- `realworld-safety-focused-nav-v1`
+- `realworld-safety-readme-centerpiece-v1`
+- `realworld-safety-registry-alignment-v1`
+- `realworld-safety-ui-clean-v1`
+
+Current flagship workflow: **Public Safety Search**
 
 ## One-line description
 
-Dav AI is a React, TypeScript, FastAPI, and PostgreSQL public-data safety review workspace that helps users search FDA/USDA records, normalize queries, review source evidence, and preserve provenance through audit metadata.
+Dav AI is a full-stack public safety intelligence platform that helps users search fragmented U.S. public recall, enforcement, label, reference, vehicle, device, food, drug, cosmetic, and consumer-product records while preserving source provenance and avoiding unsupported safety claims.
+
+## Best portfolio positioning
+
+Use this positioning for GitHub, LinkedIn, resume, and interviews:
+
+> Dav AI is a source-aware public safety intelligence and recall verification platform.
+
+Do not lead with “chatbot,” “medical AI,” “outbreak detector,” or “OCR scanner.” The strongest engineering story is official/public data integration, source roles, query understanding, provenance, and careful safety boundaries.
 
 ## Demo scope
 
-The demo focuses on:
+The short demo should focus on:
 
-1. Guided public-record search
-2. Pharmacy Safety
-3. Food Safety
-4. Cosmetic Safety
-5. Query normalization and suggestions
-6. Audit and source provenance
-7. Saved Monitors
-8. Experimental ProductScan browser-side OCR intake
+1. Home page with Public Safety Search as the primary path
+2. Public Safety Search result for a consumer product recall-style query
+3. Public Safety Search result for a drug brand/generic or typo query
+4. Query understanding and expansion explanation
+5. Reference-versus-recall distinction
+6. Official source links
+7. Audit / Sources briefly to show provenance and registered sources
+
+Use Pharmacy, Food, Cosmetic, Saved Monitors, and ProductScan only as secondary breadth examples.
 
 ## What Dav AI is not
 
 - Not medical advice
-- Not a clinical system
+- Not legal advice
+- Not clinical decision support
 - Not a product-safety verdict engine
-- Not FDA-approved
-- Not production-ready for uncontrolled public use
-- Not a deployed ML prediction system
+- Not proof that a product is safe or unsafe
+- Not proof of adverse-event causation
+- Not an exhaustive recall database
+- Not a production healthcare system
+- Not a deployed ML prediction pipeline
 
 ## Recommended demo queries
 
-- Pharmacy: `xanex` → normalized to `xanax`
-- Food: `strawberries` → normalized to `strawberry`
-- Cosmetic: `hairdye` → normalized to `hair dye`
-- No-space: `proteinpowder` → normalized to `protein powder`
+Use these in order:
 
-## Three-minute demo flow
+~~~text
+air fryer
+Advil
+tylonal
+NDC 66715 6547
+blood sugar monitor
+2020 Toyota Camry
+~~~
 
-1. Start on Home and explain public-record verification.
-2. Show the guided search and suggestions.
-3. Search `xanex` and route to Pharmacy Safety.
-4. Search `strawberries` and show Food Safety normalization.
-5. Search `hairdye` and show Cosmetic Safety normalization.
-6. Open Audit and Sources to show provenance.
-7. Mention Saved Monitors as repeatable checks.
-8. Mention ProductScan as experimental browser-side OCR-assisted label extraction, not safety prediction.
+Recommended first two:
 
-## Strongest engineering points
+- `air fryer` — shows a consumer product / recall-style workflow
+- `Advil` or `tylonal` — shows query understanding, drug reference records, and recall-versus-reference distinction
 
-- Source-aware public-data workflows
-- Deterministic review signals
-- Query normalization and accessible suggestions
-- Audit events and provenance metadata
-- Source registry and freshness status
-- Saved monitor history
-- PDF report generation
-- 300+ backend tests and 180+ frontend tests
-- Responsible AI boundaries
+## 60–90 second demo script
 
-## Known limitations
-
-- No authentication or ownership yet
-- No production alert delivery
-- No clinical advice
-- No safety guarantee
-- No complete UPC/NDC/lot matching
-- ProductScan browser-side OCR is experimental and user-reviewed; no backend OCR, provider OCR, image storage, or production OCR pipeline yet
-- No production ML pipeline
-- Source data may be incomplete, delayed, duplicated, or difficult to interpret
+> Dav AI is a full-stack public safety intelligence platform I built with React, TypeScript, FastAPI, PostgreSQL, and Alembic. The problem is that public safety information is fragmented across agencies like FDA, USDA, CPSC, NHTSA, and NLM, and different sources mean different things.
+>
+> The main workflow is Public Safety Search. I can search a product like `air fryer`, and Dav AI checks selected official/public sources, normalizes the results, separates recall or enforcement records from reference and signal records, and links back to the official source.
+>
+> For drug queries like `Advil` or a typo like `tylonal`, the system applies deterministic query understanding. It can expand a known brand to a generic term, preserve the original query, and explain what else it checked. It avoids uncontrolled fuzzy matching because this is safety-sensitive.
+>
+> A key design choice is that Dav AI does not say a product is safe or unsafe. A no-match result is not a safety guarantee. The app shows what sources were checked, what kind of evidence was found, and what still needs official verification.
+>
+> Under the hood, the backend uses source adapters, typed response contracts, fail-soft source orchestration, audit metadata, source registry seeding, and migration alignment tests. The project currently has 393 backend tests and 238 frontend tests passing.
 
 ## Screenshot checklist
 
-- Home
-- Guided search suggestions
-- Pharmacy Safety result
-- Food Safety normalization result
-- Cosmetic Safety result
-- Audit detail
-- Sources page
-- Saved Monitors
-- System status
-- Experimental ProductScan intake page and limitations
+Capture these screenshots for the README or portfolio page:
+
+1. Home page showing Public Safety as the main path
+2. Public Safety Search with `air fryer`
+3. A recall/enforcement result card with official source link
+4. Public Safety Search with `Advil` or `tylonal`
+5. Query Understanding expanded/collapsed section
+6. Source Roles or Source Coverage section
+7. Sources page showing registered public sources
+8. Audit History detail showing provenance metadata
+9. Mobile or narrow-screen Public Safety page if it looks clean
+
+Do not lead with ProductScan, Regional Health, System Status, or Saved Monitors.
+
+## Architecture summary
+
+~~~text
+React + TypeScript frontend
+  -> Public Safety Search UI
+  -> FastAPI workflow route
+  -> deterministic query understanding
+  -> source planning and adapter execution
+  -> official/public source adapters and curated official snapshots
+  -> normalization, deduplication, ranking, and source-role classification
+  -> PostgreSQL audit/source registry/source-pull persistence
+  -> typed response contracts and safety-boundary UI
+~~~
+
+## Strongest engineering points
+
+- Adapter-based source architecture across heterogeneous official/public datasets
+- Deterministic query understanding with typo correction, joined-term cleanup, VIN/NDC/UPC detection, and brand/generic expansion
+- Clear separation of recall/enforcement, reference, label, and signal evidence
+- Fail-soft behavior with source timeouts and partial results
+- Audit and provenance metadata with source IDs, endpoints, timestamps, transform versions, and payload hashes
+- Alembic source-registry seed alignment with tests to prevent migration/schema drift
+- Typed FastAPI and React contracts
+- Outcome-first UI with progressive disclosure
+- Responsible safety language and zero-result boundaries
+- Automated validation: 393 backend tests, 238 frontend tests, frontend build, ESLint, and Playwright smoke coverage
+
+## Known limitations
+
+- Selected public sources only; not exhaustive
+- Some workflows use curated official snapshots for deterministic tests and demos
+- Snapshot freshness is not the same as live-source freshness
+- No match does not prove safety
+- Adverse-event reports do not prove causation
+- No complete lot, UPC, NDC package, VIN, UDI, or serial certainty for every query
+- No production authentication, tenant isolation, alert delivery, rate limiting, or complete observability
+- ProductScan is experimental input assistance only and should not be the main demo
+- Offline ML experiments are not production inference
 
 ## Interview framing
 
-Dav AI is valuable because it makes fragmented public safety records easier to search, interpret cautiously, and trace back to source evidence. The project intentionally uses deterministic logic and explicit limitations instead of pretending to make clinical or product-safety decisions.
+Use this framing:
 
-## Validation Checkpoint - June 17, 2026
+> I built Dav AI to solve a real-world data integration and trust problem: public safety records are available, but fragmented and easy to misinterpret. My goal was not to predict safety. My goal was to search selected official sources, classify what kind of evidence was found, preserve provenance, and avoid unsupported claims.
 
-This checkpoint was verified on branch `chore/demo-hardening-june-2026`.
+## Resume bullets
 
-Validation commands run:
+- Built a React, TypeScript, FastAPI, and PostgreSQL public-safety intelligence platform that unifies selected FDA/openFDA, USDA FSIS, CPSC, NHTSA, RxNorm, and DailyMed public records.
+- Designed source adapters that normalize heterogeneous recall, enforcement, label, reference, vehicle, device, food, drug, and cosmetic records into typed contracts with source-role classification.
+- Implemented deterministic query understanding with typo correction, brand/generic expansion, joined-term cleanup, and VIN/NDC/UPC detection while preserving the original user query.
+- Added audit and provenance infrastructure with source IDs, endpoints, retrieval timestamps, transform versions, payload hashes, source registry seeding, and migration alignment tests.
+- Validated the project with 393 backend tests, 238 frontend tests, TypeScript production builds, ESLint, and Playwright smoke coverage.
 
-    PYTHONPATH=backend pytest backend/tests
-    cd frontend
-    npm test
-    npm run lint
-    npm run build
+## Final demo checklist
 
-Results:
+Before recording:
 
-- Backend tests: 345 passed
-- Frontend tests: 224 passed
-- Total automated tests: 569 passed
-- Frontend lint: passed
-- Frontend production build: passed
-
-Notes:
-
-- Backend tests must be run with `PYTHONPATH=backend` from the repository root so imports such as `app.main` and `ml_experiments` resolve correctly.
-- ProductScan OCR, docs semantic preview, saved monitors, reports, audit history, and source-backed safety workflows are demo-ready prototype features.
-- Dav AI remains a public-record review workspace, not medical advice, clinical decision support, or a product-safety verdict system.
-
-## Deployed Smoke Check - June 17, 2026
-
-After PR #123 was merged, the deployment was checked for portfolio demo readiness.
-
-Manual smoke areas:
-
-- Home page
-- Guided safety search
-- Pharmacy Safety
-- Food Safety
-- Cosmetic Safety
-- Sources
-- System Status
-- Saved Monitors
-- Help Docs Search
-- ProductScan intake
-
-Result: deployment smoke-ready for portfolio demo.
-
-Notes:
-
-- This smoke check verifies portfolio/demo readiness, not production healthcare readiness.
-- Dav AI remains a public-record review workspace and does not provide medical advice, clinical decision support, or product-safety verdicts.
+- Run backend and frontend locally
+- Use Public Safety Search first
+- Use `air fryer` and `Advil` or `tylonal`
+- Show one official source link
+- Show query understanding
+- Briefly show Sources or Audit
+- Say clearly: “No match is not a safety guarantee”
+- Keep demo under 90 seconds

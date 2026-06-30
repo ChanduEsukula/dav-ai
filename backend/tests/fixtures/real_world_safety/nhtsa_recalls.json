@@ -1,0 +1,18 @@
+{
+  "Count": 1,
+  "Message": "Results returned successfully",
+  "results": [
+    {
+      "Manufacturer": "Toyota Motor Engineering & Manufacturing",
+      "NHTSACampaignNumber": "18V200000",
+      "ReportReceivedDate": "20180328",
+      "Component": "ENGINE AND ENGINE COOLING",
+      "Summary": "Toyota is recalling certain 2018 Toyota Camry vehicles due to a condition that may increase the risk of a stall.",
+      "Consequence": "An engine stall can increase the risk of a crash.",
+      "Remedy": "Dealers will inspect and repair the affected vehicles, free of charge.",
+      "Make": "TOYOTA",
+      "Model": "CAMRY",
+      "ModelYear": "2018"
+    }
+  ]
+}

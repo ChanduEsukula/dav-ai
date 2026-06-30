@@ -75,6 +75,78 @@ values
         'Periodic FDA FAERS updates'
     ),
     (
+        'rxnorm_rxnav_api',
+        'RxNorm/RxNav API',
+        'https://rxnav.nlm.nih.gov/REST',
+        'RealWorldSafety',
+        'U.S. National Library of Medicine RxNorm drug terminology source used for drug-name normalization and RXCUI reference lookup.',
+        'NLM RxNorm releases and RxNav API updates'
+    ),
+    (
+        'dailymed_spl_api',
+        'DailyMed SPL API',
+        'https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json',
+        'RealWorldSafety',
+        'U.S. National Library of Medicine DailyMed Structured Product Label source for official drug label references.',
+        'DailyMed SPL label updates'
+    ),
+    (
+        'openfda_drug_label',
+        'openFDA Drug Label API',
+        'https://api.fda.gov/drug/label.json',
+        'RealWorldSafety',
+        'Official openFDA drug label records for active ingredients, warnings, dosage, and usage sections.',
+        'Source-dependent FDA drug label updates'
+    ),
+    (
+        'openfda_ndc_directory',
+        'openFDA NDC Directory API',
+        'https://api.fda.gov/drug/ndc.json',
+        'RealWorldSafety',
+        'Official openFDA National Drug Code directory records for drug identity, labeler, active ingredients, dosage form, route, product NDC, and packaging reference. This is a reference source, not a recall source.',
+        'Source-dependent FDA NDC directory updates'
+    ),
+    (
+        'openfda_device_enforcement',
+        'openFDA Device Enforcement API',
+        'https://api.fda.gov/device/enforcement.json',
+        'RealWorldSafety',
+        'FDA medical device recall enforcement records from openFDA.',
+        'Source-dependent FDA device enforcement updates'
+    ),
+    (
+        'openfda_device_event',
+        'openFDA Device Event API',
+        'https://api.fda.gov/device/event.json',
+        'RealWorldSafety',
+        'FDA medical device adverse-event reports from openFDA. These are signal reports, not recalls or proof of causation.',
+        'Source-dependent FDA device event updates'
+    ),
+    (
+        'fda_safety_communications',
+        'FDA Medical Device Safety Communications',
+        'https://www.fda.gov/medical-devices/safety-communications',
+        'RealWorldSafety',
+        'FDA medical device safety communications and advisory context. These notices are not automatically recalls or proof of defect.',
+        'FDA safety communications are updated as advisory notices are posted'
+    ),
+    (
+        'openfda_udi_directory',
+        'openFDA UDI Directory API',
+        'https://api.fda.gov/device/udi.json',
+        'RealWorldSafety',
+        'FDA Unique Device Identifier reference records for medical-device identity matching.',
+        'FDA published updates'
+    ),
+    (
+        'cdc_vaers',
+        'CDC/VAERS Vaccine Adverse Event Reports',
+        'https://vaers.hhs.gov/data.html',
+        'RealWorldSafety',
+        'VAERS public vaccine adverse-event reports. Reports are signal reports and do not prove causation.',
+        'CDC/FDA VAERS public data updates'
+    ),
+    (
         'openfda_cosmetic_event',
         'openFDA Cosmetic Event API',
         'https://api.fda.gov/cosmetic/event.json',
@@ -91,12 +163,20 @@ values
         'Source-dependent FDA updates'
     ),
     (
+        'cdc_foodborne_outbreaks',
+        'CDC/FDA Foodborne Outbreak Investigation Context',
+        'https://www.cdc.gov/foodborne-outbreaks/ + https://www.fda.gov/food/outbreaks-foodborne-illness',
+        'RealWorldSafety',
+        'CDC/FDA foodborne outbreak and investigation context records. These are public-health context records, not automatically recalls or proof of causation.',
+        'CDC/FDA outbreak investigation updates'
+    ),
+    (
         'usda_fsis_recall',
         'USDA FSIS Recall API',
         'https://www.fsis.usda.gov/fsis/api/recall/v/1',
         'FoodRadar',
         'Meat, poultry, egg-product recall and public-health-alert records from USDA FSIS.',
-        'Real-time FSIS recall and public health alert updates'
+        'Curated official-source snapshot for prototype demo; live FSIS refresh not automated yet'
     ),
     (
         'foodradar_multi_source',
@@ -104,7 +184,39 @@ values
         'https://api.fda.gov/food/enforcement.json + https://www.fsis.usda.gov/fsis/api/recall/v/1',
         'FoodRadar',
         'Aggregate FoodRadar workflow combining openFDA Food Enforcement and USDA FSIS recall/public-health-alert records.',
-        'Source-dependent FDA updates plus FSIS recall/public-health-alert updates'
+        'Source-dependent openFDA updates plus curated USDA FSIS official-source snapshot; live FSIS refresh not automated yet'
+    ),
+    (
+        'fda_recalls_market_withdrawals_safety_alerts',
+        'FDA Recalls, Market Withdrawals & Safety Alerts',
+        'https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts',
+        'RealWorldSafety',
+        'Public FDA recall, market withdrawal, and safety alert notices visible on FDA.gov, including notices that may not appear in openFDA enforcement APIs.',
+        'FDA public notice page updates as recalls, market withdrawals, and safety alerts are posted'
+    ),
+    (
+        'cpsc_recalls_api',
+        'CPSC Recalls API',
+        'https://www.saferproducts.gov/RestWebServices/Recall',
+        'RealWorldSafety',
+        'Consumer Product Safety Commission recall records for home goods, electronics, batteries, scooters, toys, baby products, furniture, appliances, and other consumer products.',
+        'Curated official-source snapshot for prototype demo; live CPSC refresh not automated yet'
+    ),
+    (
+        'nhtsa_vpic_vin_decoder_api',
+        'NHTSA vPIC VIN Decoder API',
+        'https://vpic.nhtsa.dot.gov/api/',
+        'RealWorldSafety',
+        'NHTSA vPIC vehicle decoder used to turn VIN input into make, model, and model year before recall lookup.',
+        'NHTSA vPIC public API updates as vehicle product information is refreshed'
+    ),
+    (
+        'nhtsa_recalls_api_datasets',
+        'NHTSA Recalls API / datasets',
+        'https://api.nhtsa.gov/recalls/recallsByVehicle',
+        'RealWorldSafety',
+        'NHTSA vehicle recall records by make, model, and model year for vehicle safety checks.',
+        'NHTSA recall data updates as campaigns and safety notices are published'
     ),
     (
         'regional_health_pulse_demo',
@@ -122,12 +234,87 @@ on conflict (source_id) do update set
     update_cadence = excluded.update_cadence,
     updated_at = now();
 
+-- Portfolio-demo auth and profile foundation
+-- Stores application account metadata only. Do not store PHI in profile fields.
+
+create table if not exists users (
+    id uuid primary key,
+    full_name text not null,
+    email text not null,
+    password_hash text not null,
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now(),
+
+    constraint users_full_name_length_check
+        check (length(trim(full_name)) >= 2),
+
+    constraint users_email_format_check
+        check (position('@' in email) > 1),
+
+    constraint users_password_hash_present_check
+        check (length(trim(password_hash)) > 0)
+);
+
+create unique index if not exists idx_users_email
+    on users(email);
+
+create index if not exists idx_users_created_at
+    on users(created_at);
+
+create table if not exists user_profiles (
+    user_id uuid primary key references users(id) on delete cascade,
+    role text,
+    state text,
+    zip_code text,
+    alert_interests jsonb not null default '[]'::jsonb,
+    alert_frequency text,
+    report_style text,
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now(),
+
+    constraint user_profiles_role_check
+        check (
+            role is null or role in (
+                'consumer',
+                'pharmacy',
+                'clinic',
+                'public_health_analyst',
+                'student_researcher'
+            )
+        ),
+
+    constraint user_profiles_alert_frequency_check
+        check (
+            alert_frequency is null or alert_frequency in (
+                'none',
+                'weekly',
+                'monthly'
+            )
+        ),
+
+    constraint user_profiles_report_style_check
+        check (
+            report_style is null or report_style in (
+                'simple',
+                'technical',
+                'pharmacy_clinic'
+            )
+        )
+);
+
+create index if not exists idx_user_profiles_role
+    on user_profiles(role);
+
+create index if not exists idx_user_profiles_state
+    on user_profiles(state);
+
 -- Saved Monitors v2
 -- Stores repeatable public-data monitor definitions and latest manual run state.
 -- No personal health information should be stored in this table.
 
 create table if not exists saved_monitors (
     id uuid primary key,
+    user_id uuid references users(id) on delete cascade,
     name text not null,
     query text not null,
     module text not null,
@@ -146,7 +333,7 @@ create table if not exists saved_monitors (
     last_scheduled_status text,
 
     constraint saved_monitors_module_check
-        check (module in ('recallradar', 'drugsignal', 'foodradar', 'regional_health_pulse')),
+        check (module in ('recallradar', 'drugsignal', 'foodradar', 'cosmeticsignal', 'regional_health_pulse')),
 
     constraint saved_monitors_status_check
         check (status in ('not_checked', 'checked', 'error')),
@@ -175,6 +362,13 @@ create table if not exists saved_monitors (
 
 create index if not exists idx_saved_monitors_module
     on saved_monitors(module);
+
+create index if not exists idx_saved_monitors_user_id
+    on saved_monitors(user_id);
+
+create unique index if not exists idx_saved_monitors_user_module_normalized_query
+    on saved_monitors(user_id, module, lower(trim(query)))
+    where user_id is not null;
 
 create index if not exists idx_saved_monitors_status
     on saved_monitors(status);
@@ -206,7 +400,7 @@ create table if not exists saved_monitor_runs (
     error_message text,
 
     constraint saved_monitor_runs_module_check
-        check (module in ('recallradar', 'drugsignal', 'foodradar', 'regional_health_pulse')),
+        check (module in ('recallradar', 'drugsignal', 'foodradar', 'cosmeticsignal', 'regional_health_pulse')),
 
     constraint saved_monitor_runs_status_check
         check (status in ('success', 'error')),

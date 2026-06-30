@@ -1,0 +1,478 @@
+[
+  {
+    "status": "Completed",
+    "city": "Aquebogue",
+    "state": "NY",
+    "country": "United States",
+    "classification": "Class II",
+    "openfda": {},
+    "product_type": "Drugs",
+    "event_id": "83265",
+    "recalling_firm": "Altaire Pharmaceuticals, Inc.",
+    "address_1": "311 W Ln",
+    "address_2": "PO Box 849",
+    "postal_code": "11931-0849",
+    "voluntary_mandated": "Voluntary: Firm initiated",
+    "initial_firm_notification": "Two or more of the following: Email, Fax, Letter, Press Release, Telephone, Visit",
+    "distribution_pattern": "U.S.A. Nationwide",
+    "recall_number": "D-0394-2020",
+    "product_description": "CVS Health Redness Relief Lubricant Redness Reliever Eye Drops, Sterile, 1 fl. oz., (30 mL), Distributed by: CVS Pharmacy Inc., One CVS Drive, Woonsocket, RI 02895",
+    "product_quantity": "N/A",
+    "reason_for_recall": "Lack of Assurance of Sterility",
+    "recall_initiation_date": "20190702",
+    "center_classification_date": "20191115",
+    "report_date": "20191127",
+    "code_info": "Lot #: 18229 9/21  18229 9/21  19056 03/22"
+  },
+  {
+    "status": "Completed",
+    "city": "Aquebogue",
+    "state": "NY",
+    "country": "United States",
+    "classification": "Class II",
+    "openfda": {},
+    "product_type": "Drugs",
+    "event_id": "83265",
+    "recalling_firm": "Altaire Pharmaceuticals, Inc.",
+    "address_1": "311 W Ln",
+    "address_2": "PO Box 849",
+    "postal_code": "11931-0849",
+    "voluntary_mandated": "Voluntary: Firm initiated",
+    "initial_firm_notification": "Two or more of the following: Email, Fax, Letter, Press Release, Telephone, Visit",
+    "distribution_pattern": "U.S.A. Nationwide",
+    "recall_number": "D-0403-2020",
+    "product_description": "CVS Health Fast Acting Lubricant Eye Drops Dry Eye Therapy, Twin Pack Item#: 994881, Product Size: 2 x 10 mL, Distributed by: CVS Pharmacy, Inc. One CVS Drive, Woonsocket, RI 02895",
+    "product_quantity": "39,744 units",
+    "reason_for_recall": "Lack of Assurance of Sterility",
+    "recall_initiation_date": "20190702",
+    "center_classification_date": "20191115",
+    "report_date": "20191127",
+    "code_info": "17296 10/19   18094 04/20   18206 08/20"
+  },
+  {
+    "status": "Ongoing",
+    "city": "Waltham",
+    "state": "MA",
+    "country": "United States",
+    "classification": "Class II",
+    "openfda": {},
+    "product_type": "Drugs",
+    "event_id": "98792",
+    "recalling_firm": "Thea Pharma, Inc.",
+    "address_1": "303 Wyman St",
+    "address_2": "",
+    "postal_code": "02451-1208",
+    "voluntary_mandated": "Voluntary: Firm initiated",
+    "initial_firm_notification": "Letter",
+    "distribution_pattern": "Nationwide within the United States",
+    "recall_number": "D-0501-2026",
+    "product_description": "Similasan, iVIZIA, Sterile Lubricant Eye Drops (Povidone 0.5%), 0.33 Fl oz (10 mL), Made in France, Distributed by: Thea Pharma Inc., Waltham, MA 02451, NDC 59262-700-11",
+    "product_quantity": "",
+    "reason_for_recall": "Lack of Assurance of Sterility: This recall has been initiated due to CGMP deviations found by the FDA during an inspection of the manufacturer.",
+    "recall_initiation_date": "20260423",
+    "center_classification_date": "20260428",
+    "report_date": "20260506",
+    "code_info": "Lot# 5S30B, 5S30C, Exp Date: April 30, 2026; Lot# 5S31B, 6S57B, Exp Date: May 31, 2026.",
+    "more_code_info": ""
+  },
+  {
+    "status": "Terminated",
+    "city": "Richmond",
+    "state": "VA",
+    "country": "United States",
+    "classification": "Class II",
+    "openfda": {
+      "application_number": [
+        "ANDA077200"
+      ],
+      "brand_name": [
+        "ZADITOR"
+      ],
+      "generic_name": [
+        "KETOTIFEN FUMARATE"
+      ],
+      "manufacturer_name": [
+        "Alcon Laboratories, Inc."
+      ],
+      "product_ndc": [
+        "0065-4011"
+      ],
+      "product_type": [
+        "HUMAN OTC DRUG"
+      ],
+      "route": [
+        "OPHTHALMIC"
+      ],
+      "substance_name": [
+        "KETOTIFEN FUMARATE"
+      ],
+      "rxcui": [
+        "284380",
+        "311237"
+      ],
+      "spl_id": [
+        "bed738a0-2943-46e7-a65e-2440dac7971b"
+      ],
+      "spl_set_id": [
+        "ac66b1e4-c2b0-a4c3-09e3-ebd44a2f7c9f"
+      ],
+      "package_ndc": [
+        "0065-4011-05",
+        "0065-4011-06",
+        "0065-4011-11",
+        "0065401105"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "upc": [
+        "0300654011057"
+      ],
+      "unii": [
+        "HBD503WORO"
+      ]
+    },
+    "product_type": "Drugs",
+    "event_id": "90553",
+    "recalling_firm": "Mckesson Medical-Surgical Inc. Corporate Office",
+    "address_1": "9954 Maryland Drive",
+    "address_2": "Deep Run Iii Ste. 4000",
+    "postal_code": "23233",
+    "voluntary_mandated": "Voluntary: Firm initiated",
+    "initial_firm_notification": "Letter",
+    "distribution_pattern": "Nationwide in the USA.",
+    "recall_number": "D-1317-2022",
+    "product_description": "Systane Zaditor, ketotifen fumarate ophthalmic solution 0.035%, Antihistamine eye drops, Eye Itch Relief, up to 12 Hours, Sterile, 30 day supply, 5mL (0.17 FL OZ) bottle per box, Alcon, NDC 0065-4011-05.",
+    "product_quantity": "9 boxes",
+    "reason_for_recall": "CGMP Deviations: products were stored outside the drug label specifications.",
+    "recall_initiation_date": "20220629",
+    "center_classification_date": "20220805",
+    "termination_date": "20240213",
+    "report_date": "20220817",
+    "code_info": "Part# 0065401105",
+    "more_code_info": ""
+  },
+  {
+    "status": "Completed",
+    "city": "Aquebogue",
+    "state": "NY",
+    "country": "United States",
+    "classification": "Class II",
+    "openfda": {},
+    "product_type": "Drugs",
+    "event_id": "83265",
+    "recalling_firm": "Altaire Pharmaceuticals, Inc.",
+    "address_1": "311 W Ln",
+    "address_2": "PO Box 849",
+    "postal_code": "11931-0849",
+    "voluntary_mandated": "Voluntary: Firm initiated",
+    "initial_firm_notification": "Two or more of the following: Email, Fax, Letter, Press Release, Telephone, Visit",
+    "distribution_pattern": "U.S.A. Nationwide",
+    "recall_number": "D-0396-2020",
+    "product_description": "CVS Health Lubricant Eye Drops Multi-Symptom Eye Relief, Sterile, 0.5 fl. oz. (15 mL), Distributed by: CVS Pharmacy Inc., One CVS Drive, Woonsocket, RI 02895",
+    "product_quantity": "222096 units",
+    "reason_for_recall": "Lack of Assurance of Sterility",
+    "recall_initiation_date": "20190702",
+    "center_classification_date": "20191115",
+    "report_date": "20191127",
+    "code_info": "18043 2/20  18115 5/20  18300 12/20  18300 12/20  18116 5/20  18115 5/20  18044 2/20  18043 2/20"
+  },
+  {
+    "status": "Ongoing",
+    "city": "San Juan Del Rio",
+    "state": "N/A",
+    "country": "Mexico",
+    "classification": "Class II",
+    "openfda": {},
+    "product_type": "Drugs",
+    "event_id": "86162",
+    "recalling_firm": "Albek De Mexico S.A. De C.V.",
+    "address_1": "Oriente Cuatro No. 11 Nuevo",
+    "address_2": "N/A",
+    "postal_code": "N/A",
+    "voluntary_mandated": "Voluntary: Firm initiated",
+    "initial_firm_notification": "Press Release",
+    "distribution_pattern": "USA Nationwide",
+    "recall_number": "D-0080-2021",
+    "product_description": "Assured Instant Hand Sanitizer Aloe & Moisturizers (Ethyl Alcohol 70% v/v) 8 fl oz / 237 mL bottle, Distributed By: Greenbrier International, Inc. 500 Volvo Parkway, Chesapeake, VA 23320. Made in Mexico.UPC 639277928610",
+    "product_quantity": "27,000 bottles",
+    "reason_for_recall": "CGMP Deviations: Next Advanced Antibacterial Hand Sanitizer was found to be below the label claim for ethanol content and contained methanol. Other products were recalled because they were manufactured in the same facility as the product found to contain methanol.",
+    "recall_initiation_date": "20200730",
+    "center_classification_date": "20201117",
+    "report_date": "20201125",
+    "code_info": "1931102AL"
+  },
+  {
+    "status": "Terminated",
+    "city": "Bolingbroke",
+    "state": "GA",
+    "country": "United States",
+    "classification": "Class I",
+    "openfda": {},
+    "product_type": "Drugs",
+    "event_id": "86270",
+    "recalling_firm": "SG24 LLC",
+    "address_1": "8315 Rivoli Road",
+    "address_2": "Ste A",
+    "postal_code": "31004",
+    "voluntary_mandated": "Voluntary: Firm initiated",
+    "initial_firm_notification": "Press Release",
+    "distribution_pattern": "Nationwide",
+    "recall_number": "D-1572-2020",
+    "product_description": "SkinGuard 24 All-Day Hand Sanitizer 8 oz. bottle with foam pump, Dist by: SG24 LLC, Bolingbroke, GA 31004  UPC 793573147125",
+    "product_quantity": "9600 bottles",
+    "reason_for_recall": "Marketed without an Approved NDA/ANDA; product labeled to contain 0.56% methanol making it an unapproved new drug",
+    "recall_initiation_date": "20200814",
+    "center_classification_date": "20200911",
+    "termination_date": "20230605",
+    "report_date": "20200909",
+    "code_info": "SKU 051230024  All lots labeled to contain methanol"
+  },
+  {
+    "status": "Terminated",
+    "city": "Chattanooga",
+    "state": "TN",
+    "country": "United States",
+    "classification": "Class I",
+    "openfda": {},
+    "product_type": "Drugs",
+    "event_id": "89138",
+    "recalling_firm": "Aroma Release Technologies Inc",
+    "address_1": "7026 Discovery Dr",
+    "address_2": "",
+    "postal_code": "37416-1692",
+    "voluntary_mandated": "Voluntary: Firm initiated",
+    "initial_firm_notification": "Letter",
+    "distribution_pattern": "Distributed in the states of Texas and New York.",
+    "recall_number": "D-0298-2022",
+    "product_description": "Klean Touch Hand Sanitizer (Ethyl Alcohol 70%) Ingredients Ethanol and Methanol, in 55-gallon drums, Aroma Release Technology, Inc., 7026 Discovery Drive, Chattanooga, TN 37416",
+    "product_quantity": "37 55-gallon drums",
+    "reason_for_recall": "Marketed Without an Approved NDA/ANDA: Product labeled to contain methanol making it an unapproved new drug and contains methanol",
+    "recall_initiation_date": "20211130",
+    "center_classification_date": "20211228",
+    "termination_date": "20240315",
+    "report_date": "20220105",
+    "code_info": "Lots: 1620-1, 1620-3, 1620-4, 1820-4, 1820-5, 1920-1, 1920-2, No Expiration Date",
+    "more_code_info": ""
+  },
+  {
+    "status": "Ongoing",
+    "city": "Fair Lawn",
+    "state": "NJ",
+    "country": "United States",
+    "classification": "Class II",
+    "openfda": {},
+    "product_type": "Drugs",
+    "event_id": "91427",
+    "recalling_firm": "Fisher Scientific Co., LLC",
+    "address_1": "1 Reagent Ln",
+    "address_2": "N/A",
+    "postal_code": "07410-2802",
+    "voluntary_mandated": "Voluntary: Firm initiated",
+    "initial_firm_notification": "Two or more of the following: Email, Fax, Letter, Press Release, Telephone, Visit",
+    "distribution_pattern": "Nationwide in the USA",
+    "recall_number": "D-0163-2023",
+    "product_description": "Hand Sanitizer, HSANI500ML, (Isopropyl Alcohol), 75% v/v, packaged in a) 500 mL bottle and b) 6 x 500 mL bottles per case, Thermo Fisher Scientific: Janssen Pharmaceuticalaan 3a, 2440 Geel - Belgium, 1 Reagent Lane, Fair Lawn, NJ 07410.",
+    "product_quantity": "a) 1077 bottles, b) 52 cases",
+    "reason_for_recall": "CGMP Deviations: Voluntary recall of all hand sanitizer distributed after March 31, 2022, due to FDA issued guidance to cease placing hand sanitizer product, produced under temporary approval, into the market after March 31, 2022.",
+    "recall_initiation_date": "20230117",
+    "center_classification_date": "20230118",
+    "report_date": "20230125",
+    "code_info": "Lot Numbers: 202160, 202162, 202324, 202368, 202369, 202593, 202594, 202835, 202862, 202863, 202865, 202836, 202864, 203061, 203098, 203099, 203100, 203101, 203102, 203236, 203237, 203239, 203337,  203338, 203335, 203336"
+  },
+  {
+    "status": "Terminated",
+    "city": "Farmingdale",
+    "state": "NY",
+    "country": "United States",
+    "classification": "Class I",
+    "openfda": {},
+    "product_type": "Drugs",
+    "event_id": "89186",
+    "recalling_firm": "Valisa MFG LLC",
+    "address_1": "131 Executive Blvd",
+    "address_2": "",
+    "postal_code": "11735-4719",
+    "voluntary_mandated": "Voluntary: Firm initiated",
+    "initial_firm_notification": "Letter",
+    "distribution_pattern": "Nationwide in the USA",
+    "recall_number": "D-0363-2022",
+    "product_description": "kleantouch HAND SANITIZER (ethyl alcohol 70%), 8.0 FL OZ (236 ML), pump bottles, Distributed by: Valisa MFG, LLC, Farmingdale, NY, 11735, Made in USA, UPC 6 86162 99246 1",
+    "product_quantity": "7704 bottles",
+    "reason_for_recall": "Marketed Without an Approved NDA/ANDA: Product labeled to contain methanol making it an unapproved new drug and contains methanol",
+    "recall_initiation_date": "20211206",
+    "center_classification_date": "20220110",
+    "termination_date": "20240226",
+    "report_date": "20220105",
+    "code_info": "Lot #: 1260-1, 1260-2, 1260-3, 1260-4. Exp. 04/2022",
+    "more_code_info": ""
+  },
+  {
+    "status": "Terminated",
+    "city": "Dublin",
+    "state": "OH",
+    "country": "United States",
+    "classification": "Class II",
+    "openfda": {
+      "application_number": [
+        "NDA205649"
+      ],
+      "brand_name": [
+        "XIGDUO"
+      ],
+      "generic_name": [
+        "DAPAGLIFLOZIN AND METFORMIN HYDROCHLORIDE"
+      ],
+      "manufacturer_name": [
+        "AstraZeneca Pharmaceuticals LP"
+      ],
+      "product_ndc": [
+        "0310-6225",
+        "0310-6270",
+        "0310-6280",
+        "0310-6250",
+        "0310-6260"
+      ],
+      "product_type": [
+        "HUMAN PRESCRIPTION DRUG"
+      ],
+      "route": [
+        "ORAL"
+      ],
+      "substance_name": [
+        "DAPAGLIFLOZIN PROPANEDIOL",
+        "METFORMIN HYDROCHLORIDE"
+      ],
+      "rxcui": [
+        "1593058",
+        "1593068",
+        "1593070",
+        "1593072",
+        "1593775",
+        "1593831",
+        "1593833",
+        "1593835",
+        "1940496",
+        "1940498"
+      ],
+      "spl_id": [
+        "a8717b28-9445-4292-9ac7-e979f378d9c8"
+      ],
+      "spl_set_id": [
+        "ac8a0f7b-9f69-4495-abbc-3a47cd75a859"
+      ],
+      "package_ndc": [
+        "0310-6270-30",
+        "0310-6270-95",
+        "0310-6280-30",
+        "0310-6280-95",
+        "0310-6250-30",
+        "0310-6250-95",
+        "0310-6260-30",
+        "0310-6260-60",
+        "0310-6260-94",
+        "0310-6260-95",
+        "0310-6225-60",
+        "0310-6225-94"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "unii": [
+        "786Z46389E",
+        "887K2391VH"
+      ]
+    },
+    "product_type": "Drugs",
+    "event_id": "87512",
+    "recalling_firm": "Cardinal Health Inc.",
+    "address_1": "7000 Cardinal Pl",
+    "address_2": "N/A",
+    "postal_code": "43017-1091",
+    "voluntary_mandated": "Voluntary: Firm initiated",
+    "initial_firm_notification": "Letter",
+    "distribution_pattern": "FL, GA, SC",
+    "recall_number": "D-0435-2021",
+    "product_description": "xigduo XR (dapgliflozin/metformin HCl extended-release) tablets 10 mg/1000 mg 30 Tablets Rx only NDC 0310-6280-30 Manufactured for: AstraZeneca Pharmaceuticals LP Wilmington, DE 19850  Manufactured by: Bristol-Myers Squibb Manufacturing Company Humacao, Puerto Rico 00791",
+    "product_quantity": "664 bottles",
+    "reason_for_recall": "CGMP Deviations: Intermittent exposure to temperature excursion during storage.",
+    "recall_initiation_date": "20210315",
+    "center_classification_date": "20210524",
+    "termination_date": "20240617",
+    "report_date": "20210602",
+    "code_info": "MP0077"
+  },
+  {
+    "status": "Terminated",
+    "city": "Princeton",
+    "state": "NJ",
+    "country": "United States",
+    "classification": "Class III",
+    "openfda": {
+      "application_number": [
+        "ANDA077336"
+      ],
+      "brand_name": [
+        "METFORMIN HYDROCHLORIDE"
+      ],
+      "generic_name": [
+        "METFORMIN HYDROCHLORIDE"
+      ],
+      "manufacturer_name": [
+        "Sun Pharmaceutical Industries, Inc."
+      ],
+      "product_ndc": [
+        "62756-142",
+        "62756-143"
+      ],
+      "product_type": [
+        "HUMAN PRESCRIPTION DRUG"
+      ],
+      "route": [
+        "ORAL"
+      ],
+      "substance_name": [
+        "METFORMIN HYDROCHLORIDE"
+      ],
+      "spl_id": [
+        "69a60382-bf12-4627-baaf-2e0ac332b443"
+      ],
+      "spl_set_id": [
+        "41a8bb80-7b0b-476c-8134-5d161c3239c8"
+      ],
+      "package_ndc": [
+        "62756-142-01",
+        "62756-142-02",
+        "62756-143-01"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "upc": [
+        "0362756142015",
+        "0362756143012"
+      ],
+      "unii": [
+        "786Z46389E"
+      ]
+    },
+    "product_type": "Drugs",
+    "event_id": "87617",
+    "recalling_firm": "SUN PHARMACEUTICAL INDUSTRIES INC",
+    "address_1": "2 Independence Way",
+    "address_2": "N/A",
+    "postal_code": "08540-6620",
+    "voluntary_mandated": "Voluntary: Firm initiated",
+    "initial_firm_notification": "Letter",
+    "distribution_pattern": "Nationwide in the USA",
+    "recall_number": "D-0325-2021",
+    "product_description": "Metformin HCl Extended-Release Tablets, USP, 500 mg, Rx Only, 500-count bottle, Rx only, Distributed by: Sun Pharmaceutical Industries, Inc., Cranbury, NJ 08512; Manufactured by: Sun Pharmaceutical Industries Ltd., Halol-Baroda HIghway, Halol-389 350 Gujarat, India, NDC 62756-142-02.",
+    "product_quantity": "2520 bottles",
+    "reason_for_recall": "Failed Moisture Limits: Out of specification for water content",
+    "recall_initiation_date": "20210325",
+    "center_classification_date": "20210407",
+    "termination_date": "20220414",
+    "report_date": "20210414",
+    "code_info": "Lot #JKU4639A, Exp 10/2022"
+  }
+]

@@ -3,6 +3,7 @@ import {
   searchRegionalHealth,
   type RegionalHealthSearchResponse,
 } from '../api/regionalHealth'
+import SourceIntegrationBadge from './SourceIntegrationBadge'
 
 const healthPulseRegions = [
   { value: '', label: 'Select a region' },
@@ -222,6 +223,10 @@ function RegionalHealthPulse() {
                   The signal comes from <strong>{data.source_name}</strong>.{' '}
                   {data.source_freshness.freshness_message}
                 </p>
+                <SourceIntegrationBadge
+                  sourceId={data.source_id}
+                  sourceName={data.source_name}
+                />
 
                 <dl className="detail-list health-pulse-detail-list">
                   <div>

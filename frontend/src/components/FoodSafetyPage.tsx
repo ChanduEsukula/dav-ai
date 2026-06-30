@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
+  buildFoodAssistantContext,
+  type AssistantChatContext,
+} from '../api/assistant'
+import {
   searchEverydaySafety,
   type EverydaySafetyRecord,
   type EverydaySafetySearchResponse,
@@ -16,11 +20,14 @@ import { normalizeSafetyQuery } from '../utils/queryNormalization'
 import { writeSafetyQueryToUrl } from '../utils/safetyQueryUrl'
 import QueryNormalizationNotice from './QueryNormalizationNotice'
 import QueryTypeahead from './QueryTypeahead'
+import SourceIntegrationBadge from './SourceIntegrationBadge'
+import SourceDetailsDisclosure from './SourceDetailsDisclosure'
 
 type FoodSafetyPageProps = {
   initialQuery: string
   initialRawQuery?: string
   goToPage: (page: ActivePage, query?: string, rawQuery?: string) => void
+  setAssistantContext?: (context: AssistantChatContext | null) => void
 }
 
 type FoodSearchOptions = {
@@ -37,10 +44,15 @@ function truncateText(value: string | null | undefined, maxLength = 92) {
   return `${normalizedValue.slice(0, maxLength).trim()}...`
 }
 
-function sourceTypeLabel(sourceType: EverydaySafetyRecord['source_type']) {
-  return sourceType === 'USDA_FSIS_RECALL'
-    ? 'USDA / FSIS recall'
-    : 'FDA food enforcement'
+function sourceTypeLabel(
+  sourceType: EverydaySafetyRecord['source_type'],
+  sourceKind?: EverydaySafetyRecord['source_kind'],
+) {
+  if (sourceKind === 'normalized_public_notice') return 'Normalized public notice'
+  if (sourceKind === 'public_notice') return 'Official public notice'
+  if (sourceKind === 'structured_api') return 'Official API record'
+  if (sourceType === 'FDA_NORMALIZED_PUBLIC_NOTICE') return 'Normalized public notice'
+  return sourceType === 'USDA_FSIS_RECALL' ? 'USDA / FSIS recall' : 'FDA food enforcement'
 }
 
 function recordDate(record: EverydaySafetyRecord) {
@@ -63,7 +75,9 @@ function FoodRecordRow({ record, index }: { record: EverydaySafetyRecord; index:
           </span>
           <strong title={fullProductName}>{truncateText(fullProductName)}</strong>
           <span>
-            {record.recall_number || record.record_id || sourceTypeLabel(record.source_type)}
+            {record.recall_number ||
+              record.record_id ||
+              sourceTypeLabel(record.source_type, record.source_kind)}
           </span>
         </span>
 
@@ -74,7 +88,11 @@ function FoodRecordRow({ record, index }: { record: EverydaySafetyRecord; index:
 
         <span className="pharmacy-record-row__date">
           <strong>{formatDate(recordDate(record))}</strong>
-          <span>{sourceTypeLabel(record.source_type)}</span>
+          <span>{sourceTypeLabel(record.source_type, record.source_kind)}</span>
+          <SourceIntegrationBadge
+            sourceName={record.source.name}
+            sourceType={record.source_type}
+          />
         </span>
 
         <span className="pharmacy-record-row__arrow" aria-hidden="true">
@@ -94,6 +112,13 @@ function FoodRecordRow({ record, index }: { record: EverydaySafetyRecord; index:
           <span>Reason</span>
           <strong>{record.reason_for_recall || 'Not listed'}</strong>
         </div>
+
+        {record.remedy && (
+          <div className="pharmacy-record-details__wide">
+            <span>Remedy / action</span>
+            <strong>{record.remedy}</strong>
+          </div>
+        )}
 
         <div>
           <span>Distribution</span>
@@ -116,13 +141,33 @@ function FoodRecordRow({ record, index }: { record: EverydaySafetyRecord; index:
         </div>
 
         <div>
+          <span>Record type</span>
+          <strong>{sourceTypeLabel(record.source_type, record.source_kind)}</strong>
+        </div>
+
+        {record.extraction_confidence && (
+          <div>
+            <span>Notice extraction</span>
+            <strong>{record.extraction_confidence}</strong>
+          </div>
+        )}
+
+        <div>
           <span>Retrieved</span>
           <strong>{formatTimestamp(record.source.retrieval_timestamp)}</strong>
         </div>
 
         <div className="pharmacy-record-details__wide">
-          <span>Source endpoint</span>
-          <strong>{record.source.endpoint}</strong>
+          <span>Official source</span>
+          <strong>
+            {record.official_url ? (
+              <a href={record.official_url} target="_blank" rel="noreferrer">
+                Open official record
+              </a>
+            ) : (
+              record.source.endpoint
+            )}
+          </strong>
         </div>
       </div>
     </details>
@@ -133,6 +178,7 @@ function FoodSafetyPage({
   initialQuery,
   initialRawQuery,
   goToPage,
+  setAssistantContext,
 }: FoodSafetyPageProps) {
   const initialNormalization = normalizeSafetyQuery(
     initialRawQuery || initialQuery,
@@ -170,7 +216,10 @@ function FoodSafetyPage({
     ) => {
       const normalization = normalizeSafetyQuery(nextQuery, 'food')
       const cleanQuery = normalization.normalizedQuery
-      if (!cleanQuery) return
+      if (!cleanQuery) {
+        setAssistantContext?.(null)
+        return
+      }
 
       const requestKey = `${getSearchComparisonKey(cleanQuery)}::${nextSort}`
       if (inFlightKeyRef.current === requestKey) return
@@ -196,6 +245,7 @@ function FoodSafetyPage({
       setLoading(true)
       setError('')
       setHelper('')
+      setAssistantContext?.(null)
 
       if (options.updateUrl) {
         writeSafetyQueryToUrl(
@@ -217,9 +267,15 @@ function FoodSafetyPage({
         if (!isMountedRef.current || requestId !== requestIdRef.current) return
 
         setData(response)
+        if (response.count > 0) {
+          setAssistantContext?.(buildFoodAssistantContext(response))
+        } else {
+          setAssistantContext?.(null)
+        }
         completedKeyRef.current = requestKey
       } catch {
         if (isMountedRef.current && requestId === requestIdRef.current) {
+          setAssistantContext?.(null)
           setError('Unable to load public records. Check backend/source availability.')
         }
       } finally {
@@ -229,7 +285,7 @@ function FoodSafetyPage({
         }
       }
     },
-    [],
+    [setAssistantContext],
   )
 
   useEffect(() => {
@@ -256,6 +312,7 @@ function FoodSafetyPage({
         setLoading(false)
         setError('')
         setHelper('')
+        setAssistantContext?.(null)
         return
       }
 
@@ -277,7 +334,7 @@ function FoodSafetyPage({
     return () => {
       isCurrentEffect = false
     }
-  }, [initialQuery, initialRawQuery, loadFoodRecords])
+  }, [initialQuery, initialRawQuery, loadFoodRecords, setAssistantContext])
 
   function handleSearch() {
     const cleanInput = normalizeSearchTerm(query)
@@ -285,6 +342,7 @@ function FoodSafetyPage({
 
     if (!cleanInput && !cleanSubmittedQuery) {
       setError('')
+      setAssistantContext?.(null)
       setHelper(
         'Enter a food, supplement, brand, ingredient, or product wording to search public records.',
       )
@@ -590,7 +648,12 @@ function FoodSafetyPage({
                   <article key={source.source_id}>
                     <div>
                       <strong>{source.source_name}</strong>
-                      <span>{sourceTypeLabel(source.source_type)}</span>
+                      <span>{sourceTypeLabel(source.source_type, source.source_kind)}</span>
+                      <SourceIntegrationBadge
+                        sourceId={source.source_id}
+                        sourceName={source.source_name}
+                        sourceType={source.source_type}
+                      />
                     </div>
                     <dl>
                       <div>
@@ -603,6 +666,15 @@ function FoodSafetyPage({
                       </div>
                     </dl>
                     <p>{source.endpoint}</p>
+                    <SourceDetailsDisclosure
+                      sourceId={source.source_id}
+                      sourceName={source.source_name}
+                      sourceType={source.source_type}
+                      sourceKind={source.source_kind}
+                      endpoint={source.endpoint}
+                      recordCount={source.record_count}
+                      upstreamStatus={source.upstream_status}
+                    />
                   </article>
                 ))}
               </div>

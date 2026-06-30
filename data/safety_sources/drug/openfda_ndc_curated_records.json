@@ -1,0 +1,3225 @@
+[
+  {
+    "product_ndc": "53209-1004",
+    "generic_name": "Acetaminophen, Guaifenesin, and Phenylephrine Hydrochloride",
+    "labeler_name": "Morning Star OTC",
+    "brand_name": "Tylenol Sinus Severe",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "325 mg/1"
+      },
+      {
+        "name": "GUAIFENESIN",
+        "strength": "200 mg/1"
+      },
+      {
+        "name": "PHENYLEPHRINE HYDROCHLORIDE",
+        "strength": "5 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "53209-1004-2",
+        "description": "25 BLISTER PACK in 1 POUCH (53209-1004-2)  / 2 TABLET, COATED in 1 BLISTER PACK (53209-1004-1)",
+        "marketing_start_date": "20250619",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Morning Star OTC"
+      ],
+      "rxcui": [
+        "1243679"
+      ],
+      "spl_set_id": [
+        "37e939c6-064b-3548-e063-6294a90a337d"
+      ],
+      "nui": [
+        "N0000193956",
+        "N0000008867",
+        "N0000009560"
+      ],
+      "pharm_class_epc": [
+        "Expectorant [EPC]"
+      ],
+      "pharm_class_pe": [
+        "Decreased Respiratory Secretion Viscosity [PE]",
+        "Increased Respiratory Secretions [PE]"
+      ],
+      "unii": [
+        "362O9ITL9D",
+        "495W7451VQ",
+        "04JA59TNSJ"
+      ]
+    },
+    "marketing_category": "OTC MONOGRAPH DRUG",
+    "dosage_form": "TABLET, COATED",
+    "spl_id": "37e93f91-9e46-8346-e063-6294a90a3b76",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20250619",
+    "product_id": "53209-1004_37e93f91-9e46-8346-e063-6294a90a3b76",
+    "application_number": "M012",
+    "brand_name_base": "Tylenol Sinus Severe",
+    "pharm_class": [
+      "Adrenergic alpha1-Agonists [MoA]",
+      "Decreased Respiratory Secretion Viscosity [PE]",
+      "Expectorant [EPC]",
+      "Increased Respiratory Secretions [PE]",
+      "alpha-1 Adrenergic Agonist [EPC]"
+    ],
+    "_dav_query": "brand_name:\"TYLENOL\""
+  },
+  {
+    "product_ndc": "66715-6456",
+    "generic_name": "Acetaminophen, Dextromethorphan Hydrobromide, Guaifenesin, and Phenylephrine Hydrochloride",
+    "labeler_name": "Lil Drug Store Products, Inc",
+    "brand_name": "Tylenol Cold plus Flu Severe, Lil Drug Store",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "325 mg/1"
+      },
+      {
+        "name": "DEXTROMETHORPHAN HYDROBROMIDE",
+        "strength": "10 mg/1"
+      },
+      {
+        "name": "GUAIFENESIN",
+        "strength": "200 mg/1"
+      },
+      {
+        "name": "PHENYLEPHRINE HYDROCHLORIDE",
+        "strength": "5 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "66715-6456-7",
+        "description": "25 POUCH in 1 CARTON (66715-6456-7)  / 2 TABLET, FILM COATED in 1 POUCH",
+        "marketing_start_date": "20220419",
+        "marketing_end_date": "20281117",
+        "sample": false
+      },
+      {
+        "package_ndc": "66715-6456-8",
+        "description": "30 POUCH in 1 CARTON (66715-6456-8)  / 2 TABLET, FILM COATED in 1 POUCH",
+        "marketing_start_date": "20220419",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Lil Drug Store Products, Inc"
+      ],
+      "rxcui": [
+        "1110988"
+      ],
+      "spl_set_id": [
+        "f395c196-62d7-47ff-b38d-af37adf5980b"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "nui": [
+        "N0000193956",
+        "N0000008867",
+        "N0000009560"
+      ],
+      "pharm_class_epc": [
+        "Expectorant [EPC]"
+      ],
+      "pharm_class_pe": [
+        "Decreased Respiratory Secretion Viscosity [PE]",
+        "Increased Respiratory Secretions [PE]"
+      ],
+      "unii": [
+        "9D2RTI9KYH",
+        "495W7451VQ",
+        "04JA59TNSJ",
+        "362O9ITL9D"
+      ]
+    },
+    "marketing_category": "OTC MONOGRAPH DRUG",
+    "dosage_form": "TABLET, FILM COATED",
+    "spl_id": "459f6b8f-172e-cff3-e063-6294a90a362d",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20220419",
+    "product_id": "66715-6456_459f6b8f-172e-cff3-e063-6294a90a362d",
+    "application_number": "M012",
+    "brand_name_base": "Tylenol Cold plus Flu Severe, Lil Drug Store",
+    "pharm_class": [
+      "Adrenergic alpha1-Agonists [MoA]",
+      "Decreased Respiratory Secretion Viscosity [PE]",
+      "Expectorant [EPC]",
+      "Increased Respiratory Secretions [PE]",
+      "Sigma-1 Agonist [EPC]",
+      "Sigma-1 Receptor Agonists [MoA]",
+      "Uncompetitive N-methyl-D-aspartate Receptor Antagonist [EPC]",
+      "Uncompetitive NMDA Receptor Antagonists [MoA]",
+      "alpha-1 Adrenergic Agonist [EPC]"
+    ],
+    "_dav_query": "brand_name:\"TYLENOL\""
+  },
+  {
+    "product_ndc": "66715-6457",
+    "generic_name": "Acetaminophen, Guaifenesin, and Phenylephrine Hydrochloride",
+    "labeler_name": "Lil Drug Store Products, Inc",
+    "brand_name": "Tylenol Sinus Severe, Lil Drug Store",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "325 mg/1"
+      },
+      {
+        "name": "GUAIFENESIN",
+        "strength": "200 mg/1"
+      },
+      {
+        "name": "PHENYLEPHRINE HYDROCHLORIDE",
+        "strength": "5 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "66715-6457-7",
+        "description": "25 POUCH in 1 CARTON (66715-6457-7)  / 2 TABLET, COATED in 1 POUCH",
+        "marketing_start_date": "20220419",
+        "marketing_end_date": "20281031",
+        "sample": false
+      },
+      {
+        "package_ndc": "66715-6457-8",
+        "description": "30 POUCH in 1 CARTON (66715-6457-8)  / 2 TABLET, COATED in 1 POUCH",
+        "marketing_start_date": "20220419",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Lil Drug Store Products, Inc"
+      ],
+      "rxcui": [
+        "1243679"
+      ],
+      "spl_set_id": [
+        "88b68447-b016-4d5b-a5e3-c4ebccb14f8c"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "nui": [
+        "N0000193956",
+        "N0000008867",
+        "N0000009560"
+      ],
+      "pharm_class_epc": [
+        "Expectorant [EPC]"
+      ],
+      "pharm_class_pe": [
+        "Decreased Respiratory Secretion Viscosity [PE]",
+        "Increased Respiratory Secretions [PE]"
+      ],
+      "unii": [
+        "495W7451VQ",
+        "04JA59TNSJ",
+        "362O9ITL9D"
+      ]
+    },
+    "marketing_category": "OTC MONOGRAPH DRUG",
+    "dosage_form": "TABLET, COATED",
+    "spl_id": "459f7dbe-5021-08d1-e063-6294a90a8924",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20220419",
+    "product_id": "66715-6457_459f7dbe-5021-08d1-e063-6294a90a8924",
+    "application_number": "M012",
+    "brand_name_base": "Tylenol Sinus Severe, Lil Drug Store",
+    "pharm_class": [
+      "Adrenergic alpha1-Agonists [MoA]",
+      "Decreased Respiratory Secretion Viscosity [PE]",
+      "Expectorant [EPC]",
+      "Increased Respiratory Secretions [PE]",
+      "alpha-1 Adrenergic Agonist [EPC]"
+    ],
+    "_dav_query": "brand_name:\"TYLENOL\""
+  },
+  {
+    "product_ndc": "66715-6517",
+    "generic_name": "Acetaminophen and Diphenhydramine Hydrochloride",
+    "labeler_name": "Lil' Drug Store Products, Inc.",
+    "brand_name": "Tylenol PM Extra Strength, CVP HEALTH",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "500 mg/1"
+      },
+      {
+        "name": "DIPHENHYDRAMINE HYDROCHLORIDE",
+        "strength": "25 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "66715-6517-2",
+        "description": "2 POUCH in 1 CARTON (66715-6517-2)  / 2 TABLET, FILM COATED in 1 POUCH",
+        "marketing_start_date": "20220506",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Lil' Drug Store Products, Inc."
+      ],
+      "rxcui": [
+        "1092189",
+        "1092378"
+      ],
+      "spl_set_id": [
+        "643371f2-e330-441e-8932-b3aec4b179d2"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "unii": [
+        "TC2D6JAD40",
+        "362O9ITL9D"
+      ]
+    },
+    "marketing_category": "OTC MONOGRAPH DRUG",
+    "dosage_form": "TABLET, FILM COATED",
+    "spl_id": "459f9062-e920-d327-e063-6394a90acc1d",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20220506",
+    "product_id": "66715-6517_459f9062-e920-d327-e063-6394a90acc1d",
+    "application_number": "M013",
+    "brand_name_base": "Tylenol PM Extra Strength, CVP HEALTH",
+    "pharm_class": [
+      "Histamine H1 Receptor Antagonists [MoA]",
+      "Histamine-1 Receptor Antagonist [EPC]"
+    ],
+    "_dav_query": "brand_name:\"TYLENOL\""
+  },
+  {
+    "product_ndc": "66715-6547",
+    "generic_name": "Acetaminophen",
+    "labeler_name": "Lil' Drug Store Products, Inc.",
+    "brand_name": "TYLENOL EXTRA STRENGTH, CVP HEALTH",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "500 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "66715-6547-2",
+        "description": "2 POUCH in 1 CARTON (66715-6547-2)  / 2 TABLET, COATED in 1 POUCH",
+        "marketing_start_date": "20220506",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Lil' Drug Store Products, Inc."
+      ],
+      "rxcui": [
+        "198440",
+        "209459"
+      ],
+      "spl_set_id": [
+        "fa951d50-b79c-4161-8c81-fcf386b0964e"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "unii": [
+        "362O9ITL9D"
+      ]
+    },
+    "marketing_category": "OTC MONOGRAPH DRUG",
+    "dosage_form": "TABLET, COATED",
+    "spl_id": "460387da-80ba-42ee-e063-6394a90a5957",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20220506",
+    "product_id": "66715-6547_460387da-80ba-42ee-e063-6394a90a5957",
+    "application_number": "M013",
+    "brand_name_base": "TYLENOL EXTRA STRENGTH, CVP HEALTH",
+    "_dav_query": "brand_name:\"TYLENOL\""
+  },
+  {
+    "product_ndc": "67414-402",
+    "generic_name": "ACETAMINOPHEN, DEXTROMETHORPHAN HYDROBROMIDE, GUAIFENESIN, PHENYLEPHRINE HYDROCHLORIDE",
+    "labeler_name": "Jones Healthcare Group - Packaging Services, Inc",
+    "brand_name": "Tylenol Cold Plus Flu Severe Severe",
+    "brand_name_suffix": "Severe",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "325 mg/1"
+      },
+      {
+        "name": "DEXTROMETHORPHAN HYDROBROMIDE",
+        "strength": "10 mg/1"
+      },
+      {
+        "name": "GUAIFENESIN",
+        "strength": "200 mg/1"
+      },
+      {
+        "name": "PHENYLEPHRINE HYDROCHLORIDE",
+        "strength": "5 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "67414-402-00",
+        "description": "2500 POUCH in 1 BOX (67414-402-00)  / 2 TABLET, FILM COATED in 1 POUCH",
+        "marketing_start_date": "20180125",
+        "sample": false
+      },
+      {
+        "package_ndc": "67414-402-02",
+        "description": "50 POUCH in 1 CARTON (67414-402-02)  / 2 TABLET, FILM COATED in 1 POUCH",
+        "marketing_start_date": "20180125",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Jones Healthcare Group - Packaging Services, Inc"
+      ],
+      "rxcui": [
+        "1110988"
+      ],
+      "spl_set_id": [
+        "8b8582c0-8aef-482f-9738-2f1d4e325d64"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "upc": [
+        "0300450270504"
+      ],
+      "nui": [
+        "N0000193956",
+        "N0000008867",
+        "N0000009560"
+      ],
+      "pharm_class_epc": [
+        "Expectorant [EPC]"
+      ],
+      "pharm_class_pe": [
+        "Decreased Respiratory Secretion Viscosity [PE]",
+        "Increased Respiratory Secretions [PE]"
+      ],
+      "unii": [
+        "362O9ITL9D",
+        "9D2RTI9KYH",
+        "495W7451VQ",
+        "04JA59TNSJ"
+      ]
+    },
+    "marketing_category": "OTC MONOGRAPH DRUG",
+    "dosage_form": "TABLET, FILM COATED",
+    "spl_id": "0975bb48-2459-e8bd-e063-6394a90ae8d9",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20180125",
+    "product_id": "67414-402_0975bb48-2459-e8bd-e063-6394a90ae8d9",
+    "application_number": "M012",
+    "brand_name_base": "Tylenol Cold Plus Flu Severe",
+    "pharm_class": [
+      "Adrenergic alpha1-Agonists [MoA]",
+      "Decreased Respiratory Secretion Viscosity [PE]",
+      "Expectorant [EPC]",
+      "Increased Respiratory Secretions [PE]",
+      "Sigma-1 Agonist [EPC]",
+      "Sigma-1 Receptor Agonists [MoA]",
+      "Uncompetitive N-methyl-D-aspartate Receptor Antagonist [EPC]",
+      "Uncompetitive NMDA Receptor Antagonists [MoA]",
+      "alpha-1 Adrenergic Agonist [EPC]"
+    ],
+    "_dav_query": "brand_name:\"TYLENOL\""
+  },
+  {
+    "product_ndc": "66715-6556",
+    "generic_name": "Acetaminophen, Dextromethorphan Hydrobromide, Guaifenesin, and Phenylephrine Hydrochloride",
+    "labeler_name": "Lil Drug Store Products, Inc",
+    "brand_name": "Tylenol Cold plus Flu Severe, CVP HEALTH",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "325 mg/1"
+      },
+      {
+        "name": "DEXTROMETHORPHAN HYDROBROMIDE",
+        "strength": "10 mg/1"
+      },
+      {
+        "name": "GUAIFENESIN",
+        "strength": "200 mg/1"
+      },
+      {
+        "name": "PHENYLEPHRINE HYDROCHLORIDE",
+        "strength": "5 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "66715-6556-2",
+        "description": "2 POUCH in 1 CARTON (66715-6556-2)  / 2 TABLET, FILM COATED in 1 POUCH",
+        "marketing_start_date": "20220506",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Lil Drug Store Products, Inc"
+      ],
+      "rxcui": [
+        "1110988"
+      ],
+      "spl_set_id": [
+        "f395c196-62d7-47ff-b38d-af37adf5980b"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "nui": [
+        "N0000193956",
+        "N0000008867",
+        "N0000009560"
+      ],
+      "pharm_class_epc": [
+        "Expectorant [EPC]"
+      ],
+      "pharm_class_pe": [
+        "Decreased Respiratory Secretion Viscosity [PE]",
+        "Increased Respiratory Secretions [PE]"
+      ],
+      "unii": [
+        "9D2RTI9KYH",
+        "495W7451VQ",
+        "04JA59TNSJ",
+        "362O9ITL9D"
+      ]
+    },
+    "marketing_category": "OTC MONOGRAPH DRUG",
+    "dosage_form": "TABLET, FILM COATED",
+    "spl_id": "459f6b8f-172e-cff3-e063-6294a90a362d",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20220506",
+    "product_id": "66715-6556_459f6b8f-172e-cff3-e063-6294a90a362d",
+    "application_number": "M012",
+    "brand_name_base": "Tylenol Cold plus Flu Severe, CVP HEALTH",
+    "pharm_class": [
+      "Adrenergic alpha1-Agonists [MoA]",
+      "Decreased Respiratory Secretion Viscosity [PE]",
+      "Expectorant [EPC]",
+      "Increased Respiratory Secretions [PE]",
+      "Sigma-1 Agonist [EPC]",
+      "Sigma-1 Receptor Agonists [MoA]",
+      "Uncompetitive N-methyl-D-aspartate Receptor Antagonist [EPC]",
+      "Uncompetitive NMDA Receptor Antagonists [MoA]",
+      "alpha-1 Adrenergic Agonist [EPC]"
+    ],
+    "_dav_query": "brand_name:\"TYLENOL\""
+  },
+  {
+    "product_ndc": "67414-449",
+    "generic_name": "ACETAMINOPHEN",
+    "labeler_name": "Jones Healthcare Group - Packaging Services, Inc",
+    "brand_name": "Tylenol Extra Strength Caplet",
+    "brand_name_suffix": "Caplet",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "500 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "67414-449-00",
+        "description": "2500 POUCH in 1 BOX (67414-449-00)  / 2 TABLET in 1 POUCH",
+        "marketing_start_date": "20180124",
+        "sample": false
+      },
+      {
+        "package_ndc": "67414-449-10",
+        "description": "50 POUCH in 1 BOX (67414-449-10)  / 2 TABLET in 1 POUCH",
+        "marketing_start_date": "20180124",
+        "sample": false
+      },
+      {
+        "package_ndc": "67414-449-11",
+        "description": "50 POUCH in 1 BOX (67414-449-11)  / 2 TABLET in 1 POUCH",
+        "marketing_start_date": "20180124",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Jones Healthcare Group - Packaging Services, Inc"
+      ],
+      "rxcui": [
+        "198440",
+        "209459"
+      ],
+      "spl_set_id": [
+        "fba711c1-4e69-49b0-8994-97c455aebcb2"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "upc": [
+        "0300450449108"
+      ],
+      "unii": [
+        "362O9ITL9D"
+      ]
+    },
+    "marketing_category": "OTC MONOGRAPH DRUG",
+    "dosage_form": "TABLET",
+    "spl_id": "39845b60-16e5-ee53-e063-6294a90af9d7",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20180124",
+    "product_id": "67414-449_39845b60-16e5-ee53-e063-6294a90af9d7",
+    "application_number": "M013",
+    "brand_name_base": "Tylenol Extra Strength",
+    "_dav_query": "brand_name:\"TYLENOL\""
+  },
+  {
+    "product_ndc": "66715-6557",
+    "generic_name": "Acetaminophen, Guaifenesin, and Phenylephrine Hydrochloride",
+    "labeler_name": "Lil Drug Store Products, Inc",
+    "brand_name": "Tylenol Sinus Severe, CVP HEALTH",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "325 mg/1"
+      },
+      {
+        "name": "GUAIFENESIN",
+        "strength": "200 mg/1"
+      },
+      {
+        "name": "PHENYLEPHRINE HYDROCHLORIDE",
+        "strength": "5 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "66715-6557-2",
+        "description": "2 POUCH in 1 CARTON (66715-6557-2)  / 2 TABLET, COATED in 1 POUCH",
+        "marketing_start_date": "20220506",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Lil Drug Store Products, Inc"
+      ],
+      "rxcui": [
+        "1243679"
+      ],
+      "spl_set_id": [
+        "88b68447-b016-4d5b-a5e3-c4ebccb14f8c"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "nui": [
+        "N0000193956",
+        "N0000008867",
+        "N0000009560"
+      ],
+      "pharm_class_epc": [
+        "Expectorant [EPC]"
+      ],
+      "pharm_class_pe": [
+        "Decreased Respiratory Secretion Viscosity [PE]",
+        "Increased Respiratory Secretions [PE]"
+      ],
+      "unii": [
+        "495W7451VQ",
+        "04JA59TNSJ",
+        "362O9ITL9D"
+      ]
+    },
+    "marketing_category": "OTC MONOGRAPH DRUG",
+    "dosage_form": "TABLET, COATED",
+    "spl_id": "459f7dbe-5021-08d1-e063-6294a90a8924",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20220506",
+    "product_id": "66715-6557_459f7dbe-5021-08d1-e063-6294a90a8924",
+    "application_number": "M012",
+    "brand_name_base": "Tylenol Sinus Severe, CVP HEALTH",
+    "pharm_class": [
+      "Adrenergic alpha1-Agonists [MoA]",
+      "Decreased Respiratory Secretion Viscosity [PE]",
+      "Expectorant [EPC]",
+      "Increased Respiratory Secretions [PE]",
+      "alpha-1 Adrenergic Agonist [EPC]"
+    ],
+    "_dav_query": "brand_name:\"TYLENOL\""
+  },
+  {
+    "product_ndc": "67414-507",
+    "generic_name": "ACETAMINOPHEN, GUAIFENESIN, PHENYLEPHRINE HYDROCHLORIDE",
+    "labeler_name": "Jones Healthcare Group - Packaging Services, Inc",
+    "brand_name": "Tylenol Sinus Severe",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "325 mg/1"
+      },
+      {
+        "name": "GUAIFENESIN",
+        "strength": "200 mg/1"
+      },
+      {
+        "name": "PHENYLEPHRINE HYDROCHLORIDE",
+        "strength": "5 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "67414-507-00",
+        "description": "2500 POUCH in 1 BOX (67414-507-00)  / 2 TABLET, COATED in 1 POUCH",
+        "marketing_start_date": "20180125",
+        "sample": false
+      },
+      {
+        "package_ndc": "67414-507-04",
+        "description": "50 POUCH in 1 CARTON (67414-507-04)  / 2 TABLET, COATED in 1 POUCH",
+        "marketing_start_date": "20180125",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Jones Healthcare Group - Packaging Services, Inc"
+      ],
+      "rxcui": [
+        "1243679"
+      ],
+      "spl_set_id": [
+        "6c90b415-4c5f-49e5-beb6-4cf225797b21"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "upc": [
+        "0300450262530"
+      ],
+      "nui": [
+        "N0000193956",
+        "N0000008867",
+        "N0000009560"
+      ],
+      "pharm_class_epc": [
+        "Expectorant [EPC]"
+      ],
+      "pharm_class_pe": [
+        "Decreased Respiratory Secretion Viscosity [PE]",
+        "Increased Respiratory Secretions [PE]"
+      ],
+      "unii": [
+        "362O9ITL9D",
+        "495W7451VQ",
+        "04JA59TNSJ"
+      ]
+    },
+    "marketing_category": "OTC MONOGRAPH DRUG",
+    "dosage_form": "TABLET, COATED",
+    "spl_id": "09759b68-4bd0-c41f-e063-6294a90a62a4",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20180125",
+    "product_id": "67414-507_09759b68-4bd0-c41f-e063-6294a90a62a4",
+    "application_number": "M012",
+    "brand_name_base": "Tylenol Sinus Severe",
+    "pharm_class": [
+      "Adrenergic alpha1-Agonists [MoA]",
+      "Decreased Respiratory Secretion Viscosity [PE]",
+      "Expectorant [EPC]",
+      "Increased Respiratory Secretions [PE]",
+      "alpha-1 Adrenergic Agonist [EPC]"
+    ],
+    "_dav_query": "brand_name:\"TYLENOL\""
+  },
+  {
+    "product_ndc": "55910-738",
+    "generic_name": "Acetaminophen",
+    "labeler_name": "Dolgencorp Inc",
+    "brand_name": "dg health childrens pain and fever",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "160 mg/5mL"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "55910-738-26",
+        "description": "1 BOTTLE in 1 CARTON (55910-738-26)  / 118 mL in 1 BOTTLE",
+        "marketing_start_date": "20240430",
+        "sample": false
+      },
+      {
+        "package_ndc": "55910-738-34",
+        "description": "1 BOTTLE in 1 CARTON (55910-738-34)  / 237 mL in 1 BOTTLE",
+        "marketing_start_date": "20240503",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Dolgencorp Inc"
+      ],
+      "rxcui": [
+        "307668"
+      ],
+      "spl_set_id": [
+        "1d794621-9836-4ab8-92ee-fcd916964567"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "unii": [
+        "362O9ITL9D"
+      ]
+    },
+    "marketing_category": "OTC MONOGRAPH DRUG",
+    "dosage_form": "SUSPENSION",
+    "spl_id": "1d794621-9836-4ab8-92ee-fcd916964567",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20240430",
+    "product_id": "55910-738_1d794621-9836-4ab8-92ee-fcd916964567",
+    "application_number": "M013",
+    "brand_name_base": "dg health childrens pain and fever",
+    "_dav_query": "generic_name:\"ACETAMINOPHEN\""
+  },
+  {
+    "product_ndc": "11822-3343",
+    "generic_name": "Aspirin, Acetaminophen, Caffeine",
+    "labeler_name": "Rite Aid Corporation",
+    "brand_name": "Headache Relief Extra Strength",
+    "brand_name_suffix": "Extra Strength",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "250 mg/1"
+      },
+      {
+        "name": "ASPIRIN",
+        "strength": "250 mg/1"
+      },
+      {
+        "name": "CAFFEINE",
+        "strength": "65 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "11822-3343-6",
+        "description": "1 BOTTLE, PLASTIC in 1 CARTON (11822-3343-6)  / 200 TABLET, FILM COATED in 1 BOTTLE, PLASTIC",
+        "marketing_start_date": "20240927",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Rite Aid Corporation"
+      ],
+      "rxcui": [
+        "308297"
+      ],
+      "spl_set_id": [
+        "d49f3e4f-7e0e-467d-a0c4-c6b109af245e"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "upc": [
+        "0011822507950"
+      ],
+      "nui": [
+        "N0000000160",
+        "N0000008836",
+        "M0001335",
+        "N0000175722",
+        "N0000175578",
+        "N0000008832",
+        "N0000175739",
+        "N0000175729",
+        "N0000175790",
+        "M0023046"
+      ],
+      "pharm_class_moa": [
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_pe": [
+        "Decreased Prostaglandin Production [PE]",
+        "Decreased Platelet Aggregation [PE]",
+        "Central Nervous System Stimulation [PE]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]",
+        "Xanthines [CS]"
+      ],
+      "pharm_class_epc": [
+        "Nonsteroidal Anti-inflammatory Drug [EPC]",
+        "Platelet Aggregation Inhibitor [EPC]",
+        "Central Nervous System Stimulant [EPC]",
+        "Methylxanthine [EPC]"
+      ],
+      "unii": [
+        "362O9ITL9D",
+        "R16CO5Y76E",
+        "3G6A5W338E"
+      ]
+    },
+    "marketing_category": "OTC MONOGRAPH DRUG",
+    "dosage_form": "TABLET, FILM COATED",
+    "spl_id": "0d0d0619-b25f-49d1-9ab0-f44041efa231",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20240927",
+    "product_id": "11822-3343_0d0d0619-b25f-49d1-9ab0-f44041efa231",
+    "application_number": "M013",
+    "brand_name_base": "Headache Relief",
+    "pharm_class": [
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Central Nervous System Stimulant [EPC]",
+      "Central Nervous System Stimulation [PE]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Decreased Platelet Aggregation [PE]",
+      "Decreased Prostaglandin Production [PE]",
+      "Methylxanthine [EPC]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]",
+      "Platelet Aggregation Inhibitor [EPC]",
+      "Xanthines [CS]"
+    ],
+    "_dav_query": "generic_name:\"ACETAMINOPHEN\""
+  },
+  {
+    "product_ndc": "21130-431",
+    "generic_name": "Acetaminophen",
+    "labeler_name": "BETTER LIVING BRANDS LLC.",
+    "brand_name": "Pain Relief",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "500 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "21130-431-01",
+        "description": "1 BOTTLE in 1 CARTON (21130-431-01)  / 100 TABLET in 1 BOTTLE",
+        "marketing_start_date": "20230622",
+        "sample": false
+      },
+      {
+        "package_ndc": "21130-431-05",
+        "description": "1 BOTTLE in 1 CARTON (21130-431-05)  / 50 TABLET in 1 BOTTLE",
+        "marketing_start_date": "20230622",
+        "sample": false
+      },
+      {
+        "package_ndc": "21130-431-15",
+        "description": "150 TABLET in 1 BOTTLE (21130-431-15)",
+        "marketing_start_date": "20230601",
+        "sample": false
+      },
+      {
+        "package_ndc": "21130-431-25",
+        "description": "1 BOTTLE in 1 CARTON (21130-431-25)  / 250 TABLET in 1 BOTTLE",
+        "marketing_start_date": "20230601",
+        "sample": false
+      },
+      {
+        "package_ndc": "21130-431-42",
+        "description": "1 BOTTLE in 1 CARTON (21130-431-42)  / 24 TABLET in 1 BOTTLE",
+        "marketing_start_date": "20230601",
+        "sample": false
+      },
+      {
+        "package_ndc": "21130-431-50",
+        "description": "500 TABLET in 1 BOTTLE (21130-431-50)",
+        "marketing_start_date": "20230601",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "BETTER LIVING BRANDS LLC."
+      ],
+      "rxcui": [
+        "198440"
+      ],
+      "spl_set_id": [
+        "f3005d0c-424e-0ab3-e053-2995a90a1c10"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "unii": [
+        "362O9ITL9D"
+      ]
+    },
+    "marketing_category": "OTC MONOGRAPH DRUG",
+    "dosage_form": "TABLET",
+    "spl_id": "3a0b3c00-eacb-ff6f-e063-6394a90a70d7",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20230601",
+    "product_id": "21130-431_3a0b3c00-eacb-ff6f-e063-6394a90a70d7",
+    "application_number": "M013",
+    "brand_name_base": "Pain Relief",
+    "_dav_query": "generic_name:\"ACETAMINOPHEN\""
+  },
+  {
+    "product_ndc": "0113-0459",
+    "generic_name": "Acetaminophen, Dextromethorphan HBr, Doxylamine succinate",
+    "labeler_name": "L. Perrigo Company",
+    "brand_name": "good sense nighttime",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "650 mg/30mL"
+      },
+      {
+        "name": "DEXTROMETHORPHAN HYDROBROMIDE",
+        "strength": "30 mg/30mL"
+      },
+      {
+        "name": "DOXYLAMINE SUCCINATE",
+        "strength": "12.5 mg/30mL"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "0113-0459-34",
+        "description": "237 mL in 1 BOTTLE (0113-0459-34)",
+        "marketing_start_date": "20120727",
+        "sample": false
+      },
+      {
+        "package_ndc": "0113-0459-40",
+        "description": "354 mL in 1 BOTTLE (0113-0459-40)",
+        "marketing_start_date": "20120831",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20271231",
+    "openfda": {
+      "manufacturer_name": [
+        "L. Perrigo Company"
+      ],
+      "rxcui": [
+        "1043400"
+      ],
+      "spl_set_id": [
+        "f90bd64a-dd1a-4319-87cd-427d57f677ab"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "upc": [
+        "0301130459349"
+      ],
+      "unii": [
+        "362O9ITL9D",
+        "9D2RTI9KYH",
+        "V9BI9B5YI2"
+      ]
+    },
+    "marketing_category": "OTC MONOGRAPH DRUG",
+    "dosage_form": "SOLUTION",
+    "spl_id": "0add9786-62cc-4ad4-8487-d61c84db9d3b",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20110822",
+    "product_id": "0113-0459_0add9786-62cc-4ad4-8487-d61c84db9d3b",
+    "application_number": "M012",
+    "brand_name_base": "good sense nighttime",
+    "pharm_class": [
+      "Antihistamine [EPC]",
+      "Histamine Receptor Antagonists [MoA]",
+      "Sigma-1 Agonist [EPC]",
+      "Sigma-1 Receptor Agonists [MoA]",
+      "Uncompetitive N-methyl-D-aspartate Receptor Antagonist [EPC]",
+      "Uncompetitive NMDA Receptor Antagonists [MoA]"
+    ],
+    "_dav_query": "generic_name:\"ACETAMINOPHEN\""
+  },
+  {
+    "product_ndc": "41226-678",
+    "generic_name": "Acetaminophen, Guaifenesin, Acetaminophen, Dextromethorphan HBr, Triprolidine HCl",
+    "labeler_name": "KROGER COMPANY",
+    "brand_name": "Daytime Nighttime",
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "41226-678-02",
+        "description": "2 BLISTER PACK in 1 CARTON (41226-678-02)  / 1 KIT in 1 BLISTER PACK *  6 TABLET, COATED in 1 BLISTER PACK *  4 TABLET, COATED in 1 BLISTER PACK",
+        "marketing_start_date": "20250705",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "KROGER COMPANY"
+      ],
+      "rxcui": [
+        "602617",
+        "2549034",
+        "2717656"
+      ],
+      "spl_set_id": [
+        "30d50bbe-0a14-c985-e063-6294a90a47b3"
+      ],
+      "is_original_packager": [
+        true
+      ]
+    },
+    "marketing_category": "OTC MONOGRAPH DRUG",
+    "dosage_form": "KIT",
+    "spl_id": "3968365e-6fef-c916-e063-6294a90a73bb",
+    "product_type": "HUMAN OTC DRUG",
+    "marketing_start_date": "20250705",
+    "product_id": "41226-678_3968365e-6fef-c916-e063-6294a90a73bb",
+    "application_number": "M012",
+    "brand_name_base": "Daytime Nighttime",
+    "_dav_query": "generic_name:\"ACETAMINOPHEN\""
+  },
+  {
+    "product_ndc": "41250-574",
+    "marketing_end_date": "20260831",
+    "generic_name": "ACETAMINOPHEN, DEXTROMETHORPHAN HYDROBROMIDE, GUAIFENESIN, and PHENYLEPHRINE HYDROCHLORIDE",
+    "labeler_name": "MEIJER DISTRIBUTION INC",
+    "brand_name": "head congestion plus flu severe PE",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "325 mg/1"
+      },
+      {
+        "name": "DEXTROMETHORPHAN HYDROBROMIDE",
+        "strength": "10 mg/1"
+      },
+      {
+        "name": "GUAIFENESIN",
+        "strength": "100 mg/1"
+      },
+      {
+        "name": "PHENYLEPHRINE HYDROCHLORIDE",
+        "strength": "5 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "41250-574-02",
+        "description": "2 BLISTER PACK in 1 CARTON (41250-574-02)  / 12 TABLET, COATED in 1 BLISTER PACK",
+        "marketing_start_date": "20220923",
+        "marketing_end_date": "20260831",
+        "sample": false
+      }
+    ],
+    "openfda": {
+      "manufacturer_name": [
+        "MEIJER DISTRIBUTION INC"
+      ],
+      "rxcui": [
+        "1098435"
+      ],
+      "spl_set_id": [
+        "e83f0ab0-b589-4a79-e053-2995a90a6471"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "upc": [
+        "0708820130890"
+      ],
+      "nui": [
+        "N0000193956",
+        "N0000008867",
+        "N0000009560"
+      ],
+      "pharm_class_epc": [
+        "Expectorant [EPC]"
+      ],
+      "pharm_class_pe": [
+        "Decreased Respiratory Secretion Viscosity [PE]",
+        "Increased Respiratory Secretions [PE]"
+      ],
+      "unii": [
+        "362O9ITL9D",
+        "9D2RTI9KYH",
+        "495W7451VQ",
+        "04JA59TNSJ"
+      ]
+    },
+    "marketing_category": "OTC MONOGRAPH DRUG",
+    "dosage_form": "TABLET, COATED",
+    "spl_id": "2434e42c-f7f1-3148-e063-6294a90ae384",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20220923",
+    "product_id": "41250-574_2434e42c-f7f1-3148-e063-6294a90ae384",
+    "application_number": "M012",
+    "brand_name_base": "head congestion plus flu severe PE",
+    "pharm_class": [
+      "Adrenergic alpha1-Agonists [MoA]",
+      "Decreased Respiratory Secretion Viscosity [PE]",
+      "Expectorant [EPC]",
+      "Increased Respiratory Secretions [PE]",
+      "Sigma-1 Agonist [EPC]",
+      "Sigma-1 Receptor Agonists [MoA]",
+      "Uncompetitive N-methyl-D-aspartate Receptor Antagonist [EPC]",
+      "Uncompetitive NMDA Receptor Antagonists [MoA]",
+      "alpha-1 Adrenergic Agonist [EPC]"
+    ],
+    "_dav_query": "generic_name:\"ACETAMINOPHEN\""
+  },
+  {
+    "product_ndc": "41520-023",
+    "generic_name": "Acetaminophen",
+    "labeler_name": "American Sales Company",
+    "brand_name": "CareOne Childrens Acetaminophen",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "160 mg/5mL"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "41520-023-26",
+        "description": "1 BOTTLE in 1 CARTON (41520-023-26)  / 118 mL in 1 BOTTLE",
+        "marketing_start_date": "20160413",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "American Sales Company"
+      ],
+      "rxcui": [
+        "307668"
+      ],
+      "spl_set_id": [
+        "49021ae8-9655-4885-9f74-52df4cdcb26f"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "unii": [
+        "362O9ITL9D"
+      ]
+    },
+    "marketing_category": "OTC MONOGRAPH DRUG",
+    "dosage_form": "SUSPENSION",
+    "spl_id": "a46d85fd-1ef8-4c59-803b-d93cd32552e3",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20160413",
+    "product_id": "41520-023_a46d85fd-1ef8-4c59-803b-d93cd32552e3",
+    "application_number": "M013",
+    "brand_name_base": "CareOne Childrens Acetaminophen",
+    "_dav_query": "generic_name:\"ACETAMINOPHEN\""
+  },
+  {
+    "product_ndc": "42507-103",
+    "generic_name": "Acetaminophen",
+    "labeler_name": "HYVEE INC",
+    "brand_name": "Pain Relief",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "500 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "42507-103-04",
+        "description": "1 BOTTLE, PLASTIC in 1 CARTON (42507-103-04)  / 100 TABLET in 1 BOTTLE, PLASTIC",
+        "marketing_start_date": "20251120",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "HYVEE INC"
+      ],
+      "rxcui": [
+        "198440"
+      ],
+      "spl_set_id": [
+        "4227a2cc-69fa-869d-e063-6294a90a1d41"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "unii": [
+        "362O9ITL9D"
+      ]
+    },
+    "marketing_category": "OTC MONOGRAPH DRUG",
+    "dosage_form": "TABLET",
+    "spl_id": "440c15e0-5e36-1251-e063-6294a90aa010",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20251120",
+    "product_id": "42507-103_440c15e0-5e36-1251-e063-6294a90aa010",
+    "application_number": "M013",
+    "brand_name_base": "Pain Relief",
+    "_dav_query": "generic_name:\"ACETAMINOPHEN\""
+  },
+  {
+    "product_ndc": "43386-491",
+    "generic_name": "Oxycodone and Acetaminophen",
+    "labeler_name": "Lupin Pharmaceuticals,Inc.",
+    "dea_schedule": "CII",
+    "brand_name": "Oxycodone and Acetaminophen",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "325 mg/1"
+      },
+      {
+        "name": "OXYCODONE HYDROCHLORIDE",
+        "strength": "5 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Lupin Pharmaceuticals,Inc."
+      ],
+      "rxcui": [
+        "1049214",
+        "1049221",
+        "1049225",
+        "1049635"
+      ],
+      "spl_set_id": [
+        "916ff456-a27e-49dc-a312-274126a8c30c"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "upc": [
+        "0343386492107",
+        "0343386491100",
+        "0343386491018"
+      ],
+      "unii": [
+        "C1ENJ2TE6C",
+        "362O9ITL9D"
+      ]
+    },
+    "marketing_category": "ANDA",
+    "dosage_form": "TABLET",
+    "spl_id": "5e566e5f-2fef-4d70-8cfe-c24b13659b8e",
+    "product_type": "HUMAN PRESCRIPTION DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20170224",
+    "product_id": "43386-491_5e566e5f-2fef-4d70-8cfe-c24b13659b8e",
+    "application_number": "ANDA204407",
+    "brand_name_base": "Oxycodone and Acetaminophen",
+    "pharm_class": [
+      "Full Opioid Agonists [MoA]",
+      "Opioid Agonist [EPC]"
+    ],
+    "_dav_query": "generic_name:\"ACETAMINOPHEN\""
+  },
+  {
+    "product_ndc": "49035-455",
+    "generic_name": "Acetaminophen",
+    "labeler_name": "Wal-Mart Stores Inc",
+    "brand_name": "Pain and Fever Childrens",
+    "brand_name_suffix": "Childrens",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "160 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "49035-455-08",
+        "description": "4 BLISTER PACK in 1 CARTON (49035-455-08)  / 6 TABLET, CHEWABLE in 1 BLISTER PACK",
+        "marketing_start_date": "20050128",
+        "sample": false
+      },
+      {
+        "package_ndc": "49035-455-39",
+        "description": "6 TABLET, CHEWABLE in 1 BLISTER PACK (49035-455-39)",
+        "marketing_start_date": "20050128",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Wal-Mart Stores Inc"
+      ],
+      "rxcui": [
+        "313820"
+      ],
+      "spl_set_id": [
+        "462580aa-712d-43bb-846d-631db3e79c1d"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "upc": [
+        "0681131150088"
+      ],
+      "unii": [
+        "362O9ITL9D"
+      ]
+    },
+    "marketing_category": "OTC MONOGRAPH DRUG",
+    "dosage_form": "TABLET, CHEWABLE",
+    "spl_id": "7633aba2-07e3-4e3f-b270-d0929da13746",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20050128",
+    "product_id": "49035-455_7633aba2-07e3-4e3f-b270-d0929da13746",
+    "application_number": "M013",
+    "brand_name_base": "Pain and Fever",
+    "_dav_query": "generic_name:\"ACETAMINOPHEN\""
+  },
+  {
+    "product_ndc": "0573-0207",
+    "generic_name": "ibuprofen",
+    "labeler_name": "Haleon US Holdings LLC",
+    "brand_name": "CHILDRENS ADVIL",
+    "active_ingredients": [
+      {
+        "name": "IBUPROFEN",
+        "strength": "100 mg/5mL"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "0573-0207-30",
+        "description": "1 BOTTLE in 1 CARTON (0573-0207-30)  / 120 mL in 1 BOTTLE",
+        "marketing_start_date": "20120904",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Haleon US Holdings LLC"
+      ],
+      "rxcui": [
+        "197803",
+        "206878"
+      ],
+      "spl_set_id": [
+        "3079d932-afb2-94fe-f4ba-a3d8b5198fce"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "nui": [
+        "N0000000160",
+        "M0001335",
+        "N0000175722"
+      ],
+      "pharm_class_moa": [
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]"
+      ],
+      "pharm_class_epc": [
+        "Nonsteroidal Anti-inflammatory Drug [EPC]"
+      ],
+      "unii": [
+        "WK2XYI10QM"
+      ]
+    },
+    "marketing_category": "NDA",
+    "dosage_form": "SUSPENSION",
+    "spl_id": "88972802-d04c-4fe3-8c56-3c3d1e3b4218",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20120904",
+    "product_id": "0573-0207_88972802-d04c-4fe3-8c56-3c3d1e3b4218",
+    "application_number": "NDA020589",
+    "brand_name_base": "CHILDRENS ADVIL",
+    "pharm_class": [
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]"
+    ],
+    "_dav_query": "brand_name:\"ADVIL\""
+  },
+  {
+    "product_ndc": "0573-1174",
+    "generic_name": "ibuprofen",
+    "labeler_name": "Haleon US Holdings LLC",
+    "brand_name": "CHILDRENS ADVIL",
+    "active_ingredients": [
+      {
+        "name": "IBUPROFEN",
+        "strength": "100 mg/5mL"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "0573-1174-12",
+        "description": "1 BOTTLE in 1 CARTON (0573-1174-12)  / 120 mL in 1 BOTTLE",
+        "marketing_start_date": "20190930",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Haleon US Holdings LLC"
+      ],
+      "rxcui": [
+        "197803",
+        "206878"
+      ],
+      "spl_set_id": [
+        "4eba2795-e826-480d-afdc-d62004e95f36"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "nui": [
+        "N0000000160",
+        "M0001335",
+        "N0000175722"
+      ],
+      "pharm_class_moa": [
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]"
+      ],
+      "pharm_class_epc": [
+        "Nonsteroidal Anti-inflammatory Drug [EPC]"
+      ],
+      "unii": [
+        "WK2XYI10QM"
+      ]
+    },
+    "marketing_category": "NDA",
+    "dosage_form": "SUSPENSION",
+    "spl_id": "e78c4482-deac-46a8-8774-856e1fe5054c",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "19960627",
+    "product_id": "0573-1174_e78c4482-deac-46a8-8774-856e1fe5054c",
+    "application_number": "NDA020589",
+    "brand_name_base": "CHILDRENS ADVIL",
+    "pharm_class": [
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]"
+    ],
+    "_dav_query": "brand_name:\"ADVIL\""
+  },
+  {
+    "product_ndc": "0573-0150",
+    "generic_name": "ibuprofen",
+    "labeler_name": "Haleon US Holdings LLC",
+    "brand_name": "ADVIL",
+    "active_ingredients": [
+      {
+        "name": "IBUPROFEN",
+        "strength": "200 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "0573-0150-20",
+        "description": "1 BOTTLE in 1 CARTON (0573-0150-20)  / 24 TABLET, COATED in 1 BOTTLE",
+        "marketing_start_date": "19840518",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0150-30",
+        "description": "1 BOTTLE in 1 CARTON (0573-0150-30)  / 50 TABLET, COATED in 1 BOTTLE",
+        "marketing_start_date": "19840518",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0150-31",
+        "description": "1 BOTTLE in 1 CARTON (0573-0150-31)  / 75 TABLET, COATED in 1 BOTTLE",
+        "marketing_start_date": "19840518",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0150-32",
+        "description": "1 BOTTLE in 1 CARTON (0573-0150-32)  / 60 TABLET, COATED in 1 BOTTLE",
+        "marketing_start_date": "19840518",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0150-40",
+        "description": "1 BOTTLE in 1 CARTON (0573-0150-40)  / 100 TABLET, COATED in 1 BOTTLE",
+        "marketing_start_date": "19840518",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0150-41",
+        "description": "1 BOTTLE in 1 CARTON (0573-0150-41)  / 125 TABLET, COATED in 1 BOTTLE",
+        "marketing_start_date": "19840518",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0150-42",
+        "description": "1 BOTTLE in 1 CARTON (0573-0150-42)  / 150 TABLET, COATED in 1 BOTTLE",
+        "marketing_start_date": "19840518",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20271231",
+    "openfda": {
+      "manufacturer_name": [
+        "Haleon US Holdings LLC"
+      ],
+      "rxcui": [
+        "153008",
+        "310965"
+      ],
+      "spl_set_id": [
+        "1a665e64-9f30-be37-4a83-38789f1f1e89"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "upc": [
+        "0305730150200"
+      ],
+      "nui": [
+        "N0000000160",
+        "M0001335",
+        "N0000175722"
+      ],
+      "pharm_class_moa": [
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]"
+      ],
+      "pharm_class_epc": [
+        "Nonsteroidal Anti-inflammatory Drug [EPC]"
+      ],
+      "unii": [
+        "WK2XYI10QM"
+      ]
+    },
+    "marketing_category": "NDA",
+    "dosage_form": "TABLET, COATED",
+    "spl_id": "4cd840a6-9554-de58-e063-6394a90ab543",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "19840518",
+    "product_id": "0573-0150_4cd840a6-9554-de58-e063-6394a90ab543",
+    "application_number": "NDA018989",
+    "brand_name_base": "ADVIL",
+    "pharm_class": [
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]"
+    ],
+    "_dav_query": "brand_name:\"ADVIL\""
+  },
+  {
+    "product_ndc": "66715-6452",
+    "generic_name": "Ibuprofen",
+    "labeler_name": "Lil Drug Store Products, Inc",
+    "brand_name": "Advil Liqui-Gels",
+    "active_ingredients": [
+      {
+        "name": "IBUPROFEN",
+        "strength": "200 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "66715-6452-2",
+        "description": "2 POUCH in 1 CARTON (66715-6452-2)  / 2 CAPSULE, LIQUID FILLED in 1 POUCH",
+        "marketing_start_date": "20221114",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Lil Drug Store Products, Inc"
+      ],
+      "rxcui": [
+        "310964",
+        "731533"
+      ],
+      "spl_set_id": [
+        "ba5a9a04-993e-4fd6-bb40-6edfdfb69b34"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "nui": [
+        "N0000000160",
+        "M0001335",
+        "N0000175722"
+      ],
+      "pharm_class_moa": [
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]"
+      ],
+      "pharm_class_epc": [
+        "Nonsteroidal Anti-inflammatory Drug [EPC]"
+      ],
+      "unii": [
+        "WK2XYI10QM"
+      ]
+    },
+    "marketing_category": "NDA",
+    "dosage_form": "CAPSULE, LIQUID FILLED",
+    "spl_id": "14aab6c8-8942-5677-e063-6394a90a0cb9",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20171023",
+    "product_id": "66715-6452_14aab6c8-8942-5677-e063-6394a90a0cb9",
+    "application_number": "NDA020402",
+    "brand_name_base": "Advil Liqui-Gels",
+    "pharm_class": [
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]"
+    ],
+    "_dav_query": "brand_name:\"ADVIL\""
+  },
+  {
+    "product_ndc": "66715-6500",
+    "generic_name": "Ibuprofen",
+    "labeler_name": "Lil' Drug Store Products, Inc.",
+    "brand_name": "Advil",
+    "active_ingredients": [
+      {
+        "name": "IBUPROFEN",
+        "strength": "200 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "66715-6500-2",
+        "description": "2 POUCH in 1 CARTON (66715-6500-2)  / 2 TABLET, COATED in 1 POUCH",
+        "marketing_start_date": "20220506",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Lil' Drug Store Products, Inc."
+      ],
+      "rxcui": [
+        "153008",
+        "310965"
+      ],
+      "spl_set_id": [
+        "772360bd-8631-4d24-b4db-5a7e6e1d9a13"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "nui": [
+        "N0000000160",
+        "M0001335",
+        "N0000175722"
+      ],
+      "pharm_class_moa": [
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]"
+      ],
+      "pharm_class_epc": [
+        "Nonsteroidal Anti-inflammatory Drug [EPC]"
+      ],
+      "unii": [
+        "WK2XYI10QM"
+      ]
+    },
+    "marketing_category": "NDA",
+    "dosage_form": "TABLET, COATED",
+    "spl_id": "2cb6ac3b-ffe3-21bc-e063-6394a90a4569",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20220506",
+    "product_id": "66715-6500_2cb6ac3b-ffe3-21bc-e063-6394a90a4569",
+    "application_number": "NDA018989",
+    "brand_name_base": "Advil",
+    "pharm_class": [
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]"
+    ],
+    "_dav_query": "brand_name:\"ADVIL\""
+  },
+  {
+    "product_ndc": "0573-0191",
+    "generic_name": "ibuprofen",
+    "labeler_name": "Haleon US Holdings LLC",
+    "brand_name": "INFANTS ADVIL",
+    "active_ingredients": [
+      {
+        "name": "IBUPROFEN",
+        "strength": "50 mg/1.25mL"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "0573-0191-20",
+        "description": "1 BOTTLE, DROPPER in 1 CARTON (0573-0191-20)  / 15 mL in 1 BOTTLE, DROPPER",
+        "marketing_start_date": "19980130",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0191-22",
+        "description": "1 BOTTLE, DROPPER in 1 CARTON (0573-0191-22)  / 15 mL in 1 BOTTLE, DROPPER",
+        "marketing_start_date": "20140130",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0191-50",
+        "description": "1 BOTTLE, DROPPER in 1 CARTON (0573-0191-50)  / 30 mL in 1 BOTTLE, DROPPER",
+        "marketing_start_date": "19980130",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0191-75",
+        "description": "1 BOTTLE, DROPPER in 1 CARTON (0573-0191-75)  / 22.5 mL in 1 BOTTLE, DROPPER",
+        "marketing_start_date": "19980130",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Haleon US Holdings LLC"
+      ],
+      "rxcui": [
+        "204442",
+        "731531"
+      ],
+      "spl_set_id": [
+        "db5ed801-7a7e-3c83-0172-77f914daaa5a"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "nui": [
+        "N0000000160",
+        "M0001335",
+        "N0000175722"
+      ],
+      "pharm_class_moa": [
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]"
+      ],
+      "pharm_class_epc": [
+        "Nonsteroidal Anti-inflammatory Drug [EPC]"
+      ],
+      "unii": [
+        "WK2XYI10QM"
+      ]
+    },
+    "marketing_category": "NDA",
+    "dosage_form": "SUSPENSION/ DROPS",
+    "spl_id": "9f156faa-6bf8-483c-837d-050e40ec0cc5",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "19980130",
+    "product_id": "0573-0191_9f156faa-6bf8-483c-837d-050e40ec0cc5",
+    "application_number": "NDA020812",
+    "brand_name_base": "INFANTS ADVIL",
+    "pharm_class": [
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]"
+    ],
+    "_dav_query": "brand_name:\"ADVIL\""
+  },
+  {
+    "product_ndc": "0573-0147",
+    "generic_name": "Ibuprofen, Acetaminophen",
+    "labeler_name": "Haleon US Holdings LLC",
+    "brand_name": "ADVIL DUAL ACTION WITH ACETAMINOPHEN",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "250 mg/1"
+      },
+      {
+        "name": "IBUPROFEN",
+        "strength": "125 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "0573-0147-09",
+        "description": "8 TABLET, FILM COATED in 1 BOTTLE (0573-0147-09)",
+        "marketing_start_date": "20230515",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0147-18",
+        "description": "1 BOTTLE in 1 CARTON (0573-0147-18)  / 18 TABLET, FILM COATED in 1 BOTTLE",
+        "marketing_start_date": "20200727",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0147-24",
+        "description": "1 BOTTLE in 1 CARTON (0573-0147-24)  / 24 TABLET, FILM COATED in 1 BOTTLE",
+        "marketing_start_date": "20210906",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0147-36",
+        "description": "1 BOTTLE in 1 CARTON (0573-0147-36)  / 36 TABLET, FILM COATED in 1 BOTTLE",
+        "marketing_start_date": "20200727",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0147-72",
+        "description": "1 BOTTLE in 1 CARTON (0573-0147-72)  / 72 TABLET, FILM COATED in 1 BOTTLE",
+        "marketing_start_date": "20200727",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0147-86",
+        "description": "1 BOTTLE in 1 CARTON (0573-0147-86)  / 216 TABLET, FILM COATED in 1 BOTTLE",
+        "marketing_start_date": "20200727",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0147-90",
+        "description": "1 BOTTLE in 1 CARTON (0573-0147-90)  / 90 TABLET, FILM COATED in 1 BOTTLE",
+        "marketing_start_date": "20240408",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0147-91",
+        "description": "3000 POUCH in 1 CASE (0573-0147-91)  / 2 TABLET, FILM COATED in 1 POUCH",
+        "marketing_start_date": "20230515",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0147-93",
+        "description": "1 BOTTLE in 1 CARTON (0573-0147-93)  / 162 TABLET, FILM COATED in 1 BOTTLE",
+        "marketing_start_date": "20240409",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0147-94",
+        "description": "1 BOTTLE in 1 CARTON (0573-0147-94)  / 144 TABLET, FILM COATED in 1 BOTTLE",
+        "marketing_start_date": "20200727",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0147-95",
+        "description": "50 POUCH in 1 CARTON (0573-0147-95)  / 2 TABLET, FILM COATED in 1 POUCH",
+        "marketing_start_date": "20200727",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0147-97",
+        "description": "240 TABLET, FILM COATED in 1 BOTTLE (0573-0147-97)",
+        "marketing_start_date": "20250315",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Haleon US Holdings LLC"
+      ],
+      "rxcui": [
+        "2387532"
+      ],
+      "spl_set_id": [
+        "f5ea858e-76d9-4777-b3dc-5d614f66d485"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "nui": [
+        "N0000000160",
+        "M0001335",
+        "N0000175722"
+      ],
+      "pharm_class_moa": [
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]"
+      ],
+      "pharm_class_epc": [
+        "Nonsteroidal Anti-inflammatory Drug [EPC]"
+      ],
+      "unii": [
+        "362O9ITL9D",
+        "WK2XYI10QM"
+      ]
+    },
+    "marketing_category": "NDA",
+    "dosage_form": "TABLET, FILM COATED",
+    "spl_id": "440b1444-9b6d-44c2-8ec4-dbb66ebb5025",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20200727",
+    "product_id": "0573-0147_440b1444-9b6d-44c2-8ec4-dbb66ebb5025",
+    "application_number": "NDA211733",
+    "brand_name_base": "ADVIL DUAL ACTION WITH ACETAMINOPHEN",
+    "pharm_class": [
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]"
+    ],
+    "_dav_query": "brand_name:\"ADVIL\""
+  },
+  {
+    "product_ndc": "0573-0196",
+    "generic_name": "chlorpheniramine maleate, ibuprofen, and phenylephrine hydrochloride",
+    "labeler_name": "Haleon US Holdings LLC",
+    "brand_name": "Advil Allergy and Congestion Relief",
+    "active_ingredients": [
+      {
+        "name": "CHLORPHENIRAMINE MALEATE",
+        "strength": "4 mg/1"
+      },
+      {
+        "name": "IBUPROFEN",
+        "strength": "200 mg/1"
+      },
+      {
+        "name": "PHENYLEPHRINE HYDROCHLORIDE",
+        "strength": "10 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "0573-0196-01",
+        "description": "50 PACKET in 1 TRAY (0573-0196-01)  / 1 TABLET, COATED in 1 PACKET",
+        "marketing_start_date": "20120723",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0196-02",
+        "description": "2 PACKET in 1 CARTON (0573-0196-02)  / 1 TABLET, COATED in 1 PACKET",
+        "marketing_start_date": "20191001",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0196-10",
+        "description": "1 BLISTER PACK in 1 CARTON (0573-0196-10)  / 10 TABLET, COATED in 1 BLISTER PACK",
+        "marketing_start_date": "20120723",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0196-20",
+        "description": "2 BLISTER PACK in 1 CARTON (0573-0196-20)  / 10 TABLET, COATED in 1 BLISTER PACK",
+        "marketing_start_date": "20120723",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Haleon US Holdings LLC"
+      ],
+      "rxcui": [
+        "1310503"
+      ],
+      "spl_set_id": [
+        "a6cc97d8-252a-4527-a470-6d9e356342fd"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "nui": [
+        "N0000000160",
+        "M0001335",
+        "N0000175722"
+      ],
+      "pharm_class_moa": [
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]"
+      ],
+      "pharm_class_epc": [
+        "Nonsteroidal Anti-inflammatory Drug [EPC]"
+      ],
+      "unii": [
+        "04JA59TNSJ",
+        "V1Q0O9OJ9Z",
+        "WK2XYI10QM"
+      ]
+    },
+    "marketing_category": "NDA",
+    "dosage_form": "TABLET, COATED",
+    "spl_id": "ac233de1-41cf-4ef0-a7b4-30f395c88c1a",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20120723",
+    "product_id": "0573-0196_ac233de1-41cf-4ef0-a7b4-30f395c88c1a",
+    "application_number": "NDA022113",
+    "brand_name_base": "Advil Allergy and Congestion Relief",
+    "pharm_class": [
+      "Adrenergic alpha1-Agonists [MoA]",
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Histamine H1 Receptor Antagonists [MoA]",
+      "Histamine-1 Receptor Antagonist [EPC]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]",
+      "alpha-1 Adrenergic Agonist [EPC]"
+    ],
+    "_dav_query": "brand_name:\"ADVIL\""
+  },
+  {
+    "product_ndc": "0573-0148",
+    "generic_name": "diphenhydramine HCl, ibuprofen",
+    "labeler_name": "Haleon US Holdings LLC",
+    "brand_name": "ADVIL PM",
+    "active_ingredients": [
+      {
+        "name": "DIPHENHYDRAMINE HYDROCHLORIDE",
+        "strength": "25 mg/1"
+      },
+      {
+        "name": "IBUPROFEN",
+        "strength": "200 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "0573-0148-06",
+        "description": "1 BOTTLE in 1 CARTON (0573-0148-06)  / 40 CAPSULE, LIQUID FILLED in 1 BOTTLE",
+        "marketing_start_date": "20250115",
+        "sample": false
+      },
+      {
+        "package_ndc": "0573-0148-07",
+        "description": "1 BOTTLE in 1 CARTON (0573-0148-07)  / 80 CAPSULE, LIQUID FILLED in 1 BOTTLE",
+        "marketing_start_date": "20250115",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Haleon US Holdings LLC"
+      ],
+      "rxcui": [
+        "901814"
+      ],
+      "spl_set_id": [
+        "405afdb4-c157-1d88-f232-848063ba4714"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "nui": [
+        "N0000000160",
+        "M0001335",
+        "N0000175722"
+      ],
+      "pharm_class_moa": [
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]"
+      ],
+      "pharm_class_epc": [
+        "Nonsteroidal Anti-inflammatory Drug [EPC]"
+      ],
+      "unii": [
+        "TC2D6JAD40",
+        "WK2XYI10QM"
+      ]
+    },
+    "marketing_category": "NDA",
+    "dosage_form": "CAPSULE, LIQUID FILLED",
+    "spl_id": "7ff3116f-dc72-460c-ac1a-80753f1aeb55",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20250115",
+    "product_id": "0573-0148_7ff3116f-dc72-460c-ac1a-80753f1aeb55",
+    "application_number": "NDA021393",
+    "brand_name_base": "ADVIL PM",
+    "pharm_class": [
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Histamine H1 Receptor Antagonists [MoA]",
+      "Histamine-1 Receptor Antagonist [EPC]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]"
+    ],
+    "_dav_query": "brand_name:\"ADVIL\""
+  },
+  {
+    "product_ndc": "29485-6533",
+    "generic_name": "Advil PM",
+    "labeler_name": "Lil Drug Store Products, Inc",
+    "brand_name": "ADVIL PM- diphenhydramine citrate and ibuprofen tablet, coated",
+    "active_ingredients": [
+      {
+        "name": "DIPHENHYDRAMINE CITRATE",
+        "strength": "38 mg/1"
+      },
+      {
+        "name": "IBUPROFEN",
+        "strength": "200 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "29485-6533-4",
+        "description": "2 POUCH in 1 CARTON (29485-6533-4)  / 2 TABLET, COATED in 1 POUCH",
+        "marketing_start_date": "20170825",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Lil Drug Store Products, Inc"
+      ],
+      "rxcui": [
+        "895664"
+      ],
+      "spl_set_id": [
+        "d1138e15-8ae4-7b49-e053-2995a90a9607"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "nui": [
+        "N0000000160",
+        "M0001335",
+        "N0000175722"
+      ],
+      "pharm_class_moa": [
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]"
+      ],
+      "pharm_class_epc": [
+        "Nonsteroidal Anti-inflammatory Drug [EPC]"
+      ],
+      "unii": [
+        "4OD433S209",
+        "WK2XYI10QM"
+      ]
+    },
+    "marketing_category": "NDA",
+    "dosage_form": "TABLET, COATED",
+    "spl_id": "2a83226d-0fe9-8955-e063-6394a90a5bfc",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20170825",
+    "product_id": "29485-6533_2a83226d-0fe9-8955-e063-6394a90a5bfc",
+    "application_number": "NDA021394",
+    "brand_name_base": "ADVIL PM- diphenhydramine citrate and ibuprofen tablet, coated",
+    "pharm_class": [
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Histamine H1 Receptor Antagonists [MoA]",
+      "Histamine-1 Receptor Antagonist [EPC]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]"
+    ],
+    "_dav_query": "brand_name:\"ADVIL\""
+  },
+  {
+    "product_ndc": "80425-0483",
+    "generic_name": "Ibuprofen and famotidine",
+    "labeler_name": "Advanced Rx of Tennessee, LLC",
+    "brand_name": "Ibuprofen and famotidine",
+    "active_ingredients": [
+      {
+        "name": "FAMOTIDINE",
+        "strength": "26.6 mg/1"
+      },
+      {
+        "name": "IBUPROFEN",
+        "strength": "800 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "80425-0483-1",
+        "description": "30 TABLET in 1 BOTTLE (80425-0483-1)",
+        "marketing_start_date": "20240322",
+        "sample": false
+      },
+      {
+        "package_ndc": "80425-0483-2",
+        "description": "60 TABLET in 1 BOTTLE (80425-0483-2)",
+        "marketing_start_date": "20240322",
+        "sample": false
+      },
+      {
+        "package_ndc": "80425-0483-3",
+        "description": "90 TABLET in 1 BOTTLE (80425-0483-3)",
+        "marketing_start_date": "20240322",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Advanced Rx of Tennessee, LLC"
+      ],
+      "rxcui": [
+        "1100066"
+      ],
+      "spl_set_id": [
+        "2cf7412a-7f94-e39f-e063-6294a90a5bc2"
+      ],
+      "nui": [
+        "N0000000151",
+        "N0000175784",
+        "N0000000160",
+        "M0001335",
+        "N0000175722"
+      ],
+      "pharm_class_moa": [
+        "Histamine H2 Receptor Antagonists [MoA]",
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_epc": [
+        "Histamine-2 Receptor Antagonist [EPC]",
+        "Nonsteroidal Anti-inflammatory Drug [EPC]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]"
+      ],
+      "unii": [
+        "5QZO15J2Z8",
+        "WK2XYI10QM"
+      ]
+    },
+    "marketing_category": "ANDA",
+    "dosage_form": "TABLET",
+    "spl_id": "2cf74136-002a-d2a4-e063-6294a90ae545",
+    "product_type": "HUMAN PRESCRIPTION DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20240322",
+    "product_id": "80425-0483_2cf74136-002a-d2a4-e063-6294a90ae545",
+    "application_number": "ANDA203658",
+    "brand_name_base": "Ibuprofen and famotidine",
+    "pharm_class": [
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Histamine H2 Receptor Antagonists [MoA]",
+      "Histamine-2 Receptor Antagonist [EPC]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]"
+    ],
+    "_dav_query": "generic_name:\"IBUPROFEN\""
+  },
+  {
+    "product_ndc": "0113-4501",
+    "generic_name": "ibuprofen",
+    "labeler_name": "L. Perrigo Company",
+    "brand_name": "good sense ibuprofen",
+    "active_ingredients": [
+      {
+        "name": "IBUPROFEN",
+        "strength": "200 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "0113-4501-06",
+        "description": "1 BOTTLE in 1 CARTON (0113-4501-06)  / 160 CAPSULE, LIQUID FILLED in 1 BOTTLE",
+        "marketing_start_date": "20220123",
+        "sample": false
+      },
+      {
+        "package_ndc": "0113-4501-27",
+        "description": "1 BOTTLE in 1 CARTON (0113-4501-27)  / 80 CAPSULE, LIQUID FILLED in 1 BOTTLE",
+        "marketing_start_date": "20220123",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "L. Perrigo Company"
+      ],
+      "rxcui": [
+        "310964"
+      ],
+      "spl_set_id": [
+        "0cb4b0ef-5cdd-4c79-8718-4fb157a2c948"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "nui": [
+        "N0000000160",
+        "M0001335",
+        "N0000175722"
+      ],
+      "pharm_class_moa": [
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]"
+      ],
+      "pharm_class_epc": [
+        "Nonsteroidal Anti-inflammatory Drug [EPC]"
+      ],
+      "unii": [
+        "WK2XYI10QM"
+      ]
+    },
+    "marketing_category": "ANDA",
+    "dosage_form": "CAPSULE, LIQUID FILLED",
+    "spl_id": "b5367c81-7cf4-433b-b1a7-d18ed94ea8f0",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20220123",
+    "product_id": "0113-4501_b5367c81-7cf4-433b-b1a7-d18ed94ea8f0",
+    "application_number": "ANDA203599",
+    "brand_name_base": "good sense ibuprofen",
+    "pharm_class": [
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]"
+    ],
+    "_dav_query": "generic_name:\"IBUPROFEN\""
+  },
+  {
+    "product_ndc": "49483-610",
+    "generic_name": "IBUPROFEN",
+    "labeler_name": "TIME CAP LABORATORIES, INC",
+    "brand_name": "IBUPROFEN",
+    "active_ingredients": [
+      {
+        "name": "IBUPROFEN",
+        "strength": "200 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "49483-610-44",
+        "description": "40 CAPSULE, LIQUID FILLED in 1 BOTTLE, PLASTIC (49483-610-44)",
+        "marketing_start_date": "20151223",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "TIME CAP LABORATORIES, INC"
+      ],
+      "rxcui": [
+        "310964"
+      ],
+      "spl_set_id": [
+        "e0a8315a-80a5-4be3-aad1-3d01f00df494"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "nui": [
+        "N0000000160",
+        "M0001335",
+        "N0000175722"
+      ],
+      "pharm_class_moa": [
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]"
+      ],
+      "pharm_class_epc": [
+        "Nonsteroidal Anti-inflammatory Drug [EPC]"
+      ],
+      "unii": [
+        "WK2XYI10QM"
+      ]
+    },
+    "marketing_category": "ANDA",
+    "dosage_form": "CAPSULE, LIQUID FILLED",
+    "spl_id": "471706f7-1fc3-7979-e063-6294a90a54c2",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20151223",
+    "product_id": "49483-610_471706f7-1fc3-7979-e063-6294a90a54c2",
+    "application_number": "ANDA079205",
+    "brand_name_base": "IBUPROFEN",
+    "pharm_class": [
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]"
+    ],
+    "_dav_query": "generic_name:\"IBUPROFEN\""
+  },
+  {
+    "product_ndc": "51316-131",
+    "generic_name": "Acetaminophen and Ibuprofen",
+    "labeler_name": "CVS",
+    "brand_name": "Acetaminophen and Ibuprofen",
+    "active_ingredients": [
+      {
+        "name": "ACETAMINOPHEN",
+        "strength": "250 mg/1"
+      },
+      {
+        "name": "IBUPROFEN",
+        "strength": "125 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "51316-131-36",
+        "description": "36 TABLET in 1 BOTTLE (51316-131-36)",
+        "marketing_start_date": "20231001",
+        "sample": false
+      },
+      {
+        "package_ndc": "51316-131-44",
+        "description": "144 TABLET in 1 BOTTLE (51316-131-44)",
+        "marketing_start_date": "20231001",
+        "sample": false
+      },
+      {
+        "package_ndc": "51316-131-72",
+        "description": "72 TABLET in 1 BOTTLE (51316-131-72)",
+        "marketing_start_date": "20231001",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "CVS"
+      ],
+      "rxcui": [
+        "2387532"
+      ],
+      "spl_set_id": [
+        "e45830a0-c884-e556-e053-2995a90ab565"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "nui": [
+        "N0000000160",
+        "M0001335",
+        "N0000175722"
+      ],
+      "pharm_class_moa": [
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]"
+      ],
+      "pharm_class_epc": [
+        "Nonsteroidal Anti-inflammatory Drug [EPC]"
+      ],
+      "unii": [
+        "362O9ITL9D",
+        "WK2XYI10QM"
+      ]
+    },
+    "marketing_category": "ANDA",
+    "dosage_form": "TABLET",
+    "spl_id": "46545016-29d2-7e81-e063-6294a90a941f",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20231001",
+    "product_id": "51316-131_46545016-29d2-7e81-e063-6294a90a941f",
+    "application_number": "ANDA216592",
+    "brand_name_base": "Acetaminophen and Ibuprofen",
+    "pharm_class": [
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]"
+    ],
+    "_dav_query": "generic_name:\"IBUPROFEN\""
+  },
+  {
+    "product_ndc": "50090-7283",
+    "generic_name": "Ibuprofen",
+    "labeler_name": "A-S Medication Solutions",
+    "brand_name": "Ibuprofen",
+    "active_ingredients": [
+      {
+        "name": "IBUPROFEN",
+        "strength": "800 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "50090-7283-0",
+        "description": "10 TABLET, FILM COATED in 1 BOTTLE (50090-7283-0)",
+        "marketing_start_date": "20241008",
+        "sample": false
+      },
+      {
+        "package_ndc": "50090-7283-1",
+        "description": "15 TABLET, FILM COATED in 1 BOTTLE (50090-7283-1)",
+        "marketing_start_date": "20241008",
+        "sample": false
+      },
+      {
+        "package_ndc": "50090-7283-2",
+        "description": "30 TABLET, FILM COATED in 1 BOTTLE (50090-7283-2)",
+        "marketing_start_date": "20241008",
+        "sample": false
+      },
+      {
+        "package_ndc": "50090-7283-3",
+        "description": "45 TABLET, FILM COATED in 1 BOTTLE (50090-7283-3)",
+        "marketing_start_date": "20241008",
+        "sample": false
+      },
+      {
+        "package_ndc": "50090-7283-4",
+        "description": "60 TABLET, FILM COATED in 1 BOTTLE (50090-7283-4)",
+        "marketing_start_date": "20241008",
+        "sample": false
+      },
+      {
+        "package_ndc": "50090-7283-5",
+        "description": "100 TABLET, FILM COATED in 1 BOTTLE (50090-7283-5)",
+        "marketing_start_date": "20241008",
+        "sample": false
+      },
+      {
+        "package_ndc": "50090-7283-7",
+        "description": "21 TABLET, FILM COATED in 1 BOTTLE (50090-7283-7)",
+        "marketing_start_date": "20241008",
+        "sample": false
+      },
+      {
+        "package_ndc": "50090-7283-8",
+        "description": "12 TABLET, FILM COATED in 1 BOTTLE (50090-7283-8)",
+        "marketing_start_date": "20241008",
+        "sample": false
+      },
+      {
+        "package_ndc": "50090-7283-9",
+        "description": "40 TABLET, FILM COATED in 1 BOTTLE (50090-7283-9)",
+        "marketing_start_date": "20241008",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "A-S Medication Solutions"
+      ],
+      "rxcui": [
+        "197807"
+      ],
+      "spl_set_id": [
+        "b0917020-f0ec-4d07-8fbf-c1eb909f466b"
+      ],
+      "nui": [
+        "N0000000160",
+        "M0001335",
+        "N0000175722"
+      ],
+      "pharm_class_moa": [
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]"
+      ],
+      "pharm_class_epc": [
+        "Nonsteroidal Anti-inflammatory Drug [EPC]"
+      ],
+      "unii": [
+        "WK2XYI10QM"
+      ]
+    },
+    "marketing_category": "ANDA",
+    "dosage_form": "TABLET, FILM COATED",
+    "spl_id": "2f42bfa3-a3a5-40fd-bbca-973a984d4d2c",
+    "product_type": "HUMAN PRESCRIPTION DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20240523",
+    "product_id": "50090-7283_2f42bfa3-a3a5-40fd-bbca-973a984d4d2c",
+    "application_number": "ANDA202413",
+    "brand_name_base": "Ibuprofen",
+    "pharm_class": [
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]"
+    ],
+    "_dav_query": "generic_name:\"IBUPROFEN\""
+  },
+  {
+    "product_ndc": "58602-858",
+    "generic_name": "Ibuprofen",
+    "labeler_name": "Aurohealth LLC",
+    "brand_name": "Ibuprofen Minis",
+    "active_ingredients": [
+      {
+        "name": "IBUPROFEN",
+        "strength": "200 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "58602-858-12",
+        "description": "1 BOTTLE in 1 CARTON (58602-858-12)  / 40 CAPSULE, LIQUID FILLED in 1 BOTTLE",
+        "marketing_start_date": "20230914",
+        "sample": false
+      },
+      {
+        "package_ndc": "58602-858-18",
+        "description": "1 BOTTLE in 1 CARTON (58602-858-18)  / 80 CAPSULE, LIQUID FILLED in 1 BOTTLE",
+        "marketing_start_date": "20230914",
+        "sample": false
+      },
+      {
+        "package_ndc": "58602-858-23",
+        "description": "1 BOTTLE in 1 CARTON (58602-858-23)  / 120 CAPSULE, LIQUID FILLED in 1 BOTTLE",
+        "marketing_start_date": "20230914",
+        "sample": false
+      },
+      {
+        "package_ndc": "58602-858-30",
+        "description": "160 CAPSULE, LIQUID FILLED in 1 BOTTLE (58602-858-30)",
+        "marketing_start_date": "20230914",
+        "sample": false
+      },
+      {
+        "package_ndc": "58602-858-34",
+        "description": "200 CAPSULE, LIQUID FILLED in 1 BOTTLE (58602-858-34)",
+        "marketing_start_date": "20230914",
+        "sample": false
+      },
+      {
+        "package_ndc": "58602-858-42",
+        "description": "240 CAPSULE, LIQUID FILLED in 1 BOTTLE (58602-858-42)",
+        "marketing_start_date": "20230914",
+        "sample": false
+      },
+      {
+        "package_ndc": "58602-858-70",
+        "description": "1 BOTTLE, PLASTIC in 1 CARTON (58602-858-70)  / 40 CAPSULE, LIQUID FILLED in 1 BOTTLE, PLASTIC",
+        "marketing_start_date": "20230914",
+        "sample": false
+      },
+      {
+        "package_ndc": "58602-858-72",
+        "description": "1 BOTTLE, PLASTIC in 1 CARTON (58602-858-72)  / 80 CAPSULE, LIQUID FILLED in 1 BOTTLE, PLASTIC",
+        "marketing_start_date": "20230914",
+        "sample": false
+      },
+      {
+        "package_ndc": "58602-858-73",
+        "description": "1 BOTTLE in 1 CARTON (58602-858-73)  / 20 CAPSULE, LIQUID FILLED in 1 BOTTLE",
+        "marketing_start_date": "20230914",
+        "sample": false
+      },
+      {
+        "package_ndc": "58602-858-80",
+        "description": "200 CAPSULE, LIQUID FILLED in 1 BOTTLE, PLASTIC (58602-858-80)",
+        "marketing_start_date": "20230914",
+        "sample": false
+      },
+      {
+        "package_ndc": "58602-858-96",
+        "description": "1 BOTTLE, PLASTIC in 1 CARTON (58602-858-96)  / 20 CAPSULE, LIQUID FILLED in 1 BOTTLE, PLASTIC",
+        "marketing_start_date": "20230914",
+        "sample": false
+      },
+      {
+        "package_ndc": "58602-858-98",
+        "description": "240 CAPSULE, LIQUID FILLED in 1 BOTTLE, PLASTIC (58602-858-98)",
+        "marketing_start_date": "20230914",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Aurohealth LLC"
+      ],
+      "rxcui": [
+        "310964"
+      ],
+      "spl_set_id": [
+        "d0b03d99-477f-4250-ac84-576b1baf2eed"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "nui": [
+        "N0000000160",
+        "M0001335",
+        "N0000175722"
+      ],
+      "pharm_class_moa": [
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]"
+      ],
+      "pharm_class_epc": [
+        "Nonsteroidal Anti-inflammatory Drug [EPC]"
+      ],
+      "unii": [
+        "WK2XYI10QM"
+      ]
+    },
+    "marketing_category": "ANDA",
+    "dosage_form": "CAPSULE, LIQUID FILLED",
+    "spl_id": "d0b03d99-477f-4250-ac84-576b1baf2eed",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20230914",
+    "product_id": "58602-858_d0b03d99-477f-4250-ac84-576b1baf2eed",
+    "application_number": "ANDA215777",
+    "brand_name_base": "Ibuprofen Minis",
+    "pharm_class": [
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]"
+    ],
+    "_dav_query": "generic_name:\"IBUPROFEN\""
+  },
+  {
+    "product_ndc": "49588-0001",
+    "generic_name": "Ibuprofen",
+    "labeler_name": "Catalent Argentina S.A.I.y.C",
+    "active_ingredients": [
+      {
+        "name": "IBUPROFEN",
+        "strength": "200 mg/1"
+      }
+    ],
+    "finished": false,
+    "packaging": [
+      {
+        "package_ndc": "49588-0001-1",
+        "description": "1 BAG in 1 BOX (49588-0001-1)  / 10000 CAPSULE, LIQUID FILLED in 1 BAG",
+        "marketing_start_date": "10-APR-95"
+      }
+    ],
+    "listing_expiration_date": "20271231",
+    "openfda": {},
+    "marketing_category": "DRUG FOR FURTHER PROCESSING",
+    "dosage_form": "CAPSULE, LIQUID FILLED",
+    "spl_id": "51a131ce-dc7d-de3e-e063-6394a90ac90b",
+    "product_type": "DRUG FOR FURTHER PROCESSING",
+    "marketing_start_date": "19950410",
+    "product_id": "49588-0001_51a131ce-dc7d-de3e-e063-6394a90ac90b",
+    "brand_name_base": null,
+    "_dav_query": "generic_name:\"IBUPROFEN\""
+  },
+  {
+    "product_ndc": "63868-268",
+    "generic_name": "Ibuprofen",
+    "labeler_name": "CHAIN DRUG MARKETING ASSOCIATION INC",
+    "brand_name": "Ibuprofen",
+    "active_ingredients": [
+      {
+        "name": "IBUPROFEN",
+        "strength": "200 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "63868-268-25",
+        "description": "250 TABLET, COATED in 1 BOTTLE, PLASTIC (63868-268-25)",
+        "marketing_start_date": "20210531",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "CHAIN DRUG MARKETING ASSOCIATION INC"
+      ],
+      "rxcui": [
+        "310965"
+      ],
+      "spl_set_id": [
+        "c13455a3-307a-4fe1-e053-2a95a90adf8e"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "upc": [
+        "0635515952331"
+      ],
+      "nui": [
+        "N0000000160",
+        "M0001335",
+        "N0000175722"
+      ],
+      "pharm_class_moa": [
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]"
+      ],
+      "pharm_class_epc": [
+        "Nonsteroidal Anti-inflammatory Drug [EPC]"
+      ],
+      "unii": [
+        "WK2XYI10QM"
+      ]
+    },
+    "marketing_category": "ANDA",
+    "dosage_form": "TABLET, COATED",
+    "spl_id": "d07197cb-9b39-82f5-e053-2995a90a1e3b",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20210531",
+    "product_id": "63868-268_d07197cb-9b39-82f5-e053-2995a90a1e3b",
+    "application_number": "ANDA079174",
+    "brand_name_base": "Ibuprofen",
+    "pharm_class": [
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]"
+    ],
+    "_dav_query": "generic_name:\"IBUPROFEN\""
+  },
+  {
+    "product_ndc": "72288-057",
+    "generic_name": "ibuprofen",
+    "labeler_name": "Amazon.com Services LLC",
+    "brand_name": "basic care infants ibuprofen",
+    "active_ingredients": [
+      {
+        "name": "IBUPROFEN",
+        "strength": "50 mg/1.25mL"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "72288-057-10",
+        "description": "1 BOTTLE in 1 CARTON (72288-057-10)  / 30 mL in 1 BOTTLE",
+        "marketing_start_date": "20211008",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "Amazon.com Services LLC"
+      ],
+      "rxcui": [
+        "204442"
+      ],
+      "spl_set_id": [
+        "1b5b96cc-40d4-4fb8-b429-cc1a5076fa77"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "nui": [
+        "N0000000160",
+        "M0001335",
+        "N0000175722"
+      ],
+      "pharm_class_moa": [
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]"
+      ],
+      "pharm_class_epc": [
+        "Nonsteroidal Anti-inflammatory Drug [EPC]"
+      ],
+      "unii": [
+        "WK2XYI10QM"
+      ]
+    },
+    "marketing_category": "ANDA",
+    "dosage_form": "SUSPENSION",
+    "spl_id": "9480367b-7eb3-46f1-a93f-81ce2dab1071",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20211008",
+    "product_id": "72288-057_9480367b-7eb3-46f1-a93f-81ce2dab1071",
+    "application_number": "ANDA075217",
+    "brand_name_base": "basic care infants ibuprofen",
+    "pharm_class": [
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]"
+    ],
+    "_dav_query": "generic_name:\"IBUPROFEN\""
+  },
+  {
+    "product_ndc": "53943-111",
+    "generic_name": "Ibuprofen",
+    "labeler_name": "DISCOUNT DRUG MART",
+    "brand_name": "Ibuprofen",
+    "active_ingredients": [
+      {
+        "name": "IBUPROFEN",
+        "strength": "200 mg/1"
+      }
+    ],
+    "finished": true,
+    "packaging": [
+      {
+        "package_ndc": "53943-111-02",
+        "description": "1 BOTTLE, PLASTIC in 1 CARTON (53943-111-02)  / 50 TABLET, COATED in 1 BOTTLE, PLASTIC",
+        "marketing_start_date": "20200301",
+        "sample": false
+      },
+      {
+        "package_ndc": "53943-111-03",
+        "description": "1 BOTTLE, PLASTIC in 1 CARTON (53943-111-03)  / 100 TABLET, COATED in 1 BOTTLE, PLASTIC",
+        "marketing_start_date": "20200301",
+        "sample": false
+      },
+      {
+        "package_ndc": "53943-111-05",
+        "description": "500 TABLET, COATED in 1 BOTTLE, PLASTIC (53943-111-05)",
+        "marketing_start_date": "20200301",
+        "sample": false
+      },
+      {
+        "package_ndc": "53943-111-08",
+        "description": "225 TABLET, COATED in 1 BOTTLE, PLASTIC (53943-111-08)",
+        "marketing_start_date": "20200301",
+        "sample": false
+      }
+    ],
+    "listing_expiration_date": "20261231",
+    "openfda": {
+      "manufacturer_name": [
+        "DISCOUNT DRUG MART"
+      ],
+      "rxcui": [
+        "310965"
+      ],
+      "spl_set_id": [
+        "9998b851-825b-a97d-e053-2a95a90affc6"
+      ],
+      "is_original_packager": [
+        true
+      ],
+      "upc": [
+        "0093351118791"
+      ],
+      "nui": [
+        "N0000000160",
+        "M0001335",
+        "N0000175722"
+      ],
+      "pharm_class_moa": [
+        "Cyclooxygenase Inhibitors [MoA]"
+      ],
+      "pharm_class_cs": [
+        "Anti-Inflammatory Agents, Non-Steroidal [CS]"
+      ],
+      "pharm_class_epc": [
+        "Nonsteroidal Anti-inflammatory Drug [EPC]"
+      ],
+      "unii": [
+        "WK2XYI10QM"
+      ]
+    },
+    "marketing_category": "ANDA",
+    "dosage_form": "TABLET, COATED",
+    "spl_id": "352f5bc6-5fa1-1de6-e063-6294a90a2313",
+    "product_type": "HUMAN OTC DRUG",
+    "route": [
+      "ORAL"
+    ],
+    "marketing_start_date": "20200301",
+    "product_id": "53943-111_352f5bc6-5fa1-1de6-e063-6294a90a2313",
+    "application_number": "ANDA202312",
+    "brand_name_base": "Ibuprofen",
+    "pharm_class": [
+      "Anti-Inflammatory Agents",
+      "Non-Steroidal [CS]",
+      "Cyclooxygenase Inhibitors [MoA]",
+      "Nonsteroidal Anti-inflammatory Drug [EPC]"
+    ],
+    "_dav_query": "generic_name:\"IBUPROFEN\""
+  }
+]

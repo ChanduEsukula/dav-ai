@@ -1,4 +1,4 @@
-export type SafetyQueryArea = 'pharmacy' | 'food' | 'cosmetic'
+export type SafetyQueryArea = 'public_safety' | 'pharmacy' | 'food' | 'cosmetic'
 
 export type QueryNormalization = {
   rawQuery: string
@@ -12,15 +12,17 @@ export type QuerySuggestion = {
   workflowLabel: string
 }
 
-const suggestionAreas = ['pharmacy', 'food', 'cosmetic'] as const
+const suggestionAreas = ['public_safety', 'pharmacy', 'food', 'cosmetic'] as const
 
 const workflowLabels: Record<SafetyQueryArea, string> = {
-  pharmacy: 'Pharmacy Safety',
+  public_safety: 'Public Safety Search',
+  pharmacy: 'DrugSignal',
   food: 'Food & Supplement Safety',
-  cosmetic: 'Cosmetic Safety',
+  cosmetic: 'Personal Care Signals',
 }
 
 const aliasesByArea: Record<SafetyQueryArea, Record<string, string>> = {
+  public_safety: {},
   food: {
     strawberries: 'strawberry',
     berries: 'berry',
@@ -71,6 +73,25 @@ const aliasesByArea: Record<SafetyQueryArea, Record<string, string>> = {
 }
 
 const extraSuggestionsByArea: Record<SafetyQueryArea, string[]> = {
+  public_safety: [
+    'tire',
+    'scooter',
+    'electric scooter',
+    'air fryer',
+    'car seat',
+    'battery',
+    'power bank',
+    'NDC 66715 6547',
+    'Advil',
+    'Tylenol',
+    'tylonal',
+    'blood sugar monitor',
+    'glucose meter',
+    'insulin pump',
+    'CPAP',
+    'Toyota Camry',
+    'Honda Civic',
+  ],
   pharmacy: [
     'ibuprofen',
     'acetaminophen',
@@ -256,7 +277,9 @@ export function normalizeSafetyQuery(
 ): QueryNormalization {
   const rawQueryValue = normalizeSearchTerm(rawQuery)
   const lookupKey = getSearchComparisonKey(rawQueryValue)
-  const areas = area ? [area] : (['pharmacy', 'food', 'cosmetic'] as const)
+  const areas = area
+    ? [area]
+    : (['public_safety', 'pharmacy', 'food', 'cosmetic'] as const)
 
   let normalizedQuery = stripSurroundingPunctuation(rawQueryValue)
 

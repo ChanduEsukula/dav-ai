@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { searchDrugEvents } from './api/drugEvents'
 import { searchRecalls } from './api/recalls'
+import { clearStoredAuthToken } from './api/client'
 import App from './App'
 import { PAGE_IDS } from './types/navigation'
 
@@ -18,6 +19,7 @@ const mockSearchRecalls = vi.mocked(searchRecalls)
 const mockSearchDrugEvents = vi.mocked(searchDrugEvents)
 
 beforeEach(() => {
+  clearStoredAuthToken()
   mockSearchRecalls.mockReset()
   mockSearchDrugEvents.mockReset()
   mockSearchRecalls.mockResolvedValue({
@@ -91,34 +93,30 @@ test('renders Dav AI landing page', () => {
 
   expect(
     screen.getByRole('button', {
-      name: /Pharmacy Safety.*Recalls \+ adverse-event patterns/i,
+      name: /DrugSignal.*Recalls \+ adverse-event signals/i,
     }),
   ).toBeInTheDocument()
 
   expect(
     screen.getByRole('button', {
-      name: /Food Safety.*Food & supplement recalls/i,
+      name: /FoodSignal.*Recalls \+ outbreak context/i,
     }),
   ).toBeInTheDocument()
 
   expect(
     screen.getByRole('button', {
-      name: /Cosmetic Safety.*Public cosmetic-event reports/i,
+      name: /Personal Care Signals.*Personal-care event signals/i,
     }),
   ).toBeInTheDocument()
 
   expect(screen.getByRole('button', { name: /How it works/i })).toBeInTheDocument()
 
   expect(
+    screen.getByRole('heading', { name: /Safety Record Search/i }),
+  ).toBeInTheDocument()
+
+  expect(
     screen.getByRole('heading', { name: /Choose a safety lens/i }),
-  ).toBeInTheDocument()
-
-  expect(
-    screen.getByRole('heading', { name: /Search across Dav AI records/i }),
-  ).toBeInTheDocument()
-
-  expect(
-    screen.getByRole('heading', { name: /Public-data intelligence at a glance/i }),
   ).toBeInTheDocument()
 
   expect(
@@ -136,46 +134,81 @@ test('renders Dav AI landing page', () => {
   expect(screen.queryByText('98%')).not.toBeInTheDocument()
   expect(screen.getByText('Public source records')).toBeInTheDocument()
   expect(screen.getByText('Source + retrieval context')).toBeInTheDocument()
-  expect(screen.queryByRole('button', { name: /Ask DAV AI/i })).not.toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: /Explain These Results/i })).not.toBeInTheDocument()
 })
 
-test('does not expose placeholder account pages in the main demo navigation', () => {
+test('exposes auth actions without rendering old placeholder account pages', () => {
   render(<App />)
 
   expect(screen.queryByRole('button', { name: /Profile/i })).not.toBeInTheDocument()
 
-  expect(screen.queryByRole('button', { name: /Sign Up/i })).not.toBeInTheDocument()
+  expect(screen.getByRole('button', { name: /Log in/i })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: /Sign up/i })).toBeInTheDocument()
+  expect(screen.queryByText(/Early access placeholder/i)).not.toBeInTheDocument()
 })
 
-test('renders the current main navigation labels', () => {
+test('renders simplified navigation with workflow pages still available', () => {
   render(<App />)
 
   const mainNav = screen.getByRole('navigation', { name: /Main navigation/i })
+  const mainPages = within(screen.getByLabelText('Main pages'))
+  const accountActions = within(screen.getByLabelText('Account actions'))
+
+  for (const label of ['Home', 'Safety Search', 'Monitors', 'About']) {
+    expect(mainPages.getByRole('button', { name: label })).toBeInTheDocument()
+  }
 
   for (const label of [
-    'Home',
-    'Pharmacy Safety',
-    'Food Safety',
-    'Cosmetic Safety',
-    'Monitors',
+    'DrugSignal',
+    'FoodSignal',
+    'Personal Care Signals',
+    'Scan beta',
+    'Regional Health Lab',
     'Audit',
     'Sources',
     'System',
-    'About',
     'FAQ',
     'Help',
   ]) {
-    expect(within(mainNav).getByRole('button', { name: label })).toBeInTheDocument()
+    expect(mainPages.queryByRole('button', { name: label })).not.toBeInTheDocument()
   }
+
+  expect(accountActions.getByRole('button', { name: 'Log in' })).toBeInTheDocument()
+  expect(accountActions.getByRole('button', { name: 'Sign up' })).toBeInTheDocument()
+  expect(screen.getByText('Workflows')).toBeInTheDocument()
+
+  fireEvent.click(screen.getByText('Workflows'))
+  const workflowPages = within(screen.getByLabelText('Workflow pages'))
+
+  for (const label of [
+    'DrugSignal',
+    'FoodSignal',
+    'Personal Care Signals',
+    'Scan beta',
+    'Regional Health Lab',
+    'Audit',
+    'Sources',
+    'System',
+    'FAQ',
+    'Help',
+  ]) {
+    expect(workflowPages.getByRole('button', { name: label })).toBeInTheDocument()
+  }
+
+  expect(within(mainNav).queryByRole('button', { name: 'Public Safety' })).not.toBeInTheDocument()
+  expect(within(mainNav).queryByRole('button', { name: 'Saved Searches' })).not.toBeInTheDocument()
 })
 
 test('opens ProductScan from the homepage experiment entry without adding primary nav', () => {
   render(<App />)
 
-  const mainNav = screen.getByRole('navigation', { name: /Main navigation/i })
-  expect(within(mainNav).queryByRole('button', { name: /ProductScan/i })).not.toBeInTheDocument()
+  expect(
+    within(screen.getByLabelText('Main pages')).queryByRole('button', {
+      name: /Scan beta/i,
+    }),
+  ).not.toBeInTheDocument()
 
-  fireEvent.click(screen.getByRole('button', { name: /Open ProductScan/i }))
+  fireEvent.click(screen.getByRole('button', { name: /Open Scan beta/i }))
 
   expect(
     screen.getByRole('heading', { name: /Review label text before searching public records/i }),
@@ -183,15 +216,39 @@ test('opens ProductScan from the homepage experiment entry without adding primar
   expect(new URLSearchParams(window.location.search).get('page')).toBe(PAGE_IDS.PRODUCT_SCAN)
 })
 
-test('renders information navigation in the pill nav group', () => {
+test('renders focused navigation groups in the pill nav', () => {
   render(<App />)
 
-  for (const label of ['About', 'FAQ', 'Help']) {
+  for (const label of ['Home', 'Safety Search', 'Monitors', 'About']) {
     const navButton = screen.getByRole('button', { name: label })
 
-    expect(navButton.closest('.nav-actions')).toBeInTheDocument()
     expect(navButton.closest('.nav-links')).toBeInTheDocument()
+    expect(navButton.closest('.nav-advanced-menu')).not.toBeInTheDocument()
+    expect(navButton.closest('.nav-actions')).not.toBeInTheDocument()
   }
+
+  fireEvent.click(screen.getByText('Workflows'))
+  const workflowPages = within(screen.getByLabelText('Workflow pages'))
+
+  for (const label of [
+    'DrugSignal',
+    'FoodSignal',
+    'Personal Care Signals',
+    'Scan beta',
+    'Regional Health Lab',
+    'Audit',
+    'Sources',
+    'System',
+    'FAQ',
+    'Help',
+  ]) {
+    const navButton = workflowPages.getByRole('button', { name: label })
+
+    expect(navButton.closest('.nav-advanced-menu')).toBeInTheDocument()
+  }
+
+  expect(screen.queryByRole('button', { name: 'Public Safety' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: 'Saved Searches' })).not.toBeInTheDocument()
 })
 
 test('shows Help Docs Search on the Help page', () => {
@@ -213,7 +270,7 @@ test('does not show Help Docs Search on the About page', () => {
 
   render(<App />)
 
-  expect(screen.getByRole('heading', { name: /Healthcare safety intelligence/i })).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: /Public safety intelligence with source boundaries/i })).toBeInTheDocument()
   expect(screen.queryByLabelText(/Search Dav AI docs/i)).not.toBeInTheDocument()
   expect(
     screen.queryByRole('heading', { name: /Find cited snippets from Dav AI docs/i }),
@@ -234,14 +291,29 @@ test('does not show Help Docs Search on the FAQ page', () => {
   ).not.toBeInTheDocument()
 })
 
-test('ignores old placeholder account page URLs', () => {
+test('renders signup page from URL state', async () => {
   window.history.replaceState(null, '', '/?page=signup')
 
   render(<App />)
 
-  expect(screen.getByRole('heading', { name: /Public safety/i })).toBeInTheDocument()
+  expect(
+    await screen.findByRole('heading', {
+      name: /Create your public safety intelligence workspace/i,
+    }),
+  ).toBeInTheDocument()
+})
 
-  expect(screen.queryByText(/Early access placeholder/i)).not.toBeInTheDocument()
+test('redirects protected profile page to login when signed out', async () => {
+  window.history.replaceState(null, '', '/?page=profile')
+
+  render(<App />)
+
+  expect(
+    await screen.findByRole('heading', {
+      name: /Sign in to your saved safety workspace/i,
+    }),
+  ).toBeInTheDocument()
+  expect(new URLSearchParams(window.location.search).get('page')).toBe(PAGE_IDS.LOGIN)
 })
 
 test('falls back to the home page for unknown page query values', () => {
@@ -288,12 +360,12 @@ test('uses canonical active navigation and clears stale audit parameters', async
   expect(
     await screen.findByRole('heading', { name: /Safety review for Xanax/i }),
   ).toBeInTheDocument()
-  expect(screen.getByRole('button', { name: 'Pharmacy Safety' })).toHaveAttribute(
+  expect(screen.getByRole('button', { name: 'DrugSignal' })).toHaveAttribute(
     'aria-current',
     'page',
   )
 
-  fireEvent.click(screen.getByRole('button', { name: 'Food Safety' }))
+  fireEvent.click(screen.getByRole('button', { name: 'FoodSignal' }))
 
   expect(
     await screen.findByRole('heading', {

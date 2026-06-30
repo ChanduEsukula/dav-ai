@@ -59,6 +59,27 @@ const cosmeticResponse: CosmeticEventSearchResponse = {
     { reaction: 'BURNING SENSATION', count: 3 },
     { reaction: 'ERYTHEMA', count: 1 },
   ],
+  recall_count: 1,
+  recall_source_name: 'FDA Recalls, Market Withdrawals & Safety Alerts',
+  recall_source_status: 'success',
+  recall_source_error: null,
+  recall_notices: [
+    {
+      title: 'FDA public notice for Solstice Daily Mineral Sunscreen SPF 50',
+      product_name: 'Daily Mineral Sunscreen SPF 50',
+      brand_name: 'Solstice',
+      company_name: 'Solstice Labs',
+      category: 'Cosmetics',
+      reason: 'Potential product quality concern',
+      remedy: 'Consumers should stop using the affected product.',
+      published_date: '2026-06-02',
+      record_url: 'https://www.fda.gov/safety/example-sunscreen-notice',
+      source_name: 'FDA Recalls, Market Withdrawals & Safety Alerts',
+      source_kind: 'normalized_public_notice',
+      source_type: 'normalized official public notice',
+      extraction_confidence: 'high',
+    },
+  ],
   records: [
     {
       report_number: 'CAERS-2026-001',
@@ -132,7 +153,7 @@ beforeEach(() => {
   window.history.replaceState(null, '', '?page=cosmetic-safety&q=Sunscreen')
 })
 
-test('renders the Cosmetic Safety dashboard and multiple reports for Sunscreen', async () => {
+test('renders the Personal Care Signals dashboard and multiple reports for Sunscreen', async () => {
   renderCosmeticPage()
 
   expect(
@@ -147,6 +168,11 @@ test('renders the Cosmetic Safety dashboard and multiple reports for Sunscreen',
   expect(screen.getByTitle(sunscreenProduct)).toBeInTheDocument()
   expect(screen.getByTitle('Sun Veil Face Lotion')).toBeInTheDocument()
   expect(screen.getByText(/Showing 2 of 2 returned reports/i)).toBeInTheDocument()
+  expect(screen.getByText(/FDA public notices/i)).toBeInTheDocument()
+  expect(
+    screen.getByTitle('FDA public notice for Solstice Daily Mineral Sunscreen SPF 50'),
+  ).toBeInTheDocument()
+  expect(screen.getAllByText('Normalized public notice').length).toBeGreaterThan(0)
 })
 
 test('loads normalized Cosmetic reports with limit 8', async () => {
@@ -163,7 +189,7 @@ test('empty input falls back to the submitted Cosmetic query', async () => {
   renderCosmeticPage()
 
   await screen.findByRole('heading', { name: /Safety review for Sunscreen/i })
-  await user.clear(screen.getByLabelText(/Search cosmetic-event reports/i))
+  await user.clear(screen.getByLabelText(/Search cosmetic safety records/i))
   await user.click(screen.getByRole('button', { name: 'Search' }))
 
   await waitFor(() => {
@@ -177,7 +203,7 @@ test('spaces-only input falls back to the submitted Cosmetic query', async () =>
   renderCosmeticPage()
 
   await screen.findByRole('heading', { name: /Safety review for Sunscreen/i })
-  const input = screen.getByLabelText(/Search cosmetic-event reports/i)
+  const input = screen.getByLabelText(/Search cosmetic safety records/i)
   await user.clear(input)
   await user.type(input, '   ')
   await user.click(screen.getByRole('button', { name: 'Search' }))
@@ -219,18 +245,18 @@ test('an example chip runs a new Cosmetic search and clears guidance', async () 
   expect(screen.queryByText(/Enter a cosmetic, brand, ingredient/i)).not.toBeInTheDocument()
 })
 
-test('a Xanax Cosmetic search suggests Pharmacy Safety', async () => {
+test('a Xanax Cosmetic search suggests DrugSignal', async () => {
   const user = userEvent.setup()
   window.history.replaceState(null, '', '?page=cosmetic-safety')
   renderCosmeticPage('')
 
-  await user.type(screen.getByLabelText(/Search cosmetic-event reports/i), 'Xanax')
+  await user.type(screen.getByLabelText(/Search cosmetic safety records/i), 'Xanax')
   await user.click(screen.getByRole('button', { name: 'Search' }))
 
   expect(
-    await screen.findByText(/This looks more like a Pharmacy Safety search/i),
+    await screen.findByText(/This looks more like a DrugSignal search/i),
   ).toBeInTheDocument()
-  await user.click(screen.getByRole('button', { name: 'Open Pharmacy Safety' }))
+  await user.click(screen.getByRole('button', { name: 'Open DrugSignal' }))
   expect(mockGoToPage).toHaveBeenCalledWith('pharmacy-safety', 'Xanax')
 })
 
@@ -240,7 +266,7 @@ test('a Chicken Cosmetic search suggests Food & Supplement Safety', async () => 
   window.history.replaceState(null, '', '?page=cosmetic-safety')
   renderCosmeticPage('')
 
-  await user.type(screen.getByLabelText(/Search cosmetic-event reports/i), 'Chicken')
+  await user.type(screen.getByLabelText(/Search cosmetic safety records/i), 'Chicken')
   await user.click(screen.getByRole('button', { name: 'Search' }))
 
   const suggestion = await screen.findByText(
@@ -256,7 +282,7 @@ test('a Chicken Cosmetic search suggests Food & Supplement Safety', async () => 
     screen.getByText(/This looks better suited for Food & Supplement Safety/i),
   ).toBeInTheDocument()
   expect(
-    screen.queryByText(/No public reports returned for this exact search/i),
+    screen.queryByText(/No cosmetic-event reports returned for this exact search/i),
   ).not.toBeInTheDocument()
   await user.click(screen.getByRole('button', { name: 'Open Food & Supplement Safety' }))
   expect(mockGoToPage).toHaveBeenCalledWith('food-safety', 'Chicken')
@@ -267,7 +293,7 @@ test('zero reports show calm guidance without claiming the cosmetic is safe', as
   renderCosmeticPage('Unknown cream')
 
   expect(
-    await screen.findByText(/No public reports returned for this exact search/i),
+    await screen.findByText(/No cosmetic-event reports returned for this exact search/i),
   ).toBeInTheDocument()
   expect(screen.getByText(/No result does not prove a cosmetic is safe/i)).toBeInTheDocument()
   expect(screen.queryByText(/This cosmetic is safe/i)).not.toBeInTheDocument()
@@ -281,7 +307,24 @@ test('uses the report number when a Cosmetic report has no product title fields'
   mockSearchCosmeticEvents.mockResolvedValue({
     ...cosmeticResponse,
     count: 1,
-    records: [
+    recall_count: 1,
+  recall_source_name: 'FDA Recalls, Market Withdrawals & Safety Alerts',
+  recall_source_status: 'success',
+  recall_source_error: null,
+  recall_notices: [
+    {
+      title: 'FDA public notice for Solstice Daily Mineral Sunscreen SPF 50',
+      product_name: 'Daily Mineral Sunscreen SPF 50',
+      brand_name: 'Solstice',
+      company_name: 'Solstice Labs',
+      category: 'Cosmetics',
+      reason: 'Potential product quality concern',
+      published_date: '2026-06-02',
+      record_url: 'https://www.fda.gov/safety/example-sunscreen-notice',
+      source_name: 'FDA Recalls, Market Withdrawals & Safety Alerts',
+    },
+  ],
+  records: [
       {
         ...cosmeticResponse.records[0],
         report_number: 'CAERS-FALLBACK-001',
@@ -309,7 +352,7 @@ test('normalizes hairdye and preserves the original Cosmetic query', async () =>
   expect(
     screen.getByText(/Showing results for 'hair dye' based on your search 'hairdye'/i),
   ).toBeInTheDocument()
-  expect(screen.getByLabelText(/Search cosmetic-event reports/i)).toHaveValue('hairdye')
+  expect(screen.getByLabelText(/Search cosmetic safety records/i)).toHaveValue('hairdye')
   expect(new URLSearchParams(window.location.search).get('q')).toBe('hair dye')
   expect(new URLSearchParams(window.location.search).get('raw_q')).toBe('hairdye')
 })

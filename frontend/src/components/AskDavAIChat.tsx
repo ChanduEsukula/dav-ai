@@ -38,6 +38,25 @@ const drugSignalPrompt: PromptChip = {
   question: 'What does FAERS not prove from these reports?',
 }
 
+const publicSafetyPrompts: PromptChip[] = [
+  {
+    label: 'What evidence types were found?',
+    question: 'What evidence types were found in this Public Safety Search?',
+  },
+  {
+    label: 'Which sources were checked?',
+    question: 'Which public safety sources were checked for this search?',
+  },
+  {
+    label: 'What identifiers should I verify?',
+    question: 'What identifiers should I verify before acting on these public safety results?',
+  },
+  {
+    label: 'Is this a recall or reference record?',
+    question: 'Does this Public Safety Search show a recall, a reference record, an adverse-event signal, or another evidence type?',
+  },
+]
+
 function contextLabel(context: AssistantChatContext | null) {
   if (!context) return 'No result context'
 
@@ -46,6 +65,7 @@ function contextLabel(context: AssistantChatContext | null) {
     drug_event: 'DrugSignal result context',
     food: 'FoodRadar result context',
     cosmetic: 'CosmeticSignal result context',
+    public_safety: 'Public Safety Search result context',
   }
 
   return labels[context.module]
@@ -59,6 +79,7 @@ function contextBadge(context: AssistantChatContext | null) {
     drug_event: 'DrugSignal',
     food: 'FoodRadar',
     cosmetic: 'CosmeticSignal',
+    public_safety: 'Public Safety Search',
   }
 
   return badges[context.module]
@@ -90,6 +111,10 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
       return [...basePrompts, drugSignalPrompt]
     }
 
+    if (context?.module === 'public_safety') {
+      return [...publicSafetyPrompts, ...basePrompts]
+    }
+
     return basePrompts
   }, [context])
 
@@ -110,7 +135,7 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
       setQuestion('')
       setError('')
     } catch {
-      setError('Ask DAV AI is unavailable. Try again after the backend is running.')
+      setError('Result explanation is unavailable. Try again after the backend is running.')
     } finally {
       setLoading(false)
     }
@@ -121,29 +146,29 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
   }
 
   return (
-    <section className="ask-dav-ai-chat" aria-label="Ask DAV AI chatbot">
+    <section className="ask-dav-ai-chat" aria-label="Explain These Results panel">
       <button
         type="button"
         className="ask-dav-ai-chat__toggle"
         onClick={() => setIsOpen((current) => !current)}
         aria-expanded={isOpen}
       >
-        Ask DAV AI
+        Explain These Results
       </button>
 
       {isOpen && (
-        <div className="ask-dav-ai-chat__drawer" role="dialog" aria-label="Ask DAV AI">
+        <div className="ask-dav-ai-chat__drawer" role="dialog" aria-label="Explain These Results">
           <div className="ask-dav-ai-chat__header">
             <div>
-              <p className="eyebrow">Ask DAV AI</p>
-              <h2>Source-grounded safety assistant</h2>
+              <p className="eyebrow">Explain These Results</p>
+              <h2>Source-grounded result explanation</h2>
               <p>
-                Answers stay inside the current module result, source metadata, audit context, and
+                Explanations stay inside the current result, source metadata, audit context, and
                 safety limitations.
               </p>
             </div>
 
-            <button type="button" onClick={() => setIsOpen(false)} aria-label="Close Ask DAV AI">
+            <button type="button" onClick={() => setIsOpen(false)} aria-label="Close explanation panel">
               Close
             </button>
           </div>
@@ -182,7 +207,7 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
                 placeholder="Example: What should I verify?"
               />
               <button type="submit" disabled={loading || !question.trim()}>
-                {loading ? 'Asking...' : 'Ask'}
+                {loading ? 'Explaining...' : 'Explain'}
               </button>
             </div>
           </form>
@@ -201,7 +226,7 @@ function AskDavAIChat({ context }: AskDavAIChatProps) {
               aria-live="polite"
             >
               <div className="ask-dav-ai-chat__answer-header">
-                <span>{answer.refused ? 'Safety boundary' : 'DAV AI answer'}</span>
+                <span>{answer.refused ? 'Safety boundary' : 'Result explanation'}</span>
                 <small>{answer.model_info.provider} · {answer.model_info.model}</small>
               </div>
 

@@ -12,17 +12,25 @@ def test_list_sources_returns_registered_sources():
     assert response.status_code == 200
 
     body = response.json()
-    assert body["count"] == 7
-    assert len(body["sources"]) == 7
+    assert body["count"] == 21
+    assert len(body["sources"]) == 21
 
     source_ids = {source["source_id"] for source in body["sources"]}
 
     assert "openfda_drug_enforcement" in source_ids
     assert "openfda_drug_event" in source_ids
+    assert "cdc_vaers" in source_ids
+    assert "cdc_foodborne_outbreaks" in source_ids
+    assert "fda_safety_communications" in source_ids
+    assert "openfda_drug_label" in source_ids
     assert "openfda_cosmetic_event" in source_ids
     assert "openfda_food_enforcement" in source_ids
     assert "usda_fsis_recall" in source_ids
     assert "foodradar_multi_source" in source_ids
+    assert "fda_recalls_market_withdrawals_safety_alerts" in source_ids
+    assert "cpsc_recalls_api" in source_ids
+    assert "nhtsa_vpic_vin_decoder_api" in source_ids
+    assert "nhtsa_recalls_api_datasets" in source_ids
     assert "regional_health_pulse_demo" in source_ids
 
 

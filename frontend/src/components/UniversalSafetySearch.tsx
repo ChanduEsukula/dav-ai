@@ -15,6 +15,9 @@ import { normalizeSafetyQuery } from '../utils/queryNormalization'
 import type { ActivePage } from '../types/navigation'
 import QueryNormalizationNotice from './QueryNormalizationNotice'
 import QueryTypeahead from './QueryTypeahead'
+import SourceIntegrationBadge from './SourceIntegrationBadge'
+import SourceDetailsDisclosure from './SourceDetailsDisclosure'
+import { getSourceIntegrationMode } from '../utils/sourceIntegrationMode'
 
 type UniversalSafetySearchProps = {
   goToPage: (page: ActivePage, query?: string, rawQuery?: string) => void
@@ -36,7 +39,13 @@ type UniversalSearchData = {
   cosmetic?: CosmeticEventSearchResponse
 }
 
-const examples = ['Xanax', 'Chicken', 'Sunscreen', 'Protein powder', 'Shampoo']
+type UniversalSourceIdentity = {
+  sourceId?: string
+  sourceName: string
+  sourceType?: string
+}
+
+const examples = ['air fryer', 'Advil', 'NDC 66715 6547', 'Toyota Camry', 'sunscreen']
 
 function formatRecordLabel(count: number) {
   if (count === 1) return '1 possible public record found'
@@ -54,10 +63,10 @@ function buildPreview(
     const totalCount = recallCount + drugCount
 
     return {
-      eyebrow: 'Dav AI quick preview',
+      eyebrow: 'Safety record preview',
       title: `${query} looks like a drug or medication search.`,
       detail:
-        'Dav AI checked for possible drug recall matches and public adverse-event reporting patterns. Use the full pharmacy workflow to review details before interpreting the result.',
+        'Dav AI checked for possible drug recall matches and public adverse-event reporting patterns. Use the full DrugSignal workflow to review details before interpreting the result.',
       countLabel:
         totalCount > 0
           ? formatRecordLabel(totalCount)
@@ -72,14 +81,31 @@ function buildPreview(
     }
   }
 
+  if (classification.primaryArea === 'public_safety') {
+    return {
+      eyebrow: 'Safety record handoff',
+      title: `${query} belongs in Safety Record Search.`,
+      detail:
+        'Dav AI can check public recall, reference, label, vehicle, device, and consumer-product safety records with source roles and query-understanding details.',
+      countLabel: 'Open full Safety Record Search',
+      checklist: [
+        'Review recall/enforcement records separately from reference or signal records.',
+        'Check exact product, NDC, UPC, VIN, model, lot, and official source links.',
+        'No result does not prove that a product is safe.',
+      ],
+      disclaimer:
+        'Public records only. This routing preview does not run the full search or make any safety conclusion.',
+    }
+  }
+
   if (classification.primaryArea === 'food') {
     const foodCount = data.food?.count ?? 0
 
     return {
-      eyebrow: 'Dav AI quick preview',
+      eyebrow: 'Safety record preview',
       title: `${query} looks like a food or supplement search.`,
       detail:
-        'Dav AI checked food and supplement safety records for possible public matches. Use the full food safety workflow to review product names, firms, dates, and recall reasons.',
+        'Dav AI checked food and supplement safety records for possible public matches. Use the full FoodSignal workflow to review product names, firms, dates, outbreak context, and recall reasons.',
       countLabel:
         foodCount > 0
           ? formatRecordLabel(foodCount)
@@ -98,10 +124,10 @@ function buildPreview(
     const cosmeticCount = data.cosmetic?.count ?? 0
 
     return {
-      eyebrow: 'Dav AI quick preview',
+      eyebrow: 'Safety record preview',
       title: `${query} looks like a cosmetic or personal-care search.`,
       detail:
-        'Dav AI checked cosmetic-event records for possible product or brand-related reports. Use the full cosmetic workflow to review report patterns and product context.',
+        'Dav AI checked cosmetic-event records for possible product or brand-related reports. Use the full Personal Care Signals workflow to review report patterns and product context.',
       countLabel:
         cosmeticCount > 0
           ? formatRecordLabel(cosmeticCount)
@@ -117,19 +143,49 @@ function buildPreview(
   }
 
   return {
-    eyebrow: 'Dav AI needs one more step',
+    eyebrow: 'Safety record routing',
     title: `${query} may fit more than one safety area.`,
     detail:
       'This search could belong to more than one workflow. Choose the closest match so Dav AI can show the right detailed page.',
     countLabel: 'Choose a safety area to continue',
     checklist: [
-      'Use Pharmacy Safety for drugs and medications.',
-      'Use Food & Supplement Safety for food, supplements, meat, poultry, and egg products.',
-      'Use Cosmetic Safety for cosmetics and personal-care products.',
+      'Use Safety Record Search for vehicles, consumer products, NDC/UPC/VIN, and cross-source checks.',
+      'Use DrugSignal for drugs and medications.',
+      'Use FoodSignal for food, supplements, meat, poultry, and egg products.',
+      'Use Personal Care Signals for cosmetics and personal-care products.',
     ],
     disclaimer:
       'This preview is only a routing step and does not make any safety conclusion.',
   }
+}
+
+function getIntegrationSources(data: UniversalSearchData): UniversalSourceIdentity[] {
+  const sources: UniversalSourceIdentity[] = [
+    ...(data.recall?.sources_checked?.map((source) => ({
+      sourceId: source.source_id,
+      sourceName: source.source_name,
+      sourceType: source.source_type,
+    })) ?? []),
+    ...(data.food?.sources_checked.map((source) => ({
+      sourceId: source.source_id,
+      sourceName: source.source_name,
+      sourceType: source.source_type,
+    })) ?? []),
+    ...(data.cosmetic?.recall_notices?.map((notice) => ({
+      sourceName: notice.source_name,
+      sourceType: notice.source_type,
+    })) ?? []),
+  ]
+
+  const seen = new Set<string>()
+
+  return sources.filter((source) => {
+    if (!getSourceIntegrationMode(source)) return false
+    const key = `${source.sourceId ?? ''}:${source.sourceName}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
 }
 
 function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
@@ -152,6 +208,7 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
   const preview = hasSubmittedQuery
     ? buildPreview(submittedQuery, classification, searchData)
     : null
+  const integrationSources = getIntegrationSources(searchData)
 
   async function runPreviewSearch(nextQuery: string) {
     const normalization = normalizeSafetyQuery(nextQuery)
@@ -161,7 +218,7 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
       setError('')
       setNotice('')
       setHelper(
-        'Enter a product, drug, brand, food, supplement, cosmetic, or ingredient to search public records.',
+        'Enter a product, drug, food, vehicle, device, brand, identifier, or ingredient to search selected public records.',
       )
       return
     }
@@ -222,6 +279,8 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
       } else if (nextClassification.primaryArea === 'cosmetic') {
         const cosmetic = await searchCosmeticEvents(cleanQuery, 5)
         nextSearchData = { cosmetic }
+      } else if (nextClassification.primaryArea === 'public_safety') {
+        nextSearchData = {}
       }
 
       if (requestId !== requestIdRef.current) return
@@ -270,11 +329,11 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
   return (
     <section className="universal-safety-search" id="universal-safety-search">
       <div className="section-heading">
-        <p className="eyebrow">Universal safety search</p>
-        <h2>Search across Dav AI records.</h2>
+        <p className="eyebrow">Safety Record Search</p>
+        <h2>Safety Record Search.</h2>
         <p>
-          Enter a product, drug, brand, food, supplement, cosmetic, or ingredient. Dav AI checks
-          the most relevant public-data workflow first using keyword-based public-record searches.
+          Enter a product, vehicle, drug, brand, food, supplement, cosmetic, identifier, or
+          ingredient. Dav AI routes to the most relevant public-data workflow first.
         </p>
       </div>
 
@@ -298,7 +357,7 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
                 setQuery(nextQuery)
                 if (helper) setHelper('')
               }}
-              placeholder="Search: Xanax, chicken, sunscreen, protein powder, shampoo"
+              placeholder="Search: air fryer, Advil, NDC 66715 6547, Toyota Camry, sunscreen"
               ariaDescribedBy="universal-safety-helper"
               showWorkflow
             />
@@ -309,7 +368,7 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
           </div>
 
           <button type="submit" disabled={loading}>
-            {loading ? 'Checking...' : 'Analyze'}
+            {loading ? 'Checking...' : 'Search records'}
           </button>
         </form>
 
@@ -361,6 +420,32 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
 
               <strong className="universal-safety-search__count">{preview.countLabel}</strong>
 
+              {integrationSources.length > 0 && (
+                <div
+                  className="universal-safety-search__source-modes"
+                  aria-label="Source integration modes"
+                >
+                  {integrationSources.map((source) => (
+                    <span
+                      className="universal-safety-search__source-mode"
+                      key={`${source.sourceId ?? ''}-${source.sourceName}`}
+                    >
+                      <span>{source.sourceName}</span>
+                      <SourceIntegrationBadge
+                        sourceId={source.sourceId}
+                        sourceName={source.sourceName}
+                        sourceType={source.sourceType}
+                      />
+                      <SourceDetailsDisclosure
+                        sourceId={source.sourceId}
+                        sourceName={source.sourceName}
+                        sourceType={source.sourceType}
+                      />
+                    </span>
+                  ))}
+                </div>
+              )}
+
               <ul className="universal-safety-search__checklist">
                 {preview.checklist.map((item) => (
                   <li key={item}>{item}</li>
@@ -376,7 +461,9 @@ function UniversalSafetySearch({ goToPage }: UniversalSafetySearchProps) {
                 className="universal-safety-search__know-more"
                 onClick={() => openSuggestion(primarySuggestion)}
               >
-                Open {primarySuggestion.label}
+                Open {primarySuggestion.label === 'Public Safety Search'
+                  ? 'Safety Record Search'
+                  : primarySuggestion.label}
               </button>
             ) : (
               <div className="universal-safety-search__choices">

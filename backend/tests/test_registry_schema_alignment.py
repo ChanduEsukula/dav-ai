@@ -5,13 +5,36 @@ from app.sources.registry import REGISTERED_SOURCES
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCHEMA_PATH = REPO_ROOT / "backend" / "db" / "schema.sql"
+MIGRATIONS_DIR = REPO_ROOT / "backend" / "migrations" / "versions"
 MIGRATION_PATH = (
-    REPO_ROOT
-    / "backend"
-    / "migrations"
-    / "versions"
+    MIGRATIONS_DIR
     / "20260527_0007_align_regional_health_source_and_monitor_constraints.py"
 )
+
+
+def _normalize_sql(value: str) -> str:
+    return " ".join(value.split())
+
+
+def _sql_quote(value: str) -> str:
+    return value.replace("'", "''")
+
+
+def _expected_source_seed_tuple(source: dict[str, str]) -> str:
+    return _normalize_sql(
+        f"""(
+            '{_sql_quote(source["source_id"])}',
+            '{_sql_quote(source["source_name"])}',
+            '{_sql_quote(source["endpoint"])}',
+            '{_sql_quote(source["module"])}',
+            '{_sql_quote(source["description"])}',
+            '{_sql_quote(source["update_cadence"])}'
+        )"""
+    )
+
+
+def _all_migration_source_text() -> str:
+    return "\n".join(path.read_text() for path in sorted(MIGRATIONS_DIR.glob("*.py")))
 
 
 def test_registered_sources_include_current_public_source_surfaces():
@@ -21,10 +44,24 @@ def test_registered_sources_include_current_public_source_surfaces():
     assert source_ids == {
         "openfda_drug_enforcement",
         "openfda_drug_event",
+            "rxnorm_rxnav_api",
+            "dailymed_spl_api",
+            "openfda_drug_label",
+            "openfda_ndc_directory",
+            "openfda_device_enforcement",
+            "openfda_device_event",
+            "openfda_udi_directory",
+            "fda_safety_communications",
+            "cdc_vaers",
+            "cdc_foodborne_outbreaks",
         "openfda_cosmetic_event",
         "openfda_food_enforcement",
         "usda_fsis_recall",
         "foodradar_multi_source",
+        "fda_recalls_market_withdrawals_safety_alerts",
+        "cpsc_recalls_api",
+        "nhtsa_vpic_vin_decoder_api",
+        "nhtsa_recalls_api_datasets",
         "regional_health_pulse_demo",
     }
     assert modules == {
@@ -32,6 +69,7 @@ def test_registered_sources_include_current_public_source_surfaces():
         "DrugSignal",
         "CosmeticSignal",
         "FoodRadar",
+        "RealWorldSafety",
         "RegionalHealthPulse",
     }
 
@@ -43,7 +81,7 @@ def test_schema_snapshot_includes_regional_health_source_and_monitor_constraints
     assert "'Regional Health Pulse MVP scaffold'" in schema_sql
     assert "saved_monitors_module_check" in schema_sql
     assert "saved_monitor_runs_module_check" in schema_sql
-    assert "check (module in ('recallradar', 'drugsignal', 'foodradar', 'regional_health_pulse'))" in schema_sql
+    assert "check (module in ('recallradar', 'drugsignal', 'foodradar', 'cosmeticsignal', 'regional_health_pulse'))" in schema_sql
 
 
 def test_regional_health_alignment_migration_covers_seed_and_constraints():
@@ -117,3 +155,43 @@ def test_everyday_safety_source_seed_migration_exists():
         assert source_id in migration_source
 
     assert "on conflict (source_id) do update set" in migration_source
+
+
+def test_real_world_safety_source_seed_migration_exists():
+    migration_source = (
+        REPO_ROOT
+        / "backend"
+        / "migrations"
+        / "versions"
+        / "20260622_0011_seed_real_world_safety_sources.py"
+    ).read_text()
+
+    assert 'revision = "20260622_0011"' in migration_source
+    assert 'down_revision = "20260616_0010"' in migration_source
+
+    for source_id in {
+        "fda_recalls_market_withdrawals_safety_alerts",
+        "cpsc_recalls_api",
+        "nhtsa_vpic_vin_decoder_api",
+        "nhtsa_recalls_api_datasets",
+    }:
+        assert source_id in migration_source
+
+    assert "on conflict (source_id) do update set" in migration_source
+
+
+def test_all_registered_sources_are_seeded_by_alembic_migrations():
+    migration_source = _all_migration_source_text()
+
+    for source in REGISTERED_SOURCES:
+        assert source["source_id"] in migration_source
+        assert source["source_name"] in migration_source
+        assert source["endpoint"] in migration_source
+        assert source["module"] in migration_source
+
+
+def test_schema_source_registry_seed_rows_match_runtime_registry():
+    schema_sql = _normalize_sql(SCHEMA_PATH.read_text())
+
+    for source in REGISTERED_SOURCES:
+        assert _expected_source_seed_tuple(source) in schema_sql

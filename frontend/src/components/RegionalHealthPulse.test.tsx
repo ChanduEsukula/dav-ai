@@ -105,6 +105,7 @@ describe('RegionalHealthPulse', () => {
       expect(screen.getByText(/regional_health_pulse_demo/i)).toBeInTheDocument()
       expect(screen.getByText('Source freshness')).toBeInTheDocument()
       expect(screen.getByText('Scaffold data')).toBeInTheDocument()
+      expect(screen.getByText('Prototype scaffold')).toBeInTheDocument()
       expect(screen.getByText(/Live CDC\/HHS freshness checks are not configured yet/i)).toBeInTheDocument()
       expect(screen.getByText('Audit trail')).toBeInTheDocument()
       expect(screen.getByText('33333333-3333-4333-8333-333333333333')).toBeInTheDocument()

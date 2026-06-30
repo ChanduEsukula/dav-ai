@@ -16,29 +16,29 @@ type SafetyModule = {
 
 const modules: SafetyModule[] = [
   {
-    title: 'Pharmacy Safety',
+    title: 'DrugSignal',
     eyebrow: 'Drug safety workspace',
-    description: 'Review official recall records alongside public FAERS reporting patterns.',
-    chips: ['Drug recalls', 'FAERS patterns'],
-    actionLabel: 'Open Pharmacy Safety',
+    description: 'Review drug recalls, adverse-event signals, labels, and source context.',
+    chips: ['Drug recalls', 'FAERS signals'],
+    actionLabel: 'Open DrugSignal',
     variant: 'recall',
     onClick: () => {},
   },
   {
-    title: 'Food Safety',
+    title: 'FoodSignal',
     eyebrow: 'Food and supplement workspace',
-    description: 'Check food, supplement, meat, poultry, and egg-product recall records.',
-    chips: ['FDA food', 'USDA FSIS'],
-    actionLabel: 'Open Food Safety',
+    description: 'Review food recalls, USDA FSIS records, outbreak context, and future supplement signals.',
+    chips: ['Food recalls', 'Outbreak context'],
+    actionLabel: 'Open FoodSignal',
     variant: 'health',
     onClick: () => {},
   },
   {
-    title: 'Cosmetic Safety',
+    title: 'Personal Care Signals',
     eyebrow: 'Cosmetic event workspace',
-    description: 'Review cosmetic-event public records with source context and careful limitations.',
-    chips: ['Cosmetics', 'Source trail'],
-    actionLabel: 'Open Cosmetic Safety',
+    description: 'Review personal-care and cosmetic adverse-event reports as signals, not proof of causation.',
+    chips: ['Personal care', 'Signal reports'],
+    actionLabel: 'Open Personal Care Signals',
     variant: 'cosmetic',
     onClick: () => {},
   },
@@ -231,8 +231,7 @@ function SafetyWorkspace({
         </div>
 
         <p>
-          Three public-data workspaces connect to one source-aware intelligence dashboard for faster
-          search, comparison, and source verification.
+          Start with Safety Search, then open the right evidence lane for recalls, adverse-event signals, outbreak context, labels, source status, and audit trails.
         </p>
       </div>
 
@@ -252,8 +251,7 @@ function SafetyWorkspace({
       <div className="safety-workspace__bridge">
         <strong>Recommended workflow:</strong>
         <span>
-          Choose the product area, review returned records, then verify the source and audit
-          context before acting.
+          Search once, review the evidence lane, then verify source freshness, provenance, and limitations before acting.
         </span>
       </div>
     </section>

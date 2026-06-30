@@ -1,6 +1,4 @@
-import { expect, test, type Locator } from '@playwright/test'
-
-type ElementBox = NonNullable<Awaited<ReturnType<Locator['boundingBox']>>>
+import { expect, test } from '@playwright/test'
 
 const demoPages = [
   {
@@ -10,22 +8,22 @@ const demoPages = [
     nav: 'Home',
   },
   {
-    name: 'Pharmacy Safety',
+    name: 'DrugSignal',
     url: '/?page=pharmacy-safety',
     heading: 'Search pharmacy safety records',
-    nav: 'Pharmacy Safety',
+    nav: 'DrugSignal',
   },
   {
-    name: 'Food Safety',
+    name: 'FoodSignal',
     url: '/?page=food-safety',
     heading: 'Search food and supplement safety records',
-    nav: 'Food Safety',
+    nav: 'FoodSignal',
   },
   {
-    name: 'Cosmetic Safety',
+    name: 'Personal Care Signals',
     url: '/?page=cosmetic-safety',
-    heading: 'Search cosmetic-event reports',
-    nav: 'Cosmetic Safety',
+    heading: 'Search cosmetic safety records',
+    nav: 'Personal Care Signals',
   },
   {
     name: 'ProductScan',
@@ -45,9 +43,9 @@ const demoPages = [
     nav: 'System',
   },
   {
-    name: 'Saved Monitors',
+    name: 'Monitors',
     url: '/?page=saved-monitors',
-    heading: 'Saved Monitors',
+    heading: 'Saved Searches',
     nav: 'Monitors',
   },
   {
@@ -57,34 +55,6 @@ const demoPages = [
     nav: 'Help',
   },
 ]
-
-function boxesOverlap(first: ElementBox, second: ElementBox) {
-  return !(
-    first.x + first.width <= second.x ||
-    second.x + second.width <= first.x ||
-    first.y + first.height <= second.y ||
-    second.y + second.height <= first.y
-  )
-}
-
-async function expectNoOverlap(floatingCta: Locator, target: Locator, label: string) {
-  await expect(floatingCta).toBeVisible()
-  await expect(target).toBeVisible()
-
-  const [floatingBox, targetBox] = await Promise.all([
-    floatingCta.boundingBox(),
-    target.boundingBox(),
-  ])
-
-  expect(floatingBox, `${label}: floating CTA should have a bounding box`).not.toBeNull()
-  expect(targetBox, `${label}: target should have a bounding box`).not.toBeNull()
-
-  if (!floatingBox || !targetBox) {
-    throw new Error(`${label}: missing bounding box`)
-  }
-
-  expect(boxesOverlap(floatingBox, targetBox), `${label} should not be covered`).toBe(false)
-}
 
 test('demo-critical pages render without crashing', async ({ page }) => {
   for (const demoPage of demoPages) {
@@ -130,24 +100,19 @@ test('pwa installability metadata is served', async ({ page, request }) => {
   expect(await serviceWorkerResponse.text()).toContain("url.pathname.startsWith('/api/')")
 })
 
-test('mobile floating report CTA stays clear of key homepage controls', async ({ page }) => {
+test('mobile homepage controls remain reachable', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/')
 
-  const floatingReportCta = page.getByRole('button', {
-    name: /open safety report intake/i,
-  })
-  await expect(floatingReportCta).toBeVisible()
-
-  const productScanButton = page.getByRole('button', { name: /Open ProductScan/i })
+  const productScanButton = page.getByRole('button', { name: /Open Scan beta/i })
   await productScanButton.scrollIntoViewIfNeeded()
-  await expectNoOverlap(floatingReportCta, productScanButton, 'ProductScan CTA')
+  await expect(productScanButton).toBeVisible()
 
   const safetySearchInput = page.getByLabel(/Safety search/i)
   await safetySearchInput.scrollIntoViewIfNeeded()
-  await expectNoOverlap(floatingReportCta, safetySearchInput, 'Universal search input')
+  await expect(safetySearchInput).toBeVisible()
 
-  const analyzeButton = page.getByRole('button', { name: 'Analyze' })
-  await analyzeButton.scrollIntoViewIfNeeded()
-  await expectNoOverlap(floatingReportCta, analyzeButton, 'Universal search Analyze button')
+  const searchButton = page.getByRole('button', { name: 'Search records' })
+  await searchButton.scrollIntoViewIfNeeded()
+  await expect(searchButton).toBeVisible()
 })

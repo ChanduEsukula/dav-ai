@@ -19,6 +19,23 @@ class CosmeticEventRecord(BaseModel):
     products: list[CosmeticProduct]
 
 
+
+class CosmeticRecallNotice(BaseModel):
+    title: str | None = None
+    product_name: str | None = None
+    brand_name: str | None = None
+    company_name: str | None = None
+    category: str | None = None
+    reason: str | None = None
+    remedy: str | None = None
+    published_date: str | None = None
+    record_url: str | None = None
+    source_name: str
+    source_kind: str = "public_notice"
+    source_type: str = "public notice page"
+    extraction_confidence: str | None = None
+
+
 class CosmeticReaction(BaseModel):
     reaction: str
     count: int
@@ -51,3 +68,8 @@ class CosmeticEventSearchResponse(BaseModel):
     signal_score: CosmeticSignalScore
     top_reactions: list[CosmeticReaction]
     records: list[CosmeticEventRecord]
+    recall_count: int = 0
+    recall_source_name: str | None = None
+    recall_source_status: str | None = None
+    recall_source_error: str | None = None
+    recall_notices: list[CosmeticRecallNotice] = []

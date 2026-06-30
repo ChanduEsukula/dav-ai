@@ -1,21 +1,7 @@
 # Python
 __pycache__/
 *.pyc
-.venv/
-.env
-
-# Node
-node_modules/
-dist/
-.env.local
-
-# OS/editor
-.DS_Store
-.vscode/
-
-# Logs
-*.log
-# Local virtual environments
+*.py[cod]
 .venv/
 .venv-*/
 backend/.venv/
@@ -23,8 +9,30 @@ backend/.venv/
 # Python test/cache output
 .pytest_cache/
 backend/.pytest_cache/
-__pycache__/
-*.py[cod]
 
-# macOS
+# Environment files
+.env
+.env.local
+
+# Node
+node_modules/
+dist/
+
+# OS/editor
 .DS_Store
+.vscode/
+
+# Logs
+*.log
+
+# Large local CPSC source snapshot - keep local only
+/data/safety_sources/cpsc/cpsc_recalls_snapshot.json
+
+# Local/generated travel PDF artifacts
+Duluth_Airshow_North_Shore_Deluxe_Brochure.pdf
+brochure_build/
+duluth_image_contact_sheet.jpg
+duluth_pdf_sips.png
+extracted_duluth_contact_sheet.jpg
+extracted_duluth_images/
+generate_duluth_deluxe_brochure.py

@@ -18,22 +18,22 @@ type HeroModule = {
 
 const heroModules: HeroModule[] = [
   {
-    title: 'Pharmacy Safety',
-    subtitle: 'Recalls + adverse-event patterns',
+    title: 'DrugSignal',
+    subtitle: 'Recalls + adverse-event signals',
     key: 'pharmacy',
     className: 'hero-module-recall',
     icon: 'recall',
   },
   {
-    title: 'Food Safety',
-    subtitle: 'Food & supplement recalls',
+    title: 'FoodSignal',
+    subtitle: 'Recalls + outbreak context',
     key: 'food',
     className: 'hero-module-health',
     icon: 'health',
   },
   {
-    title: 'Cosmetic Safety',
-    subtitle: 'Public cosmetic-event reports',
+    title: 'Personal Care Signals',
+    subtitle: 'Personal-care event signals',
     key: 'cosmetic',
     className: 'hero-module-cosmetic',
     icon: 'cosmetic',
@@ -118,7 +118,7 @@ function Hero({
   return (
     <section className="hero">
       <div className="hero-copy">
-        <p className="eyebrow">Everyday safety intelligence</p>
+        <p className="eyebrow">Public safety intelligence</p>
 
         <h1>
           Public safety
@@ -129,11 +129,10 @@ function Hero({
         </h1>
 
         <p className="subtitle">
-          Dav AI turns public recall, drug-safety, food, supplement, and cosmetic records into
-          source-aware public-data intelligence you can inspect and verify.
+          Dav AI routes products, drugs, foods, vehicles, devices, supplements, and personal-care queries across public safety sources with provenance, source status, and clear limitations.
         </p>
 
-        <p className="hero-trust-line">Public records only • Source-backed • Not medical advice</p>
+        <p className="hero-trust-line">Official/public records • Source freshness • No safety guarantees</p>
 
         <div className="hero-module-grid" aria-label="Dav AI intelligence modules">
           {heroModules.map((module) => (
@@ -173,7 +172,7 @@ function Hero({
 
           <div className="signal-score">
             <div>
-              <p>{topResult ? 'Review priority from latest search' : 'Run a public-record search'}</p>
+              <p>{topResult ? 'Review priority from latest search' : 'Search public safety records'}</p>
               <h2>{topResult ? topResult.risk_score.score : '—'}</h2>
             </div>
             <div className="score-ring" aria-hidden="true"></div>
@@ -191,12 +190,12 @@ function Hero({
 
         <div className="floating-card card-one">
           <small>Review signal</small>
-          <strong>{topResult ? topResult.risk_score.label : 'Public-record review'}</strong>
+          <strong>{topResult ? topResult.risk_score.label : 'Evidence review'}</strong>
         </div>
 
         <div className="floating-card card-two">
           <small>Source trail</small>
-          <strong>{data ? `${data.count} FDA records` : 'Source data ready'}</strong>
+          <strong>{data ? `${data.count} FDA records` : 'Sources ready'}</strong>
         </div>
 
         <div className="floating-card card-three">

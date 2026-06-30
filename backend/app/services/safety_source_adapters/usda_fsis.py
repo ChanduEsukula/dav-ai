@@ -1,0 +1,169 @@
+from __future__ import annotations
+
+import json
+import logging
+import re
+from pathlib import Path
+from typing import Any
+
+from app.services.safety_source_adapters.base import (
+    NormalizedSafetyRecord,
+    SafetySourceAdapterError,
+    SourceAdapterResult,
+    dedupe_records,
+    first_text,
+    record_matches_query,
+    stable_payload_hash,
+    utc_now_iso,
+)
+from app.sources.registry import USDA_FSIS_RECALL
+
+logger = logging.getLogger("dav_ai.real_world_safety.usda_fsis")
+
+REPO_ROOT = Path(__file__).resolve().parents[4]
+CURATED_RECORDS_PATH = REPO_ROOT / "data" / "safety_sources" / "food" / "usda_fsis_curated_records.json"
+
+
+class USDAFSISRecallAdapter:
+    def __init__(self):
+        self.source = USDA_FSIS_RECALL
+        self.endpoint = "local:data/safety_sources/food/usda_fsis_curated_records.json"
+
+    async def search(
+        self,
+        *,
+        query: str,
+        limit: int,
+        request_id: str | None = None,
+    ) -> SourceAdapterResult:
+        retrieved_at = utc_now_iso()
+
+        try:
+            curated_records = _load_curated_records()
+            records: list[NormalizedSafetyRecord] = []
+
+            query_text = query.lower().strip()
+            query_terms = [term for term in query_text.split() if term]
+
+            for source_record in curated_records:
+                search_blob = json.dumps(source_record, ensure_ascii=False).lower()
+                is_match = query_text in search_blob or all(term in search_blob for term in query_terms)
+
+                if not is_match:
+                    continue
+
+                normalized = _normalize_fsis_record(
+                    record=source_record,
+                    retrieved_at=retrieved_at,
+                    source_name=self.source["source_name"],
+                    source_url=self.source["endpoint"],
+                )
+
+                if record_matches_query(normalized, query) or is_match:
+                    records.append(normalized)
+
+            records = dedupe_records(records)[:limit]
+
+            return SourceAdapterResult(
+                source_id=self.source["source_id"],
+                source_name=self.source["source_name"],
+                source_type="local curated official snapshot",
+                source_url=self.endpoint,
+                source_kind="structured_api",
+                retrieved_at=retrieved_at,
+                records=records,
+                raw_payload={
+                    "mode": "local_curated_official_snapshot",
+                    "path": str(CURATED_RECORDS_PATH.relative_to(REPO_ROOT)),
+                    "records_loaded": len(curated_records),
+                    "query": query,
+                    "note": "USDA FSIS provides official meat, poultry, and egg-product recall/public-health-alert records.",
+                },
+                upstream_status="success" if records else "empty",
+            )
+
+        except FileNotFoundError as exc:
+            message = f"USDA FSIS curated snapshot file not found: {CURATED_RECORDS_PATH}"
+            raise SafetySourceAdapterError(message, error_type="missing_snapshot") from exc
+        except Exception as exc:
+            logger.exception("usda_fsis_curated_snapshot_search_failed")
+            raise SafetySourceAdapterError(str(exc), error_type="adapter_error") from exc
+
+
+def _load_curated_records() -> list[dict[str, Any]]:
+    with CURATED_RECORDS_PATH.open("r", encoding="utf-8") as file:
+        payload = json.load(file)
+
+    if not isinstance(payload, list):
+        return []
+
+    return [item for item in payload if isinstance(item, dict)]
+
+
+def _list_text(value: Any) -> str | None:
+    if isinstance(value, list):
+        return "; ".join(str(item) for item in value if item)
+    return first_text(value)
+
+
+def _strip_html(value: str | None) -> str | None:
+    if not value:
+        return None
+
+    text = re.sub(r"<[^>]+>", " ", value)
+    text = re.sub(r"&nbsp;|&#160;", " ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text or None
+
+
+def _normalize_fsis_record(
+    *,
+    record: dict[str, Any],
+    retrieved_at: str,
+    source_name: str,
+    source_url: str,
+) -> NormalizedSafetyRecord:
+    title = first_text(record.get("field_title"))
+    recall_number = first_text(record.get("field_recall_number"))
+    recall_date = first_text(record.get("field_recall_date"))
+    recall_reason = _list_text(record.get("field_recall_reason"))
+    classification = first_text(record.get("field_recall_classification"))
+    risk_level = first_text(record.get("field_risk_level"))
+    product_items = _list_text(record.get("field_product_items"))
+    establishments = _list_text(record.get("field_establishment"))
+    states = _list_text(record.get("field_states"))
+    summary = _strip_html(first_text(record.get("field_summary")))
+    recall_url = first_text(record.get("field_recall_url"), source_url)
+
+    reason_parts = [
+        recall_reason,
+        f"Classification: {classification}" if classification else None,
+        f"Risk level: {risk_level}" if risk_level else None,
+        f"Products: {product_items}" if product_items else None,
+        f"States: {states}" if states else None,
+    ]
+
+    return NormalizedSafetyRecord(
+        source_name=source_name,
+        source_type="local curated official snapshot",
+        source_url=source_url,
+        source_kind="structured_api",
+        category="Meat/poultry recall",
+        product_name=first_text(product_items, title),
+        brand_name=None,
+        company_name=first_text(establishments, "USDA FSIS"),
+        title=title,
+        reason=" ".join(part for part in reason_parts if part) or summary,
+        hazard_type=first_text(recall_reason, classification, risk_level),
+        remedy=first_text(
+            "Follow the official FSIS recall instructions. Do not consume recalled meat, poultry, or egg products if your package matches the affected product details.",
+            summary,
+        ),
+        published_date=recall_date,
+        recall_number=recall_number,
+        affected_models=[],
+        affected_lots=[value for value in [product_items, establishments, states] if value],
+        raw_payload_hash=stable_payload_hash(record),
+        retrieved_at=retrieved_at,
+        record_url=recall_url,
+    )
