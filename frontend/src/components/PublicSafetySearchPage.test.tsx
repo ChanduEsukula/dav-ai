@@ -193,6 +193,80 @@ function createPublicSafetyResponse(
     return publicSafetyResponse
   }
 
+  if (normalizedQuery === 'mystery item') {
+    return {
+      ...publicSafetyResponse,
+      query,
+      raw_query: query,
+      query_understanding: {
+        ...publicSafetyResponse.query_understanding,
+        original_query: query,
+        normalized_query: normalizedQuery,
+        search_query: normalizedQuery,
+        corrections_applied: [],
+        expanded_terms: [],
+        expansion_search_terms_used: [],
+        query_type_hints: ['consumer_product'],
+      },
+      search_plan: {
+        intent: 'consumer_product',
+        confidence: 'medium',
+        reason: 'The query appears to describe a consumer product, but no matching records were returned.',
+        primary_source_ids: ['cpsc_recalls'],
+        secondary_source_ids: [],
+        sources_to_check: ['cpsc_recalls'],
+        clarification_required: false,
+      },
+      count: 0,
+      sources_checked: [
+        {
+          source_id: 'cpsc_recalls',
+          source_name: 'CPSC recalls',
+          source_type: 'local curated official snapshot',
+          source_url: 'https://www.cpsc.gov/Recalls',
+          source_kind: 'public_notice',
+          upstream_status: 'empty',
+          record_count: 0,
+        },
+      ],
+      sources_failed: [],
+      records_per_source: {},
+      structured_api_matches: 0,
+      public_notice_matches: 0,
+      total_matches: 0,
+      no_match_explanation:
+        'No matching public record was found in the checked U.S. sources. This does not certify that the product is safe.',
+      safety_intelligence_summary: {
+        ...publicSafetyResponse.safety_intelligence_summary,
+        query_type: 'consumer_product',
+        recall_or_enforcement_found: false,
+        reference_or_label_found: false,
+        signal_report_found: false,
+        matched_sources_by_role: {
+          recall_enforcement: [],
+          reference_identity: [],
+          label_reference: [],
+          signal_report: [],
+          other: [],
+        },
+        checked_sources_by_role: {
+          recall_enforcement: ['CPSC recalls'],
+          reference_identity: [],
+          label_reference: [],
+          signal_report: [],
+          other: [],
+        },
+        top_result_titles: [],
+        expansion_explanations: [],
+        plain_language_summary:
+          'No matching public record was found in the returned results from the checked sources.',
+        suggested_next_steps: [],
+      },
+      source_audits: [],
+      results: [],
+    }
+  }
+
   if (normalizedQuery === 'sunscreen') {
     return {
       ...publicSafetyResponse,
@@ -678,18 +752,22 @@ test('clears Public Safety assistant context when a search returns no matches', 
     />,
   )
 
-  await user.type(screen.getByLabelText(/Safety record search/i), 'sunscreen')
+  await user.type(screen.getByLabelText(/Safety record search/i), 'mystery item')
   await user.click(screen.getByRole('button', { name: 'Search' }))
 
   await waitFor(() => {
-    expect(mockSearchRealWorldSafety).toHaveBeenCalledWith('sunscreen', 10, 'score')
+    expect(mockSearchRealWorldSafety).toHaveBeenCalledWith('mystery item', 10, 'score')
   })
 
   await waitFor(() => {
     expect(setAssistantContext).toHaveBeenLastCalledWith(null)
   })
 
-  expect(await screen.findByText(/No matching public record was found/i)).toBeInTheDocument()
+  expect(
+    await screen.findByText(/No matching public records were returned from the checked sources/i),
+  ).toBeInTheDocument()
+  expect(screen.getByText(/This does not prove the item is safe/i)).toBeInTheDocument()
+  expect(screen.getByText(/Search the exact brand, product name, model, or manufacturer/i)).toBeInTheDocument()
 })
 
 test('clears Public Safety assistant context when a search fails', async () => {

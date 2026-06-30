@@ -1049,8 +1049,25 @@ function ResultsList({
         </div>
 
         <div className="pharmacy-empty-card public-safety-no-results">
-          <h3>No matching public records returned.</h3>
-          <p>{data.no_match_explanation}</p>
+          <h3>No matching public records were returned from the checked sources.</h3>
+          <p>
+            {data.no_match_explanation ??
+              'No matching public records were returned from the checked sources.'}
+          </p>
+          <p>
+            This does not prove the item is safe, not recalled, or risk-free. Public
+            sources can be incomplete, delayed, source-specific, or hard to match without
+            exact identifiers.
+          </p>
+          <div className="public-safety-no-results__next-steps" aria-label="No-result next steps">
+            <strong>Try next:</strong>
+            <ul>
+              <li>Search the exact brand, product name, model, or manufacturer.</li>
+              <li>Add a UPC, VIN, NDC, lot code, model year, or package size when available.</li>
+              <li>Try a broader product category if the exact item does not match.</li>
+              <li>Open official source links when a source provides a separate lookup portal.</li>
+            </ul>
+          </div>
         </div>
       </section>
     )
