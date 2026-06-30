@@ -73,7 +73,17 @@ const publicSafetyResponse: RealWorldSafetySearchResponse = {
       record_count: 0,
     },
   ],
-  sources_failed: [],
+  sources_failed: [
+    {
+      source_id: 'dailymed_spl_api',
+      source_name: 'DailyMed SPL API',
+      source_type: 'live official API',
+      source_url: 'https://dailymed.nlm.nih.gov/dailymed/services/v2',
+      source_kind: 'structured_api',
+      error_type: 'upstream_unavailable',
+      reason: 'Temporary upstream source issue.',
+    },
+  ],
   records_per_source: {
     'openFDA NDC Directory API': 1,
   },
@@ -425,7 +435,11 @@ test('renders a compact Public Safety summary, workspace, and advanced details',
   expect(within(summaryStrip).getByText('Matches')).toBeInTheDocument()
   expect(within(summaryStrip).getByText('Sources checked')).toBeInTheDocument()
   expect(within(summaryStrip).getByText('Source issues')).toBeInTheDocument()
+  expect(within(summaryStrip).getAllByText('1')).toHaveLength(2)
   expect(within(summaryStrip).getByText('drug')).toBeInTheDocument()
+  expect(screen.getByText('Some sources could not be checked')).toBeInTheDocument()
+  expect(screen.getByText(/Results may be incomplete because one or more public sources had an issue/i)).toBeInTheDocument()
+  expect(screen.getByText(/DailyMed SPL API:/i)).toBeInTheDocument()
 
   expect(screen.getByText('Export')).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Download Excel' })).toBeDisabled()
