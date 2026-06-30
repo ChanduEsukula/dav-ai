@@ -7,13 +7,13 @@ changed next.
 
 ## Verification Snapshot
 
-- Backend tests from repo root: `python3 -m pytest -q backend` -> 463 passed.
+- Backend tests from repo root: `PYTHONPATH=backend python3 -m pytest backend/tests -q` -> 463 passed.
 - Frontend build: `npm run build` -> passed.
-- Frontend tests: `npm test` -> 31 files, 265 tests passed.
-- Running backend tests from `backend/` currently fails because
-  `test_refresh_real_world_safety_snapshots_cli.py` imports repo-level
-  `scripts`. The README says to run `pytest` from `backend`, so either the test
-  import path or docs should be corrected.
+- Frontend tests: `npm test -- --run` -> 31 files, 265 tests passed.
+- Cleanup sprint validation passed after the following commits:
+  - `34fa0d1 Improve source truthfulness and live fallback clarity`
+  - `746ff71 Align public safety frontend with source freshness schema`
+  - `7396b8c Remove obsolete CPSC demo utilities`
 - Existing user edits were present before this report:
   `backend/app/services/safety_source_adapters/openfda_drug.py` and
   `backend/tests/test_real_world_safety_route.py`.
@@ -47,8 +47,8 @@ everywhere.
 | Path | Purpose | Recommendation |
 |---|---|---|
 | `.github/workflows/ci.yml` | Runs backend tests and frontend lint/test/build/E2E on PRs and pushes. | Keep. Good portfolio signal. Consider adding backend command parity check from repo root. |
-| `.gitignore` | Ignores Python, Node, env, cache, local artifacts. | Improve. It has a malformed `.DS_Storedata/...` line. Keep ignored local CPSC snapshot explicit. |
-| `README.md` | Current project narrative, stack, safety boundaries, run/test commands, source modes. | Keep and update after this audit. Fix backend test command guidance or import path. |
+| `.gitignore` | Ignores Python, Node, env, cache, local artifacts. | Updated in cleanup sprint. Keep ignored local CPSC snapshot explicit. |
+| `README.md` | Current project narrative, stack, safety boundaries, run/test commands, source modes. | Updated in cleanup sprint. Keep source-mode language honest as adapters evolve. |
 | `MedSignal_AI_Repo_Reference_Report.md` | Legacy historical audit from an earlier app state/name. | Archive or delete. It is now misleading because it says no DB/auth/DrugSignal existed. |
 | `alembic.ini` | Alembic migration config. | Keep. |
 | `docker-compose.yml` | Local backend/frontend compose setup. | Improve. Frontend container runs Vite dev server, not production static serving. |
@@ -60,7 +60,7 @@ everywhere.
 |---|---|---|
 | `backend/Dockerfile` | Runtime backend image, installs requirements, copies `backend/app` and `data`. | Keep. Add healthcheck and decide whether scripts are needed in image. |
 | `backend/.env.example` | Backend env template for DB, CORS, assistant config. | Keep. Add `AUTH_SECRET_KEY` and production warning. |
-| `backend/requirements.txt` | Backend dependency pins. | Improve. `reportlab` is unpinned. |
+| `backend/requirements.txt` | Backend dependency pins. | Updated in cleanup sprint. `reportlab` is pinned. |
 | `backend/app/main.py` | FastAPI app, CORS, request ID middleware, route registration. | Keep. Rename legacy logger namespace `medtrek.request` to `dav_ai.request`. |
 | `backend/app/audit/audit_event.py` | Builds audit event payloads with IDs, timestamps, versions. | Keep. Central to provenance. |
 
@@ -91,8 +91,10 @@ major strength because the API is explicit and testable.
 Key notes:
 
 - `real_world_safety.py` includes `source_freshness` and
-  `outbreak_context_found`, but the frontend TypeScript response type does not
-  fully mirror those fields.
+  `outbreak_context_found`.
+- Cleanup sprint aligned the frontend TypeScript response type with
+  `source_freshness`, `category_classification`, `outbreak_context_found`, and
+  `outbreak_context`.
 - `saved_monitors.py` supports `cosmeticsignal`, but `backend/db/schema.sql`
   constraints do not.
 - `assistant.py` is strict (`extra="forbid"`) and keeps assistant context
@@ -110,8 +112,8 @@ Key notes:
 | `search_workflows/real_world_query_understanding.py` | Normalizes queries, identifiers, expansions. | Keep. Add learned/curated synonym dictionary with tests. |
 | `search_workflows/product_category_classifier.py` | Rule-based source/category hints. | Keep. Later replace/augment with lightweight classifier. |
 | `search_workflows/real_world_source_planner.py` | Chooses source sets by intent. | Keep. Make source mode part of plan output. |
-| `search_workflows/safety_intelligence_summary.py` | Role-based summary of recall/reference/label/signal/outbreak evidence. | Keep. Frontend must add outbreak role support. |
-| `search_workflows/source_freshness.py` | Per-search freshness labels from source audit summaries. | Keep. Frontend should consume this directly. |
+| `search_workflows/safety_intelligence_summary.py` | Role-based summary of recall/reference/label/signal/outbreak evidence. | Keep. Frontend outbreak role support was added in cleanup sprint. |
+| `search_workflows/source_freshness.py` | Per-search freshness labels from source audit summaries. | Keep. Frontend now consumes this directly in Public Safety Search. |
 | `search_workflows/identifier_check.py` | Flags identifiers to verify: NDC/UPC/VIN/UDI/model/lot. | Keep. Excellent trust feature. |
 | `openfda_client.py`, `openfda_drug_event_client.py`, `openfda_food_enforcement_client.py`, `openfda_cosmetic_event_client.py` | Thin live openFDA clients. | Keep. Add shared retry/rate-limit/date/pagination wrapper. |
 | `usda_fsis_recall_client.py` | Live FSIS API client for FoodRadar. | Keep. Align registry/docs that currently call FSIS snapshot-only in some places. |
@@ -145,9 +147,9 @@ Key notes:
 | `frontend/Dockerfile` | Runs Vite dev server in container. | Replace for production with static build served by nginx/Caddy or platform host. |
 | `frontend/src/App.tsx` | SPA router, URL state, auth gate, assistant context. | Keep. Consider extracting route map to reduce switch complexity. |
 | `frontend/src/types/navigation.ts` | Page IDs and primary/advanced nav grouping. | Keep. Consumer-first nav is mostly right. |
-| `frontend/src/api/*` | Typed Axios clients. | Keep. Fix RealWorldSafety type drift and add source freshness types. |
+| `frontend/src/api/*` | Typed Axios clients. | Keep. RealWorldSafety type drift was improved in cleanup sprint. Continue keeping backend/frontend schema parity. |
 | `frontend/src/auth/AuthContext.tsx` | Frontend auth/session wrapper. | Keep. Add token expiration handling and production copy. |
-| `PublicSafetySearchPage.tsx` | Active universal cross-source search result page. | Keep. Consume backend `source_freshness` directly and add outbreak role UI. |
+| `PublicSafetySearchPage.tsx` | Active universal cross-source search result page. | Keep. Cleanup sprint added direct `source_freshness` consumption and outbreak role UI. |
 | `PharmacySafetyPage.tsx` | Active pharmacy/drug/recall safety page. | Keep. Treat as DrugSignal quality target. |
 | `FoodSafetyPage.tsx` | Active FoodRadar page. | Keep. Add per-source status/change/freshness panel. |
 | `CosmeticSafetyPage.tsx` | Active CosmeticSignal page. | Keep. Add trend/freshness parity with DrugSignal. |
@@ -175,7 +177,7 @@ Key notes:
 | Path | Purpose | Recommendation |
 |---|---|---|
 | `data/safety_sources/*/*_curated_records.json` | Local curated official-source snapshots used by adapters/fallbacks/tests. | Keep only as cache/fallback with explicit `refreshed_at`, `payload_sha256`, source URL, and UI label. |
-| `data/safety_sources/cpsc/cpsc_demo_records.json` | Small manually selected CPSC demo subset loaded by adapter fallback. | Remove from production search path. Keep only as test fixture if needed. |
+| `data/safety_sources/cpsc/cpsc_demo_records.json` | Former manually selected CPSC demo subset. | Completed in cleanup sprint: removed from runtime adapter usage; required coverage records now live only in `backend/tests/fixtures/cpsc_recall_search_fixture.json`. |
 | `data/safety_sources/cpsc/cpsc_daily_products_curated_records.json` | Larger CPSC curated official snapshot. | Keep as cache until live CPSC adapter is implemented; show freshness. |
 | `data/source_audits/snapshot_refresh_manifest.json` | Snapshot refresh metadata. | Keep. Fix `cpsc_recalls` vs registry `cpsc_recalls_api` ID mismatch. |
 | `data/source_audits/*audit*.json` | Source exploration/audit outputs. | Move to docs/archive or keep under `data/source_audits` as developer artifacts. Do not drive runtime UI. |
@@ -186,7 +188,7 @@ Key notes:
 |---|---|---|
 | `scripts/refresh_real_world_safety_snapshots.py` | Pulls curated snapshots and writes manifest. | Keep. Promote into scheduled/cache refresh architecture with dry-run CI tests. |
 | `scripts/audit_usa_daily_safety_apis.py`, `audit_recall_expansion_sources.py`, `audit_final_recall_enrichment_sources.py` | Source research scripts. | Keep as developer utilities; move outputs to archive. |
-| `scripts/build_cpsc_demo_records.py`, `scripts/search_cpsc_demo_records.py` | Demo subset tooling. | Retire after removing demo records from runtime path. |
+| `scripts/build_cpsc_demo_records.py`, `scripts/search_cpsc_demo_records.py` | Former demo subset tooling. | Completed in cleanup sprint: runtime adapter no longer loads CPSC demo records; obsolete demo utility scripts were removed; required records now live only in backend test fixtures. |
 | `scripts/search_cpsc_snapshot.py` | Local CPSC snapshot search helper. | Keep until live CPSC adapter is done. |
 
 ### Docs
@@ -218,31 +220,32 @@ Archive or consolidate:
 
 ### Remove or quarantine now
 
-1. `data/safety_sources/cpsc/cpsc_demo_records.json`
-   - Current adapter loads it after the daily CPSC snapshot.
-   - Even if records came from official data, the filename and selection logic
-     make it look like demo data in production search.
-   - Move selected examples into backend fixtures if tests need them.
+Completed in cleanup sprint:
 
-2. `scripts/build_cpsc_demo_records.py` and `scripts/search_cpsc_demo_records.py`
-   - Keep only as historical/dev tooling or delete after tests are migrated.
+1. Runtime CPSC adapter no longer loads `data/safety_sources/cpsc/cpsc_demo_records.json`.
+2. Required CPSC coverage records were moved into `backend/tests/fixtures/cpsc_recall_search_fixture.json`.
+3. Obsolete demo utility scripts were removed:
+   - `scripts/build_cpsc_demo_records.py`
+   - `scripts/search_cpsc_demo_records.py`
 
-3. `frontend/src/components/Signals.tsx`
+Remaining cleanup candidates:
+
+1. `frontend/src/components/Signals.tsx`
    - No live imports.
 
-4. `frontend/src/components/DrugSignal.tsx`, `RecallRadar.tsx`,
+2. `frontend/src/components/DrugSignal.tsx`, `RecallRadar.tsx`,
    `FoodRadar.tsx`, `CosmeticSignal.tsx`
    - Superseded by active area pages and not imported by `App.tsx`.
    - Merge unique briefing/report UI if still desired, then remove.
 
-5. `frontend/src/components/AuditPanel.tsx`, `SafeInsightCards.tsx`,
+3. `frontend/src/components/AuditPanel.tsx`, `SafeInsightCards.tsx`,
    `SafetyBriefingPanel.tsx`
    - Currently only used by those unused standalone components.
 
-6. `frontend/src/components/FloatingSafetyReportIntake.tsx`
+4. `frontend/src/components/FloatingSafetyReportIntake.tsx`
    - Not imported by active app.
 
-7. `frontend/src/assets/react.svg`, `frontend/src/assets/vite.svg`
+5. `frontend/src/assets/react.svg`, `frontend/src/assets/vite.svg`
    - Vite starter artifacts.
 
 ### Keep but label clearly
@@ -269,7 +272,8 @@ Archive or consolidate:
 - `real_world_safety_search.py` `LIMITATIONS` says some openFDA sources are
   curated even though food/drug adapters are now live-first with snapshot
   fallback.
-- `README.md` still mixes "current mode" labels that differ by route.
+- `README.md` source-mode narrative was improved in cleanup sprint, but should
+  continue to be reviewed as adapters evolve.
 - `docs/usa_safety_sources_registry.json` marks implemented sources as
   `planned`.
 - `MedSignal_AI_Repo_Reference_Report.md` is historically useful but stale.
@@ -328,7 +332,7 @@ Target architecture:
 
 Highest-value live upgrades:
 
-- CPSC live adapter replacing runtime demo fallback.
+- CPSC live adapter replacing curated snapshot dependency.
 - RealWorldSafety FSIS live-first adapter to match FoodRadar's live FSIS
   client.
 - Live-first RxNorm, DailyMed, openFDA NDC, drug label, UDI, device event,
@@ -342,6 +346,8 @@ Highest-value live upgrades:
 Current state:
 
 - `PublicSafetySearchPage` has strong loading/error/empty/result/source panels.
+- Cleanup sprint improved Public Safety Search source freshness display, category
+  classification typing, and outbreak-context role handling.
 - `FoodSafetyPage`, `CosmeticSafetyPage`, and `PharmacySafetyPage` are active
   and tested, but source freshness/change parity is uneven.
 - `UniversalSafetySearch` previews pharmacy/food/cosmetic but hands public
@@ -497,16 +503,25 @@ Each source entry should store:
 
 ## Backend Improvement Roadmap
 
-Must fix now:
+Completed in cleanup sprint:
 
-- Remove CPSC demo records from runtime search.
-- Add frontend RealWorldSafety type parity for `source_freshness`,
-  `outbreak_context_found`, and `outbreak_context` role.
+- Removed CPSC demo records from runtime search.
+- Added frontend RealWorldSafety type parity for `source_freshness`,
+  `category_classification`, `outbreak_context_found`, and `outbreak_context`
+  role.
+- Removed obsolete CPSC demo utility scripts.
+- Fixed `.gitignore` malformed line.
+- Pinned `reportlab`.
+- Updated README source-mode narrative and backend test command guidance.
+
+Must fix next:
+
 - Fix saved monitor DB constraints for `cosmeticsignal`.
-- Fix README/backend pytest command mismatch.
-- Fix `.gitignore` malformed line.
-- Pin `reportlab`.
-- Update stale source-mode copy and docs.
+- Fix `data/source_audits/snapshot_refresh_manifest.json` CPSC source ID
+  mismatch.
+- Update stale source-mode copy and docs that still describe implemented sources
+  as planned.
+- Update `real_world_safety_search.py` stale limitations/fallback copy.
 
 High impact:
 
@@ -529,12 +544,17 @@ Production readiness:
 
 ## Frontend Improvement Roadmap
 
-Must fix now:
+Completed in cleanup sprint:
+
+- Display backend `source_freshness` directly in Public Safety Search.
+- Add `outbreak_context` role support in Public Safety Search.
+- Add `category_classification` typing for Public Safety query understanding.
+
+Must fix next:
 
 - Remove/merge unused standalone module components.
 - Expand source integration badges for openFDA, RxNorm, DailyMed, UDI, VAERS,
   FSIS live, and snapshot fallback.
-- Display backend `source_freshness` directly in Public Safety Search.
 - Add "source unavailable" and "fallback used" panels to every search page.
 - Add persistence mode banner to Saved Searches.
 
@@ -552,39 +572,46 @@ UI polish:
 
 ### Sprint 1: Truthfulness and cleanup
 
-Files to change:
+Completed:
 
 - `backend/app/services/safety_source_adapters/cpsc.py`
-  - Stop loading `cpsc_demo_records.json` in runtime adapter.
-  - Return clear `local_curated_official_snapshot` metadata from the daily
-    snapshot only.
-- `data/safety_sources/cpsc/cpsc_demo_records.json`
-  - Move to `backend/tests/fixtures` or delete.
+  - Runtime adapter no longer loads `cpsc_demo_records.json`.
+  - Runtime CPSC search now uses the curated daily official-source snapshot.
+- `backend/tests/fixtures/cpsc_recall_search_fixture.json`
+  - Added test-only CPSC fixture coverage so tests no longer rely on runtime
+    demo data.
 - `scripts/build_cpsc_demo_records.py`
 - `scripts/search_cpsc_demo_records.py`
-  - Delete or move to archive.
+  - Removed obsolete demo utilities.
+- `frontend/src/api/realWorldSafety.ts`
+  - Added/updated `source_freshness`, `category_classification`,
+    `outbreak_context_found`, and `outbreak_context` role types.
+- `frontend/src/components/PublicSafetySearchPage.tsx`
+  - Renders backend `source_freshness`.
+  - Adds outbreak role display.
+  - Keeps fallback behavior compatible with older mocks.
+- `.gitignore`
+  - Fixed malformed line.
+- `backend/requirements.txt`
+  - Pinned `reportlab`.
+- `README.md`
+  - Corrected test command and source-mode narrative.
+- `docs/DAVAI_REPOSITORY_AUDIT_2026.md`
+  - Updated after CPSC cleanup.
+
+Remaining Sprint 1 items:
+
 - `data/source_audits/snapshot_refresh_manifest.json`
   - Fix CPSC source ID.
 - `backend/app/services/search_workflows/real_world_safety_search.py`
   - Update stale limitations and fallback copy.
-- `frontend/src/api/realWorldSafety.ts`
-  - Add `source_freshness`, `outbreak_context_found`, and `outbreak_context`
-    role types.
-- `frontend/src/components/PublicSafetySearchPage.tsx`
-  - Render backend `source_freshness`; add outbreak role display.
 - `frontend/src/utils/sourceIntegrationMode.ts`
   - Add live/snapshot mappings for all registered sources.
 - `backend/db/schema.sql`
 - new Alembic migration
   - Add `cosmeticsignal` to saved monitor constraints.
-- `.gitignore`
-  - Fix malformed line.
-- `backend/requirements.txt`
-  - Pin `reportlab`.
-- `README.md`
-  - Correct test command and source-mode narrative.
 
-Tests:
+Tests to keep running:
 
 - `backend/tests/test_real_world_safety_route.py`
 - `backend/tests/test_refresh_real_world_safety_snapshots_cli.py`
@@ -695,7 +722,7 @@ What still looks student-level:
 
 - Some UI files are duplicated or unused.
 - Some source modes are stale or inconsistent.
-- Curated/demo snapshots are too close to runtime product paths.
+- Curated snapshots still need stronger refresh/change tracking.
 - Production deployment hardening is incomplete.
 - The docs folder needs consolidation.
 
@@ -705,4 +732,3 @@ Make every module match DrugSignal's level of source-grounded intelligence:
 live-first public data, per-source status, source freshness, changed-since-last
 refresh, clear fallback labeling, structured normalization, confidence, and a
 premium intelligence-dashboard UI.
-
