@@ -37,6 +37,7 @@ from app.services.search_workflows.product_category_classifier import BROAD_PUBL
 from app.services.search_workflows.safety_intelligence_summary import build_safety_intelligence_summary
 from app.services.search_workflows.identifier_check import build_identifier_check
 from app.services.search_workflows.source_freshness import build_source_freshness
+from app.services.search_workflows.source_health_contract import validate_real_world_source_health_contract
 from app.services.safety_source_adapters.nhtsa import (
     NHTSARecallsAdapter,
     NHTSAVPICAdapter,
@@ -1261,6 +1262,18 @@ async def execute_real_world_safety_search(
         "source_freshness": source_freshness,
         "results": [record.as_response_dict() for record in ranked_records],
     }
+
+    source_health_contract_errors = validate_real_world_source_health_contract(response)
+    if source_health_contract_errors:
+        logger.warning(
+            "real_world_safety_source_health_contract_failed",
+            extra={
+                "event": "real_world_safety_source_health_contract_failed",
+                "request_id": request_id,
+                "query": search_query,
+                "errors": source_health_contract_errors,
+            },
+        )
 
     logger.info(
         "real_world_safety_response_assembled",
