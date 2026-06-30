@@ -18,21 +18,21 @@ type HeroModule = {
 
 const heroModules: HeroModule[] = [
   {
-    title: 'Pharmacy Safety',
+    title: 'DrugSignal',
     subtitle: 'Recalls + adverse-event patterns',
     key: 'pharmacy',
     className: 'hero-module-recall',
     icon: 'recall',
   },
   {
-    title: 'Food Safety',
+    title: 'FoodSignal',
     subtitle: 'Food & supplement recalls',
     key: 'food',
     className: 'hero-module-health',
     icon: 'health',
   },
   {
-    title: 'Cosmetic Safety',
+    title: 'Personal Care Signals',
     subtitle: 'Public cosmetic-event reports',
     key: 'cosmetic',
     className: 'hero-module-cosmetic',

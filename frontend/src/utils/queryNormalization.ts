@@ -16,9 +16,9 @@ const suggestionAreas = ['public_safety', 'pharmacy', 'food', 'cosmetic'] as con
 
 const workflowLabels: Record<SafetyQueryArea, string> = {
   public_safety: 'Public Safety Search',
-  pharmacy: 'Pharmacy Safety',
+  pharmacy: 'DrugSignal',
   food: 'Food & Supplement Safety',
-  cosmetic: 'Cosmetic Safety',
+  cosmetic: 'Personal Care Signals',
 }
 
 const aliasesByArea: Record<SafetyQueryArea, Record<string, string>> = {

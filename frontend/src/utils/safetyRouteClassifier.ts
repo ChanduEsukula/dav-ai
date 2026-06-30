@@ -150,7 +150,7 @@ const cosmeticTerms = [
 
 const pharmacySuggestion: SafetyRouteSuggestion = {
   area: 'pharmacy',
-  label: 'Pharmacy Safety',
+  label: 'DrugSignal',
   description: 'Check drug recall records and adverse event reporting patterns.',
   page: PAGE_IDS.PHARMACY_SAFETY,
 }
@@ -164,7 +164,7 @@ const foodSuggestion: SafetyRouteSuggestion = {
 
 const cosmeticSuggestion: SafetyRouteSuggestion = {
   area: 'cosmetic',
-  label: 'Cosmetic Safety',
+  label: 'Personal Care Signals',
   description: 'Check cosmetic and personal-care product safety reports.',
   page: PAGE_IDS.COSMETIC_SAFETY,
 }

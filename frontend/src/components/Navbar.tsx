@@ -69,7 +69,7 @@ function Navbar({
         setAdvancedOpen(false)
       }}
     >
-      {item.id === PAGE_IDS.PRODUCT_SCAN ? 'ProductScan beta' : item.label}
+      {item.label}
     </button>
   )
 
@@ -97,9 +97,9 @@ function Navbar({
           className={advancedPageIsActive ? 'active' : ''}
           aria-current={advancedPageIsActive ? 'page' : undefined}
         >
-          Advanced
+          Workflows
         </summary>
-        <div className="nav-advanced-menu" aria-label="Advanced pages">
+        <div className="nav-advanced-menu" aria-label="Workflow pages">
           {advancedNavItems.map(renderAdvancedNavItem)}
         </div>
       </details>

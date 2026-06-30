@@ -81,7 +81,7 @@ test('clicking a universal suggestion selects it and shows its workflow', async 
   const input = screen.getByRole('combobox')
   await user.type(input, 'xan')
 
-  await user.click(screen.getByRole('option', { name: /xanax.*Pharmacy Safety/i }))
+  await user.click(screen.getByRole('option', { name: /xanax.*DrugSignal/i }))
 
   expect(input).toHaveValue('xanax')
 })

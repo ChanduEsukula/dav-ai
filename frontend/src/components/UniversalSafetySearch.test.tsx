@@ -95,7 +95,7 @@ test('normalizes universal search whitespace before API and route navigation', a
   })
   expect(mockSearchDrugEvents).toHaveBeenCalledWith('xanax xr', 5)
 
-  await user.click(await screen.findByRole('button', { name: 'Open Pharmacy Safety' }))
+  await user.click(await screen.findByRole('button', { name: 'Open DrugSignal' }))
   expect(mockGoToPage).toHaveBeenCalledWith('pharmacy-safety', 'xanax xr')
 })
 
@@ -230,7 +230,7 @@ test('homepage typeahead exposes workflow labels and supports keyboard selection
   await user.type(input, 'xan')
 
   expect(
-    screen.getByRole('option', { name: /xanax.*Pharmacy Safety/i }),
+    screen.getByRole('option', { name: /xanax.*DrugSignal/i }),
   ).toBeInTheDocument()
 
   await user.keyboard('{ArrowDown}{Enter}')
