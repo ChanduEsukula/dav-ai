@@ -511,7 +511,7 @@ function CosmeticSafetyPage({
     })
   }
 
-  const records = data?.records ?? []
+  const records = useMemo(() => data?.records ?? [], [data?.records])
   const sortedRecords = useMemo(() => {
     const nextRecords = [...records]
 
