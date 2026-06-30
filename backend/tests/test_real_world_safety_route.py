@@ -1043,3 +1043,32 @@ def test_real_world_safety_fda_safety_communication_source(monkeypatch):
         and freshness["freshness_status"] == "pulled_and_stored"
         for freshness in body["source_freshness"]
     )
+
+def test_real_world_safety_logs_source_health_contract_errors_without_failing(
+    monkeypatch,
+    caplog,
+):
+    _patch_persistence(monkeypatch)
+    _patch_public_source_http(monkeypatch)
+
+    def fake_validate_source_health_contract(body):
+        return ["source_freshness source_ids must match checked and failed source_ids"]
+
+    monkeypatch.setattr(
+        real_world_safety_search,
+        "validate_real_world_source_health_contract",
+        fake_validate_source_health_contract,
+    )
+
+    with caplog.at_level("WARNING"):
+        response = client.get(
+            "/api/v1/real-world-safety/search",
+            params={"q": "2018 Toyota Camry", "limit": 5},
+        )
+
+    assert response.status_code == 200
+    assert response.json()["results"]
+    assert any(
+        record.message == "real_world_safety_source_health_contract_failed"
+        for record in caplog.records
+    )
