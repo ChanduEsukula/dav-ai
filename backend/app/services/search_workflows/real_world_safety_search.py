@@ -1264,6 +1264,11 @@ async def execute_real_world_safety_search(
     }
 
     source_health_contract_errors = validate_real_world_source_health_contract(response)
+    response["source_health"] = {
+        "contract_status": "warning" if source_health_contract_errors else "passed",
+        "contract_error_count": len(source_health_contract_errors),
+    }
+
     if source_health_contract_errors:
         logger.warning(
             "real_world_safety_source_health_contract_failed",

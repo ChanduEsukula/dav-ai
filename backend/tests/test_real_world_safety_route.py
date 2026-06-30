@@ -887,6 +887,10 @@ def test_real_world_safety_response_includes_source_freshness(monkeypatch):
     assert nhtsa_freshness[0]["source_payload_hash"] == "test-hash-nhtsa_recalls_api_datasets"
     assert nhtsa_freshness[0]["checked_at"] == body["retrieval_timestamp"]
     assert "stored audit metadata" in nhtsa_freshness[0]["explanation"]
+    assert body["source_health"] == {
+        "contract_status": "passed",
+        "contract_error_count": 0,
+    }
     _assert_real_world_source_health_contract(body)
 
 
@@ -1067,7 +1071,12 @@ def test_real_world_safety_logs_source_health_contract_errors_without_failing(
         )
 
     assert response.status_code == 200
-    assert response.json()["results"]
+    body = response.json()
+    assert body["results"]
+    assert body["source_health"] == {
+        "contract_status": "warning",
+        "contract_error_count": 1,
+    }
     assert any(
         record.message == "real_world_safety_source_health_contract_failed"
         for record in caplog.records
