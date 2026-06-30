@@ -1249,7 +1249,7 @@ function PublicSafetySearchPage({
     return () => {
       isCurrentEffect = false
     }
-  }, [initialQuery, initialRawQuery, loadPublicSafetyRecords])
+  }, [initialQuery, initialRawQuery, loadPublicSafetyRecords, setAssistantContext])
 
   const roleLookup = useMemo(() => createSourceRoleLookup(data), [data])
   const cleanDraftQuery = normalizeSearchTerm(query)
