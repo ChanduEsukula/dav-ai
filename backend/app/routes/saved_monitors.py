@@ -329,6 +329,12 @@ async def run_saved_monitor(
             response = response_model.model_dump()
             latest_score, score_label = _extract_regional_health_score(response)
 
+        elif monitor.module == SavedMonitorModule.COSMETICSIGNAL:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="CosmeticSignal saved monitor runs are not supported yet.",
+            )
+
         else:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,

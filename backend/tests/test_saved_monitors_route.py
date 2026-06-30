@@ -357,7 +357,10 @@ def test_run_cosmetic_saved_monitor_returns_unsupported_until_runner_exists() ->
     run_response = client.post(f"/api/v1/saved-monitors/{monitor_id}/run")
 
     assert run_response.status_code == 422
-    assert run_response.json()["detail"] == "Unsupported saved monitor module"
+    assert (
+        run_response.json()["detail"]
+        == "CosmeticSignal saved monitor runs are not supported yet."
+    )
 
 
 def test_reject_duplicate_saved_monitor_same_module_and_query() -> None:
