@@ -1,6 +1,4 @@
-import { expect, test, type Locator } from '@playwright/test'
-
-type ElementBox = NonNullable<Awaited<ReturnType<Locator['boundingBox']>>>
+import { expect, test } from '@playwright/test'
 
 const demoPages = [
   {
@@ -57,34 +55,6 @@ const demoPages = [
     nav: 'Help',
   },
 ]
-
-function boxesOverlap(first: ElementBox, second: ElementBox) {
-  return !(
-    first.x + first.width <= second.x ||
-    second.x + second.width <= first.x ||
-    first.y + first.height <= second.y ||
-    second.y + second.height <= first.y
-  )
-}
-
-async function expectNoOverlap(floatingCta: Locator, target: Locator, label: string) {
-  await expect(floatingCta).toBeVisible()
-  await expect(target).toBeVisible()
-
-  const [floatingBox, targetBox] = await Promise.all([
-    floatingCta.boundingBox(),
-    target.boundingBox(),
-  ])
-
-  expect(floatingBox, `${label}: floating CTA should have a bounding box`).not.toBeNull()
-  expect(targetBox, `${label}: target should have a bounding box`).not.toBeNull()
-
-  if (!floatingBox || !targetBox) {
-    throw new Error(`${label}: missing bounding box`)
-  }
-
-  expect(boxesOverlap(floatingBox, targetBox), `${label} should not be covered`).toBe(false)
-}
 
 test('demo-critical pages render without crashing', async ({ page }) => {
   for (const demoPage of demoPages) {
