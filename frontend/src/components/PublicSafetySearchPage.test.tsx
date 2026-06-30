@@ -91,6 +91,10 @@ const publicSafetyResponse: RealWorldSafetySearchResponse = {
   public_notice_matches: 0,
   total_matches: 1,
   no_match_explanation: null,
+  source_health: {
+    contract_status: 'passed',
+    contract_error_count: 0,
+  },
   safety_intelligence_summary: {
     query_type: 'drug',
     recall_or_enforcement_found: false,
@@ -558,6 +562,8 @@ test('labels curated snapshots, live APIs, and live public pages in source metad
   render(<PublicSafetySearchPage initialQuery="air fryer" />)
 
   expect(await screen.findByText('CPSC Recalls API result')).toBeInTheDocument()
+  expect(screen.getByText('Source metadata')).toBeInTheDocument()
+  expect(screen.getByText('Verified')).toBeInTheDocument()
   expect(screen.getAllByText('Curated official snapshot').length).toBeGreaterThan(0)
   expect(screen.getAllByText('Live public API').length).toBeGreaterThan(0)
   expect(screen.getAllByText('Live public page').length).toBeGreaterThan(0)
