@@ -140,6 +140,11 @@ class RealWorldSafetyIdentifierCheck(BaseModel):
     user_message: str
 
 
+class RealWorldSafetySourceHealth(BaseModel):
+    contract_status: Literal["passed", "warning"]
+    contract_error_count: int
+
+
 class RealWorldSafetySearchResponse(BaseModel):
     query: str
     raw_query: str
@@ -161,4 +166,5 @@ class RealWorldSafetySearchResponse(BaseModel):
     limitations: list[str]
     source_audits: list[RealWorldSafetyAuditSummary]
     source_freshness: list[RealWorldSafetySourceFreshness]
+    source_health: RealWorldSafetySourceHealth
     results: list[RealWorldSafetyRecord]
