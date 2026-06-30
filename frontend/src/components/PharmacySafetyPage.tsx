@@ -410,7 +410,7 @@ function PharmacySafetyPage({
     <section className="safety-area-page safety-area-page--pharmacy pharmacy-detail-page">
       <header className="pharmacy-overview">
         <div className="pharmacy-overview__main">
-          <p className="eyebrow">Pharmacy Safety</p>
+          <p className="eyebrow">DrugSignal</p>
 
           <h1>
             {submittedQuery ? (

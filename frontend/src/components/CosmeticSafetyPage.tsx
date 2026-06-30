@@ -544,7 +544,7 @@ function CosmeticSafetyPage({
     <section className="safety-area-page safety-area-page--cosmetic pharmacy-detail-page cosmetic-detail-page">
       <header className="pharmacy-overview cosmetic-overview">
         <div className="pharmacy-overview__main">
-          <p className="eyebrow">Cosmetic Safety</p>
+          <p className="eyebrow">Personal Care Signals</p>
 
           <h1>
             {submittedQuery ? (

@@ -26,7 +26,7 @@ const flowItems: FlowItem[] = [
   },
   {
     number: '03',
-    title: 'Pharmacy Safety',
+    title: 'DrugSignal',
     subtitle: 'Recalls + event patterns',
     detail: 'Drug recall records and FAERS reporting patterns in one routed workspace.',
     icon: 'radar',
@@ -34,7 +34,7 @@ const flowItems: FlowItem[] = [
   },
   {
     number: '04',
-    title: 'Food Safety',
+    title: 'FoodSignal',
     subtitle: 'Food + supplements',
     detail: 'Review food, supplement, meat, poultry, and egg-product recall records.',
     icon: 'leaf',
@@ -42,7 +42,7 @@ const flowItems: FlowItem[] = [
   },
   {
     number: '05',
-    title: 'Cosmetic Safety',
+    title: 'Personal Care Signals',
     subtitle: 'Cosmetic events',
     detail: 'Review cosmetic-event public records with source context and limitations.',
     icon: 'bottle',
@@ -170,7 +170,7 @@ function OperationalOverview({ goToPharmacySafety }: { goToPharmacySafety: () =>
             className="operational-flow__cta"
             onClick={goToPharmacySafety}
           >
-            Open Pharmacy Safety <span aria-hidden="true">→</span>
+            Open DrugSignal <span aria-hidden="true">→</span>
           </button>
 
           <span className="operational-flow__live">

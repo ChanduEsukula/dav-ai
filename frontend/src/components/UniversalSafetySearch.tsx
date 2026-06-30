@@ -66,7 +66,7 @@ function buildPreview(
       eyebrow: 'Safety record preview',
       title: `${query} looks like a drug or medication search.`,
       detail:
-        'Dav AI checked for possible drug recall matches and public adverse-event reporting patterns. Use the full pharmacy workflow to review details before interpreting the result.',
+        'Dav AI checked for possible drug recall matches and public adverse-event reporting patterns. Use the full DrugSignal workflow to review details before interpreting the result.',
       countLabel:
         totalCount > 0
           ? formatRecordLabel(totalCount)
@@ -127,7 +127,7 @@ function buildPreview(
       eyebrow: 'Safety record preview',
       title: `${query} looks like a cosmetic or personal-care search.`,
       detail:
-        'Dav AI checked cosmetic-event records for possible product or brand-related reports. Use the full cosmetic workflow to review report patterns and product context.',
+        'Dav AI checked cosmetic-event records for possible product or brand-related reports. Use the full Personal Care Signals workflow to review report patterns and product context.',
       countLabel:
         cosmeticCount > 0
           ? formatRecordLabel(cosmeticCount)
@@ -150,9 +150,9 @@ function buildPreview(
     countLabel: 'Choose a safety area to continue',
     checklist: [
       'Use Safety Record Search for vehicles, consumer products, NDC/UPC/VIN, and cross-source checks.',
-      'Use Pharmacy Safety for drugs and medications.',
+      'Use DrugSignal for drugs and medications.',
       'Use Food & Supplement Safety for food, supplements, meat, poultry, and egg products.',
-      'Use Cosmetic Safety for cosmetics and personal-care products.',
+      'Use Personal Care Signals for cosmetics and personal-care products.',
     ],
     disclaimer:
       'This preview is only a routing step and does not make any safety conclusion.',
