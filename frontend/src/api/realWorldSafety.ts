@@ -47,6 +47,32 @@ export type RealWorldSafetyFailedSource = {
   reason: string
 }
 
+export type RealWorldSafetySourceFreshness = {
+  source_id: string
+  source_name: string
+  source_type: string
+  source_kind: RealWorldSafetySourceKind
+  upstream_status: string
+  record_count: number
+  freshness_status: string
+  user_label: string
+  explanation: string
+  source_snapshot_status: string | null
+  source_pull_id: string | null
+  source_payload_hash: string | null
+  checked_at: string
+}
+
+export type RealWorldSafetyCategoryClassification = {
+  primary_category: string
+  secondary_categories: string[]
+  confidence: string
+  matched_terms: string[]
+  reason: string
+  suggested_source_ids: string[]
+  flags: Record<string, boolean>
+}
+
 export type RealWorldSafetyQueryUnderstanding = {
   original_query: string
   normalized_query: string
@@ -54,8 +80,9 @@ export type RealWorldSafetyQueryUnderstanding = {
   corrections_applied: string[]
   expanded_terms: string[]
   expansion_search_terms_used: string[]
-  detected_identifiers: Record<'vin' | 'ndc' | 'upc', string | null>
+  detected_identifiers: Record<string, string | null>
   query_type_hints: string[]
+  category_classification?: RealWorldSafetyCategoryClassification
 }
 
 export type RealWorldSafetySourceRole =
@@ -63,6 +90,7 @@ export type RealWorldSafetySourceRole =
   | 'reference_identity'
   | 'label_reference'
   | 'signal_report'
+  | 'outbreak_context'
   | 'other'
 
 export type RealWorldSafetySearchPlan = {
@@ -80,8 +108,9 @@ export type RealWorldSafetyIntelligenceSummary = {
   recall_or_enforcement_found: boolean
   reference_or_label_found: boolean
   signal_report_found: boolean
-  matched_sources_by_role: Record<RealWorldSafetySourceRole, string[]>
-  checked_sources_by_role: Record<RealWorldSafetySourceRole, string[]>
+  outbreak_context_found?: boolean
+  matched_sources_by_role: Partial<Record<RealWorldSafetySourceRole, string[]>>
+  checked_sources_by_role: Partial<Record<RealWorldSafetySourceRole, string[]>>
   top_result_titles: string[]
   expansion_explanations: string[]
   plain_language_summary: string
@@ -101,7 +130,6 @@ export type RealWorldSafetyAuditSummary = {
   source_pull_id: string | null
   source_payload_hash: string | null
 }
-
 
 export type RealWorldSafetyIdentifierCheckItem = {
   type: string
@@ -137,6 +165,7 @@ export type RealWorldSafetySearchResponse = {
   public_data_disclaimer: string
   limitations: string[]
   source_audits: RealWorldSafetyAuditSummary[]
+  source_freshness?: RealWorldSafetySourceFreshness[]
   results: RealWorldSafetyRecord[]
 }
 

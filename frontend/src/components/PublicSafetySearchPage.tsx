@@ -47,6 +47,7 @@ const roleOrder: RealWorldSafetySourceRole[] = [
   'reference_identity',
   'label_reference',
   'signal_report',
+  'outbreak_context',
   'other',
 ]
 
@@ -73,6 +74,12 @@ const roleCopy: Record<
     label: 'Signal reports',
     shortLabel: 'Signal',
     description: 'Public adverse-event signals. These are not recalls or proof of causation.',
+  },
+  outbreak_context: {
+    label: 'Outbreak / investigation context',
+    shortLabel: 'Outbreak context',
+    description:
+      'Public-health investigation or outbreak context. This is not automatically a recall or proof that a specific product caused illness.',
   },
   other: {
     label: 'Other',
@@ -249,6 +256,35 @@ function QueryUnderstandingCard({
           </strong>
         </div>
       </div>
+
+      {understanding.category_classification && (
+        <div className="public-safety-detail-grid">
+          <div>
+            <small>Primary category</small>
+            <strong>{formatQueryType(understanding.category_classification.primary_category)}</strong>
+          </div>
+          <div>
+            <small>Category confidence</small>
+            <strong>{formatQueryType(understanding.category_classification.confidence)}</strong>
+          </div>
+          <div>
+            <small>Secondary categories</small>
+            <strong>
+              {understanding.category_classification.secondary_categories.length
+                ? understanding.category_classification.secondary_categories.map(formatQueryType).join(', ')
+                : 'None'}
+            </strong>
+          </div>
+          <div>
+            <small>Matched terms</small>
+            <strong>
+              {understanding.category_classification.matched_terms.length
+                ? understanding.category_classification.matched_terms.join(', ')
+                : 'None'}
+            </strong>
+          </div>
+        </div>
+      )}
 
       <div className="public-safety-chip-block">
         <small>Corrections applied</small>
@@ -537,6 +573,9 @@ function SourceCoveragePanel({
   const auditsBySourceId = new Map(
     data.source_audits.map((audit) => [audit.source_id, audit]),
   )
+  const freshnessBySourceId = new Map(
+  (data.source_freshness ?? []).map((freshness) => [freshness.source_id, freshness]),
+  )
 
   return (
     <CollapsiblePanel
@@ -547,11 +586,7 @@ function SourceCoveragePanel({
       <div className="public-safety-coverage-grid">
         {data.sources_checked.map((source) => {
           const audit = auditsBySourceId.get(source.source_id)
-          const freshnessStatus = formatSourceFreshnessStatus({
-            upstreamStatus: source.upstream_status,
-            sourceSnapshotStatus: audit?.source_snapshot_status,
-            sourcePullId: audit?.source_pull_id,
-          })
+          const freshness = freshnessBySourceId.get(source.source_id)
 
           return (
             <div key={`${source.source_id}-${source.source_name}`}>
@@ -568,15 +603,33 @@ function SourceCoveragePanel({
 
               <div className="public-safety-source-freshness">
                 <small>Source freshness</small>
-                <span>{freshnessStatus}</span>
-                <span>Checked: {formatPublicSafetyDate(data.retrieval_timestamp)}</span>
-                {audit?.source_snapshot_status && (
+                <span>
+  {freshness?.user_label ??
+    formatSourceFreshnessStatus({
+      upstreamStatus: source.upstream_status,
+      sourceSnapshotStatus: audit?.source_snapshot_status,
+      sourcePullId: audit?.source_pull_id,
+    })}
+</span>
+                <span>
+                  Checked:{' '}
+                  {formatPublicSafetyDate(freshness?.checked_at ?? data.retrieval_timestamp)}
+                </span>
+                {freshness?.explanation && <span>{freshness.explanation}</span>}
+                {(freshness?.source_snapshot_status ?? audit?.source_snapshot_status) && (
                   <span>
-                    Snapshot: {formatSourceFreshnessValue(audit.source_snapshot_status)}
+                    Snapshot:{' '}
+                    {formatSourceFreshnessValue(
+                      freshness?.source_snapshot_status ?? audit?.source_snapshot_status,
+                    )}
                   </span>
                 )}
-                {audit?.source_pull_id && <span>Source pull stored</span>}
-                {audit?.source_payload_hash && <span>Payload hash captured</span>}
+                {(freshness?.source_pull_id ?? audit?.source_pull_id) && (
+                  <span>Source pull stored</span>
+                )}
+                {(freshness?.source_payload_hash ?? audit?.source_payload_hash) && (
+                  <span>Payload hash captured</span>
+                )}
               </div>
 
               <SourceDetailsDisclosure
@@ -587,7 +640,7 @@ function SourceCoveragePanel({
                 sourceUrl={source.source_url}
                 recordCount={source.record_count}
                 upstreamStatus={source.upstream_status}
-                retrievedAt={data.retrieval_timestamp}
+                retrievedAt={freshness?.checked_at ?? data.retrieval_timestamp}
               />
             </div>
           )
@@ -826,6 +879,8 @@ function publicSafetyRoleLabel(role: RealWorldSafetySourceRole) {
       return 'Label'
     case 'signal_report':
       return 'Signal report'
+    case 'outbreak_context':
+      return 'Outbreak context'
     default:
       return 'Public record'
   }
@@ -923,7 +978,8 @@ function ResultCard({
             <strong>{record.extraction_confidence}</strong>
           </div>
         )}
-{(record.affected_models?.length ?? 0) > 0 && (
+
+        {(record.affected_models?.length ?? 0) > 0 && (
           <div className="pharmacy-record-details__wide">
             <span>Affected models</span>
             <strong>{displayList(record.affected_models)}</strong>
