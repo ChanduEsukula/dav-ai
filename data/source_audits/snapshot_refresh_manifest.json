@@ -63,7 +63,7 @@
       "payload_sha256": "287225a91118147f4a0d913a5f2a053702aaa5f6e3cce26fd5dd00802ec51df1"
     },
     {
-      "source_id": "cpsc_recalls",
+      "source_id": "cpsc_recalls_api",
       "source_name": "CPSC Recalls API",
       "endpoint": "https://www.saferproducts.gov/RestWebServices/Recall?format=json",
       "snapshot_path": "data/safety_sources/cpsc/cpsc_daily_products_curated_records.json",
