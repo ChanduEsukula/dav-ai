@@ -30,8 +30,8 @@ const advancedNavGroups = [
     ],
   },
   {
-    label: 'Sources & Audit',
-    pageIds: [PAGE_IDS.SOURCES, PAGE_IDS.AUDIT, PAGE_IDS.SYSTEM],
+    label: 'Operations',
+    pageIds: [PAGE_IDS.SYSTEM, PAGE_IDS.SAVED_MONITORS],
   },
   {
     label: 'Labs / Advanced',

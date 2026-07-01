@@ -154,7 +154,7 @@ test('renders simplified navigation with intelligence area pages still available
   const mainPages = within(screen.getByLabelText('Main pages'))
   const accountActions = within(screen.getByLabelText('Account actions'))
 
-  for (const label of ['Home', 'Safety Search', 'Monitors', 'About']) {
+  for (const label of ['Home', 'Safety Search', 'Sources', 'Audit', 'About']) {
     expect(mainPages.getByRole('button', { name: label })).toBeInTheDocument()
   }
 
@@ -164,9 +164,8 @@ test('renders simplified navigation with intelligence area pages still available
     'Personal Care Signals',
     'Scan beta',
     'Regional Health Lab',
-    'Audit',
-    'Sources',
     'System',
+    'Monitors',
     'FAQ',
     'Help',
   ]) {
@@ -186,9 +185,8 @@ test('renders simplified navigation with intelligence area pages still available
     'Personal Care Signals',
     'Scan beta',
     'Regional Health Lab',
-    'Audit',
-    'Sources',
     'System',
+    'Monitors',
     'FAQ',
     'Help',
   ]) {
@@ -219,7 +217,7 @@ test('opens ProductScan from the homepage experiment entry without adding primar
 test('renders focused navigation groups in the pill nav', () => {
   render(<App />)
 
-  for (const label of ['Home', 'Safety Search', 'Monitors', 'About']) {
+  for (const label of ['Home', 'Safety Search', 'Sources', 'Audit', 'About']) {
     const navButton = screen.getByRole('button', { name: label })
 
     expect(navButton.closest('.nav-links')).toBeInTheDocument()
@@ -236,9 +234,8 @@ test('renders focused navigation groups in the pill nav', () => {
     'Personal Care Signals',
     'Scan beta',
     'Regional Health Lab',
-    'Audit',
-    'Sources',
     'System',
+    'Monitors',
     'FAQ',
     'Help',
   ]) {
