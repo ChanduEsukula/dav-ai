@@ -2,6 +2,8 @@ from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Query, Request
 
+from app.db.audit_repository import AuditPersistenceError
+from app.db.source_pull_repository import SourcePullPersistenceError
 from app.schemas.everyday_safety import EverydaySafetySearchResponse
 from app.services.search_workflows.everyday_safety_search import execute_everyday_safety_search
 
@@ -48,6 +50,15 @@ async def search_everyday_safety(
             detail={
                 "message": str(exc),
                 "code": "EVERYDAY_SAFETY_CATEGORY_NOT_IMPLEMENTED",
+            },
+        ) from exc
+
+    except (AuditPersistenceError, SourcePullPersistenceError) as exc:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "message": "FoodSignal search completed source work but could not persist required audit/provenance metadata.",
+                "code": "EVERYDAY_SAFETY_PROVENANCE_PERSISTENCE_UNAVAILABLE",
             },
         ) from exc
 

@@ -25,7 +25,7 @@ Implemented:
 Not implemented:
 
 - Alerts
-- Auth/RBAC
+- Production RBAC and tenancy
 - Public scheduling UI
 - Production Cron activation
 - Notification preferences
@@ -97,7 +97,7 @@ Production Cron should remain disabled until the following are addressed:
 - Scheduler failures are observable from production logs or a dashboard.
 - Alerting behavior is designed separately from scheduler execution.
 - Notification preferences exist before any user-facing alerts are sent.
-- Auth/RBAC and monitor ownership are designed before user-specific scheduling.
+- Production RBAC, tenancy, and durable monitor ownership policies are designed before user-specific scheduling.
 - Operational rollback instructions are documented.
 
 ## Safety Boundary

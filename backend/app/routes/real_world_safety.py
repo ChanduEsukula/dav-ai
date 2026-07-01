@@ -3,6 +3,8 @@ import logging
 
 from fastapi import APIRouter, HTTPException, Query, Request
 
+from app.db.audit_repository import AuditPersistenceError
+from app.db.source_pull_repository import SourcePullPersistenceError
 from app.schemas.real_world_safety import RealWorldSafetySearchResponse
 from app.services.search_workflows.real_world_safety_search import execute_real_world_safety_search
 
@@ -78,6 +80,22 @@ async def search_real_world_safety(
             detail={
                 "message": str(exc),
                 "code": "REAL_WORLD_SAFETY_QUERY_INVALID",
+            },
+        ) from exc
+    except (AuditPersistenceError, SourcePullPersistenceError) as exc:
+        logger.exception(
+            "real_world_safety_route_persistence_failed",
+            extra={
+                "event": "real_world_safety_route_persistence_failed",
+                "request_id": request_id,
+                "query": q,
+            },
+        )
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "message": "Real-world safety search completed source work but could not persist required audit/provenance metadata.",
+                "code": "REAL_WORLD_SAFETY_PROVENANCE_PERSISTENCE_UNAVAILABLE",
             },
         ) from exc
     except Exception as exc:

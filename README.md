@@ -32,7 +32,7 @@ Search public records -> identify evidence lanes -> verify exact source records 
 
 ## Main Demo Flow
 
-The current portfolio checkpoint is optimized around **Safety Record Search**.
+The current portfolio demo is optimized around **Safety Record Search**.
 
 Recommended 5-minute path:
 
@@ -223,22 +223,16 @@ npm run lint
 npm run test:e2e
 ```
 
-Focused portfolio checkpoint validation reported for `portfolio-ui-polish-v1`:
-
-- App, UniversalSafetySearch, PublicSafetySearchPage, and SavedMonitorsPage focused frontend tests: 63 passed
-- Frontend production build: passed
-
 Current full local validation checkpoint:
 
-- Backend tests: 477 passed
+- Backend tests: 488 passed
 - Frontend tests: 31 files, 282 tests passed
 - Frontend production build: passed
 - Playwright smoke tests: 3 passed
 
 ## Current Status
 
-- Checkpoint: `portfolio-ui-polish-v1`
-- Current cleanup focus: truthfulness, source-mode clarity, removal of demo-looking runtime data, and DrugSignal-quality parity across modules.
+- Current cleanup focus: recruiter-readiness, documentation clarity, source-mode truthfulness, provenance reliability, and safer deployed-mode persistence behavior.
 
 Recent product polish:
 
@@ -263,9 +257,7 @@ Recent product polish:
 
 ## Portfolio Docs
 
-- [Repository Audit 2026](docs/DAVAI_REPOSITORY_AUDIT_2026.md)
-- [Portfolio UI Polish v1 Checkpoint](docs/portfolio_ui_polish_v1_checkpoint.md)
-- [5-Minute Portfolio Demo Script](docs/demo_script_portfolio_ui_polish_v1.md)
+- [Docs Index](docs/README.md)
 - [Architecture Overview](docs/architecture_overview.md)
-- [Source Expansion Checkpoint](docs/source_expansion_checkpoint.md)
+- [Portfolio Demo Package](docs/demo/PORTFOLIO_DEMO_PACKAGE.md)
 - [Operations Runbook](docs/operations_runbook.md)

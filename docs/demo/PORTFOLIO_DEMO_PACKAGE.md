@@ -13,7 +13,7 @@ Current flagship workflow: **Public Safety Search**
 
 ## One-line description
 
-Dav AI is a full-stack public safety intelligence platform that helps users search fragmented U.S. public recall, enforcement, label, reference, vehicle, device, food, drug, cosmetic, and consumer-product records while preserving source provenance and avoiding unsupported safety claims.
+Dav AI is a full-stack public-data safety intelligence platform prototype that helps users search fragmented U.S. public recall, enforcement, label, reference, vehicle, device, food, drug, cosmetic, and consumer-product records while preserving source provenance and avoiding unsupported safety claims.
 
 ## Best portfolio positioning
 
@@ -77,7 +77,7 @@ Recommended first two:
 >
 > A key design choice is that Dav AI does not say a product is safe or unsafe. A no-match result is not a safety guarantee. The app shows what sources were checked, what kind of evidence was found, and what still needs official verification.
 >
-> Under the hood, the backend uses source adapters, typed response contracts, fail-soft source orchestration, audit metadata, source registry seeding, and migration alignment tests. The project currently has 393 backend tests and 238 frontend tests passing.
+> Under the hood, the backend uses source adapters, typed response contracts, fail-soft source orchestration, audit metadata, source registry seeding, and migration alignment tests. The current verified baseline is 488 backend tests, 282 frontend tests, frontend lint/build passing, and 3 Playwright smoke tests passing.
 
 ## Screenshot checklist
 
@@ -120,7 +120,7 @@ React + TypeScript frontend
 - Typed FastAPI and React contracts
 - Outcome-first UI with progressive disclosure
 - Responsible safety language and zero-result boundaries
-- Automated validation: 393 backend tests, 238 frontend tests, frontend build, ESLint, and Playwright smoke coverage
+- Automated validation: 488 backend tests, 282 frontend tests, frontend build, ESLint, and 3 Playwright smoke tests
 
 ## Known limitations
 
@@ -130,7 +130,7 @@ React + TypeScript frontend
 - No match does not prove safety
 - Adverse-event reports do not prove causation
 - No complete lot, UPC, NDC package, VIN, UDI, or serial certainty for every query
-- No production authentication, tenant isolation, alert delivery, rate limiting, or complete observability
+- Prototype/demo token auth only; no production RBAC, tenant isolation, alert delivery, rate limiting, or complete observability
 - ProductScan is experimental input assistance only and should not be the main demo
 - Offline ML experiments are not production inference
 
@@ -146,7 +146,7 @@ Use this framing:
 - Designed source adapters that normalize heterogeneous recall, enforcement, label, reference, vehicle, device, food, drug, and cosmetic records into typed contracts with source-role classification.
 - Implemented deterministic query understanding with typo correction, brand/generic expansion, joined-term cleanup, and VIN/NDC/UPC detection while preserving the original user query.
 - Added audit and provenance infrastructure with source IDs, endpoints, retrieval timestamps, transform versions, payload hashes, source registry seeding, and migration alignment tests.
-- Validated the project with 393 backend tests, 238 frontend tests, TypeScript production builds, ESLint, and Playwright smoke coverage.
+- Validated the project with 488 backend tests, 282 frontend tests, TypeScript production builds, ESLint, and 3 Playwright smoke tests.
 
 ## Final demo checklist
 

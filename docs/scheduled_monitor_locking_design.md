@@ -56,7 +56,7 @@ This design does not add:
 - Alerts.
 - Notification preferences.
 - Public scheduling UI.
-- Auth/RBAC.
+- Production RBAC and tenancy.
 - Distributed task queues.
 - Celery, Redis, or background workers.
 - Clinical or medical decision logic.
@@ -206,7 +206,7 @@ Before enabling production Cron, DAV AI still needs:
 - Deployment-environment verification of lock behavior.
 - Scheduler observability.
 - Clear rollback instructions.
-- Auth/RBAC and monitor ownership.
+- Production RBAC, tenancy, and durable monitor ownership policies.
 - Alerting design and notification preferences.
 - Production monitoring for job failures.
 - Careful review of duplicate-run behavior.

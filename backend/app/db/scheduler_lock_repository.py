@@ -20,9 +20,13 @@ from datetime import datetime
 import psycopg
 from psycopg.rows import dict_row
 
-from app.db.database import get_database_url
+from app.db.database import get_database_url, is_deployed_environment
 
 logger = logging.getLogger("dav_ai.scheduler_lock")
+
+
+class SchedulerLockPersistenceError(RuntimeError):
+    """Raised when scheduler-lock persistence fails in deployed mode."""
 
 
 @dataclass(frozen=True)
@@ -61,6 +65,10 @@ class SchedulerLockRepository:
         """
 
         database_url = get_database_url() if self._use_database else None
+        if self._use_database and not database_url and is_deployed_environment():
+            raise SchedulerLockPersistenceError(
+                "DATABASE_URL must be configured for scheduler locks in deployed mode."
+            )
 
         if database_url:
             try:
@@ -71,7 +79,7 @@ class SchedulerLockRepository:
                     locked_until=locked_until,
                     now=now,
                 )
-            except Exception:
+            except Exception as exc:
                 logger.exception(
                     "scheduler_lock_db_acquire_failed",
                     extra={
@@ -79,6 +87,10 @@ class SchedulerLockRepository:
                         "lock_name": lock_name,
                     },
                 )
+                if is_deployed_environment():
+                    raise SchedulerLockPersistenceError(
+                        "Scheduler lock acquisition failed in deployed mode."
+                    ) from exc
 
         return self._acquire_lock_memory(
             lock_name=lock_name,
@@ -91,6 +103,10 @@ class SchedulerLockRepository:
         """Release a lock only when owned by the current job."""
 
         database_url = get_database_url() if self._use_database else None
+        if self._use_database and not database_url and is_deployed_environment():
+            raise SchedulerLockPersistenceError(
+                "DATABASE_URL must be configured for scheduler locks in deployed mode."
+            )
 
         if database_url:
             try:
@@ -99,7 +115,7 @@ class SchedulerLockRepository:
                     lock_name=lock_name,
                     locked_by=locked_by,
                 )
-            except Exception:
+            except Exception as exc:
                 logger.exception(
                     "scheduler_lock_db_release_failed",
                     extra={
@@ -107,6 +123,10 @@ class SchedulerLockRepository:
                         "lock_name": lock_name,
                     },
                 )
+                if is_deployed_environment():
+                    raise SchedulerLockPersistenceError(
+                        "Scheduler lock release failed in deployed mode."
+                    ) from exc
 
         return self._release_lock_memory(lock_name=lock_name, locked_by=locked_by)
 
@@ -114,6 +134,10 @@ class SchedulerLockRepository:
         """Return the current lock for inspection/testing."""
 
         database_url = get_database_url() if self._use_database else None
+        if self._use_database and not database_url and is_deployed_environment():
+            raise SchedulerLockPersistenceError(
+                "DATABASE_URL must be configured for scheduler locks in deployed mode."
+            )
 
         if database_url:
             try:
@@ -121,7 +145,7 @@ class SchedulerLockRepository:
                     database_url=database_url,
                     lock_name=lock_name,
                 )
-            except Exception:
+            except Exception as exc:
                 logger.exception(
                     "scheduler_lock_db_get_failed",
                     extra={
@@ -129,6 +153,10 @@ class SchedulerLockRepository:
                         "lock_name": lock_name,
                     },
                 )
+                if is_deployed_environment():
+                    raise SchedulerLockPersistenceError(
+                        "Scheduler lock read failed in deployed mode."
+                    ) from exc
 
         return self._locks.get(lock_name)
 

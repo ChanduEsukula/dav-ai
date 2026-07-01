@@ -1,7 +1,9 @@
 from fastapi.testclient import TestClient
 import pytest
 
+from app.db.audit_repository import AuditPersistenceError
 from app.main import app
+from app.routes import recalls as recalls_route
 from app.services.search_workflows import recall_search
 from app.services.safety_source_adapters.base import (
     NormalizedSafetyRecord,
@@ -287,6 +289,27 @@ def test_search_recalls_returns_502_and_persists_error_audit(monkeypatch):
     assert "openFDA unavailable" in audit_event["error_message"]
     assert audit_event["audit_id"]
     assert audit_event["retrieval_timestamp"]
+
+
+def test_search_recalls_maps_persistence_failure_without_upstream_label(monkeypatch):
+    async def fake_execute_recall_search(**kwargs):
+        raise AuditPersistenceError("audit database unavailable")
+
+    monkeypatch.setattr(
+        recalls_route,
+        "execute_recall_search",
+        fake_execute_recall_search,
+    )
+
+    response = TestClient(app).get(
+        "/api/v1/recalls/search",
+        params={"q": "eye drops", "limit": 5},
+    )
+
+    assert response.status_code == 503
+    assert response.json()["detail"]["code"] == (
+        "RECALL_PROVENANCE_PERSISTENCE_UNAVAILABLE"
+    )
 
 
 def test_search_recalls_rejects_short_query():

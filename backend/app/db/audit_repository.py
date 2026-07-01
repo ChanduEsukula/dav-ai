@@ -6,9 +6,13 @@ import psycopg
 from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 
-from app.db.database import get_database_url
+from app.db.database import get_database_url, is_deployed_environment
 
 logger = logging.getLogger("dav_ai.audit")
+
+
+class AuditPersistenceError(RuntimeError):
+    """Raised when audit-event persistence fails in deployed mode."""
 
 
 def save_audit_event(
@@ -42,6 +46,11 @@ def save_audit_event(
                 "reason": "database_not_configured",
             },
         )
+
+        if is_deployed_environment():
+            raise AuditPersistenceError(
+                "DATABASE_URL must be configured for audit persistence in deployed mode."
+            )
 
         return {
             "status": "skipped",
@@ -118,7 +127,7 @@ def save_audit_event(
             "reason": "audit_event_persisted",
         }
 
-    except Exception:
+    except Exception as exc:
         duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
 
         logger.exception(
@@ -134,6 +143,11 @@ def save_audit_event(
                 "error_category": "audit_event_persistence_failed",
             },
         )
+
+        if is_deployed_environment():
+            raise AuditPersistenceError(
+                "Audit-event persistence failed in deployed mode."
+            ) from exc
 
         return {
             "status": "error",

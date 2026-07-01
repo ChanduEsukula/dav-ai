@@ -1,7 +1,6 @@
 # DavAI Architecture Overview
 
-- **Updated:** June 26, 2026
-- **Checkpoint:** `portfolio-ui-polish-v1`
+- **Updated:** July 1, 2026
 - **Status:** Current portfolio architecture overview. This describes the implemented prototype and its boundaries, not a production healthcare deployment.
 
 ## Product Architecture
@@ -16,7 +15,7 @@ React frontend
   -> source adapters and public/curated records
   -> normalized records, source roles, scores, summaries
   -> audit events, source pulls, payload hashes
-  -> result UI, source verification, Explain These Results, Saved Searches
+  -> result UI, source verification, Explain These Results, Monitors
 ```
 
 The strongest user-facing workflow is Safety Record Search. Focused Pharmacy, Food, and Cosmetic pages remain available for deeper module-specific review.
@@ -74,7 +73,7 @@ Current backend route families include:
 - `/api/v1/semantic-similarity/preview`
 - `/api/v1/assistant/chat`
 
-Regional Health Pulse backend routes and source metadata exist as scaffold/foundation work, but the normal user-facing frontend routing/copy has been removed at this checkpoint.
+Regional Health Pulse backend routes and source metadata exist as scaffold/foundation work, but the normal user-facing frontend routing/copy is not part of the primary demo path.
 
 ## API Adapters and Sources
 
@@ -89,7 +88,7 @@ The source registry lives in `backend/app/sources/registry.py`. Source adapters 
 | openFDA NDC, drug label, DailyMed, RxNorm | Drug identity, reference, and label context. |
 | openFDA device enforcement, device event, UDI | Device recall, signal, and identity context depending on query. |
 | FDA public recalls and safety communications | Public FDA page/advisory context. |
-| USDA FSIS | Curated official-source snapshot for meat, poultry, and egg-product recall/public-health-alert context. |
+| USDA FSIS | Live public API in focused FoodSignal flows; curated official-source snapshot or fallback context in some cross-source paths. |
 | CPSC | Curated official-source snapshot for consumer-product recall context. |
 | NHTSA vPIC and recalls | Live public vehicle decode/recall lookup paths. |
 | CDC/VAERS and CDC/FDA foodborne outbreak context | Curated/demo public-data context for signal/investigation roles. |
@@ -158,9 +157,9 @@ Incorrect claim:
 
 > DavAI has full production RAG, a vector database, autonomous web browsing, or medical reasoning.
 
-## Saved Searches Concept
+## Monitors Concept
 
-Saved Searches are repeatable public-record checks. They are implemented as saved monitor foundations internally, but user-facing language now emphasizes "Saved Searches."
+Monitors are repeatable public-record checks. They are implemented as saved monitor foundations internally, but user-facing language emphasizes repeatable public-data review rather than production alerting.
 
 Current capabilities include:
 
@@ -178,7 +177,7 @@ Current limitations:
 - no production alert delivery
 - no public scheduling UI
 - no notification preferences
-- no authentication, user ownership, RBAC, or tenant isolation
+- prototype/demo token auth exists, but there is no production RBAC or tenant isolation
 - cosmetic saved-search creation is not at full parity
 
 ## Deterministic Intelligence and AI/ML Boundaries
@@ -230,24 +229,27 @@ Frontend tests cover:
 Common validation commands:
 
 ```bash
-pytest
+PYTHONPATH=backend python3 -m pytest backend/tests -q
 cd frontend
-npm run build
-npm test
 npm run lint
+npm test -- --run
+npm run build
 npm run test:e2e
 ```
 
-Checkpoint validation reported for `portfolio-ui-polish-v1`:
+Current verified local validation:
 
-- focused frontend tests: 63 passed
-- frontend build: passed
+- Backend tests: 488 passed
+- Frontend lint: passed
+- Frontend tests: 31 files, 282 tests passed
+- Frontend production build: passed
+- Playwright smoke tests: 3 passed
 
 ## Production Readiness Gaps
 
 DavAI is credible as a portfolio-grade prototype, but the following are still future work:
 
-- authentication, user ownership, RBAC, and tenant isolation
+- production authentication, RBAC, tenant isolation, and durable user ownership policies
 - production alert delivery and notification preferences
 - scheduled refresh activation in a production environment
 - more complete live ingestion for curated snapshot sources

@@ -49,3 +49,12 @@ def test_saved_monitor_db_failure_fails_closed_in_deployed_environment(monkeypat
 
     with pytest.raises(SavedMonitorPersistenceError, match="deployed mode"):
         repo.list()
+
+
+def test_saved_monitor_requires_database_in_deployed_environment(monkeypatch):
+    repo = SavedMonitorRepository()
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.setenv("DAVAI_ENV", "production")
+
+    with pytest.raises(SavedMonitorPersistenceError, match="DATABASE_URL"):
+        repo.list()

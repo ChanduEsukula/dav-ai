@@ -2,7 +2,12 @@
 
 from datetime import datetime, timedelta, timezone
 
-from app.db.scheduler_lock_repository import SchedulerLockRepository
+import pytest
+
+from app.db.scheduler_lock_repository import (
+    SchedulerLockPersistenceError,
+    SchedulerLockRepository,
+)
 
 
 def test_acquire_new_lock_succeeds():
@@ -129,3 +134,66 @@ def test_release_missing_lock_returns_false():
     )
 
     assert released is False
+
+
+def test_db_lock_failure_falls_back_to_memory_locally(monkeypatch):
+    repository = SchedulerLockRepository(use_database=True)
+    now = datetime.now(timezone.utc)
+    monkeypatch.setenv("DATABASE_URL", "postgresql://user:pass@example.com/db")
+    monkeypatch.delenv("DAVAI_ENV", raising=False)
+
+    def mock_connect(*args, **kwargs):
+        raise RuntimeError("database unavailable")
+
+    monkeypatch.setattr(
+        "app.db.scheduler_lock_repository.psycopg.connect",
+        mock_connect,
+    )
+
+    acquired = repository.acquire_lock(
+        lock_name="saved-monitor-refresh",
+        locked_by="job-1",
+        locked_until=now + timedelta(minutes=15),
+        now=now,
+    )
+
+    assert acquired is True
+    assert repository.get_lock("saved-monitor-refresh") is not None
+
+
+def test_db_lock_failure_fails_closed_in_deployed_environment(monkeypatch):
+    repository = SchedulerLockRepository(use_database=True)
+    now = datetime.now(timezone.utc)
+    monkeypatch.setenv("DATABASE_URL", "postgresql://user:pass@example.com/db")
+    monkeypatch.setenv("DAVAI_ENV", "production")
+
+    def mock_connect(*args, **kwargs):
+        raise RuntimeError("database unavailable")
+
+    monkeypatch.setattr(
+        "app.db.scheduler_lock_repository.psycopg.connect",
+        mock_connect,
+    )
+
+    with pytest.raises(SchedulerLockPersistenceError, match="deployed mode"):
+        repository.acquire_lock(
+            lock_name="saved-monitor-refresh",
+            locked_by="job-1",
+            locked_until=now + timedelta(minutes=15),
+            now=now,
+        )
+
+
+def test_db_lock_requires_database_in_deployed_environment(monkeypatch):
+    repository = SchedulerLockRepository(use_database=True)
+    now = datetime.now(timezone.utc)
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.setenv("DAVAI_ENV", "production")
+
+    with pytest.raises(SchedulerLockPersistenceError, match="DATABASE_URL"):
+        repository.acquire_lock(
+            lock_name="saved-monitor-refresh",
+            locked_by="job-1",
+            locked_until=now + timedelta(minutes=15),
+            now=now,
+        )

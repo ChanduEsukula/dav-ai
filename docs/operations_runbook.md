@@ -136,9 +136,9 @@ Recommended actions:
 4. Retry with a simpler query.
 5. Verify the source endpoint in /api/v1/sources.
 
-## 8. Troubleshoot Supabase audit persistence
+## 8. Troubleshoot Supabase audit/source-pull persistence
 
-Audit persistence is fail-soft. RecallRadar and DrugSignal should still respond even if audit insertion fails.
+Audit/source-pull persistence is demo-friendly locally, but deployed mode should fail closed for write failures so DavAI does not present source-grounded results without required provenance.
 
 Possible causes:
 - DATABASE_URL missing.
@@ -148,14 +148,15 @@ Possible causes:
 - Network or connectivity issue.
 
 Expected app behavior:
-- Search endpoints continue working.
-- Audit insert returns skipped or error internally.
+- Local/test without `DATABASE_URL`: write operations return skipped or use documented in-memory/demo behavior where applicable.
+- Local/test with a transient DB error: selected prototype paths may return explicit error status for provenance writes.
+- Deployed mode with `DAVAI_ENV=production`, `APP_ENV=production`, `ENVIRONMENT=production`, `PYTHON_ENV=production`, or `RENDER=true`: audit/source-pull write failures should raise a clear persistence error and API routes should return a persistence-specific `503`, not an upstream-source `502`.
 - Logs include audit_insert_skipped, audit_insert_failed, audit_list_skipped, or audit_list_failed.
 
 Recommended checks:
 1. Confirm Render environment has DATABASE_URL.
 2. Confirm Supabase database is active.
-3. Confirm Alembic migrations are at head, currently `20260519_0005`.
+3. Confirm Alembic migrations are at head.
 4. Call /api/v1/audit-events?limit=10.
 5. Search Render logs using the request ID.
 
@@ -178,10 +179,11 @@ Current boundary:
 - Migration `20260519_0005_create_scheduler_locks.py` adds the `scheduler_locks` table.
 - DB-backed scheduler locking is implemented for scheduled refresh jobs.
 - In-memory scheduler lock fallback remains available for local/test-created repository instances.
+- Deployed-mode DB scheduler-lock failures should fail closed instead of silently falling back to in-memory locks.
 - The CLI job exists for a future Render Cron or similar scheduler.
 - Production scheduling is not enabled until a Render Cron or equivalent scheduler is configured and lock behavior is re-verified in that deployment environment.
 - Alerts are not implemented.
-- Auth/RBAC is not implemented.
+- Prototype/demo auth exists, but production RBAC and tenancy are not implemented.
 - Public scheduling UI is not implemented.
 - Notification preferences and alert delivery are not implemented.
 

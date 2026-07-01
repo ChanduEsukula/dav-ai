@@ -2,6 +2,8 @@ from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Query, Request
 
+from app.db.audit_repository import AuditPersistenceError
+from app.db.source_pull_repository import SourcePullPersistenceError
 from app.schemas.drug_events import DrugEventSearchResponse
 from app.services.search_workflows.drug_signal_search import execute_drug_signal_search
 
@@ -27,6 +29,15 @@ async def search_drug_events(
             request_id=request_id,
             sort=sort,
         )
+
+    except (AuditPersistenceError, SourcePullPersistenceError) as exc:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "message": "DrugSignal search completed source work but could not persist required audit/provenance metadata.",
+                "code": "DRUG_SIGNAL_PROVENANCE_PERSISTENCE_UNAVAILABLE",
+            },
+        ) from exc
 
     except Exception as exc:
         raise HTTPException(

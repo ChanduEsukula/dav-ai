@@ -2,13 +2,13 @@
 
 This is the React + TypeScript + Vite frontend for DAV AI.
 
-DAV AI is a healthcare and everyday safety intelligence product prototype that turns public openFDA, USDA FSIS, and scaffolded public-health signal data into source-aware, auditable safety signals and role-based safety briefings.
+DAV AI is a public-data safety intelligence product prototype that turns public openFDA, USDA FSIS, and scaffolded public-health signal data into source-aware, auditable safety signals and bounded explanations.
 
 ## Current MVP Status and Limitations
 
 DAV AI is a public-data healthcare and everyday safety intelligence MVP/prototype. It does not provide medical advice, does not use PHI, and does not make diagnosis, treatment, clinical decision-support, patient-risk, safe/unsafe verdict, or causation claims.
 
-The current frontend presents deterministic/rule-based intelligence from backend APIs and frontend utilities. Offline ML experiments exist in the repository, but production ML is not deployed in the user-facing frontend yet. Auth/RBAC, automated alerts, production scheduler activation, notification preferences, and full live Health Pulse data integration remain future work.
+The current frontend presents deterministic/rule-based intelligence from backend APIs and frontend utilities. Offline ML experiments exist in the repository, but production ML is not deployed in the user-facing frontend yet. Prototype/demo auth exists in the broader app, while production RBAC, tenant isolation, automated alerts, production scheduler activation, notification preferences, and full live Health Pulse data integration remain future work.
 
 The current frontend supports:
 
@@ -215,7 +215,7 @@ Current Saved Monitors UI support includes:
 - Show deterministic monitor insights and change indicators
 - Preserve internal query spacing while trimming leading/trailing input spaces
 
-Saved Monitors includes backend scheduled-refresh groundwork, CLI guardrails, database-backed scheduler locks, and run-history persistence. Production Cron, public scheduling UI, alert delivery, authentication/RBAC, notification preferences, and briefing history are not implemented yet.
+Saved Monitors includes backend scheduled-refresh groundwork, CLI guardrails, database-backed scheduler locks, and run-history persistence. Production Cron, public scheduling UI, alert delivery, production RBAC/tenancy, notification preferences, and briefing history are not implemented yet.
 
 ### Request ID Propagation
 

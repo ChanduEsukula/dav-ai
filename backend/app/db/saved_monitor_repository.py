@@ -40,7 +40,12 @@ class SavedMonitorRepository:
         self._runs: dict[UUID, list[SavedMonitorRun]] = {}
 
     def _database_url(self) -> str | None:
-        return get_database_url()
+        database_url = get_database_url()
+        if not database_url and is_deployed_environment():
+            raise SavedMonitorPersistenceError(
+                "DATABASE_URL must be configured for saved monitors in deployed mode."
+            )
+        return database_url
 
     def _handle_database_failure(
         self,

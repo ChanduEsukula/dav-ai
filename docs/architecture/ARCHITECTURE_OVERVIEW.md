@@ -200,11 +200,11 @@ Dav AI uses layered testing:
 
 Recent validation checkpoints include:
 
-- Backend pytest: 308 passed
-- Frontend tests: 186 passed
+- Backend pytest: 488 passed
+- Frontend tests: 282 passed
 - ESLint: passed
 - TypeScript/Vite build: passed
-- Playwright Chromium smoke test: passed
+- Playwright Chromium smoke tests: 3 passed
 - `git diff --check`: passed
 
 ## Current Production-Readiness Boundaries
@@ -213,9 +213,9 @@ Dav AI is portfolio-grade, not production-ready for uncontrolled public use.
 
 Missing production features include:
 
-- authentication
-- authorization
-- user ownership
+- production authentication
+- authorization / RBAC
+- durable user ownership policies
 - tenant isolation
 - rate limiting
 - abuse protection

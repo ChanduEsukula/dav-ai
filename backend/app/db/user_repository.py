@@ -11,7 +11,7 @@ import psycopg
 from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 
-from app.db.database import get_database_url
+from app.db.database import get_database_url, is_deployed_environment
 
 
 logger = logging.getLogger("dav_ai.user_repository")
@@ -63,7 +63,12 @@ class UserRepository:
         self._profiles: dict[UUID, UserProfileRecord] = {}
 
     def _database_url(self) -> str | None:
-        return get_database_url()
+        database_url = get_database_url()
+        if not database_url and is_deployed_environment():
+            raise UserRepositoryError(
+                "DATABASE_URL must be configured for user persistence in deployed mode."
+            )
+        return database_url
 
     def _row_to_user(self, row) -> UserRecord:
         return UserRecord(

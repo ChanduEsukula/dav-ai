@@ -9,9 +9,13 @@ import psycopg
 from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 
-from app.db.database import get_database_url
+from app.db.database import get_database_url, is_deployed_environment
 
 logger = logging.getLogger("dav_ai.source_pulls")
+
+
+class SourcePullPersistenceError(RuntimeError):
+    """Raised when source-pull persistence fails in deployed mode."""
 
 
 def build_payload_hash(raw_payload: dict[str, Any]) -> str:
@@ -75,6 +79,11 @@ def save_source_pull_with_snapshot(
                 "reason": "database_not_configured",
             },
         )
+        if is_deployed_environment():
+            raise SourcePullPersistenceError(
+                "DATABASE_URL must be configured for source-pull persistence in deployed mode."
+            )
+
         return {
             "status": "skipped",
             "reason": "database_not_configured",
@@ -182,7 +191,7 @@ def save_source_pull_with_snapshot(
             "payload_hash": payload_hash,
         }
 
-    except Exception:
+    except Exception as exc:
         duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
 
         logger.exception(
@@ -198,6 +207,11 @@ def save_source_pull_with_snapshot(
                 "error_category": "source_pull_persistence_failed",
             },
         )
+
+        if is_deployed_environment():
+            raise SourcePullPersistenceError(
+                "Source-pull persistence failed in deployed mode."
+            ) from exc
 
         return {
             "status": "error",

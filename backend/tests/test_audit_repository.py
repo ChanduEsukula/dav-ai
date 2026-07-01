@@ -1,4 +1,6 @@
-from app.db.audit_repository import save_audit_event
+import pytest
+
+from app.db.audit_repository import AuditPersistenceError, save_audit_event
 
 
 def _example_audit_event():
@@ -23,6 +25,7 @@ def _example_audit_event():
 
 def test_save_audit_event_skips_when_database_missing(monkeypatch):
     monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.delenv("DAVAI_ENV", raising=False)
 
     result = save_audit_event(_example_audit_event())
 
@@ -30,6 +33,14 @@ def test_save_audit_event_skips_when_database_missing(monkeypatch):
         "status": "skipped",
         "reason": "database_not_configured",
     }
+
+
+def test_save_audit_event_requires_database_in_deployed_environment(monkeypatch):
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.setenv("DAVAI_ENV", "production")
+
+    with pytest.raises(AuditPersistenceError, match="DATABASE_URL must be configured"):
+        save_audit_event(_example_audit_event())
 
 
 def test_save_audit_event_returns_saved_when_insert_succeeds(monkeypatch):
@@ -78,6 +89,7 @@ def test_save_audit_event_fails_softly_when_insert_fails(monkeypatch):
         "DATABASE_URL",
         "postgresql://user:password@localhost:5432/dav_ai",
     )
+    monkeypatch.delenv("DAVAI_ENV", raising=False)
 
     def mock_connect(*args, **kwargs):
         raise RuntimeError("database unavailable")
@@ -90,3 +102,19 @@ def test_save_audit_event_fails_softly_when_insert_fails(monkeypatch):
         "status": "error",
         "reason": "audit_event_persistence_failed",
     }
+
+
+def test_save_audit_event_fails_closed_in_deployed_environment(monkeypatch):
+    monkeypatch.setenv(
+        "DATABASE_URL",
+        "postgresql://user:password@localhost:5432/dav_ai",
+    )
+    monkeypatch.setenv("DAVAI_ENV", "production")
+
+    def mock_connect(*args, **kwargs):
+        raise RuntimeError("database unavailable")
+
+    monkeypatch.setattr("app.db.audit_repository.psycopg.connect", mock_connect)
+
+    with pytest.raises(AuditPersistenceError, match="deployed mode"):
+        save_audit_event(_example_audit_event())
