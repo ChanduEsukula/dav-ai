@@ -22,7 +22,7 @@ from app.services.safety_source_adapters.base import (
 )
 from app.sources.registry import FDA_RECALLS_MARKET_WITHDRAWALS_SAFETY_ALERTS
 
-logger = logging.getLogger("medtrek.real_world_safety.fda_public")
+logger = logging.getLogger("dav_ai.real_world_safety.fda_public")
 
 
 class FDAPublicRecallsAdapter:

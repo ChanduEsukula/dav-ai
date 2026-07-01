@@ -10,7 +10,7 @@ from psycopg.types.json import Jsonb
 from app.db.database import get_database_url
 
 
-logger = logging.getLogger("medtrek.documentation_chunks")
+logger = logging.getLogger("dav_ai.documentation_chunks")
 
 DocumentationChunkWriteStatus = Literal["inserted", "updated", "unchanged", "skipped"]
 

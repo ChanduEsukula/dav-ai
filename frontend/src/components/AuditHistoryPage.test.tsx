@@ -117,7 +117,7 @@ describe('AuditHistoryPage', () => {
     expect(screen.getAllByText('recall-risk-v0.1').length).toBeGreaterThan(0)
   })
 
-  test('renders FoodRadar module filter option without retired Regional Health filter', async () => {
+  test('renders module filter options for current audit modules', async () => {
     mockedGetAuditEvents.mockResolvedValue({
       status: 'ok',
       persistence_available: true,
@@ -128,10 +128,12 @@ describe('AuditHistoryPage', () => {
     render(<AuditHistoryPage />)
 
     expect(await screen.findByText('Audit History')).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'RecallRadar' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'DrugSignal' })).toBeInTheDocument()
     expect(screen.getByRole('option', { name: 'FoodRadar' })).toBeInTheDocument()
-    expect(
-      screen.queryByRole('option', { name: 'Regional Health Pulse' }),
-    ).not.toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'CosmeticSignal' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'RealWorldSafety' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'RegionalHealthPulse' })).toBeInTheDocument()
   })
 
   test('selects the first audit event by default', async () => {

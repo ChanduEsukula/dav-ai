@@ -17,7 +17,7 @@ from app.services.safety_source_adapters.base import (
 )
 from app.sources.registry import OPENFDA_DEVICE_EVENT
 
-logger = logging.getLogger("medtrek.real_world_safety.openfda_device_event")
+logger = logging.getLogger("dav_ai.real_world_safety.openfda_device_event")
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 CURATED_RECORDS_PATH = REPO_ROOT / "data" / "safety_sources" / "device" / "openfda_device_event_curated_records.json"

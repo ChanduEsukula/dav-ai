@@ -24,7 +24,7 @@ from app.routes.sources import router as sources_router
 from app.routes.system import router as system_router
 
 
-logger = logging.getLogger("medtrek.request")
+logger = logging.getLogger("dav_ai.request")
 
 
 def get_allowed_origins() -> list[str]:

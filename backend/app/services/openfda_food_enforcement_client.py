@@ -7,7 +7,7 @@ import httpx
 
 from app.sources.registry import OPENFDA_FOOD_ENFORCEMENT
 
-logger = logging.getLogger("medtrek.openfda.food")
+logger = logging.getLogger("dav_ai.openfda.food")
 
 
 class OpenFDAFoodEnforcementClient:

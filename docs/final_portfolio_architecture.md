@@ -15,7 +15,7 @@ This architecture document describes the current verified MVP, not a production 
 Verified deployment URLs:
 
 - Frontend: `https://dav-ai.vercel.app`
-- Backend: `https://medtrek-ai.onrender.com`
+- Backend: Render backend URL should be re-verified before demos.
 
 Verified quality gates:
 
@@ -70,7 +70,7 @@ After the primary path is clear, secondary surfaces can be shown as support:
 ```mermaid
 flowchart LR
     User["Reviewer / Demo User"] --> FE["React + TypeScript Frontend<br/>Vercel<br/>dav-ai.vercel.app"]
-    FE --> API["FastAPI Backend<br/>Render<br/>medtrek-ai.onrender.com"]
+    FE --> API["FastAPI Backend<br/>Render"]
 
     API --> RR["RecallRadar<br/>Primary MVP"]
     API --> DS["DrugSignal<br/>Primary MVP"]
@@ -168,7 +168,7 @@ Audit History, source registry, source freshness, source-pull provenance, payloa
 Current verified deployment:
 
 - Frontend: React + TypeScript on Vercel at `https://dav-ai.vercel.app`
-- Backend: FastAPI on Render at `https://medtrek-ai.onrender.com`
+- Backend: FastAPI on Render; current public URL should be re-verified before demos
 - Database: Supabase/PostgreSQL
 - Public data sources: openFDA and USDA FSIS APIs, plus scaffold source metadata for Regional Health Pulse
 
@@ -214,7 +214,7 @@ Responsible-AI posture:
 Verified deployment URLs:
 
 - Frontend: `https://dav-ai.vercel.app`
-- Backend: `https://medtrek-ai.onrender.com`
+- Backend: Render backend URL should be re-verified before demos.
 
 Verified backend smoke coverage:
 

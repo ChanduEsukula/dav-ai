@@ -140,7 +140,7 @@
 - FoodRadar is fail-soft only when USDA fails. If openFDA Food Enforcement fails first, USDA results are not attempted or returned.
 - `reportlab` is unpinned.
 - API docs and mutable endpoints are public by default.
-- Logger namespaces still use the old `medtrek` name.
+- Legacy logger namespaces were cleaned during the recruiter-readiness pass.
 
 ### Scoring and Data Contract Risks
 

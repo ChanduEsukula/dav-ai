@@ -311,9 +311,9 @@ Weaknesses:
 - broad exception handling in some workflows;
 - limited retry/backoff/circuit-breaker behavior;
 - no rate limiting or abuse controls;
-- no authentication or authorization;
-- silent in-memory persistence fallback for saved monitors;
-- some historical `medtrek` logger names;
+- prototype/demo token auth but no production RBAC or tenancy;
+- saved-monitor DB failures now fail closed in deployed mode, but other persistence surfaces still need a deployment-mode audit;
+- legacy logger names were cleaned during the recruiter-readiness pass;
 - no consistent dependency pin for `reportlab`; and
 - no production metrics, distributed traces, SLOs, or incident alerting.
 

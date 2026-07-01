@@ -11,7 +11,7 @@ DAV AI is not production healthcare software. It is not medical advice, not diag
 
 The active project name is **DAV AI**.
 
-Older planning materials may reference MedSignal AI or MedTrek AI. Those names should be treated as historical proposal or planning context. The current repository and portfolio identity should use DAV AI.
+Older planning materials may reference prior project names. Treat those names as historical proposal or planning context. The current repository and portfolio identity should use DAV AI.
 
 ## Implemented Today
 

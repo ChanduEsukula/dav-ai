@@ -7,7 +7,7 @@ import httpx
 
 from app.sources.registry import OPENFDA_DRUG_EVENT
 
-logger = logging.getLogger("medtrek.openfda")
+logger = logging.getLogger("dav_ai.openfda")
 
 
 class OpenFDADrugEventClient:

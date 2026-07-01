@@ -17,7 +17,7 @@ from app.services.safety_source_adapters.base import (
 )
 from app.sources.registry import OPENFDA_DRUG_LABEL
 
-logger = logging.getLogger("medtrek.real_world_safety.openfda_drug_label")
+logger = logging.getLogger("dav_ai.real_world_safety.openfda_drug_label")
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 CURATED_RECORDS_PATH = REPO_ROOT / "data" / "safety_sources" / "drug" / "openfda_drug_label_curated_records.json"

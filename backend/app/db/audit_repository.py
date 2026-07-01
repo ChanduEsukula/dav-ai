@@ -8,7 +8,7 @@ from psycopg.types.json import Jsonb
 
 from app.db.database import get_database_url
 
-logger = logging.getLogger("medtrek.audit")
+logger = logging.getLogger("dav_ai.audit")
 
 
 def save_audit_event(

@@ -278,7 +278,7 @@ Supporting frontend areas include:
 The backend is built with:
 
 - FastAPI
-- Render deployment at `https://medtrek-ai.onrender.com`
+- Render deployment; current public backend URL should be re-verified before demos
 - Pydantic schemas
 - route/service/scoring/repository separation
 - openFDA clients
@@ -377,7 +377,7 @@ Latest confirmed verification evidence:
 - Frontend tests: 70 passed
 - Frontend lint: passed
 - Frontend production build: passed
-- Backend deployment URL: `https://medtrek-ai.onrender.com`
+- Backend deployment URL: Render backend URL should be re-verified before demos.
 - Frontend deployment URL: `https://dav-ai.vercel.app`
 - Latest verified commit when the final checkpoint was written: `45be0be` Document deployed frontend FoodRadar smoke verification
 - Current final docs commits also exist:

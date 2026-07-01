@@ -11,7 +11,7 @@ from psycopg.types.json import Jsonb
 
 from app.db.database import get_database_url
 
-logger = logging.getLogger("medtrek.source_pulls")
+logger = logging.getLogger("dav_ai.source_pulls")
 
 
 def build_payload_hash(raw_payload: dict[str, Any]) -> str:

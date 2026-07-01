@@ -98,7 +98,6 @@
 
 .public-safety-record-panel,
 .public-safety-interpretation-card,
-.public-safety-export-card,
 .public-safety-boundary-card,
 .public-safety-clarification-panel {
   background:
@@ -166,25 +165,6 @@
 
 .public-safety-no-results {
   border-color: rgba(14, 116, 144, 0.18);
-}
-
-.public-safety-export-card button {
-  width: 100%;
-  min-height: 38px;
-  margin-top: 0.75rem;
-  border: 0;
-  border-radius: 12px;
-  color: #ffffff;
-  background: linear-gradient(135deg, #0e7490, #14b8a6);
-  font: inherit;
-  font-size: 0.76rem;
-  font-weight: 900;
-}
-
-.public-safety-export-card button:disabled {
-  cursor: not-allowed;
-  filter: saturate(0.7);
-  opacity: 0.56;
 }
 
 .public-safety-interpretation-card > p,

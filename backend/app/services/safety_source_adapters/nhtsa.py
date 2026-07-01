@@ -20,7 +20,7 @@ from app.services.safety_source_adapters.base import (
 )
 from app.sources.registry import NHTSA_RECALLS_API_DATASETS, NHTSA_VPIC_VIN_DECODER_API
 
-logger = logging.getLogger("medtrek.real_world_safety.nhtsa")
+logger = logging.getLogger("dav_ai.real_world_safety.nhtsa")
 
 VIN_RE = re.compile(r"^[A-HJ-NPR-Z0-9]{17}$", re.IGNORECASE)
 YEAR_RE = re.compile(r"\b(19[8-9]\d|20\d{2})\b")

@@ -7,7 +7,7 @@ import httpx
 
 from app.sources.registry import USDA_FSIS_RECALL
 
-logger = logging.getLogger("medtrek.usda.fsis")
+logger = logging.getLogger("dav_ai.usda.fsis")
 
 
 class USDAFSISRecallClient:

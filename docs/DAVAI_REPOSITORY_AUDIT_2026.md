@@ -49,7 +49,7 @@ everywhere.
 | `.github/workflows/ci.yml` | Runs backend tests and frontend lint/test/build/E2E on PRs and pushes. | Keep. Good portfolio signal. Consider adding backend command parity check from repo root. |
 | `.gitignore` | Ignores Python, Node, env, cache, local artifacts. | Updated in cleanup sprint. Keep ignored local CPSC snapshot explicit. |
 | `README.md` | Current project narrative, stack, safety boundaries, run/test commands, source modes. | Updated in cleanup sprint. Keep source-mode language honest as adapters evolve. |
-| `MedSignal_AI_Repo_Reference_Report.md` | Legacy historical audit from an earlier app state/name. | Archive or delete. It is now misleading because it says no DB/auth/DrugSignal existed. |
+| `docs/archive/legacy_repo_reference_report.md` | Archived historical audit from an earlier app state. | Keep archived only. It is marked legacy and should not be used as the current repository reference. |
 | `alembic.ini` | Alembic migration config. | Keep. |
 | `docker-compose.yml` | Local backend/frontend compose setup. | Improve. Frontend container runs Vite dev server, not production static serving. |
 | `pytest.ini` | Root pytest config. | Keep. Important because root-level test command passes. |
@@ -61,7 +61,7 @@ everywhere.
 | `backend/Dockerfile` | Runtime backend image, installs requirements, copies `backend/app` and `data`. | Keep. Add healthcheck and decide whether scripts are needed in image. |
 | `backend/.env.example` | Backend env template for DB, CORS, assistant config. | Keep. Add `AUTH_SECRET_KEY` and production warning. |
 | `backend/requirements.txt` | Backend dependency pins. | Updated in cleanup sprint. `reportlab` is pinned. |
-| `backend/app/main.py` | FastAPI app, CORS, request ID middleware, route registration. | Keep. Rename legacy logger namespace `medtrek.request` to `dav_ai.request`. |
+| `backend/app/main.py` | FastAPI app, CORS, request ID middleware, route registration. | Keep. Legacy request logger namespace has been cleaned to `dav_ai.request`. |
 | `backend/app/audit/audit_event.py` | Builds audit event payloads with IDs, timestamps, versions. | Keep. Central to provenance. |
 
 ### Backend Routes
@@ -212,7 +212,7 @@ Archive or consolidate:
 
 - Repeated frontend/backend verification checkpoint docs.
 - Old progress reports that conflict with the current product state.
-- `MedSignal_AI_Repo_Reference_Report.md`.
+- `docs/archive/legacy_repo_reference_report.md`.
 - `docs/usa_safety_sources_registry.json`, unless updated from "planned" to
   actual implementation status.
 
@@ -276,7 +276,7 @@ Remaining cleanup candidates:
   continue to be reviewed as adapters evolve.
 - `docs/usa_safety_sources_registry.json` marks implemented sources as
   `planned`.
-- `MedSignal_AI_Repo_Reference_Report.md` is historically useful but stale.
+- `docs/archive/legacy_repo_reference_report.md` is historically useful but stale; keep it archived only.
 
 ## Product Direction for 2026+
 

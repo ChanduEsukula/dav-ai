@@ -22,7 +22,7 @@ from psycopg.rows import dict_row
 
 from app.db.database import get_database_url
 
-logger = logging.getLogger("medtrek.scheduler_lock")
+logger = logging.getLogger("dav_ai.scheduler_lock")
 
 
 @dataclass(frozen=True)

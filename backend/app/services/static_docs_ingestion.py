@@ -17,7 +17,7 @@ from app.services.static_docs_embeddings import (
 )
 
 
-logger = logging.getLogger("medtrek.static_docs_ingestion")
+logger = logging.getLogger("dav_ai.static_docs_ingestion")
 
 
 class DocumentationChunkStorage(Protocol):

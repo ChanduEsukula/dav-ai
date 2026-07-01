@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 BACKEND_ROOT = Path(__file__).resolve().parents[2]
 ENV_PATH = BACKEND_ROOT / ".env"
 MEMORY_FALLBACK_WARNING = "Memory fallback is demo-only and not durable."
+DEPLOYED_ENVIRONMENT_VALUES = {"prod", "production", "staging", "preview"}
 PersistenceMode = Literal["database", "memory_fallback"]
 
 
@@ -30,6 +31,16 @@ def get_database_url() -> str | None:
 
 def is_database_configured() -> bool:
     return get_database_url() is not None
+
+
+def is_deployed_environment() -> bool:
+    """Return True when runtime config should fail closed instead of demo-fallback."""
+
+    for name in ("DAVAI_ENV", "APP_ENV", "ENVIRONMENT", "PYTHON_ENV"):
+        if os.getenv(name, "").strip().lower() in DEPLOYED_ENVIRONMENT_VALUES:
+            return True
+
+    return os.getenv("RENDER", "").strip().lower() == "true"
 
 
 def get_persistence_visibility(database_configured: bool | None = None) -> PersistenceVisibility:

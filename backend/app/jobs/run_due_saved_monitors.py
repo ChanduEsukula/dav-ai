@@ -18,7 +18,7 @@ from typing import Any
 
 from app.services.scheduled_monitor_refresh import run_due_saved_monitors
 
-logger = logging.getLogger("medtrek.jobs.run_due_saved_monitors")
+logger = logging.getLogger("dav_ai.jobs.run_due_saved_monitors")
 
 DEFAULT_LIMIT = 10
 MIN_LIMIT = 1

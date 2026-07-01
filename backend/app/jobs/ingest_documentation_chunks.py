@@ -20,7 +20,7 @@ import logging
 from app.services.static_docs_ingestion import ingest_documentation_chunks
 
 
-logger = logging.getLogger("medtrek.jobs.ingest_documentation_chunks")
+logger = logging.getLogger("dav_ai.jobs.ingest_documentation_chunks")
 
 
 def parse_args() -> argparse.Namespace:

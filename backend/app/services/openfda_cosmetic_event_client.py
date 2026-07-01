@@ -7,7 +7,7 @@ import httpx
 
 from app.sources.registry import OPENFDA_COSMETIC_EVENT
 
-logger = logging.getLogger("medtrek.openfda.cosmetic")
+logger = logging.getLogger("dav_ai.openfda.cosmetic")
 
 
 COSMETIC_QUERY_EXPANSIONS = {

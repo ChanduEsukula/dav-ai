@@ -37,12 +37,12 @@ Known test-suite cleanup item:
 
 ## 4. Verified Deployment URLs
 
-- Backend: `https://medtrek-ai.onrender.com`
+- Backend: Render backend URL should be re-verified before demos.
 - Frontend: `https://dav-ai.vercel.app`
 
 ## 5. Backend Deployment Verification
 
-Deployed backend smoke was verified against `https://medtrek-ai.onrender.com`.
+Deployed backend smoke was verified against the then-configured Render backend URL.
 
 Verified backend behavior:
 
