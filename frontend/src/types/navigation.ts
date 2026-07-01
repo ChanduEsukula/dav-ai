@@ -88,7 +88,8 @@ export const URL_PAGE_IDS = [
 export const PRIMARY_NAV_PAGE_IDS = [
   PAGE_IDS.HOME,
   PAGE_IDS.PUBLIC_SAFETY,
-  PAGE_IDS.SAVED_MONITORS,
+  PAGE_IDS.SOURCES,
+  PAGE_IDS.AUDIT,
   PAGE_IDS.ABOUT,
 ] as const satisfies readonly ActivePage[]
 
