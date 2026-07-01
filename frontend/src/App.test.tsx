@@ -147,7 +147,7 @@ test('exposes auth actions without rendering old placeholder account pages', () 
   expect(screen.queryByText(/Early access placeholder/i)).not.toBeInTheDocument()
 })
 
-test('renders simplified navigation with workflow pages still available', () => {
+test('renders simplified navigation with intelligence area pages still available', () => {
   render(<App />)
 
   const mainNav = screen.getByRole('navigation', { name: /Main navigation/i })
@@ -175,10 +175,10 @@ test('renders simplified navigation with workflow pages still available', () => 
 
   expect(accountActions.getByRole('button', { name: 'Log in' })).toBeInTheDocument()
   expect(accountActions.getByRole('button', { name: 'Sign up' })).toBeInTheDocument()
-  expect(screen.getByText('Workflows')).toBeInTheDocument()
+  expect(screen.getByText('Intelligence areas')).toBeInTheDocument()
 
-  fireEvent.click(screen.getByText('Workflows'))
-  const workflowPages = within(screen.getByLabelText('Workflow pages'))
+  fireEvent.click(screen.getByText('Intelligence areas'))
+  const intelligenceAreaPages = within(screen.getByLabelText('Intelligence area pages'))
 
   for (const label of [
     'DrugSignal',
@@ -192,7 +192,7 @@ test('renders simplified navigation with workflow pages still available', () => 
     'FAQ',
     'Help',
   ]) {
-    expect(workflowPages.getByRole('button', { name: label })).toBeInTheDocument()
+    expect(intelligenceAreaPages.getByRole('button', { name: label })).toBeInTheDocument()
   }
 
   expect(within(mainNav).queryByRole('button', { name: 'Public Safety' })).not.toBeInTheDocument()
@@ -227,8 +227,8 @@ test('renders focused navigation groups in the pill nav', () => {
     expect(navButton.closest('.nav-actions')).not.toBeInTheDocument()
   }
 
-  fireEvent.click(screen.getByText('Workflows'))
-  const workflowPages = within(screen.getByLabelText('Workflow pages'))
+  fireEvent.click(screen.getByText('Intelligence areas'))
+  const intelligenceAreaPages = within(screen.getByLabelText('Intelligence area pages'))
 
   for (const label of [
     'DrugSignal',
@@ -242,7 +242,7 @@ test('renders focused navigation groups in the pill nav', () => {
     'FAQ',
     'Help',
   ]) {
-    const navButton = workflowPages.getByRole('button', { name: label })
+    const navButton = intelligenceAreaPages.getByRole('button', { name: label })
 
     expect(navButton.closest('.nav-advanced-menu')).toBeInTheDocument()
   }
