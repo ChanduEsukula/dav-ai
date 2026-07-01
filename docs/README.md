@@ -45,15 +45,9 @@ Older verification notes and checkpoint reports are archived and should not over
 
 ## Archived / Historical Docs
 
-Historical milestone notes, one-off verification reports, stale progress reports, and old positioning docs live under:
+Historical milestone notes, one-off verification reports, stale progress reports, and old positioning docs were removed from the active repository because they described older DavAI states and could confuse reviewers.
 
-- `docs/archive/checkpoints/`
-- `docs/archive/verification/`
-- `docs/archive/reports/`
-- `docs/archive/design-history/`
-- `docs/archive/legacy_repo_reference_report.md`
-
-These files are retained for project history. They may contain old branch names, older test counts, earlier architecture assumptions, or historical wording. Use them as timeline evidence only.
+See [Archive](archive/README.md) for the current archive policy. Historical implementation details remain available through Git history.
 
 ## Known Limitations to Keep Visible
 
