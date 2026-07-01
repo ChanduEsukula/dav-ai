@@ -441,25 +441,6 @@ function PublicSafetySummaryStrip({
   )
 }
 
-function PublicSafetyDownloadCard() {
-  return (
-    <section className="pharmacy-insight-card public-safety-export-card">
-      <div className="pharmacy-insight-card__header">
-        <div>
-          <p className="eyebrow">Export</p>
-          <h2>Download results</h2>
-        </div>
-      </div>
-      <p className="pharmacy-insight-card__empty">
-        Export the summary, returned records, checked sources, and limitations.
-      </p>
-      <button type="button" disabled>
-        Download Excel
-      </button>
-    </section>
-  )
-}
-
 const vehicleRecallExamples = [
   '2018 Toyota Camry',
   '2020 Honda Civic',
@@ -1448,7 +1429,6 @@ function PublicSafetySearchPage({
             )}
 
             <aside className="pharmacy-insight-rail">
-              <PublicSafetyDownloadCard />
               <IdentifierCheckPanel data={data} />
               <PublicSafetyInterpretationCard data={data} />
               <PublicSafetyBoundaryCard data={data} />

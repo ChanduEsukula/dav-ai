@@ -1,9 +1,8 @@
 """Repository for Saved Monitors v2.
 
 Uses PostgreSQL/Supabase when DATABASE_URL is configured. Falls back to
-in-memory storage when the database is not configured or an operation fails.
-This keeps local/test development safe while enabling persistence in deployed
-environments after the saved_monitors table is created.
+in-memory storage when the database is not configured. Local/test instances may
+also fall back after database failures, but deployed environments fail closed.
 """
 
 from __future__ import annotations
@@ -15,7 +14,7 @@ from uuid import UUID, uuid4
 import psycopg
 from psycopg.rows import dict_row
 
-from app.db.database import get_database_url
+from app.db.database import get_database_url, is_deployed_environment
 from app.schemas.saved_monitors import (
     SavedMonitor,
     SavedMonitorCreate,
@@ -26,7 +25,11 @@ from app.schemas.saved_monitors import (
     SavedMonitorStatus,
 )
 
-logger = logging.getLogger("medtrek.saved_monitors")
+logger = logging.getLogger("dav_ai.saved_monitors")
+
+
+class SavedMonitorPersistenceError(RuntimeError):
+    """Raised when configured durable persistence fails in deployed mode."""
 
 
 class SavedMonitorRepository:
@@ -38,6 +41,24 @@ class SavedMonitorRepository:
 
     def _database_url(self) -> str | None:
         return get_database_url()
+
+    def _handle_database_failure(
+        self,
+        *,
+        event: str,
+        exc: Exception,
+        extra: dict[str, str] | None = None,
+    ) -> None:
+        log_extra = {"event": event}
+        if extra:
+            log_extra.update(extra)
+
+        logger.exception(event, extra=log_extra)
+
+        if is_deployed_environment():
+            raise SavedMonitorPersistenceError(
+                "Saved monitor database operation failed in deployed mode."
+            ) from exc
 
     def _row_to_monitor(self, row) -> SavedMonitor:
         return SavedMonitor(
@@ -163,11 +184,8 @@ class SavedMonitorRepository:
 
             return [self._row_to_monitor(row) for row in rows]
 
-        except Exception:
-            logger.exception(
-                "saved_monitor_list_failed",
-                extra={"event": "saved_monitor_list_failed"},
-            )
+        except Exception as exc:
+            self._handle_database_failure(event="saved_monitor_list_failed", exc=exc)
             return self._list_memory(user_id)
 
     def list_saved_monitors(self, user_id: UUID) -> list[SavedMonitor]:
@@ -224,13 +242,11 @@ class SavedMonitorRepository:
 
             return self._row_to_monitor(row)
 
-        except Exception:
-            logger.exception(
-                "saved_monitor_get_failed",
-                extra={
-                    "event": "saved_monitor_get_failed",
-                    "monitor_id": str(monitor_id),
-                },
+        except Exception as exc:
+            self._handle_database_failure(
+                event="saved_monitor_get_failed",
+                exc=exc,
+                extra={"monitor_id": str(monitor_id)},
             )
             monitor = self._items.get(monitor_id)
             if monitor is None or not self._monitor_belongs_to_user(monitor, user_id):
@@ -303,10 +319,10 @@ class SavedMonitorRepository:
 
             return row is not None
 
-        except Exception:
-            logger.exception(
-                "saved_monitor_duplicate_check_failed",
-                extra={"event": "saved_monitor_duplicate_check_failed"},
+        except Exception as exc:
+            self._handle_database_failure(
+                event="saved_monitor_duplicate_check_failed",
+                exc=exc,
             )
             return any(
                 monitor.module == module
@@ -423,10 +439,10 @@ class SavedMonitorRepository:
 
             return monitor
 
-        except Exception:
-            logger.exception(
-                "saved_monitor_create_failed",
-                extra={"event": "saved_monitor_create_failed"},
+        except Exception as exc:
+            self._handle_database_failure(
+                event="saved_monitor_create_failed",
+                exc=exc,
             )
             self._items[monitor.id] = monitor
             return monitor
@@ -486,10 +502,10 @@ class SavedMonitorRepository:
 
             return [self._row_to_monitor(row) for row in rows]
 
-        except Exception:
-            logger.exception(
-                "saved_monitor_due_list_failed",
-                extra={"event": "saved_monitor_due_list_failed"},
+        except Exception as exc:
+            self._handle_database_failure(
+                event="saved_monitor_due_list_failed",
+                exc=exc,
             )
             due_monitors = [
                 monitor
@@ -555,13 +571,11 @@ class SavedMonitorRepository:
 
             return updated
 
-        except Exception:
-            logger.exception(
-                "saved_monitor_schedule_update_failed",
-                extra={
-                    "event": "saved_monitor_schedule_update_failed",
-                    "monitor_id": str(monitor_id),
-                },
+        except Exception as exc:
+            self._handle_database_failure(
+                event="saved_monitor_schedule_update_failed",
+                exc=exc,
+                extra={"monitor_id": str(monitor_id)},
             )
             self._items[monitor_id] = updated
             return updated
@@ -636,13 +650,11 @@ class SavedMonitorRepository:
 
             return updated
 
-        except Exception:
-            logger.exception(
-                "saved_monitor_update_after_run_failed",
-                extra={
-                    "event": "saved_monitor_update_after_run_failed",
-                    "monitor_id": str(monitor_id),
-                },
+        except Exception as exc:
+            self._handle_database_failure(
+                event="saved_monitor_update_after_run_failed",
+                exc=exc,
+                extra={"monitor_id": str(monitor_id)},
             )
             self._items[monitor_id] = updated
             return updated
@@ -728,13 +740,11 @@ class SavedMonitorRepository:
 
             return run
 
-        except Exception:
-            logger.exception(
-                "saved_monitor_run_create_failed",
-                extra={
-                    "event": "saved_monitor_run_create_failed",
-                    "monitor_id": str(monitor.id),
-                },
+        except Exception as exc:
+            self._handle_database_failure(
+                event="saved_monitor_run_create_failed",
+                exc=exc,
+                extra={"monitor_id": str(monitor.id)},
             )
             self._runs.setdefault(monitor.id, []).append(run)
             return run
@@ -816,13 +826,11 @@ class SavedMonitorRepository:
 
             return [self._row_to_run(row) for row in rows]
 
-        except Exception:
-            logger.exception(
-                "saved_monitor_run_list_failed",
-                extra={
-                    "event": "saved_monitor_run_list_failed",
-                    "monitor_id": str(monitor_id),
-                },
+        except Exception as exc:
+            self._handle_database_failure(
+                event="saved_monitor_run_list_failed",
+                exc=exc,
+                extra={"monitor_id": str(monitor_id)},
             )
             return self._list_runs_memory(monitor_id)[:safe_limit]
 
@@ -878,13 +886,11 @@ class SavedMonitorRepository:
 
             return updated
 
-        except Exception:
-            logger.exception(
-                "saved_monitor_mark_error_failed",
-                extra={
-                    "event": "saved_monitor_mark_error_failed",
-                    "monitor_id": str(monitor_id),
-                },
+        except Exception as exc:
+            self._handle_database_failure(
+                event="saved_monitor_mark_error_failed",
+                exc=exc,
+                extra={"monitor_id": str(monitor_id)},
             )
             self._items[monitor_id] = updated
             return updated
@@ -938,13 +944,11 @@ class SavedMonitorRepository:
 
             return deleted
 
-        except Exception:
-            logger.exception(
-                "saved_monitor_delete_failed",
-                extra={
-                    "event": "saved_monitor_delete_failed",
-                    "monitor_id": str(monitor_id),
-                },
+        except Exception as exc:
+            self._handle_database_failure(
+                event="saved_monitor_delete_failed",
+                exc=exc,
+                extra={"monitor_id": str(monitor_id)},
             )
 
             monitor = self._items.get(monitor_id)
@@ -975,18 +979,18 @@ class SavedMonitorRepository:
                 with connection.cursor() as cursor:
                     try:
                         cursor.execute("delete from saved_monitor_runs")
-                    except Exception:
-                        logger.exception(
-                            "saved_monitor_runs_clear_failed",
-                            extra={"event": "saved_monitor_runs_clear_failed"},
+                    except Exception as exc:
+                        self._handle_database_failure(
+                            event="saved_monitor_runs_clear_failed",
+                            exc=exc,
                         )
                         connection.rollback()
                     cursor.execute("delete from saved_monitors")
 
-        except Exception:
-            logger.exception(
-                "saved_monitor_clear_failed",
-                extra={"event": "saved_monitor_clear_failed"},
+        except Exception as exc:
+            self._handle_database_failure(
+                event="saved_monitor_clear_failed",
+                exc=exc,
             )
 
 

@@ -7,7 +7,17 @@ import {
 } from '../api/auditEvents'
 import { PAGE_IDS } from '../types/navigation'
 
-type ModuleFilter = 'all' | 'RecallRadar' | 'DrugSignal' | 'FoodRadar'
+const moduleFilterOptions = [
+  'RecallRadar',
+  'DrugSignal',
+  'FoodRadar',
+  'CosmeticSignal',
+  'RealWorldSafety',
+  'RegionalHealthPulse',
+] as const
+
+type AuditModuleFilter = (typeof moduleFilterOptions)[number]
+type ModuleFilter = 'all' | AuditModuleFilter
 type StatusFilter = 'all' | 'success' | 'empty' | 'error'
 type AuditDetailViewMode = 'basic' | 'technical'
 
@@ -445,9 +455,11 @@ export default function AuditHistoryPage() {
                 onChange={(event) => setDraftModuleFilter(event.target.value as ModuleFilter)}
               >
                 <option value="all">All modules</option>
-                <option value="RecallRadar">RecallRadar</option>
-                <option value="DrugSignal">DrugSignal</option>
-                <option value="FoodRadar">FoodRadar</option>
+                {moduleFilterOptions.map((moduleName) => (
+                  <option key={moduleName} value={moduleName}>
+                    {moduleName}
+                  </option>
+                ))}
               </select>
             </label>
 

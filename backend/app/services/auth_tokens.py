@@ -11,6 +11,7 @@ import time
 from dataclasses import dataclass
 from uuid import UUID
 
+from app.db.database import is_deployed_environment
 
 DEFAULT_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7
 DEFAULT_DEMO_SECRET = "dav-ai-local-demo-secret-change-me"
@@ -28,7 +29,16 @@ class AuthTokenPayload:
 
 
 def _secret() -> bytes:
-    return os.getenv("AUTH_SECRET_KEY", DEFAULT_DEMO_SECRET).encode("utf-8")
+    configured_secret = os.getenv("AUTH_SECRET_KEY", "").strip()
+    if configured_secret:
+        return configured_secret.encode("utf-8")
+
+    if is_deployed_environment():
+        raise AuthTokenError(
+            "AUTH_SECRET_KEY must be configured in deployed environments."
+        )
+
+    return DEFAULT_DEMO_SECRET.encode("utf-8")
 
 
 def _base64url_encode(raw: bytes) -> str:

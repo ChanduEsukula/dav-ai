@@ -1,8 +1,8 @@
 # DavAI
 
-DavAI is a full-stack public safety intelligence prototype that routes product, drug, food, vehicle, device, supplement, and personal-care queries across selected public safety sources with source links, provenance, source-mode context, and clear verification boundaries.
+DavAI is a full-stack public-data safety intelligence platform prototype that routes product, drug, food, vehicle, device, supplement, and personal-care queries across selected public safety sources with source links, provenance, source-mode context, audit trails, and clear verification boundaries.
 
-The project is designed for portfolio and interview review. It demonstrates modern full-stack engineering, source-aware search orchestration, auditability, source provenance, and a bounded AI-assisted explanation layer without claiming to be production healthcare, legal, or regulatory software.
+The project is designed for portfolio and interview review. It demonstrates modern full-stack engineering, source-grounded search orchestration, auditability, source provenance, and bounded assistant explanations without claiming to be production healthcare, legal, regulatory, AI-safety, or predictive safety software.
 
 DavAI does not decide whether a product, drug, food, vehicle, device, or cosmetic is safe or unsafe. It is not medical advice, legal advice, clinical decision support, emergency guidance, or a replacement for official source instructions.
 
@@ -110,7 +110,7 @@ DavAI does not:
 - guarantee that an empty search means no public safety issue exists
 - provide complete lot, UPC, NDC package, UDI, VIN, serial, or model certainty for every query
 - use private patient records, PHI, prescription history, insurance data, or user medical history
-- provide production alert delivery, authentication, RBAC, or tenant isolation
+- provide production alert delivery, production-ready authentication, RBAC, or tenant isolation; current auth is prototype/demo token-based auth
 - claim full production RAG, vector database retrieval, or a production ML prediction system
 
 Users must verify exact product names, identifiers, lot codes, dates, model years, manufacturers, recalling firms, and official source records before acting.
@@ -151,7 +151,7 @@ The right portfolio wording is:
 | Persistence | PostgreSQL/Supabase-oriented repositories, psycopg, Alembic migrations |
 | Data integration | Source registry, source adapters, public APIs, public-page ingestion, curated official-source snapshots |
 | Auditability | Audit events, source pulls, source metadata, request IDs, payload hashes, source freshness/status |
-| Assistant | `/api/v1/assistant/chat` with guardrails, structured page context, mock default provider, optional OpenAI/Gemini provider configuration |
+| Assistant | `/api/v1/assistant/chat` with prototype guardrails, structured page context, mock default provider, optional OpenAI/Gemini provider configuration |
 | Reports | Bounded PDF report generation with source and limitation context |
 
 ## Run Locally
@@ -230,9 +230,10 @@ Focused portfolio checkpoint validation reported for `portfolio-ui-polish-v1`:
 
 Current full local validation checkpoint:
 
-- Backend tests: 463 passed
-- Frontend tests: 31 files, 265 tests passed
+- Backend tests: 477 passed
+- Frontend tests: 31 files, 282 tests passed
 - Frontend production build: passed
+- Playwright smoke tests: 3 passed
 
 ## Current Status
 
