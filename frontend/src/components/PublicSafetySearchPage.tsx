@@ -150,6 +150,118 @@ function getRecordTitle(record: RealWorldSafetyRecord) {
   )
 }
 
+function escapeCsvValue(value: string | number | null | undefined) {
+  const normalizedValue = value === null || value === undefined ? '' : String(value)
+
+  if (/[",\n]/.test(normalizedValue)) {
+    return `"${normalizedValue.replaceAll('"', '""')}"`
+  }
+
+  return normalizedValue
+}
+
+function slugifyFilenamePart(value: string) {
+  const slug = value
+    .toLocaleLowerCase('en-US')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
+  return slug || 'search'
+}
+
+function buildPublicSafetyCsv(
+  data: RealWorldSafetySearchResponse,
+  submittedQuery: string,
+  roleLookup: Map<string, RealWorldSafetySourceRole>,
+) {
+  const auditBySourceName = new Map(
+    data.source_audits.map((audit) => [audit.source_name, audit]),
+  )
+
+  const headers = [
+    'query',
+    'title',
+    'product_name',
+    'brand_name',
+    'company_name',
+    'category',
+    'source_name',
+    'source_type',
+    'source_kind',
+    'source_role',
+    'source_url',
+    'record_url',
+    'published_date',
+    'recall_number',
+    'hazard_type',
+    'reason',
+    'remedy',
+    'affected_models',
+    'affected_lots',
+    'raw_payload_hash',
+    'retrieved_at',
+    'audit_id',
+    'source_pull_id',
+    'source_payload_hash',
+  ]
+
+  const rows = data.results.map((record) => {
+    const audit = auditBySourceName.get(record.source_name)
+
+    return [
+      submittedQuery,
+      getRecordTitle(record),
+      record.product_name,
+      record.brand_name,
+      record.company_name,
+      record.category,
+      record.source_name,
+      record.source_type,
+      record.source_kind,
+      roleLookup.get(record.source_name) ?? 'other',
+      record.source_url,
+      record.record_url,
+      record.published_date,
+      record.recall_number,
+      record.hazard_type,
+      record.reason,
+      record.remedy,
+      record.affected_models.join('; '),
+      record.affected_lots.join('; '),
+      record.raw_payload_hash,
+      record.retrieved_at,
+      audit?.audit_id,
+      audit?.source_pull_id,
+      audit?.source_payload_hash,
+    ]
+  })
+
+  return [
+    headers.join(','),
+    ...rows.map((row) => row.map(escapeCsvValue).join(',')),
+  ].join('\n')
+}
+
+function downloadPublicSafetyCsv(
+  data: RealWorldSafetySearchResponse,
+  submittedQuery: string,
+  roleLookup: Map<string, RealWorldSafetySourceRole>,
+) {
+  const csv = buildPublicSafetyCsv(data, submittedQuery, roleLookup)
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  const date = new Date().toISOString().slice(0, 10)
+
+  link.href = url
+  link.download = `dav-ai-public-safety-${slugifyFilenamePart(submittedQuery)}-${date}.csv`
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
+}
+
+
 function createSourceRoleLookup(data: RealWorldSafetySearchResponse | null) {
   const lookup = new Map<string, RealWorldSafetySourceRole>()
   if (!data) return lookup
@@ -1082,7 +1194,7 @@ function ResultsList({
         <div
           className="recall-sort-control"
           role="group"
-          aria-label="Sort public safety records"
+          aria-label="Public safety record actions"
         >
           <button
             type="button"
@@ -1101,6 +1213,12 @@ function ResultsList({
             onClick={() => handleSortChange('latest')}
           >
             Latest
+          </button>
+          <button
+            type="button"
+            onClick={() => downloadPublicSafetyCsv(data, submittedQuery, roleLookup)}
+          >
+            Download CSV
           </button>
         </div>
       </div>

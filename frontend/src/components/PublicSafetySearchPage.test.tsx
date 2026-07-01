@@ -664,6 +664,46 @@ test('submits Vehicle Recall Check examples through Public Safety search', async
   expect(new URLSearchParams(window.location.search).get('q')).toBe('2018 Toyota Camry')
 })
 
+test('downloads returned Public Safety records as CSV', async () => {
+  const user = userEvent.setup()
+  const createObjectURL = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:public-safety-csv')
+  const revokeObjectURL = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
+  const click = vi.fn()
+  const remove = vi.fn()
+  const originalCreateElement = document.createElement.bind(document)
+
+  vi.spyOn(document, 'createElement').mockImplementation((tagName) => {
+    const element = originalCreateElement(tagName)
+
+    if (tagName.toLocaleLowerCase('en-US') === 'a') {
+      Object.defineProperty(element, 'click', {
+        value: click,
+        configurable: true,
+      })
+      Object.defineProperty(element, 'remove', {
+        value: remove,
+        configurable: true,
+      })
+    }
+
+    return element
+  })
+
+  mockSearchRealWorldSafety.mockImplementation((query) =>
+    Promise.resolve(createPublicSafetyResponse(query)),
+  )
+
+  render(<PublicSafetySearchPage initialQuery="Advil" />)
+
+  await screen.findByText('openFDA NDC listing: Advil (ibuprofen)')
+  await user.click(screen.getByRole('button', { name: 'Download CSV' }))
+
+  expect(createObjectURL).toHaveBeenCalledWith(expect.any(Blob))
+  expect(click).toHaveBeenCalled()
+  expect(remove).toHaveBeenCalled()
+  expect(revokeObjectURL).toHaveBeenCalledWith('blob:public-safety-csv')
+})
+
 test('keeps the shared Priority and Latest controls wired to Public Safety sorting', async () => {
   const user = userEvent.setup()
   render(<PublicSafetySearchPage initialQuery="Advil" />)
