@@ -21,6 +21,7 @@ Implemented:
 - Database-backed scheduler locking through `scheduler_locks`
 - Alembic migration `20260519_0005_create_scheduler_locks.py`
 - In-memory scheduler lock fallback for local/test-created repository instances
+- Deployed-mode scheduler-lock failures fail closed instead of silently using in-memory locks
 
 Not implemented:
 
@@ -45,7 +46,7 @@ The command should be tested manually in the target deployment environment befor
 
 ## Current Locking Status
 
-DB-backed scheduler locking is implemented for the scheduled monitor refresh job. The lock repository uses the `scheduler_locks` table when database persistence is configured and falls back to in-memory lock behavior for local/test-created repository instances.
+DB-backed scheduler locking is implemented for the scheduled monitor refresh job. The lock repository uses the `scheduler_locks` table when database persistence is configured, falls back to in-memory lock behavior for local/test-created repository instances, and fails closed in deployed mode when durable lock persistence is missing or unavailable.
 
 Manual verification confirmed that `python -m app.jobs.run_due_saved_monitors --limit 10` works with zero due monitors, a real temporary due DrugSignal saved monitor for `aspirin` can run successfully, a `saved_monitor_runs` row is created, and `scheduler_locks` is empty after the run, confirming lock release.
 
@@ -110,4 +111,4 @@ It does not diagnose, recommend treatment, send medical advice, claim causation,
 
 Keep Render Cron disabled.
 
-Use the CLI manually for dry-run verification and continue hardening deployment-environment scheduler verification, scheduler observability, auth/RBAC, and alert design before enabling recurring production execution.
+Use the CLI manually for dry-run verification and continue hardening deployment-environment scheduler verification, scheduler observability, production RBAC/tenancy, and alert design before enabling recurring production execution.

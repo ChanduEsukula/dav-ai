@@ -18,6 +18,7 @@ Implemented components:
 - Scheduled job integration: `backend/app/services/scheduled_monitor_refresh.py`
 - CLI entrypoint: `backend/app/jobs/run_due_saved_monitors.py`
 - In-memory fallback for local/test-created repository instances
+- Deployed-mode fail-closed behavior when durable lock persistence is missing or unavailable
 - Backend tests for lock acquisition, active-lock skipping, expired-lock takeover, release behavior, and test isolation from the real `DATABASE_URL`
 
 Manual verification confirmed that the CLI can run with zero due monitors, a real temporary due DrugSignal monitor for `aspirin` can run successfully, a `saved_monitor_runs` row is created, and `scheduler_locks` is empty after the job, confirming lock release.
@@ -171,10 +172,11 @@ Expected behavior:
 - `acquire_lock` returns `False` if active lock exists.
 - `release_lock` deletes/releases only if current job owns the lock.
 - Failures should be logged clearly.
+- In deployed mode, database lock failures should fail closed rather than silently falling back to in-memory locking.
 
 ## Local / Test Fallback
 
-For local tests and repository instances created without database configuration, an in-memory lock fallback is available similar to saved monitor and audit repository patterns.
+For local tests and repository instances created without database configuration, an in-memory lock fallback is available. In deployed mode, missing or failed durable lock persistence should raise a clear error instead of using memory-only locks.
 
 The fallback should support:
 
@@ -215,4 +217,4 @@ Before enabling production Cron, DAV AI still needs:
 
 Keep production Cron disabled until the implemented DB-backed lock behavior is re-verified in the target deployment environment and paired with scheduler observability and rollback guidance.
 
-Do not add public scheduling UI, alerts, notification delivery, or user-specific scheduling until auth/RBAC, monitor ownership, and alerting behavior are designed.
+Do not add public scheduling UI, alerts, notification delivery, or user-specific scheduling until production RBAC, tenancy, durable monitor ownership, and alerting behavior are designed.

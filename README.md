@@ -110,7 +110,7 @@ DavAI does not:
 - guarantee that an empty search means no public safety issue exists
 - provide complete lot, UPC, NDC package, UDI, VIN, serial, or model certainty for every query
 - use private patient records, PHI, prescription history, insurance data, or user medical history
-- provide production alert delivery, production-ready authentication, RBAC, or tenant isolation; current auth is prototype/demo token-based auth
+- provide production alert delivery, production authentication, RBAC, or tenant isolation; current auth is prototype/demo token-based auth
 - claim full production RAG, vector database retrieval, or a production ML prediction system
 
 Users must verify exact product names, identifiers, lot codes, dates, model years, manufacturers, recalling firms, and official source records before acting.
@@ -175,12 +175,19 @@ Useful environment variables:
 
 ```text
 DATABASE_URL=postgresql+psycopg://...
+DAVAI_ENV=local
 ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+AUTH_SECRET_KEY=
 ASSISTANT_LLM_ENABLED=false
 ASSISTANT_LLM_PROVIDER=openai
 ASSISTANT_LLM_MODEL=
 ASSISTANT_LLM_API_KEY=
 ```
+
+Use `DAVAI_ENV=production` and an explicit `AUTH_SECRET_KEY` in deployed
+environments. Deployed-mode persistence failures fail closed for provenance,
+monitor, scheduler-lock, and user/profile storage instead of silently using
+local/demo fallbacks.
 
 The assistant should remain disabled or use the mock provider unless a backend-only provider key is configured.
 

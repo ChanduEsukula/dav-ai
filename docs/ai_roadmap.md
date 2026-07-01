@@ -280,11 +280,11 @@ This would strengthen the MIT-style situational awareness direction.
 
 DAV AI can be described as:
 
-A source-grounded healthcare safety intelligence platform that uses public FDA data, explainable scoring, audit trails, and safety guardrails to help users understand recall and adverse-event signals without making medical claims.
+A source-grounded public-data safety intelligence platform prototype that uses public FDA data, explainable scoring, audit trails, and safety guardrails to help users understand recall and adverse-event signals without making medical claims.
 
 Strong resume framing:
 
-Built DAV AI, a deployed healthcare safety intelligence platform using React, TypeScript, FastAPI, Supabase/PostgreSQL, openFDA, explainable signal scoring, audit trails, request tracing, and healthcare safety guardrails. Added DrugSignal Intelligence Score v1 to transform public FAERS adverse-event records into transparent, versioned, source-grounded safety signals.
+Built DAV AI, a deployment-ready public-data safety intelligence platform prototype using React, TypeScript, FastAPI, Supabase/PostgreSQL-oriented persistence, openFDA, explainable signal scoring, audit trails, request tracing, and safety guardrails. Added DrugSignal Intelligence Score v1 to transform public FAERS adverse-event records into transparent, versioned, source-grounded safety signals.
 
 ## Current Best Next Move
 

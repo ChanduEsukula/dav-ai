@@ -19,6 +19,8 @@ Use Render or Railway for the first backend deployment.
 
 - `DATABASE_URL`: hosted PostgreSQL connection string
 - `ALLOWED_ORIGINS`: deployed frontend URL, local dev URL, or comma-separated allowed origins
+- `DAVAI_ENV=production`: marks the backend as deployed so persistence/auth failures fail closed
+- `AUTH_SECRET_KEY`: explicit secret for prototype/demo bearer-token signing in deployed mode
 
 Example during early testing:
 
@@ -27,6 +29,11 @@ ALLOWED_ORIGINS=http://localhost:5173
 ```
 
 After frontend deployment, update it to include the deployed frontend URL.
+
+Render also sets `RENDER=true`; DavAI treats that as deployed mode. In deployed
+mode, missing or broken persistence should fail closed for audit event writes,
+source-pull snapshot writes, saved monitor repository operations, scheduler
+locks, and user/profile repository storage.
 
 ## Database Migration
 
@@ -42,11 +49,9 @@ For an existing database that was already manually created from `backend/db/sche
 alembic stamp head
 ```
 
-Current initial revision:
-
-```text
-20260505_0001
-```
+Do not deploy to an old fixed revision. Deployment targets should always use
+Alembic `head` for the current branch. If a database was manually created before
+Alembic was introduced, inspect it carefully before using `alembic stamp head`.
 
 ## Health Check
 
@@ -67,7 +72,10 @@ After deployment, verify:
 3. RecallRadar search works from the frontend or API
 4. DrugSignal search works from the frontend or API
 5. Audit History can read persisted audit events
+6. A provenance persistence failure returns a persistence-specific `503`, not an upstream/public-source `502`
 
 ## Safety Requirement
 
 The deployed backend must remain public-data-only. Do not add PHI, patient identifiers, personal medication profiles, uploaded medical documents, diagnosis history, treatment history, or private health notes.
+
+Current auth is prototype/demo token-based auth with an explicit deployed secret requirement. Do not present it as production RBAC, tenancy, or enterprise identity management.

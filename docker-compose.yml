@@ -10,6 +10,7 @@ services:
       - ./backend/.env
     environment:
       - PYTHONUNBUFFERED=1
+      - DAVAI_ENV=local
 
   frontend:
     build:
