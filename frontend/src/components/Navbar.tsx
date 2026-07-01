@@ -1,5 +1,4 @@
 import {
-  ADVANCED_NAV_PAGE_IDS,
   PAGE_IDS,
   PAGE_METADATA,
   PRIMARY_NAV_PAGE_IDS,
@@ -21,6 +20,32 @@ type NavItem = {
   onClick: () => void
 }
 
+const advancedNavGroups = [
+  {
+    label: 'Signals',
+    pageIds: [
+      PAGE_IDS.PHARMACY_SAFETY,
+      PAGE_IDS.FOOD_SAFETY,
+      PAGE_IDS.COSMETIC_SAFETY,
+    ],
+  },
+  {
+    label: 'Sources & Audit',
+    pageIds: [PAGE_IDS.SOURCES, PAGE_IDS.AUDIT, PAGE_IDS.SYSTEM],
+  },
+  {
+    label: 'Labs / Advanced',
+    pageIds: [PAGE_IDS.PRODUCT_SCAN, PAGE_IDS.REGIONAL_HEALTH],
+  },
+  {
+    label: 'Support',
+    pageIds: [PAGE_IDS.FAQ, PAGE_IDS.HELP],
+  },
+] as const satisfies readonly {
+  label: string
+  pageIds: readonly ActivePage[]
+}[]
+
 function Navbar({
   activePage,
   goHome,
@@ -38,8 +63,13 @@ function Navbar({
     }))
 
   const primaryNavItems = createNavItems(PRIMARY_NAV_PAGE_IDS)
-  const advancedNavItems = createNavItems(ADVANCED_NAV_PAGE_IDS)
-  const advancedPageIsActive = advancedNavItems.some((item) => item.isActive)
+  const advancedNavGroupsWithItems = advancedNavGroups.map((group) => ({
+    ...group,
+    items: createNavItems(group.pageIds),
+  }))
+  const advancedPageIsActive = advancedNavGroupsWithItems.some((group) =>
+    group.items.some((item) => item.isActive),
+  )
 
   function handleLogout() {
     logout()
@@ -97,10 +127,15 @@ function Navbar({
           className={advancedPageIsActive ? 'active' : ''}
           aria-current={advancedPageIsActive ? 'page' : undefined}
         >
-          Workflows
+          Intelligence areas
         </summary>
-        <div className="nav-advanced-menu" aria-label="Workflow pages">
-          {advancedNavItems.map(renderAdvancedNavItem)}
+        <div className="nav-advanced-menu" aria-label="Intelligence area pages">
+          {advancedNavGroupsWithItems.map((group) => (
+            <div key={group.label} className="nav-advanced-group">
+              <small>{group.label}</small>
+              {group.items.map(renderAdvancedNavItem)}
+            </div>
+          ))}
         </div>
       </details>
 
