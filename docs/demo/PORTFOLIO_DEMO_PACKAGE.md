@@ -80,7 +80,7 @@ Recommended first two:
 >
 > A key design choice is that Dav AI does not say a product is safe or unsafe. A no-match result is not a safety guarantee. The app shows what sources were checked, what kind of evidence was found, and what still needs official verification.
 >
-> Under the hood, the backend uses source adapters, typed response contracts, fail-soft source orchestration, audit metadata, source registry seeding, and migration alignment tests. The current verified baseline is 488 backend tests, 282 frontend tests, frontend lint/build passing, and 3 Playwright smoke tests passing.
+> Under the hood, the backend uses source adapters, typed response contracts, fail-soft source orchestration, audit metadata, source registry seeding, and migration alignment tests. The current verified baseline is 488 backend tests, 283 frontend tests, frontend lint/build passing, and 3 Playwright smoke tests passing.
 
 ## Screenshot checklist
 
@@ -124,7 +124,7 @@ React + TypeScript frontend
 - Typed FastAPI and React contracts
 - Outcome-first UI with progressive disclosure
 - Responsible safety language and zero-result boundaries
-- Automated validation: 488 backend tests, 282 frontend tests, frontend build, ESLint, and 3 Playwright smoke tests
+- Automated validation: 488 backend tests, 283 frontend tests, frontend build, ESLint, and 3 Playwright smoke tests
 
 ## Known limitations
 
@@ -150,7 +150,7 @@ Use this framing:
 - Designed source adapters that normalize heterogeneous recall, enforcement, label, reference, vehicle, device, food, drug, and cosmetic records into typed contracts with source-role classification.
 - Implemented deterministic query understanding with typo correction, brand/generic expansion, joined-term cleanup, and VIN/NDC/UPC detection while preserving the original user query.
 - Added audit and provenance infrastructure with source IDs, endpoints, retrieval timestamps, transform versions, payload hashes, source registry seeding, and migration alignment tests.
-- Validated the project with 488 backend tests, 282 frontend tests, TypeScript production builds, ESLint, and 3 Playwright smoke tests.
+- Validated the project with 488 backend tests, 283 frontend tests, TypeScript production builds, ESLint, and 3 Playwright smoke tests.
 
 ## Final demo checklist
 
