@@ -33,7 +33,8 @@ The short demo should focus on:
 4. Query understanding and expansion explanation
 5. Reference-versus-recall distinction
 6. Official source links
-7. Audit / Sources briefly to show provenance and registered sources
+7. Download CSV export for returned Public Safety records
+8. Audit / Sources briefly to show provenance and registered sources
 
 Use Pharmacy, Food, Cosmetic, Saved Monitors, and ProductScan only as secondary breadth examples.
 
@@ -71,9 +72,11 @@ Recommended first two:
 
 > Dav AI is a full-stack public safety intelligence platform I built with React, TypeScript, FastAPI, PostgreSQL, and Alembic. The problem is that public safety information is fragmented across agencies like FDA, USDA, CPSC, NHTSA, and NLM, and different sources mean different things.
 >
-> The main workflow is Public Safety Search. I can search a product like `air fryer`, and Dav AI checks selected official/public sources, normalizes the results, separates recall or enforcement records from reference and signal records, and links back to the official source.
+> I start on the home page and open Public Safety Search, which is the flagship workflow. I search `air fryer` to show a consumer-product recall-style query. Dav AI checks selected official/public sources, normalizes the returned records, separates recall or enforcement evidence from reference and signal records, and links back to the official source.
 >
-> For drug queries like `Advil` or a typo like `tylonal`, the system applies deterministic query understanding. It can expand a known brand to a generic term, preserve the original query, and explain what else it checked. It avoids uncontrolled fuzzy matching because this is safety-sensitive.
+> Then I search `Advil` or `tylonal` to show deterministic query understanding. The app can preserve the original query, apply known brand/generic or typo handling, explain what else it checked, and avoid uncontrolled fuzzy matching because this is safety-sensitive.
+>
+> I expand Query Understanding and Source Coverage to show why a result appeared, which sources were checked, and what role each source played. I also open an official source link and use Download CSV to export the returned records with source, hash, and audit metadata for review.
 >
 > A key design choice is that Dav AI does not say a product is safe or unsafe. A no-match result is not a safety guarantee. The app shows what sources were checked, what kind of evidence was found, and what still needs official verification.
 >
@@ -89,9 +92,10 @@ Capture these screenshots for the README or portfolio page:
 4. Public Safety Search with `Advil` or `tylonal`
 5. Query Understanding expanded/collapsed section
 6. Source Roles or Source Coverage section
-7. Sources page showing registered public sources
-8. Audit History detail showing provenance metadata
-9. Mobile or narrow-screen Public Safety page if it looks clean
+7. Public Safety Download CSV button after returned records load
+8. Sources page showing registered public sources
+9. Audit History detail showing provenance metadata
+10. Mobile or narrow-screen Public Safety page if it looks clean
 
 Do not lead with ProductScan, Regional Health, System Status, or Saved Monitors.
 
@@ -157,6 +161,7 @@ Before recording:
 - Use `air fryer` and `Advil` or `tylonal`
 - Show one official source link
 - Show query understanding
+- Click Download CSV after records load
 - Briefly show Sources or Audit
 - Say clearly: “No match is not a safety guarantee”
 - Keep demo under 90 seconds
