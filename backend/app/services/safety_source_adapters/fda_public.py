@@ -5,6 +5,7 @@ import logging
 import re
 from html.parser import HTMLParser
 from typing import Any
+from urllib.parse import urlencode
 
 import httpx
 
@@ -41,12 +42,25 @@ class FDAPublicRecallsAdapter:
         retrieved_at = utc_now_iso()
 
         try:
-            async with httpx.AsyncClient(timeout=self.timeout_seconds) as client:
-                response = await client.get(endpoint)
+            request_url = f"{endpoint}?{urlencode({'search_api_fulltext': query})}" if query.strip() else endpoint
+
+            async with httpx.AsyncClient(timeout=self.timeout_seconds, follow_redirects=True) as client:
+                response = await client.get(request_url)
 
             response.raise_for_status()
             html = response.text
             rows = parse_fda_recalls_table(html)
+
+            # FDA's public recall page exposes filtered table rows through
+            # search_api_fulltext. If a broad or unusual query returns no rows,
+            # fall back to the default page so recent notices still remain
+            # available for broad terms such as "recall" or "food".
+            if not rows and request_url != endpoint:
+                async with httpx.AsyncClient(timeout=self.timeout_seconds, follow_redirects=True) as client:
+                    response = await client.get(endpoint)
+                response.raise_for_status()
+                html = response.text
+                rows = parse_fda_recalls_table(html)
             records: list[NormalizedSafetyRecord] = []
             normalized_rows = [
                 _normalize_fda_public_row(

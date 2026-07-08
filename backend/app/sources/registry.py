@@ -151,9 +151,9 @@ USDA_FSIS_RECALL = {
 FOODRADAR_MULTI_SOURCE = {
     "source_id": "foodradar_multi_source",
     "source_name": "FoodRadar Multi-Source Recall Search",
-    "endpoint": "https://api.fda.gov/food/enforcement.json + https://www.fsis.usda.gov/fsis/api/recall/v/1",
+    "endpoint": "https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts + https://api.fda.gov/food/enforcement.json + https://www.fsis.usda.gov/fsis/api/recall/v/1",
     "module": "FoodRadar",
-    "description": "Aggregate FoodRadar workflow combining openFDA Food Enforcement and USDA FSIS recall/public-health-alert records.",
+    "description": "Aggregate FoodRadar workflow combining FDA public recall notices, openFDA Food Enforcement records, and USDA FSIS recall/public-health-alert records.",
     "integration_mode": "mixed_live_and_curated_sources",
     "update_cadence": "Source-dependent openFDA updates plus curated USDA FSIS official-source snapshot; live FSIS refresh not automated yet",
 }

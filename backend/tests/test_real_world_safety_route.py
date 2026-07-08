@@ -95,6 +95,35 @@ def _patch_public_source_http(monkeypatch):
     monkeypatch.setattr(httpx.AsyncClient, "get", fake_get)
 
 
+
+def test_fda_public_notice_adapter_uses_fulltext_filter(monkeypatch):
+    from app.services.safety_source_adapters.fda_public import FDAPublicRecallsAdapter
+
+    requested_urls = []
+    fda_html = _load_text("fda_public_recalls.html")
+
+    async def fake_get(self, url, params=None):
+        url_text = str(url)
+        requested_urls.append(url_text)
+        return _response(url_text, text=fda_html)
+
+    monkeypatch.setattr(httpx.AsyncClient, "get", fake_get)
+
+    import asyncio
+
+    result = asyncio.run(
+        FDAPublicRecallsAdapter().search(
+            query="Pepperoni",
+            limit=5,
+            request_id="test-fda-public-fulltext",
+        )
+    )
+
+    assert result.upstream_status == "success"
+    assert any("search_api_fulltext=Pepperoni" in url for url in requested_urls)
+    assert any(record.product_name and "Pepperoni" in record.product_name for record in result.records)
+
+
 @pytest.mark.parametrize(
     ("query", "expected_source", "expected_text"),
     [

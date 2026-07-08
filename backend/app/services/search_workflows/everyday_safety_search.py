@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import re
 from typing import Any
 
 from app.audit.audit_event import build_audit_event
@@ -80,7 +81,7 @@ def _persist_food_error_audit(
         module="FoodRadar",
         source_id="foodradar_multi_source",
         source_name="FoodRadar multi-source search",
-        endpoint="openFDA Food Enforcement + USDA FSIS Recall API",
+        endpoint="FDA public notices + openFDA Food Enforcement + USDA FSIS Recall API",
         query=query,
         query_params=query_params,
         retrieval_timestamp=datetime.now(timezone.utc).isoformat(),
@@ -451,7 +452,19 @@ def _date_sort_value(record: dict[str, Any]) -> int:
         if value in (None, ""):
             continue
 
-        digits = "".join(character for character in str(value) if character.isdigit())
+        text = str(value).strip()
+
+        # openFDA commonly uses YYYYMMDD.
+        digits = "".join(character for character in text if character.isdigit())
+        if len(digits) == 8 and text[:4].isdigit():
+            return int(digits)
+
+        # FDA public notice pages commonly use MM/DD/YYYY.
+        match = re.match(r"^(\d{1,2})/(\d{1,2})/(\d{4})$", text)
+        if match:
+            month, day, year = match.groups()
+            return int(f"{year}{int(month):02d}{int(day):02d}")
+
         if len(digits) >= 8:
             return int(digits[:8])
 
@@ -628,7 +641,7 @@ async def execute_everyday_safety_search(
             module="FoodRadar",
             source_id="foodradar_multi_source",
             source_name="FoodRadar multi-source search",
-            endpoint="openFDA Food Enforcement + USDA FSIS Recall API",
+            endpoint="FDA public notices + openFDA Food Enforcement + USDA FSIS Recall API",
             query=search_query,
             query_params={
                 "category": category,
@@ -681,7 +694,7 @@ async def execute_everyday_safety_search(
             "count": len(normalized_results),
             "limit": limit,
             "source_name": "FoodRadar multi-source search",
-            "endpoint": "openFDA Food Enforcement + USDA FSIS Recall API",
+            "endpoint": "FDA public notices + openFDA Food Enforcement + USDA FSIS Recall API",
             "retrieval_timestamp": retrieval_timestamp,
             "score_version": RECALL_REVIEW_SCORE_VERSION,
             "search_strategy_used": search_strategy_used,
