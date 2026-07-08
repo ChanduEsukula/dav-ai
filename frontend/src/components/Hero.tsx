@@ -18,22 +18,22 @@ type HeroModule = {
 
 const heroModules: HeroModule[] = [
   {
-    title: 'DrugSignal',
-    subtitle: 'Recalls + adverse-event signals',
+    title: 'Drug records',
+    subtitle: 'Labels, recalls, and reporting signals',
     key: 'pharmacy',
     className: 'hero-module-recall',
     icon: 'recall',
   },
   {
-    title: 'FoodSignal',
-    subtitle: 'Recalls + outbreak context',
+    title: 'Food records',
+    subtitle: 'Recalls and source-backed food notices',
     key: 'food',
     className: 'hero-module-health',
     icon: 'health',
   },
   {
-    title: 'Personal Care Signals',
-    subtitle: 'Personal-care event signals',
+    title: 'Personal care records',
+    subtitle: 'Cosmetic and personal-care public records',
     key: 'cosmetic',
     className: 'hero-module-cosmetic',
     icon: 'cosmetic',
@@ -118,23 +118,27 @@ function Hero({
   return (
     <section className="hero">
       <div className="hero-copy">
-        <p className="eyebrow">Public safety intelligence</p>
+        <p className="eyebrow">Safety Record Search</p>
 
         <h1>
-          Public safety
+          Search public
           <br />
-          data.
+          safety records.
           <br />
-          Made clear.
+          Verify the source.
         </h1>
 
         <p className="subtitle">
-          Dav AI routes products, drugs, foods, vehicles, devices, supplements, and personal-care queries across public safety sources with provenance, source status, and clear limitations.
+          Dav AI routes products, drugs, foods, vehicles, devices, supplements,
+          and personal-care queries across selected public sources with evidence
+          types, source provenance, and clear limitations.
         </p>
 
-        <p className="hero-trust-line">Official/public records • Source freshness • No safety guarantees</p>
+        <p className="hero-trust-line">
+          Selected public sources • Source provenance • Not a safety verdict
+        </p>
 
-        <div className="hero-module-grid" aria-label="Dav AI intelligence modules">
+        <div className="hero-module-grid" aria-label="Safety record evidence lanes">
           {heroModules.map((module) => (
             <button
               key={module.key}
@@ -159,7 +163,7 @@ function Hero({
         </div>
       </div>
 
-      <div className="hero-visual" aria-label="Product preview">
+      <div className="hero-visual" aria-label="Safety Record Search preview">
         <div className="gradient-orb orb-a" aria-hidden="true"></div>
         <div className="gradient-orb orb-b" aria-hidden="true"></div>
 
@@ -189,18 +193,18 @@ function Hero({
         </div>
 
         <div className="floating-card card-one">
-          <small>Review signal</small>
-          <strong>{topResult ? topResult.risk_score.label : 'Evidence review'}</strong>
+          <small>Evidence type</small>
+          <strong>{topResult ? topResult.risk_score.label : 'Record review'}</strong>
         </div>
 
         <div className="floating-card card-two">
           <small>Source trail</small>
-          <strong>{data ? `${data.count} FDA records` : 'Sources ready'}</strong>
+          <strong>{data ? `${data.count} public records` : 'Sources ready'}</strong>
         </div>
 
         <div className="floating-card card-three">
           <small>Audit context</small>
-          <strong>{data ? 'Timestamp verified' : 'Audit trail visible'}</strong>
+          <strong>{data ? 'Timestamp available' : 'Provenance visible'}</strong>
         </div>
       </div>
     </section>

@@ -37,7 +37,6 @@ import PharmacySafetyPage from './components/PharmacySafetyPage'
 import FoodSafetyPage from './components/FoodSafetyPage'
 import CosmeticSafetyPage from './components/CosmeticSafetyPage'
 import ProductScanPage from './components/ProductScanPage'
-import ProductScanTeaser from './components/ProductScanTeaser'
 import RegionalHealthPulse from './components/RegionalHealthPulse'
 import Hero from './components/Hero'
 import SafetyWorkspace from './components/SafetyWorkspace'
@@ -53,6 +52,7 @@ import FaqPage from './components/FaqPage'
 import AboutPage from './components/AboutPage'
 import InfoPage from './components/InfoPage'
 import AskDavAIChat from './components/AskDavAIChat'
+import OperationalOverview from './components/OperationalOverview'
 import { PAGE_IDS, isUrlPage, type ActivePage } from './types/navigation'
 import { infoPages } from './data/infoPages'
 import {
@@ -244,9 +244,6 @@ function AppContent() {
             goToFoodSafety={goToFoodSafety}
             goToCosmeticSafety={goToCosmeticSafety}
           />
-
-          <ProductScanTeaser openProductScan={() => goToPage(PAGE_IDS.PRODUCT_SCAN)} />
-
         </>
       )}
 
@@ -256,6 +253,10 @@ function AppContent() {
           initialRawQuery={rawSafetyQuery}
           setAssistantContext={setAssistantContext}
         />
+      )}
+
+      {activePage === PAGE_IDS.OPERATIONAL_OVERVIEW && (
+        <OperationalOverview goToPharmacySafety={goToPharmacySafety} />
       )}
 
       {activePage === PAGE_IDS.PHARMACY_SAFETY && (

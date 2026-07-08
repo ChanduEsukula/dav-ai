@@ -20,9 +20,9 @@ type NavItem = {
   onClick: () => void
 }
 
-const advancedNavGroups = [
+const moreNavGroups = [
   {
-    label: 'Signals',
+    label: 'Evidence lanes',
     pageIds: [
       PAGE_IDS.PHARMACY_SAFETY,
       PAGE_IDS.FOOD_SAFETY,
@@ -30,11 +30,11 @@ const advancedNavGroups = [
     ],
   },
   {
-    label: 'Operations',
-    pageIds: [PAGE_IDS.SYSTEM, PAGE_IDS.SAVED_MONITORS],
+    label: 'System',
+    pageIds: [PAGE_IDS.AUDIT, PAGE_IDS.SYSTEM],
   },
   {
-    label: 'Labs / Advanced',
+    label: 'Labs',
     pageIds: [PAGE_IDS.PRODUCT_SCAN, PAGE_IDS.REGIONAL_HEALTH],
   },
   {
@@ -52,7 +52,7 @@ function Navbar({
   goToPage,
 }: NavbarProps) {
   const { currentUser, logout } = useAuth()
-  const [advancedOpen, setAdvancedOpen] = useState(false)
+  const [moreOpen, setMoreOpen] = useState(false)
 
   const createNavItems = (pageIds: readonly ActivePage[]): NavItem[] =>
     pageIds.map((pageId) => ({
@@ -63,11 +63,11 @@ function Navbar({
     }))
 
   const primaryNavItems = createNavItems(PRIMARY_NAV_PAGE_IDS)
-  const advancedNavGroupsWithItems = advancedNavGroups.map((group) => ({
+  const moreNavGroupsWithItems = moreNavGroups.map((group) => ({
     ...group,
     items: createNavItems(group.pageIds),
   }))
-  const advancedPageIsActive = advancedNavGroupsWithItems.some((group) =>
+  const morePageIsActive = moreNavGroupsWithItems.some((group) =>
     group.items.some((item) => item.isActive),
   )
 
@@ -88,7 +88,7 @@ function Navbar({
     </button>
   )
 
-  const renderAdvancedNavItem = (item: NavItem) => (
+  const renderMoreNavItem = (item: NavItem) => (
     <button
       key={item.id}
       type="button"
@@ -96,7 +96,7 @@ function Navbar({
       aria-current={item.isActive ? 'page' : undefined}
       onClick={() => {
         item.onClick()
-        setAdvancedOpen(false)
+        setMoreOpen(false)
       }}
     >
       {item.label}
@@ -120,20 +120,20 @@ function Navbar({
 
       <details
         className="nav-advanced"
-        open={advancedOpen || advancedPageIsActive}
-        onToggle={(event) => setAdvancedOpen(event.currentTarget.open)}
+        open={moreOpen || morePageIsActive}
+        onToggle={(event) => setMoreOpen(event.currentTarget.open)}
       >
         <summary
-          className={advancedPageIsActive ? 'active' : ''}
-          aria-current={advancedPageIsActive ? 'page' : undefined}
+          className={morePageIsActive ? 'active' : ''}
+          aria-current={morePageIsActive ? 'page' : undefined}
         >
-          Intelligence areas
+          More
         </summary>
-        <div className="nav-advanced-menu" aria-label="Intelligence area pages">
-          {advancedNavGroupsWithItems.map((group) => (
+        <div className="nav-advanced-menu" aria-label="Additional pages">
+          {moreNavGroupsWithItems.map((group) => (
             <div key={group.label} className="nav-advanced-group">
               <small>{group.label}</small>
-              {group.items.map(renderAdvancedNavItem)}
+              {group.items.map(renderMoreNavItem)}
             </div>
           ))}
         </div>
