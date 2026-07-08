@@ -41,6 +41,7 @@ beforeEach(() => {
       transform_version: 'test',
     },
   } as Awaited<ReturnType<typeof searchRecalls>>)
+
   mockSearchDrugEvents.mockResolvedValue({
     query: '',
     count: 0,
@@ -81,6 +82,7 @@ beforeEach(() => {
       trend_version: 'test',
     },
   } as Awaited<ReturnType<typeof searchDrugEvents>>)
+
   window.history.replaceState(null, '', '/')
 })
 
@@ -140,6 +142,59 @@ test('renders Dav AI landing page', () => {
   expect(screen.getByText('Retrieval context')).toBeInTheDocument()
   expect(screen.getByText('Not a verdict')).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: /Explain These Results/i })).not.toBeInTheDocument()
+})
+
+test('renders operational overview with supported public-source language', () => {
+  window.history.replaceState(null, '', '/?page=operational-overview')
+
+  render(<App />)
+
+  const operationalOverview = screen.getByRole('region', {
+    name: /Public-data intelligence at a glance/i,
+  })
+  const overview = within(operationalOverview)
+
+  expect(
+    overview.getByRole('heading', {
+      name: /Public-data intelligence at a glance/i,
+    }),
+  ).toBeInTheDocument()
+
+  expect(
+    overview.getByText(
+      /A source-aware operating layer for recall, adverse-event, food, cosmetic, and regional public-data workflows/i,
+    ),
+  ).toBeInTheDocument()
+
+  for (const label of [
+    'Public sources',
+    'Provenance',
+    'DrugSignal',
+    'FoodSignal',
+    'Personal Care Signals',
+    'Review boundaries',
+  ]) {
+    expect(overview.getByText(label)).toBeInTheDocument()
+  }
+
+  expect(overview.getByText(/FDA \+ openFDA/i)).toBeInTheDocument()
+  expect(overview.getByText(/Audit trail/i)).toBeInTheDocument()
+  expect(overview.getByText(/Recalls \+ event patterns/i)).toBeInTheDocument()
+  expect(overview.getByText(/Food \+ supplements/i)).toBeInTheDocument()
+  expect(overview.getByText(/Cosmetic events/i)).toBeInTheDocument()
+  expect(overview.getByText(/Verification first/i)).toBeInTheDocument()
+
+  expect(overview.getByText(/Public sources only/i)).toBeInTheDocument()
+  expect(overview.getByText(/No PHI/i)).toBeInTheDocument()
+  expect(overview.getByText(/Not medical advice/i)).toBeInTheDocument()
+  expect(overview.getByText(/Saved monitors \+ system status/i)).toBeInTheDocument()
+
+  expect(overview.getByRole('button', { name: /Open DrugSignal/i })).toBeInTheDocument()
+
+  expect(screen.queryByRole('heading', { name: /How a Search Becomes Evidence/i })).not.toBeInTheDocument()
+  expect(screen.queryByText(/diagnosis/i)).not.toBeInTheDocument()
+  expect(screen.queryByText(/official verdict/i)).not.toBeInTheDocument()
+  expect(screen.queryByText(/safe\/unsafe/i)).not.toBeInTheDocument()
 })
 
 test('exposes auth actions without rendering old placeholder account pages', () => {
