@@ -91,25 +91,25 @@ test('renders Dav AI landing page', () => {
 
   expect(
     screen.getByRole('heading', {
-      name: /Search public.*safety records.*Verify the source/i,
+      name: /Search public.*safety records.*Trace the source/i,
     }),
   ).toBeInTheDocument()
 
   expect(
     screen.getByRole('button', {
-      name: /Drug records.*Labels, recalls, and reporting signals/i,
+      name: /Drug records.*Labels \+ recalls/i,
     }),
   ).toBeInTheDocument()
 
   expect(
     screen.getByRole('button', {
-      name: /Food records.*Recalls and source-backed food notices/i,
+      name: /Food records.*Recalls \+ notices/i,
     }),
   ).toBeInTheDocument()
 
   expect(
     screen.getByRole('button', {
-      name: /Personal care records.*Cosmetic and personal-care public records/i,
+      name: /Personal care.*Cosmetic reports/i,
     }),
   ).toBeInTheDocument()
 
@@ -333,7 +333,7 @@ test('falls back to the home page for unknown page query values', () => {
 
   expect(
     screen.getByRole('heading', {
-      name: /Search public.*safety records.*Verify the source/i,
+      name: /Search public.*safety records.*Trace the source/i,
     }),
   ).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Dav AI home' })).toBeInTheDocument()

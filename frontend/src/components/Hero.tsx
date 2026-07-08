@@ -19,21 +19,21 @@ type HeroModule = {
 const heroModules: HeroModule[] = [
   {
     title: 'Drug records',
-    subtitle: 'Labels, recalls, and reporting signals',
+    subtitle: 'Labels + recalls',
     key: 'pharmacy',
     className: 'hero-module-recall',
     icon: 'recall',
   },
   {
     title: 'Food records',
-    subtitle: 'Recalls and source-backed food notices',
+    subtitle: 'Recalls + notices',
     key: 'food',
     className: 'hero-module-health',
     icon: 'health',
   },
   {
-    title: 'Personal care records',
-    subtitle: 'Cosmetic and personal-care public records',
+    title: 'Personal care',
+    subtitle: 'Cosmetic reports',
     key: 'cosmetic',
     className: 'hero-module-cosmetic',
     icon: 'cosmetic',
@@ -125,35 +125,39 @@ function Hero({
           <br />
           safety records.
           <br />
-          Verify the source.
+          Trace the source.
         </h1>
 
         <p className="subtitle">
-          Dav AI routes products, drugs, foods, vehicles, devices, supplements,
-          and personal-care queries across selected public sources with evidence
-          types, source provenance, and clear limitations.
+          DavAI checks selected public sources for product, drug, food, vehicle,
+          device, supplement, and personal-care records with evidence type,
+          source provenance, and clear limitations.
         </p>
 
         <p className="hero-trust-line">
           Selected public sources • Source provenance • Not a safety verdict
         </p>
 
-        <div className="hero-module-grid" aria-label="Safety record evidence lanes">
-          {heroModules.map((module) => (
-            <button
-              key={module.key}
-              type="button"
-              className={`hero-module-card ${module.className}`}
-              onClick={moduleActions[module.key]}
-            >
-              <HeroModuleIcon icon={module.icon} />
+        <div className="hero-quick-lanes">
+          <p>Quick lanes</p>
 
-              <span className="hero-module-copy">
-                <strong>{module.title}</strong>
-                <small>{module.subtitle}</small>
-              </span>
-            </button>
-          ))}
+          <div className="hero-module-grid" aria-label="Safety record quick lanes">
+            {heroModules.map((module) => (
+              <button
+                key={module.key}
+                type="button"
+                className={`hero-module-card ${module.className}`}
+                onClick={moduleActions[module.key]}
+              >
+                <HeroModuleIcon icon={module.icon} />
+
+                <span className="hero-module-copy">
+                  <strong>{module.title}</strong>
+                  <small>{module.subtitle}</small>
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="actions hero-secondary-actions">
