@@ -17,26 +17,26 @@ type SafetyModule = {
 const modules: SafetyModule[] = [
   {
     title: 'DrugSignal',
-    eyebrow: 'Drug safety workspace',
-    description: 'Review drug recalls, adverse-event signals, labels, and source context.',
-    chips: ['Drug recalls', 'FAERS signals'],
+    eyebrow: 'Drug records',
+    description: 'Review drug recalls, labels, adverse-event reporting signals, and source context.',
+    chips: ['Recall records', 'FAERS signals'],
     actionLabel: 'Open DrugSignal',
     variant: 'recall',
     onClick: () => {},
   },
   {
     title: 'FoodSignal',
-    eyebrow: 'Food and supplement workspace',
-    description: 'Review food recalls, USDA FSIS records, outbreak context, and future supplement signals.',
-    chips: ['Food recalls', 'Outbreak context'],
+    eyebrow: 'Food records',
+    description: 'Review food recalls, FDA public notices, USDA FSIS records, and source context.',
+    chips: ['Food recalls', 'Public notices'],
     actionLabel: 'Open FoodSignal',
     variant: 'health',
     onClick: () => {},
   },
   {
     title: 'Personal Care Signals',
-    eyebrow: 'Cosmetic event workspace',
-    description: 'Review personal-care and cosmetic adverse-event reports as signals, not proof of causation.',
+    eyebrow: 'Personal-care records',
+    description: 'Review cosmetic and personal-care reports as public-data signals, not causation proof.',
     chips: ['Personal care', 'Signal reports'],
     actionLabel: 'Open Personal Care Signals',
     variant: 'cosmetic',
@@ -166,32 +166,32 @@ function SafetySourceIcon({ variant }: { variant: SafetyModule['variant'] }) {
 
 function SafetyDashboardCore() {
   return (
-    <div className="safety-dashboard-core" aria-label="Source-aware intelligence dashboard preview">
+    <div className="safety-dashboard-core" aria-label="Source provenance preview">
       <div className="safety-dashboard-card">
         <div className="safety-dashboard-card__header">
-          <small>Source-aware intelligence</small>
-          <strong>Live public data overview</strong>
+          <small>Source-aware review</small>
+          <strong>Public-data boundaries</strong>
         </div>
 
         <div className="safety-dashboard-card__metrics" aria-label="Public data boundaries">
           <div className="safety-dashboard-metric safety-dashboard-metric--records">
-            <strong>Official</strong>
-            <span>Public source records</span>
+            <strong>Public</strong>
+            <span>Source records</span>
           </div>
 
           <div className="safety-dashboard-metric safety-dashboard-metric--weekly">
             <strong>Traceable</strong>
-            <span>Source + retrieval context</span>
+            <span>Retrieval context</span>
           </div>
 
           <div className="safety-dashboard-metric safety-dashboard-metric--traceable">
             <strong>Bounded</strong>
-            <span>Not medical advice</span>
+            <span>Not a verdict</span>
           </div>
         </div>
 
         <div className="safety-dashboard-card__sources">
-          <span>Active sources</span>
+          <span>Selected sources</span>
 
           <div className="safety-dashboard-source-grid">
             {sourceItems.map((source) => (
@@ -223,15 +223,16 @@ function SafetyWorkspace({
   const cosmeticModule = wiredModules[2]
 
   return (
-    <section className="safety-workspace" aria-label="Safety intelligence workspace">
+    <section className="safety-workspace" aria-label="Evidence lanes">
       <div className="safety-workspace__header">
         <div>
-          <p className="eyebrow">Safety intelligence workspace</p>
-          <h2>Choose a safety lens.</h2>
+          <p className="eyebrow">Focused record views</p>
+          <h2>Evidence lanes.</h2>
         </div>
 
         <p>
-          Start with Safety Search, then open the right evidence lane for recalls, adverse-event signals, outbreak context, labels, source status, and audit trails.
+          Open focused record views after search. Each lane shows public-data signals,
+          source context, and review priority without making a safety verdict.
         </p>
       </div>
 
@@ -251,7 +252,8 @@ function SafetyWorkspace({
       <div className="safety-workspace__bridge">
         <strong>Recommended workflow:</strong>
         <span>
-          Search once, review the evidence lane, then verify source freshness, provenance, and limitations before acting.
+          Search once, open a focused lane when needed, then verify source freshness,
+          provenance, and limitations before acting.
         </span>
       </div>
     </section>

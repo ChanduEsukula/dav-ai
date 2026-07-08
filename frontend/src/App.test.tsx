@@ -120,7 +120,7 @@ test('renders Dav AI landing page', () => {
   ).toBeInTheDocument()
 
   expect(
-    screen.getByRole('heading', { name: /Choose a safety lens/i }),
+    screen.getByRole('heading', { name: /Evidence lanes/i }),
   ).toBeInTheDocument()
 
   expect(
@@ -136,8 +136,9 @@ test('renders Dav AI landing page', () => {
   expect(screen.queryByText('24.6K')).not.toBeInTheDocument()
   expect(screen.queryByText('1.2K')).not.toBeInTheDocument()
   expect(screen.queryByText('98%')).not.toBeInTheDocument()
-  expect(screen.getByText('Public source records')).toBeInTheDocument()
-  expect(screen.getByText('Source + retrieval context')).toBeInTheDocument()
+  expect(screen.getByText('Source records')).toBeInTheDocument()
+  expect(screen.getByText('Retrieval context')).toBeInTheDocument()
+  expect(screen.getByText('Not a verdict')).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: /Explain These Results/i })).not.toBeInTheDocument()
 })
 
