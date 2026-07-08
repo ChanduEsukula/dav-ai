@@ -109,7 +109,7 @@ test('renders Dav AI landing page', () => {
 
   expect(
     screen.getByRole('button', {
-      name: /Personal care.*Cosmetic reports/i,
+      name: /Personal care.*Event reports/i,
     }),
   ).toBeInTheDocument()
 

@@ -33,7 +33,7 @@ const heroModules: HeroModule[] = [
   },
   {
     title: 'Personal care',
-    subtitle: 'Cosmetic reports',
+    subtitle: 'Event reports',
     key: 'cosmetic',
     className: 'hero-module-cosmetic',
     icon: 'cosmetic',
@@ -180,7 +180,7 @@ function Hero({
 
           <div className="signal-score">
             <div>
-              <p>{topResult ? 'Review priority from latest search' : 'Search public safety records'}</p>
+              <p>{topResult ? 'Review priority from latest search' : 'Public record review'}</p>
               <h2>{topResult ? topResult.risk_score.score : '—'}</h2>
             </div>
             <div className="score-ring" aria-hidden="true"></div>
