@@ -75,6 +75,8 @@
 }
 
 .hero-module-card {
+  position: relative;
+  overflow: hidden;
   flex: 1 1 172px;
   min-width: 168px;
   min-height: auto;
@@ -90,9 +92,26 @@
     0 12px 28px rgba(15, 23, 42, 0.11),
     inset 0 1px 0 rgba(255, 255, 255, 0.18);
   transition:
-    transform 160ms ease,
-    box-shadow 160ms ease,
-    filter 160ms ease;
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease;
+}
+
+.hero-module-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.16) 44%,
+    transparent 74%
+  );
+  transform: translateX(-125%);
+  opacity: 0;
+  transition:
+    transform 540ms ease,
+    opacity 540ms ease;
 }
 
 .hero-module-card:hover {
@@ -101,6 +120,11 @@
     0 17px 34px rgba(15, 23, 42, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.24);
   filter: saturate(1.04);
+}
+
+.hero-module-card:hover::after {
+  transform: translateX(125%);
+  opacity: 1;
 }
 
 .hero-module-card:active {
@@ -135,6 +159,8 @@
 }
 
 .hero-module-icon {
+  position: relative;
+  z-index: 1;
   width: 34px;
   height: 34px;
   flex: 0 0 34px;
@@ -156,6 +182,8 @@
 }
 
 .hero-module-copy {
+  position: relative;
+  z-index: 1;
   min-width: 0;
   display: grid;
   gap: 0.18rem;
@@ -200,7 +228,7 @@
   stroke-width: 3;
   stroke-linecap: round;
   transform-origin: 24px 24px;
-  animation: radarSweep 3.2s linear infinite;
+  animation: radarSweep 3.8s linear infinite;
 }
 
 .radar-dot,
@@ -210,7 +238,7 @@
 
 .radar-target {
   opacity: 0.9;
-  animation: radarTargetPulse 3.2s ease-in-out infinite;
+  animation: radarTargetPulse 3.8s ease-in-out infinite;
 }
 
 /* DrugSignal animated capsule icon */
@@ -220,7 +248,7 @@
 
 .capsule-motion {
   transform-origin: 24px 24px;
-  animation: capsuleFloat 3s ease-in-out infinite;
+  animation: capsuleFloat 3.6s ease-in-out infinite;
 }
 
 .capsule-body {
@@ -241,11 +269,11 @@
 }
 
 .capsule-dot-one {
-  animation: capsuleDotOne 3s ease-in-out infinite;
+  animation: capsuleDotOne 3.6s ease-in-out infinite;
 }
 
 .capsule-dot-two {
-  animation: capsuleDotTwo 3s ease-in-out infinite;
+  animation: capsuleDotTwo 3.6s ease-in-out infinite;
 }
 
 /* Health Pulse animated ECG icon */
@@ -267,7 +295,7 @@
   stroke-linejoin: round;
   stroke-dasharray: 74;
   stroke-dashoffset: 74;
-  animation: pulseTrace 2.2s ease-in-out infinite;
+  animation: pulseTrace 2.7s ease-in-out infinite;
 }
 
 .actions {
@@ -333,7 +361,8 @@
 
 .hero-visual {
   position: relative;
-  height: 460px;
+  isolation: isolate;
+  height: 440px;
   border-radius: 36px;
   overflow: hidden;
   background:
@@ -351,6 +380,7 @@
   content: "";
   position: absolute;
   inset: 28px;
+  z-index: 0;
   border-radius: 30px;
   border: 1px solid rgba(11, 79, 113, 0.06);
   background:
@@ -360,12 +390,28 @@
   mask-image: radial-gradient(circle at center, black 0%, transparent 75%);
 }
 
+.hero-visual::after {
+  content: "";
+  position: absolute;
+  inset: 42px;
+  z-index: 1;
+  border-radius: 28px;
+  background:
+    linear-gradient(90deg, transparent 0%, rgba(20, 184, 166, 0.08) 48%, transparent 100%),
+    radial-gradient(circle at 28% 52%, rgba(14, 116, 144, 0.08), transparent 28%),
+    radial-gradient(circle at 72% 48%, rgba(16, 185, 129, 0.08), transparent 30%);
+  opacity: 0.72;
+  animation: sourceTraceSweep 7.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
 .gradient-orb {
   position: absolute;
+  z-index: 0;
   border-radius: 999px;
   filter: blur(12px);
-  opacity: 0.44;
-  animation: float 14s ease-in-out infinite;
+  opacity: 0.38;
+  animation: float 16s ease-in-out infinite;
 }
 
 .orb-a {
@@ -392,6 +438,10 @@
   border: 1px solid rgba(11, 79, 113, 0.08);
   backdrop-filter: blur(16px);
   box-shadow: 0 18px 48px rgba(16, 32, 51, 0.085);
+  transition:
+    transform 260ms ease,
+    box-shadow 260ms ease,
+    border-color 260ms ease;
 }
 
 .main-card {
@@ -401,6 +451,7 @@
   transform: translate(-50%, -50%);
   padding: 21px;
   border-radius: 28px;
+  animation: mainCardBreathe 8.5s ease-in-out infinite;
 }
 
 .card-header {
@@ -452,9 +503,9 @@
   height: 98px;
   border-radius: 999px;
   background:
-    radial-gradient(circle, white 54%, transparent 55%),
-    conic-gradient(var(--deep-teal) 0 82%, #dbeafe 82% 100%);
-  animation: spinSoft 24s linear infinite;
+    radial-gradient(circle, rgba(255, 255, 255, 0.96) 54%, transparent 55%),
+    conic-gradient(#0f766e 0 68%, rgba(14, 116, 144, 0.12) 68% 100%);
+  animation: sourceRingPulse 7s ease-in-out infinite;
 }
 
 .mini-chart {
@@ -468,8 +519,9 @@
 .mini-chart i {
   flex: 1;
   border-radius: 999px;
-  background: linear-gradient(180deg, var(--aqua), var(--deep-teal));
-  animation: wave 4.4s ease-in-out infinite;
+  background: linear-gradient(180deg, rgba(103, 232, 249, 0.86), rgba(15, 118, 110, 0.96));
+  transform-origin: bottom;
+  animation: softEvidenceBars 5.8s ease-in-out infinite;
 }
 
 .mini-chart i:nth-child(1) {
@@ -478,27 +530,27 @@
 
 .mini-chart i:nth-child(2) {
   height: 62%;
-  animation-delay: 0.12s;
+  animation-delay: 0.18s;
 }
 
 .mini-chart i:nth-child(3) {
   height: 44%;
-  animation-delay: 0.24s;
+  animation-delay: 0.36s;
 }
 
 .mini-chart i:nth-child(4) {
   height: 82%;
-  animation-delay: 0.36s;
+  animation-delay: 0.54s;
 }
 
 .mini-chart i:nth-child(5) {
   height: 56%;
-  animation-delay: 0.48s;
+  animation-delay: 0.72s;
 }
 
 .mini-chart i:nth-child(6) {
   height: 72%;
-  animation-delay: 0.6s;
+  animation-delay: 0.9s;
 }
 
 .floating-card {
@@ -513,24 +565,25 @@
   border: 1px solid rgba(11, 79, 113, 0.08);
   backdrop-filter: blur(16px);
   box-shadow: 0 14px 34px rgba(16, 32, 51, 0.08);
-  animation: cardFloat 12s ease-in-out infinite;
+  animation: evidenceCardFloat 9.5s ease-in-out infinite;
 }
 
 .card-one {
   left: 7%;
   top: 22%;
+  animation-delay: 0s;
 }
 
 .card-two {
   right: 7%;
   top: 31%;
-  animation-delay: 1.2s;
+  animation-delay: 1.4s;
 }
 
 .card-three {
   left: 12%;
   bottom: 16%;
-  animation-delay: 2s;
+  animation-delay: 2.6s;
 }
 
 .floating-card small {
@@ -565,7 +618,7 @@
 
   48% {
     opacity: 1;
-    transform: scale(1.15);
+    transform: scale(1.12);
   }
 }
 
@@ -576,7 +629,7 @@
   }
 
   50% {
-    transform: translateY(-2px) rotate(5deg);
+    transform: translateY(-1.5px) rotate(4deg);
   }
 }
 
@@ -588,7 +641,7 @@
   }
 
   50% {
-    opacity: 0.88;
+    opacity: 0.82;
     transform: translate(1px, -1px);
   }
 }
@@ -601,7 +654,7 @@
   }
 
   50% {
-    opacity: 0.82;
+    opacity: 0.78;
     transform: translate(-1px, 1px);
   }
 }
@@ -609,7 +662,7 @@
 @keyframes pulseTrace {
   0% {
     stroke-dashoffset: 74;
-    opacity: 0.42;
+    opacity: 0.36;
   }
 
   45% {
@@ -619,7 +672,68 @@
 
   100% {
     stroke-dashoffset: -74;
-    opacity: 0.42;
+    opacity: 0.36;
+  }
+}
+
+@keyframes sourceTraceSweep {
+  0%,
+  100% {
+    transform: translateX(-10px);
+    opacity: 0.44;
+  }
+
+  50% {
+    transform: translateX(10px);
+    opacity: 0.78;
+  }
+}
+
+@keyframes mainCardBreathe {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) translateY(-5px);
+  }
+}
+
+@keyframes evidenceCardFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@keyframes sourceRingPulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(15, 118, 110, 0));
+    opacity: 0.92;
+  }
+
+  50% {
+    filter: drop-shadow(0 0 16px rgba(15, 118, 110, 0.18));
+    opacity: 1;
+  }
+}
+
+@keyframes softEvidenceBars {
+  0%,
+  100% {
+    opacity: 0.68;
+    transform: scaleY(0.92);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scaleY(1);
   }
 }
 
@@ -727,6 +841,7 @@
 @media (prefers-reduced-motion: reduce) {
   .hero-copy,
   .hero-visual,
+  .hero-visual::after,
   .gradient-orb,
   .score-ring,
   .mini-chart i,
@@ -735,9 +850,9 @@
   .radar-target,
   .capsule-motion,
   .capsule-dot,
-  .pulse-line {
+  .pulse-line,
+  .main-card {
     animation: none !important;
-    transform: none !important;
   }
 
   .main-card {
@@ -745,12 +860,18 @@
   }
 
   .actions button,
-  .hero-module-card {
+  .hero-module-card,
+  .hero-module-card::after,
+  .dashboard-card {
     transition: none !important;
   }
 
   .actions button:hover,
   .hero-module-card:hover {
     transform: none !important;
+  }
+
+  .hero-module-card:hover::after {
+    opacity: 0 !important;
   }
 }
