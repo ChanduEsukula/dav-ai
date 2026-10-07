@@ -122,8 +122,27 @@ test('renders Dav AI landing page', () => {
   ).toBeInTheDocument()
 
   expect(
-    screen.getByRole('heading', { name: /Evidence lanes/i }),
+    screen.getByRole('heading', { name: /Choose an evidence lane/i }),
   ).toBeInTheDocument()
+
+  const evidenceLanes = within(screen.getByRole('region', { name: /Evidence lanes/i }))
+
+  expect(evidenceLanes.getByText(/After search/i)).toBeInTheDocument()
+  expect(evidenceLanes.getByRole('button', { name: /Open DrugSignal/i })).toBeInTheDocument()
+  expect(evidenceLanes.getByRole('button', { name: /Open FoodSignal/i })).toBeInTheDocument()
+  expect(
+    evidenceLanes.getByRole('button', { name: /Open Personal Care Signals/i }),
+  ).toBeInTheDocument()
+
+  for (const boundary of [
+    'Public records only',
+    'Traceable retrieval context',
+    'Bounded outputs',
+    'Not a verdict',
+    'Not medical advice',
+  ]) {
+    expect(evidenceLanes.getByText(boundary)).toBeInTheDocument()
+  }
 
   expect(
     screen.queryByRole('heading', { name: /Search public FDA recall signals/i }),
@@ -138,10 +157,12 @@ test('renders Dav AI landing page', () => {
   expect(screen.queryByText('24.6K')).not.toBeInTheDocument()
   expect(screen.queryByText('1.2K')).not.toBeInTheDocument()
   expect(screen.queryByText('98%')).not.toBeInTheDocument()
-  expect(screen.getByText('Source records')).toBeInTheDocument()
-  expect(screen.getByText('Retrieval context')).toBeInTheDocument()
-  expect(screen.getByText('Not a verdict')).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: /Explain These Results/i })).not.toBeInTheDocument()
+  expect(screen.queryByText(/safe\/unsafe/i)).not.toBeInTheDocument()
+  expect(screen.queryByText(/diagnosis/i)).not.toBeInTheDocument()
+  expect(screen.queryByText(/official verdict/i)).not.toBeInTheDocument()
+  expect(screen.queryByText(/clinical decision/i)).not.toBeInTheDocument()
+  expect(screen.queryByText(/medical recommendation/i)).not.toBeInTheDocument()
 })
 
 test('renders operational overview with supported public-source language', () => {
@@ -150,50 +171,135 @@ test('renders operational overview with supported public-source language', () =>
   render(<App />)
 
   const operationalOverview = screen.getByRole('region', {
-    name: /Public-data intelligence at a glance/i,
+    name: /How DavAI routes public safety records/i,
   })
   const overview = within(operationalOverview)
 
   expect(
     overview.getByRole('heading', {
-      name: /Public-data intelligence at a glance/i,
+      name: /How DavAI routes public safety records/i,
     }),
   ).toBeInTheDocument()
 
   expect(
     overview.getByText(
-      /A source-aware operating layer for recall, adverse-event, food, cosmetic, and regional public-data workflows/i,
+      /DavAI was built to solve a real-world problem: public safety information is scattered across FDA, USDA, NHTSA, CPSC, RxNorm, DailyMed, and other public sources/i,
+    ),
+  ).toBeInTheDocument()
+
+  expect(
+    overview.getByText(
+      /The app turns one search into routed public-record review surfaces with provenance, audit context, and clear limitations/i,
     ),
   ).toBeInTheDocument()
 
   for (const label of [
-    'Public sources',
-    'Provenance',
-    'DrugSignal',
-    'FoodSignal',
-    'Personal Care Signals',
-    'Review boundaries',
+    'Why DavAI exists',
+    'Unified search input',
+    'Query classification',
+    'API + source routing',
+    'Evidence normalization',
+    'Reports, monitors, assistant',
   ]) {
     expect(overview.getByText(label)).toBeInTheDocument()
   }
 
-  expect(overview.getByText(/FDA \+ openFDA/i)).toBeInTheDocument()
-  expect(overview.getByText(/Audit trail/i)).toBeInTheDocument()
-  expect(overview.getByText(/Recalls \+ event patterns/i)).toBeInTheDocument()
-  expect(overview.getByText(/Food \+ supplements/i)).toBeInTheDocument()
-  expect(overview.getByText(/Cosmetic events/i)).toBeInTheDocument()
-  expect(overview.getByText(/Verification first/i)).toBeInTheDocument()
+  for (const label of [
+    'Fragmented public data',
+    'One query',
+    'Intent + identifiers',
+    'Source planner',
+    'Traceable records',
+    'Bounded review support',
+  ]) {
+    expect(overview.getByText(label)).toBeInTheDocument()
+  }
 
-  expect(overview.getByText(/Public sources only/i)).toBeInTheDocument()
-  expect(overview.getByText(/No PHI/i)).toBeInTheDocument()
+  expect(
+    overview.getByText(/drugs, food, cosmetics, devices, vehicles, and consumer products/i),
+  ).toBeInTheDocument()
+
+  expect(
+    overview.getByText(
+      /product, drug, food, device, vehicle, identifier, ingredient, brand, or generic name/i,
+    ),
+  ).toBeInTheDocument()
+
+  expect(overview.getByText(/NDC, VIN, and UDI/i)).toBeInTheDocument()
+
+  expect(
+    overview.getByText(/selected APIs, public pages, official snapshots, and fallback contexts/i),
+  ).toBeInTheDocument()
+
+  expect(
+    overview.getByText(/source, timestamp, request ID, audit event, and limitations/i),
+  ).toBeInTheDocument()
+
+  expect(overview.getByText(/without making a safety verdict/i)).toBeInTheDocument()
+
+  expect(overview.getByText(/Public records only/i)).toBeInTheDocument()
+  expect(overview.getByText(/No PHI fields/i)).toBeInTheDocument()
   expect(overview.getByText(/Not medical advice/i)).toBeInTheDocument()
-  expect(overview.getByText(/Saved monitors \+ system status/i)).toBeInTheDocument()
+  expect(overview.getByText(/Not a safety verdict/i)).toBeInTheDocument()
 
-  expect(overview.getByRole('button', { name: /Open DrugSignal/i })).toBeInTheDocument()
+  expect(overview.getByText(/Public source fabric/i)).toBeInTheDocument()
+  expect(
+    overview.getByText(/Selected APIs, public pages, official snapshots, and context sources/i),
+  ).toBeInTheDocument()
 
+  for (const source of [
+    'openFDA',
+    'FDA public pages',
+    'USDA FSIS',
+    'NHTSA',
+    'CPSC',
+    'RxNorm + DailyMed',
+    'CDC / VAERS context',
+  ]) {
+    expect(overview.getByText(source)).toBeInTheDocument()
+  }
+
+  expect(
+    overview.getByText(/Drug Enforcement, Drug Event, Food Enforcement, Cosmetic Event, Label, NDC, Device, UDI/i),
+  ).toBeInTheDocument()
+
+  expect(
+    overview.getByText(/Recalls, market withdrawals, safety alerts, device safety communications/i),
+  ).toBeInTheDocument()
+
+  expect(
+    overview.getByText(/Meat, poultry, and egg-product recall records/i),
+  ).toBeInTheDocument()
+
+  expect(
+    overview.getByText(/vPIC vehicle identity and recall datasets/i),
+  ).toBeInTheDocument()
+
+  expect(
+    overview.getByText(/Consumer-product recall snapshot context/i),
+  ).toBeInTheDocument()
+
+  expect(
+    overview.getByText(/Drug identity and label reference context/i),
+  ).toBeInTheDocument()
+
+  expect(
+    overview.getByText(/Signal\/context records only, not causation proof/i),
+  ).toBeInTheDocument()
+
+  expect(
+    overview.getByText(/Results · evidence lanes · saved monitors · PDF reports · bounded assistant/i),
+  ).toBeInTheDocument()
+
+  expect(
+    overview.getByText(/Verify with original sources. Public records support review, not advice or verdicts/i),
+  ).toBeInTheDocument()
+
+  expect(overview.queryByRole('button', { name: /Open DrugSignal/i })).not.toBeInTheDocument()
   expect(screen.queryByRole('heading', { name: /How a Search Becomes Evidence/i })).not.toBeInTheDocument()
   expect(screen.queryByText(/diagnosis/i)).not.toBeInTheDocument()
   expect(screen.queryByText(/official verdict/i)).not.toBeInTheDocument()
+  expect(screen.queryByText(/clinical decision/i)).not.toBeInTheDocument()
   expect(screen.queryByText(/safe\/unsafe/i)).not.toBeInTheDocument()
 })
 
@@ -398,7 +504,7 @@ test('falls back to the home page for unknown page query values', () => {
 })
 
 test('updates a detail page when browser history changes only the query', async () => {
-  window.history.replaceState(null, '', '/?page=pharmacy-safety&q=Xanax')
+  window.history.replaceState(null, '', '/?page=pharmacy-safety&pharmacy_mode=live&q=Xanax')
   render(<App />)
 
   expect(
@@ -406,7 +512,7 @@ test('updates a detail page when browser history changes only the query', async 
   ).toBeInTheDocument()
 
   act(() => {
-    window.history.pushState(null, '', '/?page=pharmacy-safety&q=Metformin')
+    window.history.pushState(null, '', '/?page=pharmacy-safety&pharmacy_mode=live&q=Metformin')
     window.dispatchEvent(new PopStateEvent('popstate'))
   })
 
@@ -420,7 +526,7 @@ test('uses canonical active navigation and clears stale audit parameters', async
   window.history.replaceState(
     null,
     '',
-    '/?page=pharmacy-safety&q=Xanax&audit_id=stale-audit',
+    '/?page=pharmacy-safety&pharmacy_mode=live&q=Xanax&audit_id=stale-audit',
   )
   render(<App />)
 
@@ -446,7 +552,7 @@ test('restores normalized and original queries from a deep link', async () => {
   window.history.replaceState(
     null,
     '',
-    '/?page=pharmacy-safety&q=xanax&raw_q=xanex',
+    '/?page=pharmacy-safety&pharmacy_mode=live&q=xanax&raw_q=xanex',
   )
   render(<App />)
 

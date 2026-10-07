@@ -1,0 +1,26 @@
+# Backend builds use the repository root as their context. Only ship runtime inputs.
+**
+!backend/
+backend/**
+!backend/Dockerfile
+!backend/requirements.txt
+!backend/app/
+!backend/app/**
+!data/
+data/**
+!data/safety_sources/
+!data/safety_sources/**
+
+# These remain excluded even if accidentally created inside an allowed directory.
+**/__pycache__
+**/*.pyc
+**/.env
+**/.env.*
+**/*.zip
+**/*.parquet
+**/*.duckdb*
+**/*.sqlite*
+**/*.dump
+**/*.partial
+**/*.tmp
+**/.DS_Store

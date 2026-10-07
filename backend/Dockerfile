@@ -11,7 +11,7 @@ RUN python -m pip install --upgrade pip \
     && python -m pip install --no-cache-dir -r requirements.txt
 
 COPY backend/app ./app
-COPY data ./data
+COPY data/safety_sources ./data/safety_sources
 
 EXPOSE 8000
 

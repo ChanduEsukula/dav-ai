@@ -6,6 +6,10 @@ import uuid
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.routes.drug_ask import router as drug_ask_router
+from app.routes.pharma_release import router as pharma_release_router
+from app.routes.drug_safety import router as drug_safety_router
+from app.routes.drugs import router as drugs_router
 from app.routes import saved_monitors
 from app.routes.assistant import router as assistant_router
 from app.routes.audit_events import router as audit_events_router
@@ -118,6 +122,10 @@ async def request_id_logging_middleware(request: Request, call_next):
             response.headers["X-Request-ID"] = request_id
 
 
+app.include_router(drugs_router)
+app.include_router(drug_safety_router)
+app.include_router(drug_ask_router)
+app.include_router(pharma_release_router)
 app.include_router(recalls_router, prefix="/api/v1/recalls", tags=["RecallRadar"])
 app.include_router(drug_events_router, prefix="/api/v1/drug-events", tags=["DrugSignal"])
 app.include_router(cosmetic_events_router, prefix="/api/v1/cosmetic-events", tags=["CosmeticSignal"])

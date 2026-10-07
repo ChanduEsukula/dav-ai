@@ -36,3 +36,14 @@ duluth_pdf_sips.png
 extracted_duluth_contact_sheet.jpg
 extracted_duluth_images/
 generate_duluth_deluxe_brochure.py
+# Official downloaded pharmaceutical archives (regenerable cache)
+data/pharma_bulk_cache/
+# Local recovery backups contain real downloaded evidence; never commit them.
+data/pharma_recovery/
+# Real research snapshots, analytical intermediates, and Colab exports
+/data/research/
+/data/ml/
+
+# Generated frozen pharmaceutical release artifacts.
+# Large runtime databases are mounted separately and must never be committed.
+/data/releases/
