@@ -1,0 +1,100 @@
+{
+  "type": "drug_label_evidence",
+  "scope": "PRODUCT_LINKED_LABEL",
+  "product_ref": "p_Vc0Skbe7dZz1q5ya",
+  "release": {
+    "release_id": "synthetic-release",
+    "contract_id": "test-contract",
+    "policy_version": "1",
+    "schema_version": "test-schema",
+    "build_version": "test-build",
+    "build_time_utc": "2026-10-01T00:00:00Z",
+    "ndc_observation_date": "2026-09-26",
+    "label_export_date": "2026-09-25",
+    "window_start": "2020-01-01",
+    "window_end": "2026-06-30",
+    "publication_authorized": false
+  },
+  "source_snapshot_date": "2026-09-25",
+  "coverage": {
+    "state": "READY",
+    "reason_code": null,
+    "scope": "PRODUCT",
+    "as_of_date": null,
+    "source_date": "2026-09-25",
+    "measured_count": null,
+    "unresolved_count": null,
+    "stored_record_count": null,
+    "bounded": null,
+    "truncated": null,
+    "empty_message": null,
+    "limitations": [
+      "Frozen coverage, not live or comprehensive safety evidence."
+    ]
+  },
+  "records": [
+    {
+      "label_set_id": "set-test",
+      "label_version": "3",
+      "effective_date": "2026-01-01",
+      "applicability_class": "EXACT_PRODUCT",
+      "evidence_scope": "PRODUCT",
+      "selection_status": "SELECTED_STORED",
+      "match_method": "EXACT_NDC",
+      "matched_value": "0009-0029",
+      "boxed_warning": "Stored boxed_warning text.",
+      "warnings_and_precautions": "Stored warnings_and_cautions text.",
+      "warnings": "Stored warnings text.",
+      "contraindications": "Stored contraindications text.",
+      "adverse_reactions": "Stored adverse_reactions text.",
+      "drug_interactions": "Stored drug_interactions text.",
+      "section_states": {
+        "boxed_warning": {
+          "text": "Stored boxed_warning text.",
+          "field_present": true,
+          "state": "READY",
+          "reason_code": "STORED"
+        },
+        "warnings_and_cautions": {
+          "text": "Stored warnings_and_cautions text.",
+          "field_present": true,
+          "state": "READY",
+          "reason_code": "STORED"
+        },
+        "warnings": {
+          "text": "Stored warnings text.",
+          "field_present": true,
+          "state": "READY",
+          "reason_code": "STORED"
+        },
+        "contraindications": {
+          "text": "Stored contraindications text.",
+          "field_present": true,
+          "state": "READY",
+          "reason_code": "STORED"
+        },
+        "drug_interactions": {
+          "text": "Stored drug_interactions text.",
+          "field_present": true,
+          "state": "READY",
+          "reason_code": "STORED"
+        },
+        "adverse_reactions": {
+          "text": "Stored adverse_reactions text.",
+          "field_present": true,
+          "state": "READY",
+          "reason_code": "STORED"
+        }
+      },
+      "source": "openfda_drug_label",
+      "source_record_id": "source-label-test",
+      "source_url": "https://api.fda.gov/drug/label.json"
+    }
+  ],
+  "missing_sections": [],
+  "limitations": [
+    "Frozen coverage, not live or comprehensive safety evidence.",
+    "Only admitted exact product-linked labels are shown. Missing fields or absent links do not mean no warnings exist.",
+    "Stored label sections are quoted source text, not an individualized assessment or ranking of major risks."
+  ]
+}

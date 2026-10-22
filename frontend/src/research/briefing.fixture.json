@@ -1,0 +1,329 @@
+{
+  "schema_version": "agent-research-v2",
+  "status": "partial",
+  "workflow_state": "PARTIAL",
+  "medication": {
+    "product_ref": "p__nMAuONai9IGqouU",
+    "brand_names": [
+      "Xanax"
+    ],
+    "generic_name": "alprazolam",
+    "strength": ".25 mg/1",
+    "dosage_form": "TABLET",
+    "routes": [
+      "ORAL"
+    ],
+    "active_ingredients": [
+      "alprazolam"
+    ],
+    "product_ndcs": [
+      "0009-0029"
+    ],
+    "package_ndcs": [
+      "0009-0029-01"
+    ],
+    "provenance": {
+      "source": null,
+      "source_id": null,
+      "source_record_id": "one",
+      "source_url": "https://api.fda.gov/drug/ndc.json",
+      "observed_at": "2026-09-26"
+    }
+  },
+  "requested_categories": [
+    "labels",
+    "recalls",
+    "faers"
+  ],
+  "routing": {
+    "mode": "deterministic",
+    "model_planned_tools": [],
+    "backend_completed_tools": [
+      "get_drug_label_evidence",
+      "search_historical_recalls",
+      "get_faers_reporting_evidence"
+    ],
+    "discarded_model_content": false
+  },
+  "sections": [
+    {
+      "category": "labels",
+      "status": "unavailable",
+      "reason": null,
+      "evidence": {
+        "type": "drug_label_evidence",
+        "scope": "PRODUCT_LINKED_LABEL",
+        "product_ref": "p__nMAuONai9IGqouU",
+        "release": {
+          "release_id": "synthetic-release",
+          "contract_id": "test-contract",
+          "policy_version": "1",
+          "schema_version": "test-schema",
+          "build_version": "test-build",
+          "build_time_utc": "2026-10-01T00:00:00Z",
+          "ndc_observation_date": "2026-09-26",
+          "label_export_date": "2026-09-25",
+          "window_start": "2020-01-01",
+          "window_end": "2026-06-30",
+          "publication_authorized": false
+        },
+        "source_snapshot_date": "2026-09-25",
+        "coverage": {
+          "state": "READY",
+          "reason_code": null,
+          "scope": "PRODUCT",
+          "as_of_date": null,
+          "source_date": "2026-09-25",
+          "measured_count": null,
+          "unresolved_count": null,
+          "stored_record_count": null,
+          "bounded": null,
+          "truncated": null,
+          "empty_message": null,
+          "limitations": [
+            "Frozen coverage, not live or comprehensive safety evidence."
+          ]
+        },
+        "records": [],
+        "missing_sections": [
+          "warnings"
+        ],
+        "limitations": [
+          "Frozen coverage, not live or comprehensive safety evidence.",
+          "Only admitted exact product-linked labels are shown. Missing fields or absent links do not mean no warnings exist.",
+          "Stored label sections are quoted source text, not an individualized assessment or ranking of major risks."
+        ]
+      }
+    },
+    {
+      "category": "recalls",
+      "status": "incomplete",
+      "reason": null,
+      "evidence": {
+        "type": "historical_recall_evidence",
+        "product_ref": "p__nMAuONai9IGqouU",
+        "product": {
+          "product_ref": "p__nMAuONai9IGqouU",
+          "brand_names": [
+            "Xanax"
+          ],
+          "generic_name": "alprazolam",
+          "strength": ".25 mg/1",
+          "dosage_form": "TABLET",
+          "routes": [
+            "ORAL"
+          ],
+          "active_ingredients": [
+            "alprazolam"
+          ],
+          "product_ndcs": [
+            "0009-0029"
+          ],
+          "package_ndcs": [
+            "0009-0029-01"
+          ],
+          "provenance": {
+            "source": null,
+            "source_id": null,
+            "source_record_id": "one",
+            "source_url": "https://api.fda.gov/drug/ndc.json",
+            "observed_at": "2026-09-26"
+          }
+        },
+        "release": {
+          "release_id": "synthetic-release",
+          "contract_id": "test-contract",
+          "policy_version": "1",
+          "schema_version": "test-schema",
+          "build_version": "test-build",
+          "build_time_utc": "2026-10-01T00:00:00Z",
+          "ndc_observation_date": "2026-09-26",
+          "label_export_date": "2026-09-25",
+          "window_start": "2020-01-01",
+          "window_end": "2026-06-30",
+          "publication_authorized": false
+        },
+        "records": [
+          {
+            "recall_number": "D-TEST-2016",
+            "classification": "Class II",
+            "reported_status": "Terminated",
+            "reason_for_recall": "Subpotent Drug",
+            "recalling_firm": "Firm",
+            "recall_initiation_date": "2015-09-24",
+            "report_date": "2016-01-01",
+            "lot_information": "Lot C111054",
+            "lot_scope": "UNKNOWN",
+            "applicability_class": "AFFECTED_PACKAGE",
+            "match_method": "EXACT_PACKAGE_NDC",
+            "matched_value": "0009-0029-01",
+            "source_record_id": "D-TEST-2016",
+            "source_url": "https://api.fda.gov/drug/enforcement.json"
+          }
+        ],
+        "coverage": {
+          "state": "READY",
+          "reason_code": null,
+          "scope": "PRODUCT",
+          "as_of_date": null,
+          "source_date": "2026-09-25",
+          "measured_count": null,
+          "unresolved_count": null,
+          "stored_record_count": null,
+          "bounded": null,
+          "truncated": null,
+          "empty_message": null,
+          "limitations": [
+            "Frozen coverage, not live or comprehensive safety evidence."
+          ]
+        },
+        "source_snapshot_date": "2026-09-25",
+        "record_count": 1,
+        "returned_count": 1,
+        "results_truncated": false,
+        "limitations": [
+          "These are historical recall records linked to this product. Lot and package applicability must be evaluated separately. No linked records does not prove that the product was never recalled.",
+          "Missing linked recalls do not establish that a drug has never been recalled. Recall coverage is partial.",
+          "Adverse-event counts are ingredient-level reporting associations, not product-specific counts, incidence, causality, comparative safety, or personal risk.",
+          "Spontaneous reporting can be incomplete, duplicated, biased, and revised. Reports do not establish that the medication caused a reaction.",
+          "Ingredient counts must not be summed into a product total, including for combination products.",
+          "Name and age identify the report only. This report provides no diagnosis, treatment recommendation, or age-specific risk estimate."
+        ],
+        "interpretation": "Historical links only. Lot applicability is not inferred; partial coverage cannot establish no historical recalls."
+      }
+    },
+    {
+      "category": "faers",
+      "status": "available",
+      "reason": null,
+      "evidence": {
+        "type": "faers_reporting_evidence",
+        "scope": "INGREDIENT_LEVEL_REPORTING_EVIDENCE",
+        "product_ref": "p__nMAuONai9IGqouU",
+        "release": {
+          "release_id": "synthetic-release",
+          "contract_id": "test-contract",
+          "policy_version": "1",
+          "schema_version": "test-schema",
+          "build_version": "test-build",
+          "build_time_utc": "2026-10-01T00:00:00Z",
+          "ndc_observation_date": "2026-09-26",
+          "label_export_date": "2026-09-25",
+          "window_start": "2020-01-01",
+          "window_end": "2026-06-30",
+          "publication_authorized": false
+        },
+        "coverage": {
+          "state": "READY",
+          "reason_code": null,
+          "scope": "PRODUCT",
+          "as_of_date": null,
+          "source_date": "2026-09-23",
+          "measured_count": null,
+          "unresolved_count": null,
+          "stored_record_count": null,
+          "bounded": null,
+          "truncated": null,
+          "empty_message": null,
+          "limitations": [
+            "Frozen coverage, not live or comprehensive safety evidence."
+          ]
+        },
+        "records": [
+          {
+            "ingredient_name": "alprazolam",
+            "scope": "INGREDIENT",
+            "analytics": {
+              "window_start": "2020-01-01",
+              "window_end": "2026-06-30",
+              "report_count": 2,
+              "unique_case_count": 2,
+              "serious_report_count": 0,
+              "serious_known_report_count": 0,
+              "death_report_count": 0,
+              "hospitalization_report_count": 0,
+              "disability_report_count": 0,
+              "life_threatening_report_count": 0,
+              "suspect_report_count": 0,
+              "concomitant_report_count": 0,
+              "interacting_report_count": 0,
+              "active_month_count": 0,
+              "reaction_term_count": 0,
+              "co_report_activity": 0,
+              "count_unit": "deduplicated ingredient-report associations",
+              "date_basis": "parsed latest-receipt month",
+              "limitations": [
+                "Spontaneous reports do not establish causation."
+              ]
+            },
+            "top_reported_reactions": [
+              {
+                "reaction": "synthetic reported term",
+                "co_report_activity": 1,
+                "active_months": 1,
+                "rank": 1
+              }
+            ],
+            "monthly": [
+              {
+                "period": "2020-03-01",
+                "report_count": 2,
+                "serious_report_count": 0
+              }
+            ],
+            "coverage": {
+              "state": "READY",
+              "reason_code": null,
+              "scope": "PRODUCT",
+              "as_of_date": null,
+              "source_date": "2026-09-23",
+              "measured_count": null,
+              "unresolved_count": null,
+              "stored_record_count": null,
+              "bounded": null,
+              "truncated": null,
+              "empty_message": null,
+              "limitations": [
+                "Frozen coverage, not live or comprehensive safety evidence."
+              ]
+            },
+            "source": {
+              "source_id": "source-faers",
+              "source_name": "openfda_drug_event",
+              "source_url": "https://api.fda.gov/drug/event.json",
+              "export_date": "2026-09-23",
+              "observed_at": "2026-09-26"
+            }
+          }
+        ],
+        "summary": {
+          "scope": "INGREDIENT_COMPONENTS_ONLY",
+          "ingredient_count": 1,
+          "ingredients_with_analytics": 1,
+          "ingredients_without_analytics": 0,
+          "product_report_total": null,
+          "limitation": "Never sum into product totals."
+        },
+        "limitations": [
+          "Ingredient-level spontaneous FAERS reporting associations only. These are not observations attributed to the selected NDC and do not establish causation, incidence, comparative safety or individual risk. Do not sum ingredients into a product total. No denominators, risk scores or signal classifications are inferred.",
+          "Frozen coverage, not live or comprehensive safety evidence.",
+          "Never sum into product totals."
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    "Missing linked recalls do not establish that a drug has never been recalled. Recall coverage is partial.",
+    "Adverse-event counts are ingredient-level reporting associations, not product-specific counts, incidence, causality, comparative safety, or personal risk.",
+    "Spontaneous reporting can be incomplete, duplicated, biased, and revised. Reports do not establish that the medication caused a reaction.",
+    "Ingredient counts must not be summed into a product total, including for combination products.",
+    "Name and age identify the report only. This report provides no diagnosis, treatment recommendation, or age-specific risk estimate.",
+    "Not medical advice, individualized guidance or FDA endorsement. Data is frozen, not live.",
+    "Frozen coverage, not live or comprehensive safety evidence.",
+    "Only admitted exact product-linked labels are shown. Missing fields or absent links do not mean no warnings exist.",
+    "Stored label sections are quoted source text, not an individualized assessment or ranking of major risks.",
+    "These are historical recall records linked to this product. Lot and package applicability must be evaluated separately. No linked records does not prove that the product was never recalled.",
+    "Ingredient-level spontaneous FAERS reporting associations only. These are not observations attributed to the selected NDC and do not establish causation, incidence, comparative safety or individual risk. Do not sum ingredients into a product total. No denominators, risk scores or signal classifications are inferred.",
+    "Never sum into product totals."
+  ]
+}
