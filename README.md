@@ -7,10 +7,14 @@ Dav AI is a read-only FDA pharmaceutical evidence explorer built with FastAPI, R
 Use Python 3.13 and Node 24. The existing frozen SQLite release is mounted separately and must never be rebuilt or edited during application development.
 
 ```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install -r backend/requirements-dev.txt
+python3.13 -m venv .venv
+.venv/bin/python -m pip install --require-hashes --only-binary=:all: -r backend/requirements-dev.txt
+.venv/bin/python -m pip check
+.venv/bin/python -c 'import cryptography; print(cryptography.__version__)'
 PYTHONPATH=backend .venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --no-access-log
 ```
+
+Use the root `.venv` consistently for these commands. Re-run the locked install after pulling dependency changes, even when `.venv` already exists; recreating or activating an old environment does not synchronize it. `cryptography` is required by the security suite and is already pinned in the development lock file. A separate `backend/.venv` is not automatically synchronized with the root environment.
 
 In another terminal:
 
@@ -64,7 +68,20 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-Default browser tests use recorded evidence and exercise desktop/mobile layout and the PDF form. For a real frozen-release search-to-PDF browser journey, run `scripts/pharma_offline_server.py` with `PORT=18000` and `PYTHONPATH=backend`, then run `PHARMA_OFFLINE_SMOKE=1 npm run test:e2e:release`. That verification server blocks outbound FDA/provider HTTP.
+Default browser tests use recorded evidence and exercise desktop/mobile layout and the PDF form. For a real frozen-release search-to-PDF browser journey, start the verification server from the repository root:
+
+```sh
+PORT=18000 PYTHONPATH=backend .venv/bin/python scripts/pharma_offline_server.py
+```
+
+Then run in another terminal:
+
+```sh
+cd frontend
+PHARMA_OFFLINE_SMOKE=1 npm run test:e2e:release
+```
+
+The verification server binds only to loopback, blocks outbound FDA/provider HTTP, and defaults CORS to the exact Playwright frontend origin `http://127.0.0.1:15173`. An explicitly set `ALLOWED_ORIGINS` is preserved; if it excludes that origin, the browser test will be blocked. This harness setting does not change the application's default CORS policy or authorize hosted serving. Stop the verification server with Ctrl-C when finished.
 
 Offline PostgreSQL tests require `PHARMA_TEST_DATABASE_URL` pointing to a disposable server with CREATEDB permission. They create/drop uniquely named test databases; never point them at a recovery backup. Selected release integration tests fail when the artifact is absent; explicitly deselect them for source-only checks. CI runs synthetic artifact, policy, PDF, ingestion, research and browser checks without distributing the large local release.
 

@@ -90,3 +90,40 @@ describe('pharmaceutical explorer', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('PDF could not be generated')
   })
 })
+
+it('groups source records without losing their vintages or inventing missing URLs', async () => {
+  const duplicate = structuredClone(evidence)
+  duplicate.release.sources = [
+    { source_id: 'archive', source_name: 'openfda_ndc_directory', source_url: 'https://download.open.fda.gov/drug/ndc/archive.zip', export_date: '2026-09-26', observed_at: '2026-09-26T15:05:08Z' },
+    { source_id: 'identity', source_name: 'openfda_ndc_directory', source_url: null, export_date: null, observed_at: '2026-09-26T15:05:08Z' },
+    { source_id: 'older', source_name: 'openfda_ndc_directory', source_url: 'https://api.fda.gov/drug/ndc.json', export_date: '2026-08-01', observed_at: null },
+    { source_id: 'missing', source_name: 'other_source', source_url: null, export_date: null, observed_at: null },
+  ]
+  const original = structuredClone(duplicate)
+  vi.mocked(getDrugEvidence).mockResolvedValue(duplicate)
+  render(<StoredDrugCatalog />)
+  await select()
+  const sources = screen.getByRole('region', { name: 'Sources and data freshness' })
+  expect(within(sources).getAllByText(/openfda_ndc_directory/)).toHaveLength(1)
+  expect(within(sources).getByRole('link', { name: /Official FDA source/ })).toHaveAttribute('href', duplicate.release.sources[0].source_url)
+  fireEvent.click(within(sources).getByText('Stored provenance records (3)'))
+  expect(within(sources).getByText(/Exported: 2026-08-01/)).toBeInTheDocument()
+  expect(within(sources).getAllByRole('link', { name: /Stored FDA reference/ }).map(link => link.getAttribute('href'))).toEqual([duplicate.release.sources[0].source_url, duplicate.release.sources[2].source_url])
+  expect(within(sources).getByText('No URL stored for this provenance record.')).toBeInTheDocument()
+  expect(within(sources).getByText('Official source link unavailable')).toBeInTheDocument()
+  expect(duplicate).toEqual(original)
+})
+
+it('prefers a verified FDA reference without making unsafe source URLs clickable', async () => {
+  const sources = structuredClone(evidence)
+  const row = { source_id: 'unsafe', source_name: 'example', source_url: 'https://api.fda.gov.evil.example/fake', export_date: null, observed_at: null }
+  sources.release.sources = [row, { ...row, source_id: 'safe', source_url: 'https://api.fda.gov/drug/ndc.json' }]
+  vi.mocked(getDrugEvidence).mockResolvedValue(sources)
+  render(<StoredDrugCatalog />)
+  await select()
+  const region = screen.getByRole('region', { name: 'Sources and data freshness' })
+  expect(within(region).getByRole('link', { name: /Official FDA source/ })).toHaveAttribute('href', sources.release.sources[1].source_url)
+  fireEvent.click(within(region).getByText('Stored provenance records (2)'))
+  expect(within(region).getByText('Official source link unavailable')).toBeInTheDocument()
+  expect(region.querySelector(`a[href="${row.source_url}"]`)).toBeNull()
+})

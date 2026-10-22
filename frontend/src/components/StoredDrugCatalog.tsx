@@ -1,18 +1,42 @@
 import { useEffect, useRef, useState } from 'react'
-import { getDrugEvidence, searchCatalog, type CatalogDrug, type Coverage, type DrugEvidence } from '../api/drugCatalog'
+import { getDrugEvidence, searchCatalog, type CatalogDrug, type Coverage, type DrugEvidence, type Release } from '../api/drugCatalog'
 import { generateReport } from '../api/reports'
 
 const drugName = (drug: CatalogDrug) => drug.brand_names.join(', ') || drug.generic_name || 'Unnamed medication'
 const text = (value: string | null | undefined) => value || 'Not supplied'
 const number = (value: number) => value.toLocaleString()
 
-function Source({ url, children = 'Official FDA source' }: { url: string | null; children?: React.ReactNode }) {
-  let allowed = false
+function isOfficialSource(url: string | null) {
   try {
     const parsed = new URL(url || '')
-    allowed = parsed.protocol === 'https:' && ['api.fda.gov', 'www.fda.gov', 'fda.gov', 'open.fda.gov', 'download.open.fda.gov'].includes(parsed.hostname) && !parsed.username && !parsed.password && (!parsed.port || parsed.port === '443')
-  } catch { /* Missing or malformed provenance remains explicit. */ }
-  return allowed ? <a href={url!} target="_blank" rel="noopener noreferrer">{children} ↗</a> : <span>Official source link unavailable</span>
+    return parsed.protocol === 'https:' && ['api.fda.gov', 'www.fda.gov', 'fda.gov', 'open.fda.gov', 'download.open.fda.gov'].includes(parsed.hostname) && !parsed.username && !parsed.password && (!parsed.port || parsed.port === '443')
+  } catch { return false }
+}
+
+function Source({ url, children = 'Official FDA source' }: { url: string | null; children?: React.ReactNode }) {
+  return isOfficialSource(url) ? <a href={url!} target="_blank" rel="noopener noreferrer">{children} ↗</a> : <span>Official source link unavailable</span>
+}
+
+function SourceList({ sources }: { sources: Release['sources'] }) {
+  const groups = new Map<string, Release['sources']>()
+  for (const source of sources) {
+    const records = groups.get(source.source_name) || []
+    records.push(source)
+    groups.set(source.source_name, records)
+  }
+  return <ul>{[...groups].map(([name, records]) => {
+    // Summarize the dataset once; retain each stored record and its own URL/date.
+    const primary = records.find(record => isOfficialSource(record.source_url)) || records[0]
+    return <li key={name}><span>{name}</span> · Source vintage: {primary.export_date || primary.observed_at || 'Not supplied'} · <Source url={primary.source_url} />
+      {records.length > 1 && <details><summary>Stored provenance records ({records.length})</summary>
+        <ul>{records.map(record => <li key={record.source_id}>
+          Exported: {text(record.export_date)} · Observed: {text(record.observed_at)} · {record.source_url
+            ? <Source url={record.source_url}>Stored FDA reference</Source>
+            : <span>No URL stored for this provenance record.</span>}
+        </li>)}</ul>
+      </details>}
+    </li>
+  })}</ul>
 }
 
 function CoverageNote({ coverage }: { coverage: Coverage }) {
@@ -201,7 +225,7 @@ export default function StoredDrugCatalog() {
       <section className="sources" aria-labelledby="source-heading"><h2 id="source-heading">Sources and data freshness</h2>
         <p>Release: {evidence.release.release_id}</p><p>Built: {evidence.release.build_time_utc} · NDC observed: {evidence.release.ndc_observation_date}</p>
         <p>AE reporting window: {evidence.release.window_start} to {evidence.release.window_end}</p>
-        <ul>{evidence.release.sources.map(source => <li key={source.source_id}>{source.source_name} · Source vintage: {source.export_date || source.observed_at || 'Not supplied'} · <Source url={source.source_url} /></li>)}</ul>
+        <SourceList sources={evidence.release.sources} />
         <ul>{evidence.limitations.map((v, i) => <li key={i}>{v}</li>)}</ul>
       </section>
     </>}
