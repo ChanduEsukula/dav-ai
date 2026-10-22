@@ -1,12 +1,17 @@
 """Verify signed revocation records without authorizing deployment."""
 
-import json
 from datetime import datetime, timedelta, timezone
 
 from cryptography.exceptions import InvalidSignature
 
 from app.security.staging_authorization import AuthorizationRejected
 from app.security.trusted_keys import TrustedKeyRegistry
+from app.security.validation import (
+    check_signature_input,
+    parse_document,
+    parse_timestamp,
+    utc_time,
+)
 
 
 MAX_RECORD_LIFETIME = timedelta(minutes=5)
@@ -23,29 +28,6 @@ REQUIRED_FIELDS = frozenset({
 })
 
 
-def _reject_duplicates(pairs):
-    result = {}
-    for key, value in pairs:
-        if key in result:
-            raise AuthorizationRejected("Duplicate revocation field")
-        result[key] = value
-    return result
-
-
-def _parse_timestamp(value):
-    if not isinstance(value, str):
-        raise AuthorizationRejected("Invalid revocation timestamp")
-    try:
-        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
-    except ValueError as exc:
-        raise AuthorizationRejected("Invalid revocation timestamp") from exc
-
-    if parsed.tzinfo is None:
-        raise AuthorizationRejected("Revocation timestamp lacks timezone")
-
-    return parsed.astimezone(timezone.utc)
-
-
 def verify_signed_revocation(
     *,
     payload: bytes,
@@ -55,21 +37,11 @@ def verify_signed_revocation(
     minimum_sequence: int,
     now: datetime | None = None,
 ) -> dict:
-    """Validate signed bytes, authority, timestamps and sequence floor."""
+    """Offline floor check only: equality is allowed; this does not consume state."""
 
-    if not isinstance(payload, bytes) or len(payload) > 65536:
-        raise AuthorizationRejected("Invalid revocation payload size")
-
-    try:
-        record = json.loads(
-            payload,
-            object_pairs_hook=_reject_duplicates,
-            parse_constant=lambda value: (_ for _ in ()).throw(
-                AuthorizationRejected("Invalid revocation JSON constant")
-            ),
-        )
-    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-        raise AuthorizationRejected("Invalid revocation JSON") from exc
+    record = parse_document(payload, limit=65536, label="revocation",
+                            duplicate="Duplicate revocation field")
+    check_signature_input(signature)
 
     if not isinstance(record, dict) or set(record) != REQUIRED_FIELDS:
         raise AuthorizationRejected("Invalid revocation record shape")
@@ -98,6 +70,9 @@ def verify_signed_revocation(
     if type(minimum_sequence) is not int or minimum_sequence < 0:
         raise AuthorizationRejected("Invalid sequence floor")
 
+    if sequence > 2**63 - 1:
+        raise AuthorizationRejected("Invalid revocation sequence")
+
     if sequence < minimum_sequence:
         raise AuthorizationRejected("Revocation rollback detected")
 
@@ -110,14 +85,9 @@ def verify_signed_revocation(
         ):
             raise AuthorizationRejected("Invalid revocation identifiers")
 
-    issued = _parse_timestamp(record["issued_at"])
-    expires = _parse_timestamp(record["expires_at"])
-    current = now if now is not None else datetime.now(timezone.utc)
-
-    if current.tzinfo is None:
-        raise AuthorizationRejected("Revocation clock lacks timezone")
-
-    current = current.astimezone(timezone.utc)
+    issued = parse_timestamp(record["issued_at"])
+    expires = parse_timestamp(record["expires_at"])
+    current = utc_time(now if now is not None else datetime.now(timezone.utc))
 
     if not issued <= current < expires:
         raise AuthorizationRejected("Revocation record not currently valid")

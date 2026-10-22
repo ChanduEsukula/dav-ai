@@ -3,16 +3,18 @@
 This module does not grant permission to serve pharmaceutical data.
 """
 
-import base64
-import json
 from datetime import datetime, timedelta, timezone
 
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
-
-class AuthorizationRejected(ValueError):
-    """A staging authorization did not pass verification."""
+from app.security.validation import (
+    AuthorizationRejected,
+    check_signature_input,
+    parse_document,
+    parse_timestamp,
+    utc_time,
+)
 
 
 REQUIRED_CLAIMS = frozenset({
@@ -40,32 +42,15 @@ def verify_staging_authorization(
 ) -> dict:
     """Validate the exact signed bytes and mandatory staging claims."""
 
+    claims = parse_document(payload, limit=8192, label="authorization",
+                            duplicate="Duplicate authorization claim")
+    check_signature_input(signature)
+    if not isinstance(public_key, Ed25519PublicKey):
+        raise AuthorizationRejected("Invalid trusted public key")
     try:
         public_key.verify(signature, payload)
     except (InvalidSignature, ValueError, TypeError) as exc:
         raise AuthorizationRejected("Invalid authorization signature") from exc
-
-    def reject_duplicate_keys(pairs):
-        result = {}
-        for key, value in pairs:
-            if key in result:
-                raise AuthorizationRejected("Duplicate authorization claim")
-            result[key] = value
-        return result
-
-    try:
-        claims = json.loads(
-            payload,
-            object_pairs_hook=reject_duplicate_keys,
-            parse_constant=lambda value: (_ for _ in ()).throw(
-                AuthorizationRejected("Invalid JSON constant")
-            ),
-        )
-    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-        raise AuthorizationRejected("Invalid authorization document") from exc
-
-    if not isinstance(claims, dict):
-        raise AuthorizationRejected("Authorization claims must be an object")
 
     if set(claims) != REQUIRED_CLAIMS:
         raise AuthorizationRejected("Unexpected authorization claims")
@@ -88,26 +73,9 @@ def verify_staging_authorization(
     if claims["deployment_id"] != expected_deployment_id:
         raise AuthorizationRejected("Wrong staging deployment")
 
-    def parse_time(value: str) -> datetime:
-        try:
-            parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
-        except ValueError as exc:
-            raise AuthorizationRejected("Invalid authorization timestamp") from exc
-
-        if parsed.tzinfo is None:
-            raise AuthorizationRejected("Authorization timestamp lacks timezone")
-
-        return parsed.astimezone(timezone.utc)
-
-    issued = parse_time(claims["issued_at"])
-    expires = parse_time(claims["expires_at"])
-
-    current = now or datetime.now(timezone.utc)
-
-    if current.tzinfo is None:
-        raise AuthorizationRejected("Verification clock lacks timezone")
-
-    current = current.astimezone(timezone.utc)
+    issued = parse_timestamp(claims["issued_at"])
+    expires = parse_timestamp(claims["expires_at"])
+    current = utc_time(now if now is not None else datetime.now(timezone.utc))
 
     if not issued <= current < expires:
         raise AuthorizationRejected("Authorization is not currently valid")

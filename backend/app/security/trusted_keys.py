@@ -50,22 +50,16 @@ def verify_with_trusted_keys(
 ) -> dict:
     """Verify an approval using a registry-selected trusted key."""
 
-    import json
+    from app.security.validation import parse_document
 
     from app.security.staging_authorization import (
         verify_staging_authorization,
     )
 
-    if not isinstance(payload, bytes) or len(payload) > 8192:
-        raise AuthorizationRejected("Invalid authorization payload size")
-
-    try:
-        untrusted_claims = json.loads(payload)
-    except (UnicodeDecodeError, ValueError, TypeError) as exc:
-        raise AuthorizationRejected("Invalid authorization document") from exc
-
-    if not isinstance(untrusted_claims, dict):
-        raise AuthorizationRejected("Invalid authorization document")
+    untrusted_claims = parse_document(
+        payload, limit=8192, label="authorization",
+        duplicate="Duplicate authorization claim",
+    )
 
     key_id = untrusted_claims.get("key_id")
     public_key = registry.resolve(key_id)

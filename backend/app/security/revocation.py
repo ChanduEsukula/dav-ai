@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
 from app.security.staging_authorization import AuthorizationRejected
+from app.security.validation import utc_time
 
 
 MAX_REVOCATION_AGE = timedelta(minutes=5)
@@ -26,15 +27,13 @@ def check_revocation(
     if not isinstance(approval_id, str) or not approval_id:
         raise AuthorizationRejected("Invalid approval identifier")
 
-    if snapshot is None:
+    if not isinstance(snapshot, RevocationSnapshot):
         raise AuthorizationRejected("Revocation state unavailable")
-
-    current = now if now is not None else datetime.now(timezone.utc)
-
-    if current.tzinfo is None or snapshot.fetched_at.tzinfo is None:
-        raise AuthorizationRejected("Revocation clock lacks timezone")
-
-    age = current.astimezone(timezone.utc) - snapshot.fetched_at.astimezone(timezone.utc)
+    if (type(snapshot.revoked_approval_ids) is not frozenset
+            or any(type(v) is not str or not v for v in snapshot.revoked_approval_ids)):
+        raise AuthorizationRejected("Invalid revocation identifiers")
+    current = utc_time(now if now is not None else datetime.now(timezone.utc))
+    age = current - utc_time(snapshot.fetched_at)
 
     if age < timedelta(0) or age > MAX_REVOCATION_AGE:
         raise AuthorizationRejected("Revocation state is not fresh")
