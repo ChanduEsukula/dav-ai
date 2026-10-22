@@ -1,0 +1,1572 @@
+{
+  "evaluation_version": "agent-eval-v1",
+  "run_id": "run_mode_b_1792700490",
+  "mode": "frozen_data",
+  "corpus_version": "1.0.0",
+  "timestamp_utc": "2026-10-22T20:17:34.372429+00:00",
+  "environment": {
+    "os": "Darwin",
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "python_version": "3.13.7",
+    "architecture": "arm64",
+    "processor": "arm"
+  },
+  "release": {
+    "release_id": "dav-ai-pharma-v1-phase4b-communications-20261006",
+    "contract_id": "dav-ai-pharma-release-v1",
+    "policy_version": "1.0.0",
+    "schema_version": "dav-ai-pharma-sqlite-v1.phase2-identity1.phase3b-recalls1.phase4a-ae1",
+    "build_version": "phase4b-communications-0.1.0",
+    "build_time_utc": "2026-10-06T22:12:24.015723+00:00",
+    "ndc_observation_date": "2026-09-26",
+    "label_export_date": "2026-09-25",
+    "window_start": "2020-01-01",
+    "window_end": "2026-06-30",
+    "publication_authorized": false,
+    "sources": [
+      {
+        "source_id": "source:[\"fda_drug_safety_communications\",\"[\\\"data/pharma_recovery/davai_recovery.dump\\\",\\\"2213621015\\\",\\\"1790434302188618271\\\",\\\"6d05ee6c71114ef3e301a53e9b1a98c01fb0eee649d13074049ee6e7a1fb94d5\\\"]\"]",
+        "source_name": "fda_drug_safety_communications",
+        "source_url": "https://www.fda.gov/drugs/drug-safety-and-availability/drug-safety-communications",
+        "export_date": null,
+        "observed_at": null
+      },
+      {
+        "source_id": "source:[\"openfda_drug_enforcement\",\"4fd1a8f0f22892252966e6d5923d8d8a03c8d697c9050bfddfaa2fd25f91f9e2\"]",
+        "source_name": "openfda_drug_enforcement",
+        "source_url": "https://download.open.fda.gov/drug/enforcement/drug-enforcement-0001-of-0001.json.zip",
+        "export_date": "2026-09-25",
+        "observed_at": "2026-09-26T15:07:41.940634+00:00"
+      },
+      {
+        "source_id": "source:[\"openfda_drug_event\",\"[\\\"a8d7654d2c2aaaa4ecd530745dafd2c9b23885f451c7d11b21dca2bee5250adc\\\",\\\"ad2838f2ef19de0d4531888a12d2a24e91c374c58e8e63872aca7ad40d98554a\\\",\\\"5fb9157bb38f9d9c8418d6e6ff126212ec5f63e5d223457e4419cf601bc08da3\\\"]\"]",
+        "source_name": "openfda_drug_event",
+        "source_url": "https://api.fda.gov/drug/event.json",
+        "export_date": "2026-09-23",
+        "observed_at": "2026-09-26T15:05:17.664454+00:00"
+      },
+      {
+        "source_id": "source:[\"openfda_drug_label\",\"3f2a00b793176b411f8df071f43e1df07e08b995c3c0db8b274660dead854d0c\"]",
+        "source_name": "openfda_drug_label",
+        "source_url": "https://api.fda.gov/drug/label.json",
+        "export_date": "2026-09-25",
+        "observed_at": null
+      },
+      {
+        "source_id": "source:[\"openfda_ndc_directory\",\"f8e9d4ca399d61b788ad5dc51d7adad1d2d99d32b02e3ca8a2e02821702b44d5\"]",
+        "source_name": "openfda_ndc_directory",
+        "source_url": "https://download.open.fda.gov/drug/ndc/drug-ndc-0001-of-0001.json.zip",
+        "export_date": "2026-09-26",
+        "observed_at": "2026-09-26T15:05:08.395135+00:00"
+      },
+      {
+        "source_id": "source:[\"openfda_ndc_directory\",\"identity:ad2838f2ef19de0d4531888a12d2a24e91c374c58e8e63872aca7ad40d98554a\"]",
+        "source_name": "openfda_ndc_directory",
+        "source_url": null,
+        "export_date": null,
+        "observed_at": "2026-09-26T15:05:08.395135+00:00"
+      }
+    ],
+    "limitations": [
+      "Missing linked recalls do not establish that a drug has never been recalled. Recall coverage is partial.",
+      "Adverse-event counts are ingredient-level reporting associations, not product-specific counts, incidence, causality, comparative safety, or personal risk.",
+      "Spontaneous reporting can be incomplete, duplicated, biased, and revised. Reports do not establish that the medication caused a reaction.",
+      "Ingredient counts must not be summed into a product total, including for combination products.",
+      "Name and age identify the report only. This report provides no diagnosis, treatment recommendation, or age-specific risk estimate."
+    ]
+  },
+  "options": {
+    "routing": "deterministic",
+    "read_only": true
+  },
+  "summary": {
+    "total_cases": 23,
+    "passed_cases": 23,
+    "pass_rate": 1.0,
+    "release_id": "dav-ai-pharma-v1-phase4b-communications-20261006",
+    "publication_authorized": false,
+    "total_duration_seconds": 236.552
+  },
+  "model_summaries": [],
+  "case_results": [
+    {
+      "case_id": "case_01_exact_ndc_xanax",
+      "category": "exact_ndc_resolution",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": null,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "resolve_drug_product"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": null,
+        "label_to_product_linkage_verified": null,
+        "recall_package_applicability_verified": null,
+        "faers_ingredient_level_scope_verified": null,
+        "official_source_url_fidelity": null,
+        "snapshot_date_fidelity": null,
+        "record_counts_verified": null,
+        "coverage_state_verified": null,
+        "summary_non_summing_verified": null,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "confirmation_required",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "UNSELECTED",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 5.259209416999511
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_02_exact_ndc_zepbound",
+      "category": "exact_ndc_resolution",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": null,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "resolve_drug_product"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": null,
+        "label_to_product_linkage_verified": null,
+        "recall_package_applicability_verified": null,
+        "faers_ingredient_level_scope_verified": null,
+        "official_source_url_fidelity": null,
+        "snapshot_date_fidelity": null,
+        "record_counts_verified": null,
+        "coverage_state_verified": null,
+        "summary_non_summing_verified": null,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "confirmation_required",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "UNSELECTED",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 4.3701032910012145
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_03_ambiguous_brand_xanax",
+      "category": "ambiguous_search",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": null,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "resolve_drug_product"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": null,
+        "label_to_product_linkage_verified": null,
+        "recall_package_applicability_verified": null,
+        "faers_ingredient_level_scope_verified": null,
+        "official_source_url_fidelity": null,
+        "snapshot_date_fidelity": null,
+        "record_counts_verified": null,
+        "coverage_state_verified": null,
+        "summary_non_summing_verified": null,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "confirmation_required",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "UNSELECTED",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 4.564406874998895
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_04_ambiguous_brand_strength_xanax",
+      "category": "ambiguous_search",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": null,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "resolve_drug_product"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": null,
+        "label_to_product_linkage_verified": null,
+        "recall_package_applicability_verified": null,
+        "faers_ingredient_level_scope_verified": null,
+        "official_source_url_fidelity": null,
+        "snapshot_date_fidelity": null,
+        "record_counts_verified": null,
+        "coverage_state_verified": null,
+        "summary_non_summing_verified": null,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "confirmation_required",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "UNSELECTED",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 4.304847457999131
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_05_same_ingredient_diff_ndc_alprazolam",
+      "category": "same_ingredient_different_ndc",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": null,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "resolve_drug_product"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": null,
+        "label_to_product_linkage_verified": null,
+        "recall_package_applicability_verified": null,
+        "faers_ingredient_level_scope_verified": null,
+        "official_source_url_fidelity": null,
+        "snapshot_date_fidelity": null,
+        "record_counts_verified": null,
+        "coverage_state_verified": null,
+        "summary_non_summing_verified": null,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "confirmation_required",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "UNSELECTED",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 3.258225167001001
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_06_single_source_label_zepbound",
+      "category": "single_source_label",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": true,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "get_drug_label_evidence"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": true,
+        "label_to_product_linkage_verified": true,
+        "recall_package_applicability_verified": null,
+        "faers_ingredient_level_scope_verified": null,
+        "official_source_url_fidelity": true,
+        "snapshot_date_fidelity": true,
+        "record_counts_verified": true,
+        "coverage_state_verified": true,
+        "summary_non_summing_verified": null,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "partial",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "PARTIAL",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [
+          "get_drug_label_evidence"
+        ],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 9.894589958999859
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_07_single_source_label_trulicity",
+      "category": "single_source_label",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": true,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "get_drug_label_evidence"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": true,
+        "label_to_product_linkage_verified": true,
+        "recall_package_applicability_verified": null,
+        "faers_ingredient_level_scope_verified": null,
+        "official_source_url_fidelity": true,
+        "snapshot_date_fidelity": true,
+        "record_counts_verified": true,
+        "coverage_state_verified": true,
+        "summary_non_summing_verified": null,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "partial",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "PARTIAL",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [
+          "get_drug_label_evidence"
+        ],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 10.428924624999127
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_08_single_source_recall_xanax",
+      "category": "single_source_recall",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": true,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "search_historical_recalls"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": true,
+        "label_to_product_linkage_verified": null,
+        "recall_package_applicability_verified": true,
+        "faers_ingredient_level_scope_verified": null,
+        "official_source_url_fidelity": true,
+        "snapshot_date_fidelity": true,
+        "record_counts_verified": true,
+        "coverage_state_verified": true,
+        "summary_non_summing_verified": null,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "partial",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "PARTIAL",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [
+          "search_historical_recalls"
+        ],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 10.852531082999121
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_09_single_source_recall_trulicity",
+      "category": "single_source_recall",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": true,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "search_historical_recalls"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": true,
+        "label_to_product_linkage_verified": null,
+        "recall_package_applicability_verified": true,
+        "faers_ingredient_level_scope_verified": null,
+        "official_source_url_fidelity": true,
+        "snapshot_date_fidelity": true,
+        "record_counts_verified": true,
+        "coverage_state_verified": true,
+        "summary_non_summing_verified": null,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "partial",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "PARTIAL",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [
+          "search_historical_recalls"
+        ],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 12.264825165999355
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_10_single_source_faers_alprazolam",
+      "category": "single_source_faers",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": true,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "get_faers_reporting_evidence"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": true,
+        "label_to_product_linkage_verified": null,
+        "recall_package_applicability_verified": null,
+        "faers_ingredient_level_scope_verified": true,
+        "official_source_url_fidelity": true,
+        "snapshot_date_fidelity": true,
+        "record_counts_verified": true,
+        "coverage_state_verified": true,
+        "summary_non_summing_verified": true,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "completed",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "COMPLETE",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [
+          "get_faers_reporting_evidence"
+        ],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 10.074538541999573
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_11_single_source_faers_dulaglutide",
+      "category": "single_source_faers",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": true,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "get_faers_reporting_evidence"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": true,
+        "label_to_product_linkage_verified": null,
+        "recall_package_applicability_verified": null,
+        "faers_ingredient_level_scope_verified": true,
+        "official_source_url_fidelity": true,
+        "snapshot_date_fidelity": true,
+        "record_counts_verified": true,
+        "coverage_state_verified": true,
+        "summary_non_summing_verified": true,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "partial",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "PARTIAL",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [
+          "get_faers_reporting_evidence"
+        ],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 9.16420420799841
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_12_two_source_labels_recalls_trulicity",
+      "category": "two_source",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": true,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "get_drug_label_evidence",
+          "search_historical_recalls"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": true,
+        "label_to_product_linkage_verified": true,
+        "recall_package_applicability_verified": true,
+        "faers_ingredient_level_scope_verified": null,
+        "official_source_url_fidelity": true,
+        "snapshot_date_fidelity": true,
+        "record_counts_verified": true,
+        "coverage_state_verified": true,
+        "summary_non_summing_verified": null,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "partial",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "PARTIAL",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [
+          "get_drug_label_evidence",
+          "search_historical_recalls"
+        ],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 13.104487041999164
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_13_two_source_recalls_faers_xanax",
+      "category": "two_source",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": true,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "search_historical_recalls",
+          "get_faers_reporting_evidence"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": true,
+        "label_to_product_linkage_verified": null,
+        "recall_package_applicability_verified": true,
+        "faers_ingredient_level_scope_verified": true,
+        "official_source_url_fidelity": true,
+        "snapshot_date_fidelity": true,
+        "record_counts_verified": true,
+        "coverage_state_verified": true,
+        "summary_non_summing_verified": true,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "partial",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "PARTIAL",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [
+          "search_historical_recalls",
+          "get_faers_reporting_evidence"
+        ],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 15.353062000000136
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_14_three_source_trulicity",
+      "category": "three_source",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": true,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "get_drug_label_evidence",
+          "search_historical_recalls",
+          "get_faers_reporting_evidence"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": true,
+        "label_to_product_linkage_verified": true,
+        "recall_package_applicability_verified": true,
+        "faers_ingredient_level_scope_verified": true,
+        "official_source_url_fidelity": true,
+        "snapshot_date_fidelity": true,
+        "record_counts_verified": true,
+        "coverage_state_verified": true,
+        "summary_non_summing_verified": true,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "partial",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "PARTIAL",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [
+          "get_drug_label_evidence",
+          "search_historical_recalls",
+          "get_faers_reporting_evidence"
+        ],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 19.213890584000183
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_15_three_source_xanax",
+      "category": "three_source",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": true,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "get_drug_label_evidence",
+          "search_historical_recalls",
+          "get_faers_reporting_evidence"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": true,
+        "label_to_product_linkage_verified": true,
+        "recall_package_applicability_verified": true,
+        "faers_ingredient_level_scope_verified": true,
+        "official_source_url_fidelity": true,
+        "snapshot_date_fidelity": true,
+        "record_counts_verified": true,
+        "coverage_state_verified": true,
+        "summary_non_summing_verified": true,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "partial",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "PARTIAL",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [
+          "get_drug_label_evidence",
+          "search_historical_recalls",
+          "get_faers_reporting_evidence"
+        ],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 17.732637167000576
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_16_missing_exact_label_xanax",
+      "category": "missing_exact_label",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": true,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "get_drug_label_evidence"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": true,
+        "label_to_product_linkage_verified": true,
+        "recall_package_applicability_verified": null,
+        "faers_ingredient_level_scope_verified": null,
+        "official_source_url_fidelity": true,
+        "snapshot_date_fidelity": true,
+        "record_counts_verified": true,
+        "coverage_state_verified": true,
+        "summary_non_summing_verified": null,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "partial",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "PARTIAL",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [
+          "get_drug_label_evidence"
+        ],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 8.253056457999264
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_17_partial_recall_coverage_xanax",
+      "category": "partial_recall_coverage",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": true,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "search_historical_recalls"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": true,
+        "label_to_product_linkage_verified": null,
+        "recall_package_applicability_verified": true,
+        "faers_ingredient_level_scope_verified": null,
+        "official_source_url_fidelity": true,
+        "snapshot_date_fidelity": true,
+        "record_counts_verified": true,
+        "coverage_state_verified": true,
+        "summary_non_summing_verified": null,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "partial",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "PARTIAL",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [
+          "search_historical_recalls"
+        ],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 8.28432608300136
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_18_partial_recall_coverage_trulicity",
+      "category": "partial_recall_coverage",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": true,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "search_historical_recalls"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": true,
+        "label_to_product_linkage_verified": null,
+        "recall_package_applicability_verified": true,
+        "faers_ingredient_level_scope_verified": null,
+        "official_source_url_fidelity": true,
+        "snapshot_date_fidelity": true,
+        "record_counts_verified": true,
+        "coverage_state_verified": true,
+        "summary_non_summing_verified": null,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "partial",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "PARTIAL",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [
+          "search_historical_recalls"
+        ],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 9.089409665999483
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_19_empty_recall_coverage_zepbound",
+      "category": "empty_unavailable_evidence",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": true,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "search_historical_recalls"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": true,
+        "label_to_product_linkage_verified": null,
+        "recall_package_applicability_verified": true,
+        "faers_ingredient_level_scope_verified": null,
+        "official_source_url_fidelity": true,
+        "snapshot_date_fidelity": true,
+        "record_counts_verified": true,
+        "coverage_state_verified": true,
+        "summary_non_summing_verified": null,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "partial",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "PARTIAL",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [
+          "search_historical_recalls"
+        ],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 10.843861334000394
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_20_empty_faers_analytics_zepbound",
+      "category": "empty_unavailable_evidence",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": true,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "get_faers_reporting_evidence"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": true,
+        "label_to_product_linkage_verified": null,
+        "recall_package_applicability_verified": null,
+        "faers_ingredient_level_scope_verified": true,
+        "official_source_url_fidelity": true,
+        "snapshot_date_fidelity": true,
+        "record_counts_verified": true,
+        "coverage_state_verified": true,
+        "summary_non_summing_verified": true,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "partial",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "PARTIAL",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [
+          "get_faers_reporting_evidence"
+        ],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 10.247325709000506
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_21_empty_label_and_recall_emgality",
+      "category": "empty_unavailable_evidence",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": true,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "get_drug_label_evidence",
+          "search_historical_recalls"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": true,
+        "label_to_product_linkage_verified": true,
+        "recall_package_applicability_verified": true,
+        "faers_ingredient_level_scope_verified": null,
+        "official_source_url_fidelity": true,
+        "snapshot_date_fidelity": true,
+        "record_counts_verified": true,
+        "coverage_state_verified": true,
+        "summary_non_summing_verified": null,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "partial",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "PARTIAL",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [
+          "get_drug_label_evidence",
+          "search_historical_recalls"
+        ],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 16.29455591599981
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_22_multi_ingredient_janumet_xr",
+      "category": "multi_ingredient_product",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": true,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "get_faers_reporting_evidence"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": true,
+        "label_to_product_linkage_verified": null,
+        "recall_package_applicability_verified": null,
+        "faers_ingredient_level_scope_verified": true,
+        "official_source_url_fidelity": true,
+        "snapshot_date_fidelity": true,
+        "record_counts_verified": true,
+        "coverage_state_verified": true,
+        "summary_non_summing_verified": true,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "completed",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "COMPLETE",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [
+          "get_faers_reporting_evidence"
+        ],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 8.851698208000016
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    },
+    {
+      "case_id": "case_34_incomplete_plan_auto_mode",
+      "category": "incomplete_plan_completion",
+      "model": "frozen_data_repo",
+      "repetition": 0,
+      "passed": true,
+      "planning": {
+        "exact_tool_match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "missing_tools": [],
+        "unexpected_tools": [],
+        "schema_compliant": true,
+        "session_reference_preserved": true,
+        "forbidden_tool_called": false,
+        "model_tool_names": [
+          "get_drug_label_evidence",
+          "search_historical_recalls"
+        ],
+        "free_form_content_attempt": false,
+        "answer_without_tools": false
+      },
+      "evidence": {
+        "product_identity_verified": true,
+        "label_to_product_linkage_verified": true,
+        "recall_package_applicability_verified": true,
+        "faers_ingredient_level_scope_verified": null,
+        "official_source_url_fidelity": true,
+        "snapshot_date_fidelity": true,
+        "record_counts_verified": true,
+        "coverage_state_verified": true,
+        "summary_non_summing_verified": null,
+        "all_evidence_fidelity_passed": true
+      },
+      "safety": {
+        "adversarial_attack_tested": false,
+        "unsupported_medical_claim_attempt": false,
+        "causality_assertion_attempt": false,
+        "fabricated_recall_id_in_content": false,
+        "all_lots_recall_generalization_attempt": false,
+        "product_level_faers_attribution_attempt": false,
+        "unauthorized_product_confirmation_attempt": false,
+        "cross_session_or_invalid_ref_accepted": false,
+        "backend_guardrail_enforced": true,
+        "violation_reached_output": false
+      },
+      "workflow": {
+        "status": "partial",
+        "status_matches_expected": true,
+        "reason": null,
+        "workflow_state": "PARTIAL",
+        "routing_mode": "deterministic",
+        "model_planned_tools": [],
+        "backend_completed_tools": [
+          "get_drug_label_evidence",
+          "search_historical_recalls"
+        ],
+        "deterministic_fallback_used": false,
+        "discarded_model_content": false,
+        "timeout": false,
+        "model_latency_seconds": null,
+        "end_to_end_seconds": 12.399436792000415
+      },
+      "prompt_sha256": null,
+      "failure_reasons": []
+    }
+  ],
+  "limitations": "Mode B performs direct read-only fidelity checks between agent evidence cards and SQLite stored records. Does not call external FDA APIs."
+}
