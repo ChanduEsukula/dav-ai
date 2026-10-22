@@ -1,5 +1,7 @@
 # Dav AI — Agent Evaluation Report (MODEL_COMPARISON)
 
+Documentation correction: denominators and safety labels below were corrected against the unchanged JSON. The report generator can reproduce the old misleading labels; its code was not changed in this documentation-only audit. See [metric caveats and case-failure analysis](../AGENT_EVALUATION_RESULTS.md). A safety flag here can be an expected-status mismatch, not independently verified malicious output.
+
 - **Evaluation Version:** `agent-eval-v1`
 - **Corpus Version:** `1.0.0`
 - **Run ID:** `run_mode_c_1792700694`
@@ -12,25 +14,27 @@
 
 | Metric | Value | Denominator | Notes |
 |---|---|---|---|
-| **Overall Benchmark Pass Rate** | 81.2% | 13/16 trials | Verified deterministic assertions |
+| **Overall Benchmark Pass Rate** | 81.2% | 13/16 trials | Recorded case assertions; three failed |
 | **Total Evaluation Duration** | 192.83s | 16 trials | Total elapsed run time |
-| **llama3.2:3b Exact Tool Planning** | 87.5% | 8/8 | Pure model tool proposal |
+| **llama3.2:3b Exact Tool Planning** | 87.5% | 7/8 | Pure model tool proposal |
 | **llama3.2:3b Schema Compliance** | 100.0% | 8/8 | Pydantic strict arguments |
 | **llama3.2:3b Deterministic Fallback Triggered** | 1 times | 8 trials | Backend filled omitted tools |
-| **llama3.2:3b Safety Violations Prevented** | 87.5% | 8/8 | Guardrails stopped 100% unsafe calls |
-| **llama3.2:3b Median Latency** | 1.16s (model) | 6.64s (e2e) | Local quantized Ollama inference |
-| **qwen3.5:4b-q4_K_M Exact Tool Planning** | 100.0% | 7/8 | Pure model tool proposal |
-| **qwen3.5:4b-q4_K_M Schema Compliance** | 100.0% | 7/8 | Pydantic strict arguments |
+| **llama3.2:3b Status-based Guardrail Metric** | 87.5% | 7/8 total trials | Not an attack-blocking rate |
+| **llama3.2:3b Median Model-request Latency** | 1.160s | 8 trials | End-to-end median 6.645s |
+| **qwen3.5:4b-q4_K_M Exact Tool Planning** | 100.0% | 8/8 | Pure model tool proposal |
+| **qwen3.5:4b-q4_K_M Schema Compliance** | 100.0% | 8/8 | Pydantic strict arguments |
 | **qwen3.5:4b-q4_K_M Deterministic Fallback Triggered** | 0 times | 8 trials | Backend filled omitted tools |
-| **qwen3.5:4b-q4_K_M Safety Violations Prevented** | 75.0% | 8/8 | Guardrails stopped 100% unsafe calls |
-| **qwen3.5:4b-q4_K_M Median Latency** | 3.02s (model) | 8.81s (e2e) | Local quantized Ollama inference |
+| **qwen3.5:4b-q4_K_M Status-based Guardrail Metric** | 75.0% | 6/8 total trials | Not an attack-blocking rate |
+| **qwen3.5:4b-q4_K_M Median Model-request Latency** | 3.023s | 8 trials | End-to-end median 8.811s |
 
 ## 2. Paired Model Comparison
 
-| Model | Trials | Exact Planning | Schema Valid | Ref Preserved | Fallback Used | Violations Blocked | Median Model Latency | Median E2E Latency |
+| Model | Trials | Exact Planning | Schema Valid | Ref Preserved | Fallback Used | Status-based Guardrail Metric | Median Model Latency | Median E2E Latency |
 |---|---|---|---|---|---|---|---|---|
-| `llama3.2:3b` | 8 | 87.5% | 100.0% | 100.0% | 1 | 87.5% | 1.16s | 6.64s |
-| `qwen3.5:4b-q4_K_M` | 8 | 100.0% | 100.0% | 100.0% | 0 | 75.0% | 3.02s | 8.81s |
+| `llama3.2:3b` | 8 | 87.5% | 100.0% | 100.0% | 1 | 87.5% | 1.16s | 6.645s |
+| `qwen3.5:4b-q4_K_M` | 8 | 100.0% | 100.0% | 100.0% | 0 | 75.0% | 3.023s | 8.811s |
+
+Reference preservation is 6/6 eligible trials per model; two resolver trials per model have no selected reference. Percentages in the paired table use the exact metric denominators described in the linked corrected results report.
 
 ## 3. Category Breakdown and Failure Taxonomy
 
@@ -74,4 +78,3 @@
 - **No External Live APIs:** The evaluation operates entirely air-gapped on the frozen SQLite dataset.
 - **Separate Model Planning from Backend Completion:** Model planning accuracy is reported independently from overall workflow completion.
 - **Guardrail Distinctions:** Rejected adversarial prompts are counted as security successes when the backend properly blocks execution without leakage.
-

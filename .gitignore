@@ -47,3 +47,7 @@ data/pharma_recovery/
 # Generated frozen pharmaceutical release artifacts.
 # Large runtime databases are mounted separately and must never be committed.
 /data/releases/
+
+# Local generated cohort selections and derived research outputs (not source).
+/data/cohorts/
+/data/derived/
