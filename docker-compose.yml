@@ -1,49 +1,23 @@
+# Local verification only. Production publication remains unauthorized.
 services:
   backend:
     build:
       context: .
       dockerfile: backend/Dockerfile
-    container_name: dav-ai-backend
     ports:
-      - "8000:8000"
-    env_file:
-      - ./backend/.env
+      - "127.0.0.1:8000:8000"
     environment:
-      - PYTHONUNBUFFERED=1
-      - DAVAI_ENV=local
-      - DAV_AI_PHARMA_RELEASE_DB=/data/pharma/pharma.sqlite
+      DAVAI_ENV: local
+      DAV_AI_PHARMA_RELEASE_DB: /data/pharma/pharma.sqlite
+      ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
     volumes:
       - ./data/releases/dav_ai_pharma_v1/phase4b-communications-2026-10-06/pharma.sqlite:/data/pharma/pharma.sqlite:ro
-
   frontend:
     build:
       context: ./frontend
-    container_name: dav-ai-frontend
+      args:
+        VITE_API_BASE_URL: http://localhost:8000
     ports:
-      - "5173:5173"
-    env_file:
-      - ./frontend/.env
-    environment:
-      - VITE_API_BASE_URL=http://localhost:8000
+      - "127.0.0.1:5173:80"
     depends_on:
       - backend
-
-  postgres:
-    image: postgres:16
-    profiles: [pharma]
-    environment:
-      POSTGRES_USER: davai
-      POSTGRES_PASSWORD: local-davai
-      POSTGRES_DB: davai
-    ports:
-      - "127.0.0.1:5433:5432"
-    volumes:
-      - pharma_postgres:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U davai -d davai"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
-volumes:
-  pharma_postgres:

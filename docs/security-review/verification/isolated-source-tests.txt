@@ -1,0 +1,83 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.7, pytest-9.0.3, pluggy-1.7.0
+rootdir: /private/tmp/davai-security-review-source/backend
+configfile: pytest.ini
+plugins: anyio-4.14.2
+collected 539 items / 7 deselected / 532 selected
+
+backend/tests/pharma/test_bulk_labels.py ..ssss                          [  1%]
+backend/tests/pharma/test_catalog.py sssssss                             [  2%]
+backend/tests/pharma/test_normalization_and_client.py .......            [  3%]
+backend/tests/pharma/test_offline_verifier.py s..                        [  4%]
+backend/tests/pharma/test_safety.py ssssssssss....s..ssss                [  8%]
+backend/tests/pharma_release/test_artifact_installation.py ............. [ 10%]
+...............................................                          [ 19%]
+backend/tests/pharma_release/test_consumer_label_admission.py .......    [ 20%]
+backend/tests/pharma_release/test_explorer_reports.py .................. [ 24%]
+..............                                                           [ 26%]
+backend/tests/pharma_release/test_hardening.py .............             [ 29%]
+backend/tests/pharma_release/test_phase1.py ............................ [ 34%]
+.................                                                        [ 37%]
+backend/tests/pharma_release/test_phase2.py ............................ [ 43%]
+.......                                                                  [ 44%]
+backend/tests/pharma_release/test_phase3_labels.py ..................... [ 48%]
+......................                                                   [ 52%]
+backend/tests/pharma_release/test_phase3b_recalls.py ................... [ 56%]
+................................                                         [ 62%]
+backend/tests/pharma_release/test_phase4a_ae.py ........................ [ 66%]
+..................                                                       [ 69%]
+backend/tests/pharma_release/test_phase4b_communications.py ............ [ 72%]
+..............................                                           [ 77%]
+backend/tests/research/test_database_health_report.py .....              [ 78%]
+backend/tests/research/test_dav_ai_100_cohort.py ssss.ss                 [ 80%]
+backend/tests/research/test_drug_safety_snapshot.py .......              [ 81%]
+backend/tests/research/test_historical_capture_provenance.py ....        [ 82%]
+backend/tests/research/test_monthly_shards.py ....                       [ 82%]
+backend/tests/research/test_native_release_continuity.py ....            [ 83%]
+backend/tests/research/test_pipeline.py ..............                   [ 86%]
+backend/tests/research/test_regulatory_applicability.py ..........       [ 88%]
+backend/tests/test_database_config.py ...                                [ 88%]
+backend/tests/test_drug_reaction_theme_classifier_experiment.py ........ [ 90%]
+.........                                                                [ 91%]
+backend/tests/test_recall_reason_classifier_experiment.py .............. [ 94%]
+..                                                                       [ 94%]
+backend/tests/test_request_logging_middleware.py ....                    [ 95%]
+backend/tests/test_review_priority_classifier.py ...........             [ 97%]
+backend/tests/test_saved_monitor_anomaly_experiment.py ............      [100%]
+
+=============================== warnings summary ===============================
+../davai-rc-py313/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /private/tmp/davai-rc-py313/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+---------------------- Pharmaceutical release integration ----------------------
+Release checks not selected. Artifact-independent results do not verify release integration.
+=========================== short test summary info ============================
+SKIPPED [1] backend/tests/pharma/test_bulk_labels.py:63: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_bulk_labels.py:85: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_bulk_labels.py:98: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_bulk_labels.py:112: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_catalog.py:28: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_catalog.py:39: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_catalog.py:65: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_catalog.py:87: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_catalog.py:104: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_catalog.py:124: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_catalog.py:141: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_offline_verifier.py:11: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [3] backend/tests/pharma/test_safety.py:63: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_safety.py:84: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_safety.py:99: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_safety.py:121: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_safety.py:128: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_safety.py:140: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_safety.py:161: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_safety.py:179: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_safety.py:193: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_safety.py:222: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_safety.py:233: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_safety.py:243: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [1] backend/tests/pharma/test_safety.py:255: Set PHARMA_TEST_DATABASE_URL to a PostgreSQL server with CREATEDB permission
+SKIPPED [6] backend/tests/research/test_dav_ai_100_cohort.py:14: Offline cohort artifact is not mounted
+=========== 499 passed, 33 skipped, 7 deselected, 1 warning in 7.58s ===========

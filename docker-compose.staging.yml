@@ -1,0 +1,52 @@
+# Architecture/configuration only. Do not deploy until separately authorized.
+# publication_validated=false: staging startup is deliberately refused by the shared gate.
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      DAVAI_ENV: staging
+      DAV_AI_PHARMA_ARTIFACT_ROOT: /var/lib/davai-artifacts
+      DAV_AI_PHARMA_REQUIRE_READY_AT_STARTUP: "1"
+      ALLOWED_ORIGINS: ${DAV_AI_STAGING_ORIGIN:?Set the exact private staging origin}
+    volumes:
+      - type: bind
+        source: ${DAV_AI_STAGING_ARTIFACT_ROOT:?Set the managed artifact store path}
+        target: /var/lib/davai-artifacts
+        read_only: true
+        bind:
+          create_host_path: false
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=32m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    networks: [private]
+    restart: "no"
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=2)"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 60s
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ""
+    user: "101:101"
+    volumes:
+      - ./ops/staging/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:rw,noexec,nosuid,uid=101,gid=101,mode=0700,size=32m
+      - /var/run:rw,noexec,nosuid,uid=101,gid=101,mode=0700,size=1m
+      - /tmp:rw,noexec,nosuid,uid=101,gid=101,mode=0700,size=16m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    networks: [private]
+    restart: "no"
+networks:
+  private:
+    internal: true

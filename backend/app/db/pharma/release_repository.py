@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from contextlib import closing
+
 import json
 import re
 from typing import Any
@@ -34,7 +36,7 @@ class FrozenPharmaReleaseRepository:
     """
 
     def find_by_id(self, product_id: str) -> dict[str, Any] | None:
-        with connect_release() as con:
+        with closing(connect_release()) as con:
             row = con.execute(
                 """
                 SELECT *
@@ -65,7 +67,7 @@ class FrozenPharmaReleaseRepository:
         normalized_name = _normalize_name(q)
         normalized_identifier = _normalize_identifier(q)
 
-        with connect_release() as con:
+        with closing(connect_release()) as con:
             product_ids: list[str] = []
 
             # 1. Exact identifier matches first.
@@ -101,6 +103,24 @@ class FrozenPharmaReleaseRepository:
             ).fetchall()
 
             for row in name_rows:
+                if row["product_id"] not in product_ids:
+                    product_ids.append(row["product_id"])
+
+            # Ingredient names must also discover combination products whose product
+            # aliases do not contain the ingredient. Membership uses sealed ingredient IDs.
+            ingredient_rows = con.execute(
+                """
+                SELECT DISTINCT pi.product_id
+                FROM product_ingredients pi
+                JOIN ingredients i ON i.ingredient_id = pi.ingredient_id
+                JOIN products p ON p.product_id = pi.product_id
+                WHERE (lower(i.canonical_name) = ? OR lower(i.canonical_name) LIKE ? ESCAPE '\\')
+                  AND p.eligibility_mode = 'NORMAL_CONSUMER'
+                ORDER BY pi.product_id LIMIT ?
+                """,
+                (normalized_name, self._escape_like(normalized_name) + "%", limit + offset),
+            ).fetchall()
+            for row in ingredient_rows:
                 if row["product_id"] not in product_ids:
                     product_ids.append(row["product_id"])
 
@@ -149,7 +169,7 @@ class FrozenPharmaReleaseRepository:
 
 
     def safety(self, product_id: str) -> dict[str, Any] | None:
-        with connect_release() as con:
+        with closing(connect_release()) as con:
             product = con.execute(
                 """
                 SELECT *
@@ -178,7 +198,7 @@ class FrozenPharmaReleaseRepository:
             }
 
     def timeline(self, product_id: str) -> dict[str, Any] | None:
-        with connect_release() as con:
+        with closing(connect_release()) as con:
             product = con.execute(
                 """
                 SELECT product_id
@@ -194,23 +214,9 @@ class FrozenPharmaReleaseRepository:
                 return None
 
             events: list[dict[str, Any]] = []
+            labels = self._consumer_labels(con, product_id)
 
-            for row in con.execute(
-                """
-                SELECT
-                    l.label_id,
-                    l.effective_date,
-                    l.version_number,
-                    s.source_name,
-                    s.source_url
-                FROM product_labels pl
-                JOIN labels l ON l.label_id = pl.label_id
-                LEFT JOIN sources s ON s.source_id = l.source_id
-                WHERE pl.product_id = ?
-                ORDER BY l.effective_date DESC, l.version_number DESC
-                """,
-                (product_id,),
-            ):
+            for row in labels:
                 if row["effective_date"]:
                     events.append({
                         "source": row["source_name"] or "openfda_drug_label",
@@ -219,10 +225,13 @@ class FrozenPharmaReleaseRepository:
                         "date_type": "effective_date",
                         "title": "Preserved FDA drug label",
                         "summary": (
-                            f"Product-scoped preserved label version "
-                            f"{row['version_number'] or 'unknown'}."
+                            "Earlier stored applicable label"
+                            if row["selection_status"] == "EARLIER_STORED"
+                            else "Latest selected applicable label in preserved export"
+                        ) + (
+                            f"; product-scoped version {row['version_number']}."
                         ),
-                        "source_url": row["source_url"],
+                        "source_url": row["provenance_source_url"],
                         "record_id": row["label_id"],
                     })
 
@@ -358,7 +367,7 @@ class FrozenPharmaReleaseRepository:
                 "drug_id": product_id,
                 "events": events,
                 "coverage": {
-                    "labels": self._coverage(con, product_id, "labels"),
+                    "labels": self._label_coverage(con, product_id, labels),
                     "recalls": self._coverage(con, product_id, "recalls"),
                     "adverse_events": self._coverage(
                         con, product_id, "ae_analytics"
@@ -366,10 +375,15 @@ class FrozenPharmaReleaseRepository:
                 },
             }
 
-    def _labels(self, con, product_id: str) -> dict[str, Any]:
-        records = []
+    @staticmethod
+    def _consumer_labels(con, product_id: str):
+        """Honor sealed product/source-set decisions; never reselect withheld rows.
 
-        linked = con.execute(
+        Gates mirror the release contract section 6 and schema/label validator.
+        EARLIER_STORED remains usable only with explicit partial/earlier wording.
+        Independent source sets are retained, rather than choosing one by date.
+        """
+        return con.execute(
             """
             SELECT
                 l.*,
@@ -377,12 +391,26 @@ class FrozenPharmaReleaseRepository:
                 pl.match_method,
                 pl.matched_value,
                 pl.evidence_scope,
+                pl.selection_status,
                 s.source_name,
                 s.source_url AS provenance_source_url
             FROM product_labels pl
             JOIN labels l ON l.label_id = pl.label_id
+            JOIN products p ON p.product_id = pl.product_id
             LEFT JOIN sources s ON s.source_id = l.source_id
             WHERE pl.product_id = ?
+              AND p.eligibility_mode = 'NORMAL_CONSUMER'
+              AND pl.consumer_eligible = 1
+              AND pl.selection_status IN ('SELECTED_STORED', 'EARLIER_STORED')
+              AND pl.applicability_class = 'EXACT_PRODUCT'
+              AND pl.evidence_scope = 'PRODUCT'
+              AND pl.ingredient_set_verified = 1
+              AND pl.formulation_scope_verified = 1
+              AND json_array_length(pl.conflicts_json) = 0
+              AND l.date_status = 'VALID'
+              AND l.version_number IS NOT NULL
+              AND l.has_requested_safety_section = 1
+              AND l.extraction_valid = 1
             ORDER BY
                 COALESCE(l.effective_date, '') DESC,
                 COALESCE(l.version_number, -1) DESC,
@@ -390,6 +418,43 @@ class FrozenPharmaReleaseRepository:
             """,
             (product_id,),
         ).fetchall()
+
+    def _label_coverage(self, con, product_id: str, labels) -> dict[str, Any]:
+        coverage = self._coverage(con, product_id, "labels")
+        count = len(labels)
+        coverage["stored_record_count"] = count
+        # Stored build counts include regulatory/withheld edges. Consumer counts
+        # describe only admitted evidence; no evidence is not an observed zero.
+        coverage["measured_count"] = count if count else None
+        if not count:
+            if coverage["state"] not in {"UNKNOWN", "UNAVAILABLE"}:
+                coverage.update(
+                    state="UNKNOWN",
+                    reason_code="NO_CONSUMER_ELIGIBLE_STORED_LABEL",
+                )
+            coverage["empty_message"] = (
+                "No consumer-eligible product-scoped label evidence is available "
+                "in this preserved release. This does not establish the absence "
+                "of warnings, contraindications, adverse reactions or interactions."
+            )
+        elif (
+            coverage["state"] != "READY"
+            or any(row["selection_status"] == "EARLIER_STORED" for row in labels)
+        ):
+            coverage.update(
+                state="PARTIAL",
+                reason_code="STORED_LABEL_TEXT_WITH_SCOPE_DATE_OR_SELECTION_LIMITATIONS",
+            )
+        coverage["limitations"] = [
+            *coverage["limitations"],
+            "Label counts describe only consumer-eligible records returned for "
+            "this product, not complete labeling or absence of clinical risks.",
+        ]
+        return coverage
+
+    def _labels(self, con, product_id: str) -> dict[str, Any]:
+        records = []
+        linked = self._consumer_labels(con, product_id)
 
         for label in linked:
             section_rows = con.execute(
@@ -431,6 +496,7 @@ class FrozenPharmaReleaseRepository:
                 "match_method": label["match_method"],
                 "matched_value": label["matched_value"],
                 "evidence_scope": label["evidence_scope"],
+                "selection_status": label["selection_status"],
                 "boxed_warning": self._section_text(
                     sections, "boxed_warning"
                 ),
@@ -457,8 +523,10 @@ class FrozenPharmaReleaseRepository:
 
         return {
             "records": records,
-            "latest_records": records[:1],
-            "coverage": self._coverage(con, product_id, "labels"),
+            # Compatibility key: these are the stored selections for every
+            # independent set, including explicitly identified earlier evidence.
+            "latest_records": records,
+            "coverage": self._label_coverage(con, product_id, linked),
         }
 
     def _recalls(self, con, product_id: str) -> dict[str, Any]:
@@ -551,6 +619,7 @@ class FrozenPharmaReleaseRepository:
                     "scope": "INGREDIENT",
                     "analytics": None,
                     "top_reported_reactions": [],
+                    "monthly": [],
                     "coverage": coverage,
                 })
                 continue
@@ -617,6 +686,10 @@ class FrozenPharmaReleaseRepository:
                     "limitations": _json_list(summary["limitations_json"]),
                 },
                 "top_reported_reactions": reactions,
+                "monthly": [dict(row) for row in con.execute(
+                    "SELECT period, report_count, serious_report_count FROM ae_monthly "
+                    "WHERE ingredient_id = ? ORDER BY period", (ingredient_id,)
+                )],
                 "coverage": coverage,
             })
 

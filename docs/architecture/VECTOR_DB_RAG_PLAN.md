@@ -1,5 +1,29 @@
 # Vector DB / RAG Plan
 
+## Pharmaceutical hybrid RAG direction — documented, not implemented
+
+The current agreed future architecture extends the older documentation-only plan
+below. Implementation follows model training, evaluation and integration; it is
+outside the active ingestion/ML-data phase.
+
+- PostgreSQL structured retrieval supplies exact drug/product identities, recalls,
+  adverse-event counts, dates and other factual records.
+- PostgreSQL with pgvector retrieves authoritative text: FDA label sections,
+  warnings, contraindications, safety communications, recall descriptions/reasons
+  and other appropriate official textual evidence.
+- The trained PyTorch artifact supplies an optional experimental emerging
+  reporting-signal output, with model version and limitations.
+- Ask Dav combines SQL evidence, retrieved text and optional ML output for Gemini;
+  the server controls evidence identifiers, source URLs and rendered citations.
+
+Do not embed the approximately 20M raw adverse-event reports individually. Keep
+exact counts and identity/date filters in SQL. Retrieval cannot establish causality,
+incidence or patient risk; the model predicts reporting behavior. Missing evidence
+must remain explicit. The deployment target is $0 recurring infrastructure cost
+with only domain spending allowed; pgvector storage, embeddings and Gemini usage
+must fit that constraint before this future phase is enabled. See
+[the deployment plan](../DEPLOYMENT_PLAN.md).
+
 ## Purpose
 
 This document outlines a future vector database and retrieval-augmented generation (RAG) capability for Dav AI.

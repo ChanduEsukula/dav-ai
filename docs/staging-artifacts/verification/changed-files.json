@@ -1,0 +1,21 @@
+{
+  "modified": [
+    ".dockerignore",
+    "README.md",
+    "backend/.env.example",
+    "backend/app/db/pharma/release_connection.py",
+    "backend/app/main.py",
+    "docs/architecture/PHARMACEUTICAL_EXPLORER.md",
+    "docs/hardening/ARTIFACT_OPERATIONS.md",
+    "scripts/manage_pharma_artifact.py",
+    "scripts/prepare_release_candidate.py"
+  ],
+  "added_source": [
+    "backend/app/db/pharma/artifact_store.py",
+    "backend/tests/pharma_release/test_artifact_installation.py",
+    "docker-compose.staging.yml",
+    "docs/staging-artifacts/OPERATIONS.md",
+    "ops/staging/environment.example",
+    "ops/staging/nginx.conf"
+  ]
+}

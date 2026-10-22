@@ -1,0 +1,27 @@
+Using Python 3.12.15 environment at: /tmp/davai-runtime-check
+Resolved 17 packages in 522ms
+Downloading reportlab (1.9MiB)
+Downloading pillow (4.6MiB)
+Downloading pydantic-core (1.9MiB)
+ Downloaded reportlab
+ Downloaded pydantic-core
+ Downloaded pillow
+Prepared 17 packages in 502ms
+Installed 17 packages in 13ms
+ + annotated-doc==0.0.4
+ + annotated-types==0.7.0
+ + anyio==4.13.0
+ + charset-normalizer==3.5.2
+ + click==8.3.3
+ + fastapi==0.136.1
+ + h11==0.16.0
+ + idna==3.20
+ + pillow==13.0.0
+ + pydantic==2.13.3
+ + pydantic-core==2.46.3
+ + python-dotenv==1.2.2
+ + reportlab==4.4.5
+ + starlette==1.0.0
+ + typing-extensions==4.15.0
+ + typing-inspection==0.4.2
+ + uvicorn==0.46.0

@@ -1,0 +1,7 @@
+# Offline ingestion, PostgreSQL recovery/migrations, and reproducible release builds.
+-r requirements-runtime.lock
+httpx==0.28.1
+psycopg==3.3.4
+psycopg-binary==3.3.4
+alembic==1.17.2
+ijson==3.4.0.post0

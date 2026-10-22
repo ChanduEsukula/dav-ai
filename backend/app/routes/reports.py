@@ -1,93 +1,71 @@
-from __future__ import annotations
+"""Bounded, in-memory pharmaceutical evidence PDFs, without personal-data storage."""
+import logging
+from collections import deque
+from threading import BoundedSemaphore, Lock
+from time import monotonic
 
-from fastapi import APIRouter, HTTPException, Request, status
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import Response
 
-from app.schemas.reports import SafetyIntelligenceReportRequest
-from app.services.report_pdf import (
-    build_report_filename,
-    build_safety_intelligence_pdf,
-)
-from app.services.search_workflows.cosmetic_signal_search import (
-    execute_cosmetic_signal_search,
-)
-from app.services.search_workflows.drug_signal_search import execute_drug_signal_search
-from app.services.search_workflows.everyday_safety_search import execute_everyday_safety_search
-from app.services.search_workflows.recall_search import execute_recall_search
+from app.db.pharma.release_connection import PharmaceuticalReleaseUnavailable
+from app.schemas.reports import PharmaceuticalReportRequest
+from app.services.pharma.evidence import drug_evidence
+from app.services.report_pdf import build_pharmaceutical_pdf
 
-router = APIRouter(prefix="/api/v1/reports", tags=["reports"])
+logger = logging.getLogger("dav_ai.report")
+
+router = APIRouter(prefix="/api/v1/reports", tags=["PDF evidence reports"])
+_slots = BoundedSemaphore(2)
+_lock = Lock()
+_attempts: dict[str, deque] = {}
+MAX_CLIENTS = 4096
+REPORTS_PER_MINUTE = 5
 
 
-@router.post("/safety-intelligence")
-async def create_safety_intelligence_report(
-    payload: SafetyIntelligenceReportRequest,
-    request: Request,
-) -> Response:
-    """Generate a public-data safety intelligence PDF report.
+def admit_report(client: str):
+    now = monotonic()
+    with _lock:
+        for key in list(_attempts):
+            if not _attempts[key] or _attempts[key][-1] <= now - 60:
+                del _attempts[key]
+        if client not in _attempts and len(_attempts) >= MAX_CLIENTS:
+            raise HTTPException(429, "Report service is busy", headers={"Retry-After": "60"})
+        attempts = _attempts.setdefault(client, deque())
+        while attempts and attempts[0] <= now - 60:
+            attempts.popleft()
+        if len(attempts) >= REPORTS_PER_MINUTE:
+            raise HTTPException(429, "Report limit reached. Try again in one minute.", headers={"Retry-After": "60"})
+        attempts.append(now)
 
-    This endpoint does not persist reports or user-entered report details.
-    """
 
-    request_id = getattr(request.state, "request_id", None)
-
-    recall_result = None
-    drug_signal_result = None
-    everyday_safety_result = None
-    cosmetic_signal_result = None
-
+@router.post("/pharmaceutical", response_class=Response,
+             responses={200: {"content": {"application/pdf": {}}}})
+def create_pharmaceutical_report(payload: PharmaceuticalReportRequest, request: Request):
+    admit_report(request.client.host if request.client else "unknown")
+    if not _slots.acquire(blocking=False):
+        raise HTTPException(429, "Report generation is busy", headers={"Retry-After": "5"})
     try:
-        if payload.module in {"recallradar", "both"}:
-            recall_result = await execute_recall_search(
-                query=payload.query,
-                limit=5,
-                request_id=request_id,
-            )
-
-        if payload.module in {"drugsignal", "both"}:
-            drug_signal_result = await execute_drug_signal_search(
-                query=payload.query,
-                limit=5,
-                request_id=request_id,
-            )
-
-        if payload.module == "foodradar":
-            everyday_safety_result = await execute_everyday_safety_search(
-                category="food_supplement",
-                query=payload.query,
-                limit=5,
-                request_id=request_id,
-            )
-
-        if payload.module == "cosmeticsignal":
-            cosmetic_signal_result = await execute_cosmetic_signal_search(
-                query=payload.query,
-                limit=10,
-                request_id=request_id,
-            )
-
-    except Exception as exc:
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail={
-                "message": "Unable to retrieve source data for the report.",
-                "code": "REPORT_SOURCE_DATA_UNAVAILABLE",
-            },
-        ) from exc
-
-    pdf_bytes = build_safety_intelligence_pdf(
-        request=payload,
-        recall_result=recall_result,
-        drug_signal_result=drug_signal_result,
-        everyday_safety_result=everyday_safety_result,
-        cosmetic_signal_result=cosmetic_signal_result,
-    )
-
-    filename = build_report_filename(payload.query)
-
-    return Response(
-        content=pdf_bytes,
-        media_type="application/pdf",
-        headers={
-            "Content-Disposition": f'attachment; filename="{filename}"',
-        },
-    )
+        try:
+            evidence = drug_evidence(payload.product_id)
+        except PharmaceuticalReleaseUnavailable as exc:
+            raise HTTPException(503, "Pharmaceutical release is unavailable") from exc
+        if evidence is None:
+            raise HTTPException(404, "Drug not found")
+        try:
+            content = build_pharmaceutical_pdf(payload, evidence)
+        except ValueError as exc:
+            raise HTTPException(413, "Evidence exceeds the bounded PDF report size") from exc
+        return Response(content, media_type="application/pdf", headers={
+            "Content-Disposition": 'attachment; filename="dav-ai-evidence-report.pdf"',
+            "Cache-Control": "no-store, private, max-age=0",
+            "Pragma": "no-cache",
+            "X-Content-Type-Options": "nosniff",
+        })
+    except HTTPException:
+        raise
+    except Exception:
+        # Never log exception text/locals: renderer failures may contain a report name.
+        logger.warning("pharmaceutical_report_generation_failed")
+        raise HTTPException(500, "Report generation failed") from None
+    finally:
+        _slots.release()

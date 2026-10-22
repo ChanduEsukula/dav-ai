@@ -1,0 +1,16 @@
+{
+  "activation": {
+    "active": "validation-a",
+    "format": "dav-ai-activation-v1",
+    "generation": "32a02f46b7414473840522c7bf9847d5",
+    "previous": "validation-b",
+    "publication_authorized": false
+  },
+  "activation_error": null,
+  "incomplete": [],
+  "installed": [
+    "validation-a",
+    "validation-b"
+  ],
+  "publication_authorized": false
+}

@@ -1,0 +1,5 @@
+
+> frontend@0.0.0 test
+> vitest run --reporter=json --outputFile=/tmp/davai-verification-frontend.json
+
+JSON report written to /tmp/davai-verification-frontend.json

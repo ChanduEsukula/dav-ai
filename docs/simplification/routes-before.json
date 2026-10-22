@@ -1,0 +1,1961 @@
+{
+  "/api/drugs/search": {
+    "get": {
+      "tags": [
+        "Drug Catalog"
+      ],
+      "summary": "Search Drugs",
+      "operationId": "search_drugs_api_drugs_search_get",
+      "parameters": [
+        {
+          "name": "q",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "title": "Q"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 1,
+            "default": 20,
+            "title": "Limit"
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 100000,
+            "minimum": 0,
+            "default": 0,
+            "title": "Offset"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrugSearchResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/drugs/{product_id}": {
+    "get": {
+      "tags": [
+        "Drug Catalog"
+      ],
+      "summary": "Drug Detail",
+      "operationId": "drug_detail_api_drugs__product_id__get",
+      "parameters": [
+        {
+          "name": "product_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "title": "Product Id"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrugOverview"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/drugs/{product_id}/safety": {
+    "get": {
+      "tags": [
+        "Stored Drug Safety"
+      ],
+      "summary": "Drug Safety",
+      "operationId": "drug_safety_api_drugs__product_id__safety_get",
+      "parameters": [
+        {
+          "name": "product_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "title": "Product Id"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/drugs/{product_id}/timeline": {
+    "get": {
+      "tags": [
+        "Stored Drug Safety"
+      ],
+      "summary": "Drug Timeline",
+      "operationId": "drug_timeline_api_drugs__product_id__timeline_get",
+      "parameters": [
+        {
+          "name": "product_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "title": "Product Id"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/drugs/{product_id}/safety/{section}": {
+    "get": {
+      "tags": [
+        "Stored Drug Safety"
+      ],
+      "summary": "Drug Safety Section",
+      "operationId": "drug_safety_section_api_drugs__product_id__safety__section__get",
+      "parameters": [
+        {
+          "name": "product_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "title": "Product Id"
+          }
+        },
+        {
+          "name": "section",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "enum": [
+              "labels",
+              "recalls",
+              "adverse_events",
+              "communications"
+            ],
+            "type": "string",
+            "title": "Section"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/drugs/{product_id}/ask": {
+    "post": {
+      "tags": [
+        "Stored Ask Dav AI"
+      ],
+      "summary": "Drug Ask",
+      "operationId": "drug_ask_api_drugs__product_id__ask_post",
+      "parameters": [
+        {
+          "name": "product_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "title": "Product Id"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AskRequest"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/pharma/releases/semaglutide": {
+    "get": {
+      "tags": [
+        "Pharma Release"
+      ],
+      "summary": "Get Semaglutide Release",
+      "operationId": "get_semaglutide_release_api_v1_pharma_releases_semaglutide_get",
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/recalls/search": {
+    "get": {
+      "tags": [
+        "RecallRadar"
+      ],
+      "summary": "Search Recalls",
+      "operationId": "search_recalls_api_v1_recalls_search_get",
+      "parameters": [
+        {
+          "name": "q",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Drug, product, brand, or recall keyword",
+            "title": "Q"
+          },
+          "description": "Drug, product, brand, or recall keyword"
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 25,
+            "minimum": 1,
+            "default": 10,
+            "title": "Limit"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "enum": [
+              "score",
+              "latest"
+            ],
+            "type": "string",
+            "description": "Sort recall results by review score or latest recall initiation date.",
+            "default": "score",
+            "title": "Sort"
+          },
+          "description": "Sort recall results by review score or latest recall initiation date."
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecallSearchResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/drug-events/search": {
+    "get": {
+      "tags": [
+        "DrugSignal"
+      ],
+      "summary": "Search Drug Events",
+      "operationId": "search_drug_events_api_v1_drug_events_search_get",
+      "parameters": [
+        {
+          "name": "q",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Drug name or medicinal product",
+            "title": "Q"
+          },
+          "description": "Drug name or medicinal product"
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 25,
+            "minimum": 1,
+            "default": 10,
+            "title": "Limit"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "enum": [
+              "reports",
+              "alpha"
+            ],
+            "type": "string",
+            "description": "Sort DrugSignal top reactions by report count or alphabetically.",
+            "default": "reports",
+            "title": "Sort"
+          },
+          "description": "Sort DrugSignal top reactions by report count or alphabetically."
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrugEventSearchResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/cosmetic-events/search": {
+    "get": {
+      "tags": [
+        "CosmeticSignal"
+      ],
+      "summary": "Search Cosmetic Events",
+      "operationId": "search_cosmetic_events_api_v1_cosmetic_events_search_get",
+      "parameters": [
+        {
+          "name": "q",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Cosmetic brand, product, reaction, or outcome keyword",
+            "title": "Q"
+          },
+          "description": "Cosmetic brand, product, reaction, or outcome keyword"
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 25,
+            "minimum": 1,
+            "default": 10,
+            "title": "Limit"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CosmeticEventSearchResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/everyday-safety/search": {
+    "get": {
+      "tags": [
+        "Everyday Safety"
+      ],
+      "summary": "Search Everyday Safety",
+      "operationId": "search_everyday_safety_api_v1_everyday_safety_search_get",
+      "parameters": [
+        {
+          "name": "category",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "const": "food_supplement",
+            "type": "string",
+            "description": "Everyday safety category. v0.1 supports food_supplement.",
+            "title": "Category"
+          },
+          "description": "Everyday safety category. v0.1 supports food_supplement."
+        },
+        {
+          "name": "q",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Food, supplement, product, brand, or recall keyword",
+            "title": "Q"
+          },
+          "description": "Food, supplement, product, brand, or recall keyword"
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 25,
+            "minimum": 1,
+            "default": 10,
+            "title": "Limit"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "enum": [
+              "score",
+              "latest"
+            ],
+            "type": "string",
+            "description": "FoodRadar result ordering. score ranks by review score; latest ranks by newest report/recall date.",
+            "default": "score",
+            "title": "Sort"
+          },
+          "description": "FoodRadar result ordering. score ranks by review score; latest ranks by newest report/recall date."
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EverydaySafetySearchResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/real-world-safety/search": {
+    "get": {
+      "tags": [
+        "Real-World Safety"
+      ],
+      "summary": "Search Real World Safety",
+      "operationId": "search_real_world_safety_api_v1_real_world_safety_search_get",
+      "parameters": [
+        {
+          "name": "q",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Consumer product, vehicle make/model/year, VIN, brand, company, or public recall keyword.",
+            "title": "Q"
+          },
+          "description": "Consumer product, vehicle make/model/year, VIN, brand, company, or public recall keyword."
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 25,
+            "minimum": 1,
+            "default": 10,
+            "title": "Limit"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "enum": [
+              "score",
+              "latest"
+            ],
+            "type": "string",
+            "description": "Result ordering. score ranks by query relevance; latest ranks by newest source date.",
+            "default": "score",
+            "title": "Sort"
+          },
+          "description": "Result ordering. score ranks by query relevance; latest ranks by newest source date."
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RealWorldSafetySearchResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/sources": {
+    "get": {
+      "tags": [
+        "Sources"
+      ],
+      "summary": "List Sources",
+      "operationId": "list_sources_api_v1_sources_get",
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SourceRegistryResponse"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/docs/search": {
+    "get": {
+      "tags": [
+        "Documentation"
+      ],
+      "summary": "Search Docs",
+      "operationId": "search_docs_api_v1_docs_search_get",
+      "parameters": [
+        {
+          "name": "q",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120,
+            "description": "Keyword search over approved Dav AI documentation.",
+            "title": "Q"
+          },
+          "description": "Keyword search over approved Dav AI documentation."
+        },
+        {
+          "name": "max_results",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 20,
+            "minimum": 1,
+            "description": "Maximum number of cited documentation snippets to return.",
+            "default": 8,
+            "title": "Max Results"
+          },
+          "description": "Maximum number of cited documentation snippets to return."
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaticDocsSearchResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/docs/chunks": {
+    "get": {
+      "tags": [
+        "Documentation"
+      ],
+      "summary": "Preview Docs Chunks",
+      "operationId": "preview_docs_chunks_api_v1_docs_chunks_get",
+      "parameters": [
+        {
+          "name": "max_results",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 1,
+            "description": "Maximum number of deterministic documentation chunks to preview.",
+            "default": 20,
+            "title": "Max Results"
+          },
+          "description": "Maximum number of deterministic documentation chunks to preview."
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaticDocsChunkPreviewResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/docs/embedding-preview": {
+    "get": {
+      "tags": [
+        "Documentation"
+      ],
+      "summary": "Preview Docs Embeddings",
+      "operationId": "preview_docs_embeddings_api_v1_docs_embedding_preview_get",
+      "parameters": [
+        {
+          "name": "max_results",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 1,
+            "description": "Maximum number of deterministic documentation embedding previews to return.",
+            "default": 20,
+            "title": "Max Results"
+          },
+          "description": "Maximum number of deterministic documentation embedding previews to return."
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaticDocsEmbeddingPreviewResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/docs/semantic-preview": {
+    "get": {
+      "tags": [
+        "Documentation"
+      ],
+      "summary": "Preview Docs Semantic Retrieval",
+      "operationId": "preview_docs_semantic_retrieval_api_v1_docs_semantic_preview_get",
+      "parameters": [
+        {
+          "name": "q",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120,
+            "description": "Deterministic preview query over stored documentation chunk preview embeddings.",
+            "title": "Q"
+          },
+          "description": "Deterministic preview query over stored documentation chunk preview embeddings."
+        },
+        {
+          "name": "max_results",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 20,
+            "minimum": 1,
+            "description": "Maximum number of deterministic semantic preview matches to return.",
+            "default": 8,
+            "title": "Max Results"
+          },
+          "description": "Maximum number of deterministic semantic preview matches to return."
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaticDocsSemanticPreviewResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/audit-events/": {
+    "get": {
+      "tags": [
+        "Audit History"
+      ],
+      "summary": "Get Audit Events",
+      "operationId": "get_audit_events_api_v1_audit_events__get",
+      "parameters": [
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 1,
+            "default": 50,
+            "title": "Limit"
+          }
+        },
+        {
+          "name": "module",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Filter by module, such as RecallRadar or DrugSignal",
+            "title": "Module"
+          },
+          "description": "Filter by module, such as RecallRadar or DrugSignal"
+        },
+        {
+          "name": "upstream_status",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Filter by upstream status, such as success, empty, or error",
+            "title": "Upstream Status"
+          },
+          "description": "Filter by upstream status, such as success, empty, or error"
+        },
+        {
+          "name": "q",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Search query, audit ID, source, or version metadata",
+            "title": "Q"
+          },
+          "description": "Search query, audit ID, source, or version metadata"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuditHistoryListResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/audit-events/{audit_id}": {
+    "get": {
+      "tags": [
+        "Audit History"
+      ],
+      "summary": "Get Audit Event",
+      "operationId": "get_audit_event_api_v1_audit_events__audit_id__get",
+      "parameters": [
+        {
+          "name": "audit_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "title": "Audit Id"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuditHistoryDetailResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/audit-events/{audit_id}/source-pull": {
+    "get": {
+      "tags": [
+        "Audit History"
+      ],
+      "summary": "Get Audit Event Source Pull",
+      "description": "Return metadata-only source-pull provenance for an audit event.\n\nRaw public-source payloads are intentionally not returned by this endpoint.",
+      "operationId": "get_audit_event_source_pull_api_v1_audit_events__audit_id__source_pull_get",
+      "parameters": [
+        {
+          "name": "audit_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "title": "Audit Id"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SourcePullProvenanceResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/system/status": {
+    "get": {
+      "tags": [
+        "System"
+      ],
+      "summary": "Get System Status",
+      "operationId": "get_system_status_api_v1_system_status_get",
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SystemStatusResponse"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/system/data-quality": {
+    "get": {
+      "tags": [
+        "System"
+      ],
+      "summary": "Get Data Quality",
+      "operationId": "get_data_quality_api_v1_system_data_quality_get",
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataQualityResponse"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/auth/signup": {
+    "post": {
+      "tags": [
+        "auth"
+      ],
+      "summary": "Signup",
+      "operationId": "signup_api_v1_auth_signup_post",
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthSignupRequest"
+            }
+          }
+        },
+        "required": true
+      },
+      "responses": {
+        "201": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/auth/login": {
+    "post": {
+      "tags": [
+        "auth"
+      ],
+      "summary": "Login",
+      "operationId": "login_api_v1_auth_login_post",
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthLoginRequest"
+            }
+          }
+        },
+        "required": true
+      },
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/auth/me": {
+    "get": {
+      "tags": [
+        "auth"
+      ],
+      "summary": "Me",
+      "operationId": "me_api_v1_auth_me_get",
+      "parameters": [
+        {
+          "name": "authorization",
+          "in": "header",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authorization"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthUser"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/profile": {
+    "get": {
+      "tags": [
+        "profile"
+      ],
+      "summary": "Get Profile",
+      "operationId": "get_profile_api_v1_profile_get",
+      "parameters": [
+        {
+          "name": "authorization",
+          "in": "header",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authorization"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserProfile"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    },
+    "put": {
+      "tags": [
+        "profile"
+      ],
+      "summary": "Update Profile",
+      "operationId": "update_profile_api_v1_profile_put",
+      "parameters": [
+        {
+          "name": "authorization",
+          "in": "header",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authorization"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserProfileUpdate"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserProfile"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/saved-monitors": {
+    "get": {
+      "tags": [
+        "saved-monitors"
+      ],
+      "summary": "List Saved Monitors",
+      "description": "List saved monitors.",
+      "operationId": "list_saved_monitors_api_v1_saved_monitors_get",
+      "parameters": [
+        {
+          "name": "authorization",
+          "in": "header",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authorization"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SavedMonitor"
+                },
+                "title": "Response List Saved Monitors Api V1 Saved Monitors Get"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    },
+    "post": {
+      "tags": [
+        "saved-monitors"
+      ],
+      "summary": "Create Saved Monitor",
+      "description": "Create a saved monitor.\n\nSaved monitors are unique by module and normalized query so users do not\naccidentally create duplicate monitors for the same public-data workflow.",
+      "operationId": "create_saved_monitor_api_v1_saved_monitors_post",
+      "parameters": [
+        {
+          "name": "authorization",
+          "in": "header",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authorization"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SavedMonitorCreate"
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavedMonitor"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/saved-monitors/{monitor_id}/runs": {
+    "get": {
+      "tags": [
+        "saved-monitors"
+      ],
+      "summary": "List Saved Monitor Runs",
+      "description": "List recent manual run-history rows for one saved monitor.",
+      "operationId": "list_saved_monitor_runs_api_v1_saved_monitors__monitor_id__runs_get",
+      "parameters": [
+        {
+          "name": "monitor_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Monitor Id"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 50,
+            "minimum": 1,
+            "default": 10,
+            "title": "Limit"
+          }
+        },
+        {
+          "name": "authorization",
+          "in": "header",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authorization"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SavedMonitorRun"
+                },
+                "title": "Response List Saved Monitor Runs Api V1 Saved Monitors  Monitor Id  Runs Get"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/saved-monitors/{monitor_id}/insights": {
+    "get": {
+      "tags": [
+        "saved-monitors"
+      ],
+      "summary": "Get Saved Monitor Insight",
+      "description": "Return deterministic AI Monitor Insight for one saved monitor.\n\nThis insight is based only on stored Dav AI public-data monitor history.\nIt is not medical advice, diagnosis, treatment guidance, clinical decision\nsupport, or proof of causality.",
+      "operationId": "get_saved_monitor_insight_api_v1_saved_monitors__monitor_id__insights_get",
+      "parameters": [
+        {
+          "name": "monitor_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Monitor Id"
+          }
+        },
+        {
+          "name": "authorization",
+          "in": "header",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authorization"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MonitorInsightResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/saved-monitors/{monitor_id}/run": {
+    "post": {
+      "tags": [
+        "saved-monitors"
+      ],
+      "summary": "Run Saved Monitor",
+      "description": "Run one saved monitor manually and update its latest result fields.",
+      "operationId": "run_saved_monitor_api_v1_saved_monitors__monitor_id__run_post",
+      "parameters": [
+        {
+          "name": "monitor_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Monitor Id"
+          }
+        },
+        {
+          "name": "authorization",
+          "in": "header",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authorization"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavedMonitor"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/saved-monitors/{monitor_id}": {
+    "delete": {
+      "tags": [
+        "saved-monitors"
+      ],
+      "summary": "Delete Saved Monitor",
+      "description": "Delete a saved monitor by ID.",
+      "operationId": "delete_saved_monitor_api_v1_saved_monitors__monitor_id__delete",
+      "parameters": [
+        {
+          "name": "monitor_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Monitor Id"
+          }
+        },
+        {
+          "name": "authorization",
+          "in": "header",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authorization"
+          }
+        }
+      ],
+      "responses": {
+        "204": {
+          "description": "Successful Response"
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/reports/safety-intelligence": {
+    "post": {
+      "tags": [
+        "reports"
+      ],
+      "summary": "Create Safety Intelligence Report",
+      "description": "Generate a public-data safety intelligence PDF report.\n\nThis endpoint does not persist reports or user-entered report details.",
+      "operationId": "create_safety_intelligence_report_api_v1_reports_safety_intelligence_post",
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SafetyIntelligenceReportRequest"
+            }
+          }
+        },
+        "required": true
+      },
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/regional-health/search": {
+    "get": {
+      "tags": [
+        "Regional Health Pulse"
+      ],
+      "summary": "Search Regional Health",
+      "operationId": "search_regional_health_api_v1_regional_health_search_get",
+      "parameters": [
+        {
+          "name": "region",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80,
+            "title": "Region"
+          }
+        },
+        {
+          "name": "category",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 80,
+            "title": "Category"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegionalHealthSearchResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/semantic-similarity/preview": {
+    "post": {
+      "tags": [
+        "Semantic Similarity"
+      ],
+      "summary": "Preview Semantic Similarity",
+      "operationId": "preview_semantic_similarity_api_v1_semantic_similarity_preview_post",
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SemanticSimilarityPreviewRequest"
+            }
+          }
+        },
+        "required": true
+      },
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SemanticSimilarityPreviewResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/assistant/chat": {
+    "post": {
+      "tags": [
+        "Ask DAV AI"
+      ],
+      "summary": "Chat With Assistant",
+      "operationId": "chat_with_assistant_api_v1_assistant_chat_post",
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AssistantChatRequest"
+            }
+          }
+        },
+        "required": true
+      },
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantChatResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/": {
+    "get": {
+      "summary": "Root",
+      "operationId": "root__get",
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "/health": {
+    "get": {
+      "summary": "Health Check",
+      "operationId": "health_check_health_get",
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "/ready": {
+    "get": {
+      "summary": "Readiness Check",
+      "operationId": "readiness_check_ready_get",
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      }
+    }
+  }
+}

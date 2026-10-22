@@ -1,763 +1,210 @@
-import { useEffect, useState, type ReactNode } from 'react'
-import {
-  getStoredDrug,
-  searchCatalog,
-  type CatalogDrug,
-  type Coverage,
-  type IngredientCoverage,
-} from '../api/drugCatalog'
-import '../styles/stored-drug-catalog.css'
-import AskStoredDrug from './AskStoredDrug'
-import SemaglutideRelease from './SemaglutideRelease'
+import { useEffect, useRef, useState } from 'react'
+import { getDrugEvidence, searchCatalog, type CatalogDrug, type Coverage, type DrugEvidence } from '../api/drugCatalog'
+import { generateReport } from '../api/reports'
 
-const tabs = [
-  'OVERVIEW',
-  'SAFETY',
-  'RECALLS',
-  'ADVERSE EVENTS',
-  'LABEL',
-  'TIMELINE',
-  'SOURCES',
-] as const
+const drugName = (drug: CatalogDrug) => drug.brand_names.join(', ') || drug.generic_name || 'Unnamed medication'
+const text = (value: string | null | undefined) => value || 'Not supplied'
+const number = (value: number) => value.toLocaleString()
 
-type Tab = typeof tabs[number]
-
-type SourceRecord = {
-  source: string
-  source_record_id: string
-  source_url: string | null
-  observed_at?: string | null
-}
-
-const stamp = (value: string | null | undefined) =>
-  value ? new Date(value).toLocaleString() : 'Not supplied'
-
-const officialSource = (url: string | null) =>
-  Boolean(
-    url &&
-      /^https:\/\/(?:api\.fda\.gov|www\.fda\.gov|fda\.gov|download\.open\.fda\.gov)\//.test(
-        url,
-      ),
-  )
-
-function Source({ record }: { record: SourceRecord }) {
-  return (
-    <p className="stored-source">
-      {record.source} · Source ID: {record.source_record_id}
-      <br />
-      {record.observed_at && <>Observed: {stamp(record.observed_at)}<br /></>}
-      {officialSource(record.source_url) ? (
-        <a
-          href={record.source_url || undefined}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Open official source
-        </a>
-      ) : (
-        'Official source link unavailable'
-      )}
-    </p>
-  )
+function Source({ url, children = 'Official FDA source' }: { url: string | null; children?: React.ReactNode }) {
+  let allowed = false
+  try {
+    const parsed = new URL(url || '')
+    allowed = parsed.protocol === 'https:' && ['api.fda.gov', 'www.fda.gov', 'fda.gov', 'open.fda.gov', 'download.open.fda.gov'].includes(parsed.hostname) && !parsed.username && !parsed.password && (!parsed.port || parsed.port === '443')
+  } catch { /* Missing or malformed provenance remains explicit. */ }
+  return allowed ? <a href={url!} target="_blank" rel="noopener noreferrer">{children} ↗</a> : <span>Official source link unavailable</span>
 }
 
 function CoverageNote({ coverage }: { coverage: Coverage }) {
-  return (
-    <div className="stored-coverage">
-      <p>
-        <strong>Coverage state: {coverage.state}</strong> ·{' '}
-        {coverage.reason_code}
-      </p>
-
-      <p>Scope: {coverage.scope}</p>
-
-      {coverage.measured_count !== null &&
-        coverage.measured_count !== undefined && (
-          <p>Measured count in release: {coverage.measured_count}</p>
-        )}
-
-      <p>
-        As of: {coverage.as_of_date || 'Not supplied'} · Source date:{' '}
-        {coverage.source_date || 'Not supplied'}
-      </p>
-
-      {coverage.limitations.length > 0 && (
-        <details>
-          <summary>Coverage limitations</summary>
-          <ul>
-            {coverage.limitations.map((item, index) => (
-              <li key={`${item}-${index}`}>{item}</li>
-            ))}
-          </ul>
-        </details>
-      )}
-    </div>
-  )
+  return <aside className="coverage">
+    <strong>Coverage: {coverage.state}</strong>
+    <p>{coverage.empty_message}</p>
+    <p>Source date: {text(coverage.source_date)} · As of: {text(coverage.as_of_date)}</p>
+    <details><summary>Coverage details and limitations</summary>
+      <p>{coverage.scope} · {coverage.reason_code}</p>
+      <ul>{coverage.limitations.map((v, i) => <li key={i}>{v}</li>)}</ul>
+    </details>
+  </aside>
 }
 
-function IngredientCoverageNote({
-  coverage,
-}: {
-  coverage: IngredientCoverage
-}) {
-  return (
-    <div className="stored-coverage">
-      <p>
-        <strong>Ingredient coverage: {coverage.state}</strong> ·{' '}
-        {coverage.reason_code}
-      </p>
-
-      <p>Scope: {coverage.scope}</p>
-
-      <p>
-        As of: {coverage.as_of_date || 'Not supplied'} · Source date:{' '}
-        {coverage.source_date || 'Not supplied'}
-      </p>
-
-      {coverage.limitations.length > 0 && (
-        <details>
-          <summary>Ingredient analytics limitations</summary>
-          <ul>
-            {coverage.limitations.map((item, index) => (
-              <li key={`${item}-${index}`}>{item}</li>
-            ))}
-          </ul>
-        </details>
-      )}
-    </div>
-  )
+type Remote<T> = { key: string; value?: T; error?: string }
+function useRemote<T>(key: string, load: (key: string, signal: AbortSignal) => Promise<T>) {
+  const [state, setState] = useState<Remote<T>>({ key: '' })
+  useEffect(() => {
+    if (!key) return
+    const controller = new AbortController()
+    load(key, controller.signal).then(value => {
+      if (!controller.signal.aborted) setState({ key, value })
+    }).catch(() => {
+      if (!controller.signal.aborted) setState({ key, error: 'Evidence could not be loaded. The release may be unavailable. Please try again.' })
+    })
+    return () => controller.abort()
+  }, [key, load])
+  return { value: state.key === key ? state.value : undefined, error: state.key === key ? state.error : undefined,
+    loading: !!key && (state.key !== key || (!state.value && !state.error)) }
+}
+const loadEvidence = (key: string, signal: AbortSignal) => getDrugEvidence(JSON.parse(key).id, signal)
+const loadSearch = (key: string, signal: AbortSignal) => {
+  const { q, offset } = JSON.parse(key) as { q: string; offset: number }
+  return searchCatalog(q, offset, signal)
 }
 
-function Records<T extends SourceRecord & { id: string }>({
-  section,
-  children,
-}: {
-  section: { records: T[]; coverage: Coverage }
-  children: (record: T) => ReactNode
-}) {
-  return (
-    <>
-      <CoverageNote coverage={section.coverage} />
-
-      {section.records.length === 0 ? (
-        <p>{section.coverage.empty_message}</p>
-      ) : (
-        section.records.map(record => (
-          <article className="stored-record" key={record.id}>
-            {children(record)}
-            <Source record={record} />
-          </article>
-        ))
-      )}
-    </>
-  )
-}
-
-const labelFields = [
-  'boxed_warning',
-  'warnings_and_precautions',
-  'warnings',
-  'contraindications',
-  'adverse_reactions',
-  'drug_interactions',
-] as const
-
-export default function StoredDrugCatalog({
-  initialQuery,
-}: {
-  initialQuery: string
-}) {
-  return <Catalog key={initialQuery} initialQuery={initialQuery} />
-}
-
-function Catalog({ initialQuery }: { initialQuery: string }) {
-  const [query, setQuery] = useState(initialQuery)
-  const [submitted, setSubmitted] = useState(initialQuery)
-  const [offset, setOffset] = useState(0)
-  const [searchAttempt, setSearchAttempt] = useState(0)
-  const [detailAttempt, setDetailAttempt] = useState(0)
-  const [results, setResults] = useState<CatalogDrug[]>([])
-  const [selected, setSelected] = useState<string | null>(null)
-  const [detail, setDetail] =
-    useState<Awaited<ReturnType<typeof getStoredDrug>> | null>(null)
-  const [tab, setTab] = useState<Tab>('OVERVIEW')
-  const [loading, setLoading] = useState(Boolean(initialQuery.trim()))
-  const [detailLoading, setDetailLoading] = useState(false)
+function ReportDialog({ evidence }: { evidence: DrugEvidence }) {
+  const dialog = useRef<HTMLDialogElement>(null)
+  const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  const [detailError, setDetailError] = useState('')
-
-  const releaseQuery = submitted.trim().toLowerCase() === 'semaglutide'
-
-  useEffect(() => {
-    if (!submitted.trim()) return
-
-    if (releaseQuery) {
-      setResults([])
-      setError('')
-      setLoading(false)
-      return
-    }
-
-    const controller = new AbortController()
-
-    searchCatalog(submitted, offset, controller.signal)
-      .then(data => {
-        setResults(data.results)
-      })
-      .catch(() => {
-        if (!controller.signal.aborted) {
-          setError(
-            'Frozen pharmaceutical release unavailable. No live FDA fallback was used.',
-          )
-        }
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false)
-      })
-
-    return () => controller.abort()
-  }, [submitted, offset, searchAttempt, releaseQuery])
-
-  useEffect(() => {
-    if (!selected) return
-
-    const controller = new AbortController()
-
-    getStoredDrug(selected, controller.signal)
-      .then(setDetail)
-      .catch(() => {
-        if (!controller.signal.aborted) {
-          setDetailError(
-            'Unable to load frozen drug safety information. Please try again.',
-          )
-        }
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setDetailLoading(false)
-      })
-
-    return () => controller.abort()
-  }, [selected, detailAttempt])
-
-  function changePage(nextOffset: number) {
-    setLoading(true)
-    setError('')
-    setResults([])
-    setOffset(nextOffset)
-  }
-
-  function openDrug(id: string) {
-    setDetailLoading(true)
-    setDetail(null)
-    setDetailError('')
-    setSelected(id)
-    setDetailAttempt(value => value + 1)
-    setTab('OVERVIEW')
-  }
-
-  return (
-    <section className="stored-catalog">
-      <header>
-        <p>PHARMACEUTICAL CATALOG</p>
-        <h1>Search pharmacy safety records</h1>
-        <p>
-          Search the frozen Dav AI pharmaceutical release by generic name,
-          brand, NDC, or RxCUI. Coverage varies by evidence domain.
-        </p>
-      </header>
-
-      <form
-        onSubmit={event => {
-          event.preventDefault()
-          setLoading(true)
-          setError('')
-          setSubmitted(query.trim())
-          setOffset(0)
-          setSelected(null)
-          setDetail(null)
-          setResults([])
-          setSearchAttempt(value => value + 1)
-        }}
-      >
-        <label htmlFor="stored-drug-query">
-          Search stored pharmaceutical catalog
-        </label>
-
-        <div className="stored-search">
-          <input
-            id="stored-drug-query"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            maxLength={200}
-            required
-          />
-          <button type="submit" disabled={!query.trim() || loading}>
-            Search stored data
-          </button>
-        </div>
+  const [success, setSuccess] = useState(false)
+  const abort = useRef(false)
+  useEffect(() => { abort.current = false; return () => { abort.current = true } }, [])
+  const title = `Dav AI - ${drugName(evidence.drug)} Evidence Report`
+  return <>
+    <button className="primary" onClick={() => { setError(''); setSuccess(false); dialog.current?.showModal() }}>Generate PDF Report</button>
+    <dialog ref={dialog} aria-labelledby="report-heading" onClose={() => { dialog.current?.querySelector("form")?.reset(); setError(''); setSuccess(false) }} onCancel={event => { if (busy) event.preventDefault() }}>
+      <h2 id="report-heading">Generate PDF Report</h2>
+      <p>Name and age identify this report only. They are not stored or used to estimate medical risk.</p>
+      <form onSubmit={async event => {
+        event.preventDefault()
+        const form = event.currentTarget
+        const fields = new FormData(form)
+        const name = String(fields.get('name') || '').trim()
+        if (!name) { setError('Enter your name.'); return }
+        const age = String(fields.get('age') || '')
+        setBusy(true); setError(''); setSuccess(false)
+        try {
+          const blob = await generateReport(evidence.drug.id, name, age === '' ? undefined : Number(age))
+          if (abort.current) return
+          const url = URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.href = url; link.download = 'dav-ai-evidence-report.pdf'; link.click()
+          setTimeout(() => URL.revokeObjectURL(url), 1000)
+          form.reset(); setSuccess(true)
+        } catch {
+          if (!abort.current) setError('The PDF could not be generated. Check your details, then retry. If the report limit was reached, wait one minute.')
+        } finally { if (!abort.current) setBusy(false) }
+      }}>
+        <label>Name (required)<input name="name" required maxLength={100} autoComplete="off" disabled={busy} /></label>
+        <label>Age (optional)<input name="age" type="number" min={0} max={120} step={1} autoComplete="off" disabled={busy} /></label>
+        <label>Report title<input value={title} readOnly /></label>
+        <label>Selected drug<input value={`${drugName(evidence.drug)} · ${evidence.drug.product_ndcs.join(', ')}`} readOnly /></label>
+        {error && <p role="alert">{error}</p>}
+        {success && <p role="status">Your PDF download is ready.</p>}
+        <div className="actions"><button className="primary" disabled={busy}>{busy ? 'Generating…' : 'Generate and download'}</button>
+          <button type="button" disabled={busy} onClick={() => { dialog.current?.close(); dialog.current?.querySelector('form')?.reset(); setError(''); setSuccess(false) }}>Close</button></div>
       </form>
+    </dialog>
+  </>
+}
 
-      {error && <p role="alert">{error}</p>}
-      {loading && <p role="status">Searching stored records…</p>}
-
-      {!loading &&
-        !error &&
-        submitted &&
-        !releaseQuery &&
-        results.length === 0 && (
-          <p>
-            No products in this frozen Dav AI release match the query. This is
-            not a statement about FDA coverage or product availability.
-          </p>
-        )}
-
-      {!loading && !error && releaseQuery && <SemaglutideRelease />}
-
-      {results.length > 0 && (
-        <details open={!selected}>
-          <summary>
-            {results.length} matching products on this page — choose a
-            formulation
-          </summary>
-
-          <ul className="stored-results">
-            {results.map(drug => (
-              <li key={drug.id}>
-                <button type="button" onClick={() => openDrug(drug.id)}>
-                  <strong>{drug.generic_name || 'Generic name not supplied'}</strong>{' '}
-                  — {drug.brand_names.join(', ') || 'No brand supplied'}
-                  <br />
-                  {drug.strength || 'Strength not supplied'} ·{' '}
-                  {drug.dosage_form || 'Dosage form not supplied'} ·{' '}
-                  {drug.manufacturers.join(', ') || 'Labeler not supplied'} ·
-                  NDC {drug.product_ndcs.join(', ') || 'not supplied'}
-                </button>
-              </li>
-            ))}
-          </ul>
-
-          {submitted && !loading && (
-            <div className="stored-paging">
-              <button
-                disabled={offset === 0}
-                onClick={() => changePage(Math.max(0, offset - 20))}
-              >
-                Previous results
-              </button>
-              <button
-                disabled={results.length < 20}
-                onClick={() => changePage(offset + 20)}
-              >
-                Next results
-              </button>
-            </div>
-          )}
-        </details>
-      )}
-
-      {detailLoading && (
-        <p role="status">Loading stored safety information…</p>
-      )}
-
-      {detailError && (
-        <div role="alert">
-          {detailError}{' '}
-          <button onClick={() => selected && openDrug(selected)}>
-            Retry details
-          </button>
-        </div>
-      )}
-
-      {detail && (
-        <div className="stored-detail">
-          <h2>{detail.drug.generic_name || 'Drug product'}</h2>
-
-          <p>
-            Public-source information, not medical advice. Dav AI does not
-            calculate a safety score or rank drugs by safety.
-          </p>
-
-          <div role="tablist" aria-label="Drug information">
-            {tabs.map(t => (
-              <button
-                key={t}
-                id={`stored-tab-${t.replaceAll(' ', '-')}`}
-                role="tab"
-                aria-selected={tab === t}
-                aria-controls="stored-panel"
-                onClick={() => setTab(t)}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-
-          <div
-            role="tabpanel"
-            id="stored-panel"
-            aria-labelledby={`stored-tab-${tab.replaceAll(' ', '-')}`}
-          >
-            {tab === 'OVERVIEW' && (
-              <>
-                <h3>Drug overview</h3>
-
-                <dl>
-                  {[
-                    ['Generic name', detail.drug.generic_name],
-                    ['Brands', detail.drug.brand_names.join(', ')],
-                    ['Ingredients', detail.drug.active_ingredients.join(', ')],
-                    ['Strength', detail.drug.strength],
-                    ['Dosage form', detail.drug.dosage_form],
-                    ['Routes', detail.drug.routes.join(', ')],
-                    [
-                      'Manufacturers / labelers',
-                      detail.drug.manufacturers.join(', '),
-                    ],
-                    ['Product NDCs', detail.drug.product_ndcs.join(', ')],
-                    ['Package NDCs', detail.drug.package_ndcs.join(', ')],
-                    [
-                      'Associated RxCUIs',
-                      detail.drug.rxcuis.length
-                        ? `${detail.drug.rxcuis.length} associated`
-                        : null,
-                    ],
-                    [
-                      'Combination product',
-                      detail.drug.is_combination ? 'Yes' : 'No',
-                    ],
-                    [
-                      'Identity partial',
-                      detail.drug.identity_partial ? 'Yes' : 'No',
-                    ],
-                  ].map(([label, value]) => (
-                    <div key={label}>
-                      <dt>{label}</dt>
-                      <dd>{value || 'Not supplied'}</dd>
-                    </div>
-                  ))}
-                </dl>
-
-                {detail.drug.rxcuis.length > 0 && (
-                  <details>
-                    <summary>
-                      Associated RxCUIs — not treated as one canonical product
-                      identifier
-                    </summary>
-                    <ul>
-                      {detail.drug.rxcuis.map(item => (
-                        <li key={item.value}>
-                          {item.value} · concept type{' '}
-                          {item.concept_type || 'unknown'} ·{' '}
-                          {item.has_conflict
-                            ? 'conflicted / non-unique mapping'
-                            : item.is_unique_product
-                              ? 'unique product mapping'
-                              : 'not established as unique'}
-                        </li>
-                      ))}
-                    </ul>
-                  </details>
-                )}
-
-                <Source record={detail.drug.provenance} />
-              </>
-            )}
-
-            {tab === 'SAFETY' && (
-              <>
-                <h3>FDA safety communications</h3>
-                <p>
-                  Communications shown here are ingredient-level context only.
-                  A link does not establish applicability to every product,
-                  formulation, strength, dose, or indication.
-                </p>
-
-                <Records section={detail.safety.communications}>
-                  {record => (
-                    <>
-                      <h4>{record.title || 'Title not supplied'}</h4>
-                      <p>
-                        Ingredient: {record.ingredient_name} · Published:{' '}
-                        {record.published_date || 'Not supplied'}
-                      </p>
-                      <p>{record.scope_qualifiers}</p>
-                      <details>
-                        <summary>Read stored official text</summary>
-                        <p className="stored-text">{record.body_text}</p>
-                      </details>
-                    </>
-                  )}
-                </Records>
-              </>
-            )}
-
-            {tab === 'RECALLS' && (
-              <>
-                <h3>Verified linked recalls</h3>
-                <p>
-                  Recall status is source-reported. Recall discovery and
-                  linkage coverage are partial, so an empty result is not proof
-                  that no historical recall exists.
-                </p>
-
-                <Records section={detail.safety.recalls}>
-                  {record => (
-                    <>
-                      <h4>{record.product_description}</h4>
-                      <p>
-                        {record.recall_initiation_date ||
-                          'Date not supplied'}{' '}
-                        · {record.classification || 'Unclassified'}
-                      </p>
-                      <p>{record.reason_for_recall}</p>
-                      <p>
-                        Lots: {record.lot_information || 'Not supplied'} · Lot
-                        scope: {record.lot_scope}
-                      </p>
-                      <p>
-                        Distribution:{' '}
-                        {record.distribution_pattern || 'Not supplied'}
-                      </p>
-                      <p>
-                        Reported status:{' '}
-                        {record.reported_status || 'Not supplied'} · Recalling
-                        firm: {record.recalling_firm || 'Not supplied'}
-                      </p>
-                    </>
-                  )}
-                </Records>
-              </>
-            )}
-
-            {tab === 'ADVERSE EVENTS' && (
-              <>
-                <h3>Ingredient-level adverse-event analytics</h3>
-
-                <p>{detail.safety.adverse_events.summary.limitation}</p>
-
-                <CoverageNote
-                  coverage={detail.safety.adverse_events.coverage}
-                />
-
-                <p>
-                  Ingredient components:{' '}
-                  {detail.safety.adverse_events.summary.ingredient_count} ·
-                  Analytics available:{' '}
-                  {
-                    detail.safety.adverse_events.summary
-                      .ingredients_with_analytics
-                  }{' '}
-                  · Unavailable:{' '}
-                  {
-                    detail.safety.adverse_events.summary
-                      .ingredients_without_analytics
-                  }
-                </p>
-
-                {detail.safety.adverse_events.records.map(record => (
-                  <article
-                    className="stored-record"
-                    key={record.ingredient_id}
-                  >
-                    <h4>{record.ingredient_name}</h4>
-
-                    <p>
-                      Scope: ingredient-level FAERS-derived co-reporting
-                      analytics
-                    </p>
-
-                    <IngredientCoverageNote coverage={record.coverage} />
-
-                    {!record.analytics ? (
-                      <p>
-                        Ingredient analytics are unavailable in this frozen
-                        release. This is not an observed zero and does not mean
-                        no reports exist.
-                      </p>
-                    ) : (
-                      <>
-                        <p>
-                          Window: {record.analytics.window_start} through{' '}
-                          {record.analytics.window_end}
-                        </p>
-
-                        <p>
-                          {record.analytics.report_count} deduplicated
-                          ingredient-report associations ·{' '}
-                          {record.analytics.serious_report_count} marked
-                          serious · {record.analytics.death_report_count} with
-                          a death outcome flag ·{' '}
-                          {record.analytics.hospitalization_report_count} with
-                          a hospitalization outcome flag
-                        </p>
-
-                        <p>
-                          Reaction co-report activity:{' '}
-                          {record.analytics.co_report_activity}. This is
-                          distinct from report count.
-                        </p>
-
-                        {record.top_reported_reactions.length > 0 && (
-                          <>
-                            <h5>Top co-reported reaction terms</h5>
-                            <ul>
-                              {record.top_reported_reactions.map(reaction => (
-                                <li key={reaction.reaction}>
-                                  {reaction.reaction}: {' '}
-                                  {reaction.co_report_activity} co-report
-                                  activity · {reaction.active_months} active
-                                  months
-                                </li>
-                              ))}
-                            </ul>
-                          </>
-                        )}
-                      </>
-                    )}
-                  </article>
-                ))}
-              </>
-            )}
-
-            {tab === 'LABEL' && (
-              <>
-                <h3>Latest verified product-scoped label</h3>
-
-                <Records
-                  section={{
-                    ...detail.safety.labels,
-                    records: detail.safety.labels.latest_records || [],
-                  }}
-                >
-                  {record => (
-                    <>
-                      <h4>FDA label {record.label_set_id}</h4>
-                      <p>
-                        Effective: {record.effective_date || 'Not supplied'} ·
-                        Version: {record.label_version || 'Not supplied'} ·
-                        Applicability: {record.applicability_class}
-                      </p>
-
-                      {labelFields.map(field => {
-                        const state = record.section_states[field]
-                        const text = record[field]
-
-                        return (
-                          <details key={field}>
-                            <summary>{field.replaceAll('_', ' ')}</summary>
-
-                            {text ? (
-                              <p className="stored-text">{text}</p>
-                            ) : (
-                              <p>
-                                No structured text is stored for this field.
-                                {state
-                                  ? ` State: ${state.state}; reason: ${state.reason_code}.`
-                                  : ''}{' '}
-                                This is not a clinical absence conclusion.
-                              </p>
-                            )}
-                          </details>
-                        )
-                      })}
-                    </>
-                  )}
-                </Records>
-              </>
-            )}
-
-            {tab === 'TIMELINE' && (
-              <>
-                <h3>Stored safety timeline</h3>
-
-                <p>
-                  Only dated evidence from the frozen release appears here.
-                  Missing entries do not establish absence. Ingredient-level
-                  adverse-event monthly activity is not presented as an
-                  individual clinical event.
-                </p>
-
-                <details>
-                  <summary>Timeline source coverage</summary>
-                  {(
-                    [
-                      'labels',
-                      'recalls',
-                      'adverse_events',
-                      'communications',
-                    ] as const
-                  ).map(kind => (
-                    <CoverageNote
-                      key={kind}
-                      coverage={detail.safety[kind].coverage}
-                    />
-                  ))}
-                </details>
-
-                {detail.timeline.length === 0 && (
-                  <p>No dated linked evidence is stored in this release.</p>
-                )}
-
-                <ol>
-                  {detail.timeline.map(event => (
-                    <li key={`${event.event_type}-${event.record_id}`}>
-                      <strong>
-                        {event.date} · {event.title || 'Title not supplied'}
-                      </strong>
-
-                      <p>
-                        {event.date_type.replaceAll('_', ' ')} ·{' '}
-                        {event.summary}
-                      </p>
-
-                      <p>Source: {event.source}</p>
-
-                      {officialSource(event.source_url) && (
-                        <a
-                          href={event.source_url || undefined}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Open official source
-                        </a>
-                      )}
-                    </li>
-                  ))}
-                </ol>
-              </>
-            )}
-
-            {tab === 'SOURCES' && (
-              <>
-                <h3>Sources and frozen-release coverage</h3>
-
-                <Source record={detail.drug.provenance} />
-
-                {(
-                  [
-                    'labels',
-                    'recalls',
-                    'adverse_events',
-                    'communications',
-                  ] as const
-                ).map(kind => (
-                  <section key={kind}>
-                    <h4>{kind.replaceAll('_', ' ')}</h4>
-                    <CoverageNote
-                      coverage={detail.safety[kind].coverage}
-                    />
-                  </section>
-                ))}
-              </>
-            )}
-          </div>
-
-          <AskStoredDrug
-            key={detail.drug.id}
-            drugId={detail.drug.id}
-          />
-        </div>
-      )}
+export default function StoredDrugCatalog() {
+  const [location, setLocation] = useState(() => window.location.search)
+  const [retry, setRetry] = useState(0)
+  const params = new URLSearchParams(location)
+  const query = params.get('q') || ''
+  const selected = params.get('drug') || ''
+  const offset = Math.min(100000, Math.max(0, Number(params.get('offset')) || 0))
+  useEffect(() => {
+    const pop = () => setLocation(window.location.search)
+    window.addEventListener('popstate', pop)
+    return () => window.removeEventListener('popstate', pop)
+  }, [])
+  function navigate(q: string, drug = '', nextOffset = 0) {
+    const url = new URL(window.location.href)
+    url.search = ''
+    if (q) url.searchParams.set('q', q)
+    if (drug) url.searchParams.set('drug', drug)
+    if (nextOffset) url.searchParams.set('offset', String(nextOffset))
+    window.history.pushState(null, '', url)
+    setLocation(url.search)
+  }
+  const searchKey = query ? JSON.stringify({ q: query, offset, retry }) : ''
+  const results = useRemote(searchKey, loadSearch)
+  const result = useRemote(selected ? JSON.stringify({ id: selected, retry }) : '', loadEvidence)
+  const evidence = result.value
+  return <main className="explorer" id="main-content">
+    <a className="skip-link" href="#search">Skip to drug search</a>
+    <header><a className="brand" href="/">Dav AI<span>Pharmaceutical evidence explorer</span></a><span className="badge">FDA source data</span></header>
+    <section className="intro" aria-labelledby="title"><p className="eyebrow">Drug recalls · Reported adverse events</p>
+      <h1 id="title">Explore the evidence<br />behind your medication.</h1>
+      <p>Find an exact product, review linked recall history and explore ingredient-level reporting. Download a personalized evidence report without an account.</p>
+      <form className="search" role="search" onSubmit={event => {
+        event.preventDefault()
+        const q = String(new FormData(event.currentTarget).get('q') || '').trim()
+        if (q) navigate(q)
+      }}><label htmlFor="search">Brand, generic name, active ingredient or NDC</label>
+        <div><input key={query} id="search" name="q" defaultValue={query} placeholder="e.g. Xanax, alprazolam or an NDC" required maxLength={200} /><button className="primary">Search drugs</button></div>
+      </form>
     </section>
-  )
+    {results.loading && <p role="status">Searching the stored drug catalog…</p>}
+    {results.error && <p role="alert">{results.error} <button onClick={() => setRetry(v => v + 1)}>Retry search</button></p>}
+    {results.value && <section aria-labelledby="selection-heading" className="selection">
+      <h2 id="selection-heading">Select an exact product</h2>
+      <p>Verify labeler, formulation and NDC. Similar names can refer to different products.</p>
+      {!results.value.results.length && <p>No matching products in this stored release. Try another brand, ingredient or identifier.</p>}
+      <ul className="products">{results.value.results.map(drug => <li key={drug.id}>
+        <button aria-pressed={selected === drug.id} onClick={() => navigate(query, drug.id, offset)}>
+          <strong>{drugName(drug)}</strong><span>{text(drug.generic_name)} · {text(drug.strength)} · {text(drug.dosage_form)}</span>
+          <span>Labeler: {drug.manufacturers.join(', ') || 'Not supplied'} · NDC: {drug.product_ndcs.join(', ') || 'Not supplied'}</span>
+        </button>
+      </li>)}</ul>
+      <div className="actions">{offset > 0 && <button onClick={() => navigate(query, '', offset - 20)}>Previous products</button>}
+        {results.value.results.length === 20 && <button onClick={() => navigate(query, '', offset + 20)}>More products</button>}</div>
+    </section>}
+    {result.loading && <p role="status">Loading verified product evidence…</p>}
+    {result.error && <p role="alert">{result.error} <button onClick={() => setRetry(v => v + 1)}>Retry evidence</button></p>}
+    {evidence && <>
+      <section className="identity" aria-labelledby="drug-heading">
+        <div><p className="eyebrow">Selected medication</p><h2 id="drug-heading">{drugName(evidence.drug)}</h2>
+          <p>{text(evidence.drug.generic_name)} · {text(evidence.drug.strength)} · {text(evidence.drug.dosage_form)} · {evidence.drug.routes.join(', ')}</p>
+          <p>Active ingredients: {evidence.drug.active_ingredients.join(', ') || 'Not supplied'}</p>
+          <p>NDC-listed labeler: {evidence.drug.manufacturers.join(', ') || 'Not supplied'}. Manufacturer not independently verified.</p>
+          <p>Product NDC: {evidence.drug.product_ndcs.join(', ') || 'Not supplied'} · Package NDC: {evidence.drug.package_ndcs.join(', ') || 'Not supplied'}</p>
+          {evidence.drug.identity_partial && <p>Identity is partial. Verify the exact package and formulation.</p>}
+          <Source url={evidence.drug.provenance.source_url} />
+        </div><ReportDialog key={evidence.drug.id} evidence={evidence} />
+      </section>
+      <div className="evidence-panels">
+        <section className="panel" aria-labelledby="recall-heading"><p className="eyebrow">Product-linked evidence</p><h2 id="recall-heading">Recall history</h2>
+          <CoverageNote coverage={evidence.recalls.coverage} />
+          {!evidence.recalls.records.length && <p>No verified linked records in this release. This does not establish that the drug has never been recalled.</p>}
+          {evidence.recalls.records.map(recall => <article key={recall.id} className="record">
+            <h3>{recall.recall_number}</h3><p>{recall.product_description}</p><p><strong>Reason:</strong> {recall.reason_for_recall}</p>
+            <p>Recalling firm: {text(recall.recalling_firm)} (distinct from the product labeler)</p>
+            <p>Classification: {text(recall.classification)} · Source-reported status: {text(recall.reported_status)}</p>
+            <p>Initiated: {text(recall.recall_initiation_date)} · Reported: {text(recall.report_date)}</p>
+            <p>Lots: {text(recall.lot_information)} · Lot scope: {recall.lot_scope}</p>
+            <p>Applicability: {recall.applicability_class} · Matched identifier: {text(recall.matched_value)}</p>
+            <p>Source record: {recall.source_record_id}</p><Source url={recall.source_url} />
+          </article>)}
+        </section>
+        <section className="panel" aria-labelledby="ae-heading"><p className="eyebrow">Ingredient-level reporting</p><h2 id="ae-heading">Reported adverse events</h2>
+          <CoverageNote coverage={evidence.adverse_events.coverage} />
+          <p>{evidence.adverse_events.summary.limitation}</p>
+          {evidence.adverse_events.records.map(ingredient => <article key={ingredient.ingredient_id} className="record">
+            <h3>{ingredient.ingredient_name}</h3><p>Ingredient coverage: {ingredient.coverage.state}</p>
+            {ingredient.analytics ? <>
+              <div className="counts"><p><strong>{number(ingredient.analytics.report_count)}</strong>ingredient-report associations</p>
+                <p><strong>{number(ingredient.analytics.serious_report_count)}</strong>reports marked serious</p></div>
+              <p>Reporting period: {ingredient.analytics.window_start} to {ingredient.analytics.window_end}</p>
+              <p>Count unit: {ingredient.analytics.count_unit} · Date basis: {ingredient.analytics.date_basis}</p>
+              <h4>Top reported reactions</h4><p>Co-report activity counts are not unique patient counts.</p>
+              <table><thead><tr><th scope="col">Reaction</th><th scope="col">Co-report activity</th></tr></thead>
+                <tbody>{ingredient.top_reported_reactions.map(reaction => <tr key={reaction.rank}><td>{reaction.reaction}</td><td>{number(reaction.co_report_activity)}</td></tr>)}</tbody></table>
+              <details><summary>Monthly reporting trends</summary>
+                {ingredient.monthly.length ? <table><thead><tr><th scope="col">Month</th><th scope="col">Reports</th><th scope="col">Serious</th></tr></thead>
+                  <tbody>{ingredient.monthly.map(month => <tr key={month.period}><td>{month.period.slice(0, 7)}</td><td>{number(month.report_count)}</td><td>{number(month.serious_report_count)}</td></tr>)}</tbody></table> : <p>No monthly data available.</p>}
+              </details>
+              <ul>{ingredient.analytics.limitations.map((v, i) => <li key={i}>{v}</li>)}</ul>
+            </> : <p>No stored analytics available for this ingredient. Missing data is not a zero count.</p>}
+          </article>)}
+        </section>
+      </div>
+      <section className="sources" aria-labelledby="source-heading"><h2 id="source-heading">Sources and data freshness</h2>
+        <p>Release: {evidence.release.release_id}</p><p>Built: {evidence.release.build_time_utc} · NDC observed: {evidence.release.ndc_observation_date}</p>
+        <p>AE reporting window: {evidence.release.window_start} to {evidence.release.window_end}</p>
+        <ul>{evidence.release.sources.map(source => <li key={source.source_id}>{source.source_name} · Source vintage: {source.export_date || source.observed_at || 'Not supplied'} · <Source url={source.source_url} /></li>)}</ul>
+        <ul>{evidence.limitations.map((v, i) => <li key={i}>{v}</li>)}</ul>
+      </section>
+    </>}
+    <footer>Public FDA source evidence. Not medical advice. Reporting counts do not establish causation or individual risk.</footer>
+  </main>
 }

@@ -10,13 +10,13 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:e2e:release": "playwright test --config=playwright.pharma.config.ts"
   },
   "dependencies": {
-    "axios": "^1.15.2",
+    "axios": "^1.20.0",
     "react": "^19.2.5",
-    "react-dom": "^19.2.5",
-    "tesseract.js": "^7.0.0"
+    "react-dom": "^19.2.5"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -35,7 +35,7 @@
     "jsdom": "^29.1.1",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
-    "vite": "^8.0.10",
-    "vitest": "^4.1.5"
+    "vite": "^8.3.5",
+    "vitest": "^4.1.12"
   }
 }

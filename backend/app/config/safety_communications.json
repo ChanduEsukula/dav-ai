@@ -1,0 +1,19 @@
+{
+  "communications": [
+    {
+      "url": "https://www.fda.gov/drugs/drug-safety-communications/fda-requests-removal-suicidal-behavior-and-ideation-warning-glucagon-peptide-1-receptor-agonist-glp",
+      "names": ["semaglutide", "tirzepatide"],
+      "scope": "generic"
+    },
+    {
+      "url": "https://www.fda.gov/safety/medical-product-safety-information/neurontin-gralise-horizant-gabapentin-and-lyrica-lyrica-cr-pregabalin-drug-safety-communication",
+      "names": ["gabapentin"],
+      "scope": "generic"
+    },
+    {
+      "url": "https://www.fda.gov/drugs/drug-safety-communications/fda-requires-boxed-warning-about-serious-mental-health-side-effects-asthma-and-allergy-drug",
+      "names": ["montelukast", "montelukast sodium", "Singulair"],
+      "scope": "generic"
+    }
+  ]
+}

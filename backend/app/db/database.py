@@ -8,6 +8,7 @@ BACKEND_ROOT = Path(__file__).resolve().parents[2]
 ENV_PATH = BACKEND_ROOT / ".env"
 MEMORY_FALLBACK_WARNING = "Memory fallback is demo-only and not durable."
 DEPLOYED_ENVIRONMENT_VALUES = {"prod", "production", "staging", "preview"}
+LOCAL_ENVIRONMENT_VALUES = {"local", "dev", "development", "test", "testing"}
 PersistenceMode = Literal["database", "memory_fallback"]
 
 
@@ -37,10 +38,12 @@ def is_deployed_environment() -> bool:
     """Return True when runtime config should fail closed instead of demo-fallback."""
 
     for name in ("DAVAI_ENV", "APP_ENV", "ENVIRONMENT", "PYTHON_ENV"):
-        if os.getenv(name, "").strip().lower() in DEPLOYED_ENVIRONMENT_VALUES:
+        # Explicit unknown/empty modes must never silently select local serving.
+        # Any hosted marker wins over another variable declaring local mode.
+        if name in os.environ and os.environ[name].strip().lower() not in LOCAL_ENVIRONMENT_VALUES:
             return True
 
-    return os.getenv("RENDER", "").strip().lower() == "true"
+    return "RENDER" in os.environ and os.environ["RENDER"].strip().lower() != "false"
 
 
 def get_persistence_visibility(database_configured: bool | None = None) -> PersistenceVisibility:

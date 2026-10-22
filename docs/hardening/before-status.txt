@@ -1,0 +1,415 @@
+## chore/stabilize-davai-v3
+ M .dockerignore
+ M .github/workflows/ci.yml
+ M README.md
+ M backend/.env.example
+ M backend/Dockerfile
+ D backend/app/analytics/monitor_insights.py
+ D backend/app/analytics/saved_monitor_review_priority.py
+ D backend/app/audit/audit_event.py
+ D backend/app/db/audit_repository.py
+ D backend/app/db/documentation_chunks_repository.py
+ M backend/app/db/pharma/release_connection.py
+ M backend/app/db/pharma/release_repository.py
+ D backend/app/db/saved_monitor_repository.py
+ D backend/app/db/scheduler_lock_repository.py
+ D backend/app/db/source_pull_repository.py
+ D backend/app/db/user_repository.py
+ D backend/app/jobs/ingest_documentation_chunks.py
+ D backend/app/jobs/run_due_saved_monitors.py
+ M backend/app/main.py
+ D backend/app/nlp/semantic_similarity_preview.py
+ D backend/app/routes/assistant.py
+ D backend/app/routes/audit_events.py
+ D backend/app/routes/auth.py
+ D backend/app/routes/cosmetic_events.py
+ D backend/app/routes/docs.py
+ D backend/app/routes/drug_ask.py
+ D backend/app/routes/drug_events.py
+ D backend/app/routes/everyday_safety.py
+ D backend/app/routes/pharma_release.py
+ D backend/app/routes/profile.py
+ D backend/app/routes/real_world_safety.py
+ D backend/app/routes/recalls.py
+ D backend/app/routes/regional_health.py
+ M backend/app/routes/reports.py
+ D backend/app/routes/saved_monitors.py
+ D backend/app/routes/semantic_similarity.py
+ D backend/app/routes/sources.py
+ D backend/app/routes/system.py
+ D backend/app/schemas/assistant.py
+ D backend/app/schemas/audit.py
+ D backend/app/schemas/audit_history.py
+ D backend/app/schemas/auth.py
+ D backend/app/schemas/cosmetic_events.py
+ D backend/app/schemas/docs.py
+ D backend/app/schemas/drug_events.py
+ D backend/app/schemas/everyday_safety.py
+ D backend/app/schemas/monitor_insights.py
+ D backend/app/schemas/profile.py
+ D backend/app/schemas/real_world_safety.py
+ D backend/app/schemas/recalls.py
+ D backend/app/schemas/regional_health.py
+ M backend/app/schemas/reports.py
+ D backend/app/schemas/saved_monitors.py
+ D backend/app/schemas/semantic_similarity.py
+ D backend/app/schemas/source_pulls.py
+ D backend/app/schemas/sources.py
+ D backend/app/schemas/system.py
+ D backend/app/scoring/drug_signal_score.py
+ D backend/app/scoring/reaction_classifier.py
+ D backend/app/scoring/recall_score.py
+ D backend/app/scoring/regional_health_signal.py
+ D backend/app/scoring/source_freshness.py
+ D backend/app/services/assistant_guardrails.py
+ D backend/app/services/assistant_service.py
+ D backend/app/services/auth_context.py
+ D backend/app/services/auth_passwords.py
+ D backend/app/services/auth_tokens.py
+ D backend/app/services/drug_signal_semantic_candidates.py
+ D backend/app/services/foodradar_query_normalization.py
+ D backend/app/services/foodradar_search_intent.py
+ D backend/app/services/llm_provider.py
+ D backend/app/services/official_public_notice_search.py
+ D backend/app/services/openfda_client.py
+ D backend/app/services/openfda_cosmetic_event_client.py
+ D backend/app/services/openfda_drug_event_client.py
+ D backend/app/services/openfda_food_enforcement_client.py
+ D backend/app/services/pharma/ask.py
+ D backend/app/services/query_normalization.py
+ D backend/app/services/recall_semantic_candidates.py
+ M backend/app/services/report_pdf.py
+ D backend/app/services/safety_source_adapters/base.py
+ D backend/app/services/safety_source_adapters/cdc_foodborne_outbreaks.py
+ D backend/app/services/safety_source_adapters/cpsc.py
+ D backend/app/services/safety_source_adapters/dailymed.py
+ D backend/app/services/safety_source_adapters/fda_public.py
+ D backend/app/services/safety_source_adapters/fda_safety_communications.py
+ D backend/app/services/safety_source_adapters/nhtsa.py
+ D backend/app/services/safety_source_adapters/openfda_device.py
+ D backend/app/services/safety_source_adapters/openfda_device_event.py
+ D backend/app/services/safety_source_adapters/openfda_drug.py
+ D backend/app/services/safety_source_adapters/openfda_drug_label.py
+ D backend/app/services/safety_source_adapters/openfda_food.py
+ D backend/app/services/safety_source_adapters/openfda_ndc.py
+ D backend/app/services/safety_source_adapters/openfda_udi.py
+ D backend/app/services/safety_source_adapters/rxnorm.py
+ D backend/app/services/safety_source_adapters/usda_fsis.py
+ D backend/app/services/safety_source_adapters/vaers.py
+ D backend/app/services/scheduled_monitor_refresh.py
+ D backend/app/services/search_workflows/cosmetic_signal_search.py
+ D backend/app/services/search_workflows/drug_signal_search.py
+ D backend/app/services/search_workflows/everyday_safety_search.py
+ D backend/app/services/search_workflows/identifier_check.py
+ D backend/app/services/search_workflows/product_category_classifier.py
+ D backend/app/services/search_workflows/real_world_query_understanding.py
+ D backend/app/services/search_workflows/real_world_safety_search.py
+ D backend/app/services/search_workflows/real_world_source_planner.py
+ D backend/app/services/search_workflows/recall_search.py
+ D backend/app/services/search_workflows/regional_health_search.py
+ D backend/app/services/search_workflows/safety_intelligence_summary.py
+ D backend/app/services/search_workflows/source_freshness.py
+ D backend/app/services/search_workflows/source_health_contract.py
+ D backend/app/services/semantic_similarity_service.py
+ D backend/app/services/static_docs_chunking.py
+ D backend/app/services/static_docs_embeddings.py
+ D backend/app/services/static_docs_ingestion.py
+ D backend/app/services/static_docs_retrieval.py
+ D backend/app/services/static_docs_semantic_preview.py
+ D backend/app/services/usda_fsis_recall_client.py
+ D backend/app/sources/registry.py
+ D backend/app/trends/drug_signal_trend.py
+ M backend/db/schema.sql
+ M backend/migrations/versions/20260608_0009_seed_everyday_safety_sources.py
+ M backend/requirements.txt
+ M backend/tests/pharma_release/test_phase5a_runtime_ask.py
+ D backend/tests/test_assistant_route.py
+ D backend/tests/test_audit_event.py
+ D backend/tests/test_audit_events_route.py
+ D backend/tests/test_audit_repository.py
+ D backend/tests/test_auth_profile_route.py
+ D backend/tests/test_auth_tokens.py
+ D backend/tests/test_cosmetic_events_route.py
+ D backend/tests/test_documentation_chunks_migration.py
+ D backend/tests/test_drug_events_route.py
+ D backend/tests/test_drug_signal_score.py
+ D backend/tests/test_drug_signal_semantic_candidates.py
+ D backend/tests/test_drug_signal_trend.py
+ D backend/tests/test_everyday_safety_route.py
+ D backend/tests/test_fda_public_notice_adapter.py
+ D backend/tests/test_foodradar_search_intent.py
+ D backend/tests/test_monitor_insights.py
+ D backend/tests/test_nhtsa_recall_adapter.py
+ D backend/tests/test_nhtsa_vehicle_query_parser.py
+ D backend/tests/test_openfda_client.py
+ D backend/tests/test_openfda_drug_event_client.py
+ D backend/tests/test_product_category_classifier.py
+ D backend/tests/test_query_normalization.py
+ D backend/tests/test_reaction_classifier.py
+ D backend/tests/test_real_world_query_understanding.py
+ D backend/tests/test_real_world_safety_route.py
+ D backend/tests/test_real_world_source_planner.py
+ D backend/tests/test_recall_score.py
+ D backend/tests/test_recall_semantic_candidates.py
+ D backend/tests/test_recalls_route.py
+ D backend/tests/test_refresh_real_world_safety_snapshots_cli.py
+ D backend/tests/test_regional_health_route.py
+ D backend/tests/test_regional_health_signal.py
+ D backend/tests/test_registry_schema_alignment.py
+ D backend/tests/test_reports_route.py
+ M backend/tests/test_request_logging_middleware.py
+ D backend/tests/test_run_due_saved_monitors_job.py
+ D backend/tests/test_saved_monitor_repository_persistence.py
+ D backend/tests/test_saved_monitor_review_priority.py
+ D backend/tests/test_saved_monitors_route.py
+ D backend/tests/test_scheduled_monitor_refresh.py
+ D backend/tests/test_scheduler_lock_repository.py
+ D backend/tests/test_semantic_similarity_preview.py
+ D backend/tests/test_semantic_similarity_route.py
+ D backend/tests/test_semantic_similarity_service.py
+ D backend/tests/test_source_freshness.py
+ D backend/tests/test_source_health_contract.py
+ D backend/tests/test_source_pull_repository.py
+ D backend/tests/test_sources_route.py
+ D backend/tests/test_static_docs_chunking.py
+ D backend/tests/test_static_docs_embeddings.py
+ D backend/tests/test_static_docs_ingestion.py
+ D backend/tests/test_static_docs_route.py
+ D backend/tests/test_static_docs_semantic_preview.py
+ D backend/tests/test_system_sources_consistency.py
+ D backend/tests/test_system_status_route.py
+ D backend/tests/test_user_repository_persistence.py
+ M docker-compose.yml
+ M docs/README.md
+ M docs/architecture/VECTOR_DB_RAG_PLAN.md
+ M frontend/Dockerfile
+ M frontend/README.md
+ M frontend/e2e/demo-smoke.spec.ts
+ M frontend/package-lock.json
+ M frontend/package.json
+ M frontend/playwright.config.ts
+ D frontend/public/icons.svg
+ M frontend/public/manifest.webmanifest
+ M frontend/public/sw.js
+ M frontend/src/App.css
+ M frontend/src/App.test.tsx
+ M frontend/src/App.tsx
+ D frontend/src/api/assistant.ts
+ D frontend/src/api/auditEvents.ts
+ D frontend/src/api/auth.ts
+ M frontend/src/api/client.ts
+ D frontend/src/api/cosmeticEvents.ts
+ D frontend/src/api/docs.ts
+ M frontend/src/api/drugCatalog.ts
+ D frontend/src/api/drugEvents.ts
+ D frontend/src/api/everydaySafety.ts
+ D frontend/src/api/profile.ts
+ D frontend/src/api/realWorldSafety.ts
+ D frontend/src/api/recalls.ts
+ D frontend/src/api/regionalHealth.ts
+ M frontend/src/api/reports.ts
+ D frontend/src/api/savedMonitors.ts
+ D frontend/src/api/sources.ts
+ D frontend/src/api/systemStatus.ts
+ D frontend/src/assets/hero.png
+ D frontend/src/assets/react.svg
+ D frontend/src/assets/vite.svg
+ D frontend/src/auth/AuthContext.test.tsx
+ D frontend/src/auth/AuthContext.tsx
+ D frontend/src/components/AboutPage.tsx
+ D frontend/src/components/AskDavAIChat.test.tsx
+ D frontend/src/components/AskDavAIChat.tsx
+ D frontend/src/components/AskStoredDrug.test.tsx
+ D frontend/src/components/AskStoredDrug.tsx
+ D frontend/src/components/AuditHistoryPage.test.tsx
+ D frontend/src/components/AuditHistoryPage.tsx
+ D frontend/src/components/AuditPanel.tsx
+ D frontend/src/components/CosmeticSafetyPage.test.tsx
+ D frontend/src/components/CosmeticSafetyPage.tsx
+ D frontend/src/components/CosmeticSignal.test.tsx
+ D frontend/src/components/CosmeticSignal.tsx
+ D frontend/src/components/DataSourcesPage.tsx
+ D frontend/src/components/DrugSignal.test.tsx
+ D frontend/src/components/DrugSignal.tsx
+ D frontend/src/components/FaqPage.tsx
+ D frontend/src/components/FloatingSafetyReportIntake.test.tsx
+ D frontend/src/components/FloatingSafetyReportIntake.tsx
+ D frontend/src/components/FoodRadar.test.tsx
+ D frontend/src/components/FoodRadar.tsx
+ D frontend/src/components/FoodSafetyPage.test.tsx
+ D frontend/src/components/FoodSafetyPage.tsx
+ D frontend/src/components/HelpDocsSearch.test.tsx
+ D frontend/src/components/HelpDocsSearch.tsx
+ D frontend/src/components/Hero.tsx
+ D frontend/src/components/InfoPage.tsx
+ D frontend/src/components/LoginPage.test.tsx
+ D frontend/src/components/LoginPage.tsx
+ D frontend/src/components/Navbar.tsx
+ D frontend/src/components/OnboardingPage.test.tsx
+ D frontend/src/components/OnboardingPage.tsx
+ D frontend/src/components/OperationalOverview.tsx
+ D frontend/src/components/PharmacyCatalogPage.tsx
+ D frontend/src/components/PharmacySafetyPage.test.tsx
+ D frontend/src/components/PharmacySafetyPage.tsx
+ D frontend/src/components/ProductScanPage.test.tsx
+ D frontend/src/components/ProductScanPage.tsx
+ D frontend/src/components/ProductScanTeaser.tsx
+ D frontend/src/components/ProfilePage.test.tsx
+ D frontend/src/components/ProfilePage.tsx
+ D frontend/src/components/PublicSafetySearchPage.test.tsx
+ D frontend/src/components/PublicSafetySearchPage.tsx
+ D frontend/src/components/QueryNormalizationNotice.tsx
+ D frontend/src/components/QueryTypeahead.test.tsx
+ D frontend/src/components/QueryTypeahead.tsx
+ D frontend/src/components/RecallRadar.test.tsx
+ D frontend/src/components/RecallRadar.tsx
+ D frontend/src/components/RegionalHealthPulse.test.tsx
+ D frontend/src/components/RegionalHealthPulse.tsx
+ D frontend/src/components/SafeInsightCards.tsx
+ D frontend/src/components/SafetyBriefingPanel.tsx
+ D frontend/src/components/SafetyWorkspace.tsx
+ D frontend/src/components/SavedMonitorsPage.css
+ D frontend/src/components/SavedMonitorsPage.test.tsx
+ D frontend/src/components/SavedMonitorsPage.tsx
+ D frontend/src/components/SemaglutideRelease.tsx
+ D frontend/src/components/Signals.tsx
+ D frontend/src/components/SignupPage.test.tsx
+ D frontend/src/components/SignupPage.tsx
+ D frontend/src/components/SourceDetailsDisclosure.tsx
+ D frontend/src/components/SourceIntegrationBadge.tsx
+ M frontend/src/components/StoredDrugCatalog.test.tsx
+ M frontend/src/components/StoredDrugCatalog.tsx
+ D frontend/src/components/SystemStatusPage.test.tsx
+ D frontend/src/components/SystemStatusPage.tsx
+ D frontend/src/components/UniversalSafetySearch.test.tsx
+ D frontend/src/components/UniversalSafetySearch.tsx
+ D frontend/src/data/faqs.ts
+ D frontend/src/data/infoPages.ts
+ D frontend/src/data/signals.ts
+ M frontend/src/index.css
+ M frontend/src/main.tsx
+ D frontend/src/styles/about.css
+ D frontend/src/styles/animations.css
+ D frontend/src/styles/ask-dav-ai.css
+ D frontend/src/styles/audit-history.css
+ D frontend/src/styles/auth.css
+ D frontend/src/styles/briefing.css
+ D frontend/src/styles/cosmeticsignal.css
+ D frontend/src/styles/datasources.css
+ D frontend/src/styles/drugsignal.css
+ D frontend/src/styles/faq.css
+ D frontend/src/styles/floating-safety-report-intake.css
+ D frontend/src/styles/foodradar.css
+ D frontend/src/styles/hero.css
+ D frontend/src/styles/navbar.css
+ D frontend/src/styles/operational-overview.css
+ D frontend/src/styles/pages.css
+ D frontend/src/styles/productscan.css
+ D frontend/src/styles/public-safety-search.css
+ D frontend/src/styles/query-typeahead.css
+ D frontend/src/styles/recallradar.css
+ D frontend/src/styles/safe-insight-cards.css
+ D frontend/src/styles/safety-area-pages.css
+ D frontend/src/styles/safety-workspace.css
+ D frontend/src/styles/search-glass.css
+ D frontend/src/styles/signals.css
+ D frontend/src/styles/source-details-disclosure.css
+ D frontend/src/styles/source-integration-badge.css
+ D frontend/src/styles/stored-drug-catalog.css
+ D frontend/src/styles/universal-safety-search.css
+ D frontend/src/types/briefing.ts
+ D frontend/src/types/navigation.ts
+ D frontend/src/utils/briefingGenerator.test.ts
+ D frontend/src/utils/briefingGenerator.ts
+ D frontend/src/utils/productScanExtraction.test.ts
+ D frontend/src/utils/productScanExtraction.ts
+ D frontend/src/utils/productScanImageQuality.test.ts
+ D frontend/src/utils/productScanImageQuality.ts
+ D frontend/src/utils/productScanOcr.ts
+ D frontend/src/utils/queryNormalization.test.ts
+ D frontend/src/utils/queryNormalization.ts
+ D frontend/src/utils/recallFormatters.ts
+ D frontend/src/utils/safetyQueryUrl.test.ts
+ D frontend/src/utils/safetyQueryUrl.ts
+ D frontend/src/utils/safetyRouteClassifier.test.ts
+ D frontend/src/utils/safetyRouteClassifier.ts
+ D frontend/src/utils/sourceIntegrationMode.test.ts
+ D frontend/src/utils/sourceIntegrationMode.ts
+ M scripts/verify_local_setup.sh
+?? backend/app/config/
+?? backend/app/db/pharma/connection.py
+?? backend/app/db/pharma/drug_repository.py
+?? backend/app/db/pharma/ingestion_run_repository.py
+?? backend/app/db/pharma/safety_repository.py
+?? backend/app/jobs/analyze_research.py
+?? backend/app/jobs/audit_research.py
+?? backend/app/jobs/checkpoint_drug_join.py
+?? backend/app/jobs/ingest_label_bulk.py
+?? backend/app/jobs/ingest_pharmaceutical_data.py
+?? backend/app/jobs/ingest_pharmaceutical_safety.py
+?? backend/app/jobs/ingest_research.py
+?? backend/app/jobs/research_status.py
+?? backend/app/jobs/verify_research_replay.py
+?? backend/app/research/
+?? backend/app/routes/evidence.py
+?? backend/app/services/pharma/bulk_labels.py
+?? backend/app/services/pharma/communications_ingestion.py
+?? backend/app/services/pharma/evidence.py
+?? backend/app/services/pharma/ndc_ingestion.py
+?? backend/app/services/pharma/normalization.py
+?? backend/app/services/pharma/safety_ingestion.py
+?? backend/app/services/pharma/safety_matching.py
+?? backend/app/services/pharma/safety_records.py
+?? backend/app/services/report_limits.py
+?? backend/migrations/versions/20260925_0016_create_pharmaceutical_mvp.py
+?? backend/migrations/versions/20260925_0017_seed_drug_communications.py
+?? backend/migrations/versions/20260926_0018_pharma_bulk_checkpoints.py
+?? backend/requirements-dev.txt
+?? backend/requirements-offline.txt
+?? backend/requirements-research.txt
+?? backend/tests/pharma/
+?? backend/tests/pharma_release/test_consumer_label_admission.py
+?? backend/tests/pharma_release/test_explorer_reports.py
+?? backend/tests/pharma_release/test_phase1.py
+?? backend/tests/pharma_release/test_phase2.py
+?? backend/tests/pharma_release/test_phase3_labels.py
+?? backend/tests/pharma_release/test_phase3b_recalls.py
+?? backend/tests/pharma_release/test_phase4a_ae.py
+?? backend/tests/pharma_release/test_phase4b_communications.py
+?? backend/tests/research/
+?? data/cohorts/
+?? data/derived/
+?? deliverables/
+?? docs/DEPLOYMENT_PLAN.md
+?? docs/architecture/PHARMACEUTICAL_EXPLORER.md
+?? docs/data/
+?? docs/evidence/
+?? docs/finalization/
+?? docs/hardening/
+?? docs/ml/
+?? docs/pharma_release_phase3b_recalls.md
+?? docs/pharma_release_phase4a_ae.md
+?? docs/pharma_release_phase4b_communications.md
+?? docs/pharma_release_v1_contract.md
+?? docs/pharmaceutical_week1.md
+?? docs/pharmaceutical_week2.md
+?? docs/pharmaceutical_week3.md
+?? docs/simplification/
+?? frontend/e2e/pharma-offline.spec.ts
+?? frontend/nginx.conf
+?? frontend/playwright.pharma.config.ts
+?? frontend/src/test/evidence.json
+?? scripts/audit_fda_native_continuity.py
+?? scripts/audit_regulatory_applicability.py
+?? scripts/build_dav_ai_100_cohort.py
+?? scripts/database_health_report.py
+?? scripts/drug_safety_snapshot.py
+?? scripts/measure_full_research_quality.py
+?? scripts/pharma_offline_server.py
+?? scripts/pharma_release/
+?? scripts/regulatory_applicability.py
+?? scripts/run_full_research_analysis.py
+?? scripts/verify_fda_historical_capture.py
+?? scripts/verify_pharma_failed_refresh.py
+?? scripts/verify_research_temporal_gates.py
+?? scripts/verify_runtime_artifact.py

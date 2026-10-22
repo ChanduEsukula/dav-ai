@@ -1,0 +1,38 @@
+
+> frontend@0.0.0 test:e2e:release
+> playwright test --config=playwright.pharma.config.ts
+
+[2m[WebServer] [22m(node:49192) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:49212) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:49212) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › e2e/pharma-offline.spec.ts:3:1 › real frozen release search-to-PDF works with outbound network disabled (188ms)
+
+
+  1) [chromium] › e2e/pharma-offline.spec.ts:3:1 › real frozen release search-to-PDF works with outbound network disabled
+
+    Error: Required artifact is unavailable or unauthorized; release journey is BLOCKED
+
+    [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32m200[39m
+    Received: [31m503[39m
+
+      4 |   expect(process.env.PHARMA_OFFLINE_SMOKE, 'Required release journey must be explicitly enabled; it cannot skip').toBe('1')
+      5 |   const api = process.env.PHARMA_API_URL || 'http://127.0.0.1:18000'
+    > 6 |   expect((await request.get(`${api}/ready`)).status(), 'Required artifact is unavailable or unauthorized; release journey is BLOCKED').toBe(200)
+        |                                                                                                                                        ^
+      7 |   const results = await request.get(`${api}/api/drugs/search?q=Xanax`)
+      8 |   expect(results.ok()).toBe(true)
+      9 |   const products = (await results.json()).results
+        at /private/tmp/davai-rc-clean/frontend/e2e/pharma-offline.spec.ts:6:136
+
+    Error Context: test-results/pharma-offline-real-frozen-2cade-h-outbound-network-disabled-chromium/error-context.md
+
+  1 failed
+    [chromium] › e2e/pharma-offline.spec.ts:3:1 › real frozen release search-to-PDF works with outbound network disabled

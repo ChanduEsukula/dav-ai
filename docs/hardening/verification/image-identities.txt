@@ -1,0 +1,2 @@
+[davai-release-candidate-backend:latest] sha256:868d16d64ccb25f9109d79230c089f40773ce57550c52d3d3ba9551e800f3b8f arm64
+[davai-release-candidate-frontend:latest] sha256:7ffc247e1c4e331f7d2309887ad83c51a98a6edcb11e5f536114f5f8626e3a76 arm64
