@@ -1,36 +1,17 @@
-from __future__ import annotations
-
-from typing import Literal
-
-from pydantic import BaseModel, Field
+"""Ephemeral report identifiers; no accounts or persistence."""
+import unicodedata
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, field_validator
 
 
-ReportRole = Literal[
-    "consumer",
-    "pharmacy",
-    "clinic",
-    "public_health_analyst",
-    "student_researcher",
-]
+class PharmaceuticalReportRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    product_id: str = Field(min_length=1, max_length=512)
+    name: str = Field(min_length=1, max_length=100)
+    age: StrictInt | None = Field(default=None, ge=0, le=120)
 
-ReportModule = Literal[
-    "recallradar",
-    "drugsignal",
-    "foodradar",
-    "cosmeticsignal",
-    "both",
-]
-
-
-class SafetyIntelligenceReportRequest(BaseModel):
-    """Request body for a public-data safety intelligence PDF report.
-
-    This schema intentionally avoids PHI fields.
-    """
-
-    prepared_for: str = Field(min_length=2, max_length=120)
-    organization: str | None = Field(default=None, max_length=160)
-    role: ReportRole
-    query: str = Field(min_length=2, max_length=120)
-    module: ReportModule
-    purpose: str | None = Field(default=None, max_length=500)
+    @field_validator("name", "product_id")
+    @classmethod
+    def plain_text(cls, value):
+        if not value.strip() or any(unicodedata.category(c).startswith("C") for c in value):
+            raise ValueError("Use nonblank text without control characters")
+        return value

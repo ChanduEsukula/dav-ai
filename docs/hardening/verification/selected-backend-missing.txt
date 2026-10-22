@@ -1,0 +1,46 @@
+EEEE                                                                     [100%]
+==================================== ERRORS ====================================
+_____________ ERROR at setup of test_zepbound_exact_label_evidence _____________
+
+    @pytest.fixture(scope="module")
+    def release():
+        if not Path(release_database_path()).is_file():
+>           pytest.fail("Required release artifact is not mounted; use -m 'not release_artifact' for source-only checks")
+E           Failed: Required release artifact is not mounted; use -m 'not release_artifact' for source-only checks
+
+backend/tests/pharma_release/test_phase5a_runtime_ask.py:31: Failed
+_________ ERROR at setup of test_missing_recall_and_ae_remain_unknown __________
+
+    @pytest.fixture(scope="module")
+    def release():
+        if not Path(release_database_path()).is_file():
+>           pytest.fail("Required release artifact is not mounted; use -m 'not release_artifact' for source-only checks")
+E           Failed: Required release artifact is not mounted; use -m 'not release_artifact' for source-only checks
+
+backend/tests/pharma_release/test_phase5a_runtime_ask.py:31: Failed
+______ ERROR at setup of test_semaglutide_ingredient_analytics_and_months ______
+
+    @pytest.fixture(scope="module")
+    def release():
+        if not Path(release_database_path()).is_file():
+>           pytest.fail("Required release artifact is not mounted; use -m 'not release_artifact' for source-only checks")
+E           Failed: Required release artifact is not mounted; use -m 'not release_artifact' for source-only checks
+
+backend/tests/pharma_release/test_phase5a_runtime_ask.py:31: Failed
+________ ERROR at setup of test_verified_recall_keeps_partial_coverage _________
+
+    @pytest.fixture(scope="module")
+    def release():
+        if not Path(release_database_path()).is_file():
+>           pytest.fail("Required release artifact is not mounted; use -m 'not release_artifact' for source-only checks")
+E           Failed: Required release artifact is not mounted; use -m 'not release_artifact' for source-only checks
+
+backend/tests/pharma_release/test_phase5a_runtime_ask.py:31: Failed
+---------------------- Pharmaceutical release integration ----------------------
+Optional run only: 0/4 release checks passed. NOT a required integration gate.
+=========================== short test summary info ============================
+ERROR backend/tests/pharma_release/test_phase5a_runtime_ask.py::test_zepbound_exact_label_evidence
+ERROR backend/tests/pharma_release/test_phase5a_runtime_ask.py::test_missing_recall_and_ae_remain_unknown
+ERROR backend/tests/pharma_release/test_phase5a_runtime_ask.py::test_semaglutide_ingredient_analytics_and_months
+ERROR backend/tests/pharma_release/test_phase5a_runtime_ask.py::test_verified_recall_keeps_partial_coverage
+4 errors in 0.02s

@@ -1,0 +1,3 @@
+# Set explicitly for config validation. Never commit an actual operator environment file.
+DAV_AI_STAGING_ARTIFACT_ROOT=/srv/davai-artifacts
+DAV_AI_STAGING_ORIGIN=https://private-staging.example.invalid

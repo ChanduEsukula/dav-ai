@@ -1,0 +1,345 @@
+{
+  "drug": {
+    "id": "product:[\"openfda_ndc_directory\",\"0169-1704_6834044a-22f1-4f35-b846-b3448ee84c16\"]",
+    "product_id": "product:[\"openfda_ndc_directory\",\"0169-1704_6834044a-22f1-4f35-b846-b3448ee84c16\"]",
+    "generic_name": "oral semaglutide",
+    "brand_names": [
+      "OZEMPIC"
+    ],
+    "active_ingredients": [
+      "semaglutide"
+    ],
+    "ingredient_ids": [
+      "ingredient:aceb6dacee359207f1939f8b"
+    ],
+    "strength": "4 mg/1",
+    "dosage_form": "TABLET",
+    "routes": [
+      "ORAL"
+    ],
+    "manufacturers": [
+      "Novo Nordisk Pharmaceutical Industries, LP"
+    ],
+    "product_ndcs": [
+      "0169-1704"
+    ],
+    "package_ndcs": [
+      "0169-1704-30"
+    ],
+    "rxcui": null,
+    "rxcuis": [
+      {
+        "value": "2200644",
+        "concept_type": "UNKNOWN",
+        "is_unique_product": false,
+        "has_conflict": true
+      },
+      {
+        "value": "2200650",
+        "concept_type": "UNKNOWN",
+        "is_unique_product": false,
+        "has_conflict": true
+      },
+      {
+        "value": "2200652",
+        "concept_type": "UNKNOWN",
+        "is_unique_product": false,
+        "has_conflict": true
+      },
+      {
+        "value": "2200654",
+        "concept_type": "UNKNOWN",
+        "is_unique_product": false,
+        "has_conflict": true
+      },
+      {
+        "value": "2200656",
+        "concept_type": "UNKNOWN",
+        "is_unique_product": false,
+        "has_conflict": true
+      },
+      {
+        "value": "2200658",
+        "concept_type": "UNKNOWN",
+        "is_unique_product": false,
+        "has_conflict": true
+      },
+      {
+        "value": "2707547",
+        "concept_type": "UNKNOWN",
+        "is_unique_product": false,
+        "has_conflict": true
+      },
+      {
+        "value": "2707549",
+        "concept_type": "UNKNOWN",
+        "is_unique_product": false,
+        "has_conflict": true
+      },
+      {
+        "value": "2707551",
+        "concept_type": "UNKNOWN",
+        "is_unique_product": false,
+        "has_conflict": true
+      },
+      {
+        "value": "2707553",
+        "concept_type": "UNKNOWN",
+        "is_unique_product": false,
+        "has_conflict": true
+      },
+      {
+        "value": "2707555",
+        "concept_type": "UNKNOWN",
+        "is_unique_product": false,
+        "has_conflict": true
+      },
+      {
+        "value": "2707557",
+        "concept_type": "UNKNOWN",
+        "is_unique_product": false,
+        "has_conflict": true
+      },
+      {
+        "value": "2736944",
+        "concept_type": "UNKNOWN",
+        "is_unique_product": false,
+        "has_conflict": true
+      },
+      {
+        "value": "2736946",
+        "concept_type": "UNKNOWN",
+        "is_unique_product": false,
+        "has_conflict": true
+      },
+      {
+        "value": "2736948",
+        "concept_type": "UNKNOWN",
+        "is_unique_product": false,
+        "has_conflict": true
+      }
+    ],
+    "is_combination": false,
+    "identity_partial": false,
+    "formulation_id": "formulation:25552918739a6335871e21d9",
+    "application_number": "NDA213051",
+    "product_type": "HUMAN PRESCRIPTION DRUG",
+    "marketing_category": "NDA",
+    "consumer_classification": "NORMAL_CONSUMER_HUMAN_PRODUCT",
+    "provenance": {
+      "source": "openfda_ndc_directory",
+      "source_id": "source:[\"openfda_ndc_directory\",\"f8e9d4ca399d61b788ad5dc51d7adad1d2d99d32b02e3ca8a2e02821702b44d5\"]",
+      "source_record_id": "0169-1704_6834044a-22f1-4f35-b846-b3448ee84c16",
+      "source_url": "https://download.open.fda.gov/drug/ndc/drug-ndc-0001-of-0001.json.zip",
+      "observed_at": "2026-09-26T15:05:08.395135+00:00"
+    }
+  },
+  "recalls": {
+    "records": [],
+    "coverage": {
+      "state": "UNKNOWN",
+      "reason_code": "NO_VERIFIED_RECALL_LINK",
+      "scope": "EXPLICIT_TEXT_NDC_PRODUCT_APPLICABILITY; FROZEN_2026-09-26_IDENTITY; ENFORCEMENT_EXPORT_2026-09-25",
+      "as_of_date": "2026-09-26",
+      "source_date": "2026-09-25",
+      "measured_count": null,
+      "unresolved_count": null,
+      "stored_record_count": 0,
+      "bounded": true,
+      "truncated": false,
+      "empty_message": "No verified recall is linked to this product in this release. Recall coverage is partial.",
+      "limitations": [
+        "Recall linkage/discovery coverage is partial; absence of an edge is not proof of no historical recalls.",
+        "Only explicit NDC-marked text is resolved against the frozen current identity snapshot; historical/unmatched/ambiguous identifiers are held back.",
+        "FDA classification and status are as reported in the 2026-09-25 source snapshot; not live current status.",
+        "Exact code_info and more_code_info are retained; lot scope is unparsed UNKNOWN, never an assertion that the user's package or all lots are affected.",
+        "No verified recall is linked to this product in this release. Recall coverage is partial."
+      ]
+    }
+  },
+  "adverse_events": {
+    "records": [
+      {
+        "ingredient_id": "ingredient:aceb6dacee359207f1939f8b",
+        "ingredient_name": "semaglutide",
+        "scope": "INGREDIENT",
+        "analytics": {
+          "window_start": "2020-01-01",
+          "window_end": "2026-06-30",
+          "report_count": 27585,
+          "unique_case_count": 27585,
+          "serious_report_count": 14624,
+          "serious_known_report_count": 27574,
+          "death_report_count": 343,
+          "hospitalization_report_count": 5206,
+          "disability_report_count": 638,
+          "life_threatening_report_count": 824,
+          "suspect_report_count": 23210,
+          "concomitant_report_count": 4263,
+          "interacting_report_count": 192,
+          "active_month_count": 78,
+          "reaction_term_count": 4264,
+          "co_report_activity": 97481,
+          "count_unit": "deduplicated ingredient-report associations",
+          "date_basis": "parsed latest-receipt month",
+          "limitations": [
+            "Descriptive FAERS-derived ingredient co-reporting associations; not patient counts.",
+            "A report can contain multiple drugs, ingredients and reactions; ingredient totals cannot be summed into globally unique report counts or product totals.",
+            "Outcome counts describe reports marked serious or containing the specified outcome flag.",
+            "This is a current normalized/revised research snapshot filtered by parsed receipt dates; it does not recreate the public data at historical cutoffs.",
+            "Exact frozen ingredient IDs retain separate salt, hydrate and solvate identities; unresolved source mentions and reporting completeness are not measured.",
+            "Reaction co_report_activity is distinct from deduplicated report_count; each report may contribute to multiple reaction terms.",
+            "Only observed ingredient-month rows are stored; an absent bin is not an observed zero."
+          ]
+        },
+        "top_reported_reactions": [
+          {
+            "reaction": "nausea",
+            "co_report_activity": 3640,
+            "active_months": 70,
+            "rank": 1
+          },
+          {
+            "reaction": "vomiting",
+            "co_report_activity": 2494,
+            "active_months": 73,
+            "rank": 2
+          }
+        ],
+        "monthly": [
+          {
+            "period": "2020-01-01",
+            "report_count": 8,
+            "serious_report_count": 6
+          },
+          {
+            "period": "2020-02-01",
+            "report_count": 5,
+            "serious_report_count": 4
+          }
+        ],
+        "coverage": {
+          "ingredient_id": "ingredient:aceb6dacee359207f1939f8b",
+          "state": "READY",
+          "reason_code": "SCOPED_INGREDIENT_ANALYTICS_AVAILABLE",
+          "scope": "DEDUPLICATED_INGREDIENT_REPORT_ANALYTICS",
+          "as_of_date": "2026-09-26",
+          "source_date": "2026-09-23",
+          "measured_count": 1,
+          "unresolved_count": null,
+          "limitations": [
+            "Descriptive FAERS-derived ingredient co-reporting associations; not patient counts.",
+            "A report can contain multiple drugs, ingredients and reactions; ingredient totals cannot be summed into globally unique report counts or product totals.",
+            "Outcome counts describe reports marked serious or containing the specified outcome flag.",
+            "This is a current normalized/revised research snapshot filtered by parsed receipt dates; it does not recreate the public data at historical cutoffs.",
+            "Exact frozen ingredient IDs retain separate salt, hydrate and solvate identities; unresolved source mentions and reporting completeness are not measured.",
+            "Reaction co_report_activity is distinct from deduplicated report_count; each report may contribute to multiple reaction terms.",
+            "Only observed ingredient-month rows are stored; an absent bin is not an observed zero."
+          ]
+        }
+      }
+    ],
+    "coverage": {
+      "state": "READY",
+      "reason_code": "ALL_COMPONENT_ANALYTICS_AVAILABLE",
+      "scope": "COMPONENT_ANALYTICS_AVAILABILITY_ONLY; NOT_PRODUCT_REPORT_COUNTS",
+      "as_of_date": "2026-09-26",
+      "source_date": "2026-09-23",
+      "measured_count": 1,
+      "unresolved_count": null,
+      "stored_record_count": 1,
+      "bounded": true,
+      "truncated": false,
+      "empty_message": "This coverage count measures available ingredient components, never AE reports for the product.",
+      "limitations": [
+        "Descriptive FAERS-derived ingredient co-reporting associations; not patient counts.",
+        "A report can contain multiple drugs, ingredients and reactions; ingredient totals cannot be summed into globally unique report counts or product totals.",
+        "Outcome counts describe reports marked serious or containing the specified outcome flag.",
+        "This is a current normalized/revised research snapshot filtered by parsed receipt dates; it does not recreate the public data at historical cutoffs.",
+        "Exact frozen ingredient IDs retain separate salt, hydrate and solvate identities; unresolved source mentions and reporting completeness are not measured.",
+        "Reaction co_report_activity is distinct from deduplicated report_count; each report may contribute to multiple reaction terms.",
+        "Only observed ingredient-month rows are stored; an absent bin is not an observed zero.",
+        "This coverage count measures available ingredient components, never AE reports for the product."
+      ]
+    },
+    "summary": {
+      "scope": "INGREDIENT_COMPONENTS_ONLY",
+      "ingredient_count": 1,
+      "ingredients_with_analytics": 1,
+      "ingredients_without_analytics": 0,
+      "product_report_total": null,
+      "limitation": "Dav AI does not sum ingredient FAERS counts into a product-level adverse-event total. These are descriptive ingredient-level co-reporting associations, not incidence or causality."
+    }
+  },
+  "release": {
+    "release_id": "dav-ai-pharma-v1-phase4b-communications-20261006",
+    "contract_id": "dav-ai-pharma-release-v1",
+    "policy_version": "1.0.0",
+    "schema_version": "dav-ai-pharma-sqlite-v1.phase2-identity1.phase3b-recalls1.phase4a-ae1",
+    "build_version": "phase4b-communications-0.1.0",
+    "build_time_utc": "2026-10-06T22:12:24.015723+00:00",
+    "ndc_observation_date": "2026-09-26",
+    "label_export_date": "2026-09-25",
+    "window_start": "2020-01-01",
+    "window_end": "2026-06-30",
+    "publication_authorized": false,
+    "sources": [
+      {
+        "source_id": "source:[\"fda_drug_safety_communications\",\"[\\\"data/pharma_recovery/davai_recovery.dump\\\",\\\"2213621015\\\",\\\"1790434302188618271\\\",\\\"6d05ee6c71114ef3e301a53e9b1a98c01fb0eee649d13074049ee6e7a1fb94d5\\\"]\"]",
+        "source_name": "fda_drug_safety_communications",
+        "source_url": "https://www.fda.gov/drugs/drug-safety-and-availability/drug-safety-communications",
+        "export_date": null,
+        "observed_at": null
+      },
+      {
+        "source_id": "source:[\"openfda_drug_enforcement\",\"4fd1a8f0f22892252966e6d5923d8d8a03c8d697c9050bfddfaa2fd25f91f9e2\"]",
+        "source_name": "openfda_drug_enforcement",
+        "source_url": "https://download.open.fda.gov/drug/enforcement/drug-enforcement-0001-of-0001.json.zip",
+        "export_date": "2026-09-25",
+        "observed_at": "2026-09-26T15:07:41.940634+00:00"
+      },
+      {
+        "source_id": "source:[\"openfda_drug_event\",\"[\\\"a8d7654d2c2aaaa4ecd530745dafd2c9b23885f451c7d11b21dca2bee5250adc\\\",\\\"ad2838f2ef19de0d4531888a12d2a24e91c374c58e8e63872aca7ad40d98554a\\\",\\\"5fb9157bb38f9d9c8418d6e6ff126212ec5f63e5d223457e4419cf601bc08da3\\\"]\"]",
+        "source_name": "openfda_drug_event",
+        "source_url": "https://api.fda.gov/drug/event.json",
+        "export_date": "2026-09-23",
+        "observed_at": "2026-09-26T15:05:17.664454+00:00"
+      },
+      {
+        "source_id": "source:[\"openfda_drug_label\",\"3f2a00b793176b411f8df071f43e1df07e08b995c3c0db8b274660dead854d0c\"]",
+        "source_name": "openfda_drug_label",
+        "source_url": "https://api.fda.gov/drug/label.json",
+        "export_date": "2026-09-25",
+        "observed_at": null
+      },
+      {
+        "source_id": "source:[\"openfda_ndc_directory\",\"f8e9d4ca399d61b788ad5dc51d7adad1d2d99d32b02e3ca8a2e02821702b44d5\"]",
+        "source_name": "openfda_ndc_directory",
+        "source_url": "https://download.open.fda.gov/drug/ndc/drug-ndc-0001-of-0001.json.zip",
+        "export_date": "2026-09-26",
+        "observed_at": "2026-09-26T15:05:08.395135+00:00"
+      },
+      {
+        "source_id": "source:[\"openfda_ndc_directory\",\"identity:ad2838f2ef19de0d4531888a12d2a24e91c374c58e8e63872aca7ad40d98554a\"]",
+        "source_name": "openfda_ndc_directory",
+        "source_url": null,
+        "export_date": null,
+        "observed_at": "2026-09-26T15:05:08.395135+00:00"
+      }
+    ],
+    "limitations": [
+      "Missing linked recalls do not establish that a drug has never been recalled. Recall coverage is partial.",
+      "Adverse-event counts are ingredient-level reporting associations, not product-specific counts, incidence, causality, comparative safety, or personal risk.",
+      "Spontaneous reporting can be incomplete, duplicated, biased, and revised. Reports do not establish that the medication caused a reaction.",
+      "Ingredient counts must not be summed into a product total, including for combination products.",
+      "Name and age identify the report only. This report provides no diagnosis, treatment recommendation, or age-specific risk estimate."
+    ]
+  },
+  "limitations": [
+    "Missing linked recalls do not establish that a drug has never been recalled. Recall coverage is partial.",
+    "Adverse-event counts are ingredient-level reporting associations, not product-specific counts, incidence, causality, comparative safety, or personal risk.",
+    "Spontaneous reporting can be incomplete, duplicated, biased, and revised. Reports do not establish that the medication caused a reaction.",
+    "Ingredient counts must not be summed into a product total, including for combination products.",
+    "Name and age identify the report only. This report provides no diagnosis, treatment recommendation, or age-specific risk estimate."
+  ]
+}

@@ -1,0 +1,12 @@
+
+> frontend@0.0.0 test
+> vitest run
+
+
+ RUN  v4.1.12 /private/tmp/davai-release-candidate/frontend
+
+
+ Test Files  2 passed (2)
+      Tests  6 passed (6)
+   Start at  19:26:41
+   Duration  655ms (transform 73ms, setup 72ms, import 132ms, tests 272ms, environment 508ms)

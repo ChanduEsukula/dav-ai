@@ -1,0 +1,10 @@
+{
+  "publication_validated": {
+    "data/releases/dav_ai_pharma_v1/phase4b-communications-2026-10-06/release_metadata.json": false,
+    "docs/evidence/pharma-release-v1-build-2026-10-06-phase4b-communications/release_metadata.json": false
+  },
+  "database_mode": "0o444",
+  "database_bytes": 4825108480,
+  "head": "4ca92a94a6c27799c3ead5b0b00a91a3afb6fa03",
+  "recovery": "0e4c5112f0075199d98bc0436b0f890b5b3b2a11"
+}

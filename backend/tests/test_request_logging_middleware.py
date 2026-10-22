@@ -35,10 +35,12 @@ def test_root_response_includes_request_id_header():
     assert response.json()["status"] == "ok"
 
 
-def test_sources_response_includes_request_id_header():
+def test_coverage_response_includes_request_id_header(monkeypatch):
+    # Header contract does not depend on an external 4.83 GB local artifact.
+    monkeypatch.setattr("app.routes.evidence.release_metadata", lambda: {"release_id": "synthetic"})
     test_client = TestClient(app)
 
-    response = test_client.get("/api/v1/sources")
+    response = test_client.get("/api/coverage")
 
     assert response.status_code == 200
     assert response.headers["X-Request-ID"]

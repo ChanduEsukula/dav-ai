@@ -1,0 +1,100 @@
+{
+  "name": "dav-ai",
+  "networks": {
+    "private": {
+      "name": "dav-ai_private",
+      "ipam": {},
+      "internal": true
+    }
+  },
+  "services": {
+    "backend": {
+      "restart": "no",
+      "cap_drop": [
+        "ALL"
+      ],
+      "command": null,
+      "entrypoint": null,
+      "environment": {
+        "ALLOWED_ORIGINS": "https://private.example.invalid",
+        "DAVAI_ENV": "staging",
+        "DAV_AI_PHARMA_ARTIFACT_ROOT": "/var/lib/davai-artifacts",
+        "DAV_AI_PHARMA_REQUIRE_READY_AT_STARTUP": "1"
+      },
+      "networks": {
+        "private": null
+      },
+      "read_only": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "tmpfs": [
+        "/tmp:rw,noexec,nosuid,size=32m"
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/tmp/davai-install-verification/store",
+          "target": "/var/lib/davai-artifacts",
+          "read_only": true,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "build": {
+        "context": "/Users/chanduesukula/dav-ai",
+        "dockerfile": "backend/Dockerfile"
+      },
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=2)"
+        ],
+        "timeout": "3s",
+        "interval": "30s",
+        "retries": 3,
+        "start_period": "1m0s"
+      }
+    },
+    "frontend": {
+      "restart": "no",
+      "cap_drop": [
+        "ALL"
+      ],
+      "command": null,
+      "entrypoint": null,
+      "networks": {
+        "private": null
+      },
+      "read_only": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "tmpfs": [
+        "/var/cache/nginx:rw,noexec,nosuid,uid=101,gid=101,mode=0700,size=32m",
+        "/var/run:rw,noexec,nosuid,uid=101,gid=101,mode=0700,size=1m",
+        "/tmp:rw,noexec,nosuid,uid=101,gid=101,mode=0700,size=16m"
+      ],
+      "user": "101:101",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/Users/chanduesukula/dav-ai/ops/staging/nginx.conf",
+          "target": "/etc/nginx/conf.d/default.conf",
+          "read_only": true,
+          "bind": {}
+        }
+      ],
+      "build": {
+        "context": "/Users/chanduesukula/dav-ai/frontend",
+        "dockerfile": "Dockerfile",
+        "args": {
+          "VITE_API_BASE_URL": ""
+        }
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 {
   "name": "Dav AI",
   "short_name": "Dav AI",
-  "description": "Source-aware public safety intelligence for drugs, food, supplements, and cosmetics.",
+  "description": "FDA drug recall history, ingredient-level reported adverse events, and evidence PDF reports.",
   "id": "/",
   "start_url": "/",
   "scope": "/",

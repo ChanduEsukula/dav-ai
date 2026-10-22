@@ -1,31 +1,24 @@
+from contextlib import asynccontextmanager
 import logging
 import os
 import time
 import uuid
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from app.services.report_limits import ReportPrivacyMiddleware
 
-from app.routes.drug_ask import router as drug_ask_router
-from app.routes.pharma_release import router as pharma_release_router
+from app.db.database import is_deployed_environment
+from app.db.pharma.release_connection import (
+    PharmaceuticalReleaseUnavailable,
+    connect_release,
+)
 from app.routes.drug_safety import router as drug_safety_router
 from app.routes.drugs import router as drugs_router
-from app.routes import saved_monitors
-from app.routes.assistant import router as assistant_router
-from app.routes.audit_events import router as audit_events_router
-from app.routes.auth import router as auth_router
-from app.routes.cosmetic_events import router as cosmetic_events_router
-from app.routes.docs import router as docs_router
-from app.routes.drug_events import router as drug_events_router
-from app.routes.everyday_safety import router as everyday_safety_router
-from app.routes.profile import router as profile_router
-from app.routes.real_world_safety import router as real_world_safety_router
-from app.routes.recalls import router as recalls_router
-from app.routes.regional_health import router as regional_health_router
 from app.routes.reports import router as reports_router
-from app.routes.semantic_similarity import router as semantic_similarity_router
-from app.routes.sources import router as sources_router
-from app.routes.system import router as system_router
+from app.routes.evidence import router as evidence_router
 
 
 logger = logging.getLogger("dav_ai.request")
@@ -44,11 +37,32 @@ def get_allowed_origins() -> list[str]:
     ]
 
 
-app = FastAPI(
+class PharmaceuticalAPI(FastAPI):
+    def build_middleware_stack(self):
+        # Wrap ServerErrorMiddleware too: even unexpected 500s must be private.
+        return ReportPrivacyMiddleware(super().build_middleware_stack())
+
+
+@asynccontextmanager
+async def application_lifespan(application):
+    strict = (is_deployed_environment() or "DAV_AI_PHARMA_ARTIFACT_ROOT" in os.environ
+              or os.getenv("DAV_AI_PHARMA_REQUIRE_READY_AT_STARTUP") == "1")
+    if strict:
+        try:
+            connection = connect_release()
+            connection.close()
+        except Exception:
+            logger.error("pharmaceutical_startup_refused")
+            raise RuntimeError("Pharmaceutical startup refused: artifact unavailable or serving unauthorized") from None
+    yield
+
+
+app = PharmaceuticalAPI(
+    lifespan=application_lifespan,
     title="Dav AI API",
     description=(
-        "Healthcare safety intelligence API for recalls, adverse-event signals, "
-        "source transparency, audit-aware safety briefings, and public-data PDF reports."
+        "Frozen FDA pharmaceutical evidence: recalls, reported adverse events, "
+        "coverage, provenance, and personalized PDF evidence reports."
     ),
     version="0.1.0",
     docs_url="/docs",
@@ -59,16 +73,20 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=get_allowed_origins(),
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "X-Request-ID"],
     expose_headers=["Content-Disposition"],
 )
 
 
 @app.middleware("http")
 async def request_id_logging_middleware(request: Request, call_next):
-    request_id = request.headers.get("X-Request-ID") or str(uuid.uuid4())
+    supplied_id = request.headers.get("X-Request-ID", "")
+    # Untrusted identifiers must not introduce unbounded or control-character log data.
+    request_id = supplied_id if (0 < len(supplied_id) <= 64 and all(
+        c.isascii() and (c.isalnum() or c in "-_") for c in supplied_id
+    )) else str(uuid.uuid4())
     request.state.request_id = request_id
 
     start_time = time.perf_counter()
@@ -91,7 +109,7 @@ async def request_id_logging_middleware(request: Request, call_next):
         status_code = response.status_code
         return response
     except Exception:
-        logger.exception(
+        logger.error(
             "request_failed",
             extra={
                 "event": "request_failed",
@@ -124,28 +142,8 @@ async def request_id_logging_middleware(request: Request, call_next):
 
 app.include_router(drugs_router)
 app.include_router(drug_safety_router)
-app.include_router(drug_ask_router)
-app.include_router(pharma_release_router)
-app.include_router(recalls_router, prefix="/api/v1/recalls", tags=["RecallRadar"])
-app.include_router(drug_events_router, prefix="/api/v1/drug-events", tags=["DrugSignal"])
-app.include_router(cosmetic_events_router, prefix="/api/v1/cosmetic-events", tags=["CosmeticSignal"])
-app.include_router(everyday_safety_router, prefix="/api/v1/everyday-safety", tags=["Everyday Safety"])
-app.include_router(real_world_safety_router, prefix="/api/v1/real-world-safety", tags=["Real-World Safety"])
-app.include_router(sources_router, prefix="/api/v1/sources", tags=["Sources"])
-app.include_router(docs_router, prefix="/api/v1/docs", tags=["Documentation"])
-app.include_router(audit_events_router, tags=["Audit History"])
-app.include_router(system_router, tags=["System"])
-app.include_router(auth_router)
-app.include_router(profile_router)
-app.include_router(saved_monitors.router)
 app.include_router(reports_router)
-app.include_router(regional_health_router, prefix="/api/v1/regional-health", tags=["Regional Health Pulse"])
-app.include_router(
-    semantic_similarity_router,
-    prefix="/api/v1/semantic-similarity",
-    tags=["Semantic Similarity"],
-)
-app.include_router(assistant_router)
+app.include_router(evidence_router)
 
 
 @app.get("/")
@@ -153,21 +151,7 @@ def root():
     return {
         "message": "Dav AI backend is running",
         "status": "ok",
-        "modules": [
-            "RecallRadar",
-            "DrugSignal",
-            "FoodRadar",
-            "CosmeticSignal",
-            "Everyday Safety",
-            "Real-World Safety",
-            "Sources",
-            "Audit History",
-            "Auth",
-            "Profile",
-            "Saved Monitors",
-            "Reports",
-            "Regional Health Pulse",
-        ],
+        "modules": ["Drug recalls", "Reported adverse events", "PDF evidence reports"],
         "docs": "/docs",
     }
 
@@ -177,3 +161,43 @@ def health_check():
     return {
         "status": "healthy",
     }
+
+
+@app.get("/ready")
+def readiness_check():
+    connection = None
+
+    try:
+        connection = connect_release()
+        connection.execute("SELECT 1").fetchone()
+
+    except (PharmaceuticalReleaseUnavailable, OSError):
+        raise HTTPException(
+            status_code=503,
+            detail="Pharmaceutical service is not ready",
+        )
+
+    except Exception:
+        logger.exception("pharmaceutical_readiness_check_failed")
+        raise HTTPException(
+            status_code=503,
+            detail="Pharmaceutical service is not ready",
+        )
+
+    finally:
+        if connection is not None:
+            connection.close()
+
+    return {
+        "status": "ready",
+        "pharmaceutical_database": "available",
+    }
+
+
+@app.exception_handler(RequestValidationError)
+async def safe_validation_error(request: Request, exc: RequestValidationError):
+    if request.url.path.rstrip("/") == "/api/v1/reports/pharmaceutical":
+        # Pydantic normally reflects the invalid name/age in input/ctx fields.
+        return JSONResponse(status_code=422, content={"detail": "Invalid report fields"})
+    from fastapi.exception_handlers import request_validation_exception_handler
+    return await request_validation_exception_handler(request, exc)

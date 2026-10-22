@@ -1,0 +1,5 @@
+Database size: 4825108480
+SHA-256: 87779eda6b06c75f10603762b18f8c66a5cb7b12ed37d47ab1bf9b4825639c71
+Publication approved: False
+WARNING: Artifact is valid for local verification but not approved for public publication.
+Artifact integrity verification: PASSED

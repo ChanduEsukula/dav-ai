@@ -34,7 +34,7 @@ python3 - <<'PY'
 import importlib.util
 import sys
 
-required = ["fastapi", "pydantic", "sqlalchemy", "alembic", "pytest"]
+required = ["fastapi", "pydantic", "reportlab", "uvicorn"]
 missing = [name for name in required if importlib.util.find_spec(name) is None]
 
 if missing:
@@ -53,11 +53,6 @@ from app.main import app
 print("OK: FastAPI app imports")
 print(f"OK: app title = {app.title}")
 PY
-
-echo
-echo "Checking Alembic configuration..."
-python3 -m alembic --version
-python3 -m alembic heads
 
 echo
 echo "Checking Node..."

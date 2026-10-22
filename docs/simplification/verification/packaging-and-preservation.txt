@@ -1,0 +1,7 @@
+docker compose config --quiet: PASS
+Python compileall: PASS
+Runtime import: no psycopg/httpx
+git diff --check: PASS
+Protected tracked data/evidence diff: empty
+Active HEAD: 4ca92a9 (unchanged)
+Publication authorization: false (unchanged)

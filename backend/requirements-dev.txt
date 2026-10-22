@@ -1,0 +1,4 @@
+-r requirements-offline.txt
+-r requirements-research.txt
+pytest==9.0.3
+pypdf==6.21.2

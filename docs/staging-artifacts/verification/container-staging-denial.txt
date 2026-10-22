@@ -1,0 +1,2 @@
+unapproved staging startup correctly refused
+pharmaceutical_startup_refused

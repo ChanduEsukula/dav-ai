@@ -1,0 +1,23 @@
+
+> frontend@0.0.0 test:e2e
+> playwright test
+
+[2m[WebServer] [22m(node:39554) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 2 workers
+
+(node:39559) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:39560) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:39559) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:39560) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › e2e/demo-smoke.spec.ts:5:3 › search, select and download an evidence report at 1440px (1.3s)
+  ✓  3 [chromium] › e2e/demo-smoke.spec.ts:5:3 › search, select and download an evidence report at 390px (502ms)
+  ✓  4 [chromium] › e2e/demo-smoke.spec.ts:50:1 › keyboard dialog cancellation clears report details and restores focus (225ms)
+  ✓  2 [chromium] › e2e/pharma-offline.spec.ts:3:1 › real frozen release search-to-PDF works with outbound network disabled (6.7s)
+
+  4 passed (8.5s)

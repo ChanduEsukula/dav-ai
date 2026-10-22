@@ -1,118 +1,61 @@
 import { expect, test } from '@playwright/test'
+import evidence from '../src/test/evidence.json' with { type: 'json' }
 
-const demoPages = [
-  {
-    name: 'Home',
-    url: '/',
-    heading: /Public safety\s+data\.\s+Made clear\./i,
-    nav: 'Home',
-  },
-  {
-    name: 'DrugSignal',
-    url: '/?page=pharmacy-safety',
-    heading: 'Search pharmacy safety records',
-    nav: 'DrugSignal',
-  },
-  {
-    name: 'FoodSignal',
-    url: '/?page=food-safety',
-    heading: 'Search food and supplement safety records',
-    nav: 'FoodSignal',
-  },
-  {
-    name: 'Personal Care Signals',
-    url: '/?page=cosmetic-safety',
-    heading: 'Search cosmetic safety records',
-    nav: 'Personal Care Signals',
-  },
-  {
-    name: 'ProductScan',
-    url: '/?page=productscan',
-    heading: 'Review label text before searching public records.',
-  },
-  {
-    name: 'Sources',
-    url: '/?page=sources',
-    heading: 'Registered public data sources.',
-    nav: 'Sources',
-  },
-  {
-    name: 'System Status',
-    url: '/?page=system',
-    heading: 'System Status',
-    nav: 'System',
-  },
-  {
-    name: 'Monitors',
-    url: '/?page=saved-monitors',
-    heading: 'Saved Searches',
-    nav: 'Monitors',
-  },
-  {
-    name: 'Help Docs Search',
-    url: '/?page=help',
-    heading: 'Find cited snippets from Dav AI docs.',
-    nav: 'Help',
-  },
-]
-
-test('demo-critical pages render without crashing', async ({ page }) => {
-  for (const demoPage of demoPages) {
-    await test.step(demoPage.name, async () => {
-      await page.goto(demoPage.url)
-
-      await expect(page.getByRole('heading', { name: demoPage.heading })).toBeVisible()
-
-      if (demoPage.nav) {
-        await expect(
-          page.getByRole('button', { name: demoPage.nav, exact: true }),
-        ).toHaveAttribute('aria-current', 'page')
+for (const width of [1440, 390]) {
+  test(`search, select and download an evidence report at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 })
+    const personalRequests: string[] = []
+    await page.route('http://127.0.0.1:18000/api/**', async route => {
+      const request = route.request()
+      if (request.url().includes('/search')) return route.fulfill({ json: { results: [evidence.drug], count: 1 } })
+      if (request.url().endsWith('/evidence')) return route.fulfill({ json: evidence })
+      if (request.url().endsWith('/pharmaceutical')) {
+        expect(request.method()).toBe('POST')
+        expect(request.postDataJSON()).toEqual({ product_id: evidence.drug.id, name: 'Browser Reader', age: 37 })
+        personalRequests.push(request.url())
+        return route.fulfill({ contentType: 'application/pdf', body: '%PDF-1.4\n%%EOF', headers: { 'Cache-Control': 'no-store' } })
       }
+      return route.abort()
     })
-  }
-})
-
-test('pwa installability metadata is served', async ({ page, request }) => {
-  await page.goto('/')
-
-  await expect(page.locator('link[rel="manifest"]')).toHaveAttribute(
-    'href',
-    '/manifest.webmanifest',
-  )
-  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
-    'content',
-    '#0b4f71',
-  )
-
-  const manifestResponse = await request.get('/manifest.webmanifest')
-  expect(manifestResponse.ok()).toBeTruthy()
-
-  const manifest = await manifestResponse.json()
-  expect(manifest).toMatchObject({
-    name: 'Dav AI',
-    short_name: 'Dav AI',
-    start_url: '/',
-    display: 'standalone',
+    await page.goto('/')
+    await page.getByLabel('Brand, generic name, active ingredient or NDC').fill('Ozempic')
+    await page.getByRole('button', { name: 'Search drugs' }).click()
+    await page.getByRole('button', { name: /OZEMPIC/i }).click()
+    await expect(page.getByRole('heading', { name: 'Recall history', exact: true })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Reported adverse events', exact: true })).toBeVisible()
+    const recall = await page.getByRole('region', { name: 'Recall history', exact: true }).boundingBox()
+    const ae = await page.getByRole('region', { name: 'Reported adverse events', exact: true }).boundingBox()
+    if (width > 760) expect(Math.abs(recall!.y - ae!.y)).toBeLessThan(2)
+    else expect(ae!.y).toBeGreaterThan(recall!.y)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+    await page.getByRole('button', { name: 'Generate PDF Report', exact: true }).click()
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toBeVisible()
+    await expect(dialog.getByLabel('Name (required)')).toBeFocused()
+    await dialog.getByLabel('Name (required)').fill('Browser Reader')
+    await dialog.getByLabel('Age (optional)').fill('37')
+    const download = page.waitForEvent('download')
+    await dialog.getByRole('button', { name: 'Generate and download' }).click()
+    expect((await download).suggestedFilename()).toBe('dav-ai-evidence-report.pdf')
+    await expect(dialog.getByRole('status')).toHaveText('Your PDF download is ready.')
+    expect(personalRequests).toHaveLength(1)
+    expect(page.url()).not.toContain('Reader')
+    await dialog.getByRole('button', { name: 'Close', exact: true }).click()
+    await page.reload()
+    await expect(page.getByRole('heading', { name: 'Recall history', exact: true })).toBeVisible()
+    await page.screenshot({ path: `/tmp/davai-explorer-${width}.png`, fullPage: true })
   })
+}
 
-  const serviceWorkerResponse = await request.get('/sw.js')
-  expect(serviceWorkerResponse.ok()).toBeTruthy()
-  expect(await serviceWorkerResponse.text()).toContain("url.pathname.startsWith('/api/')")
-})
-
-test('mobile homepage controls remain reachable', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 })
-  await page.goto('/')
-
-  const productScanButton = page.getByRole('button', { name: /Open Scan beta/i })
-  await productScanButton.scrollIntoViewIfNeeded()
-  await expect(productScanButton).toBeVisible()
-
-  const safetySearchInput = page.getByLabel(/Safety search/i)
-  await safetySearchInput.scrollIntoViewIfNeeded()
-  await expect(safetySearchInput).toBeVisible()
-
-  const searchButton = page.getByRole('button', { name: 'Search records' })
-  await searchButton.scrollIntoViewIfNeeded()
-  await expect(searchButton).toBeVisible()
+test('keyboard dialog cancellation clears report details and restores focus', async ({ page }) => {
+  await page.route('http://127.0.0.1:18000/api/**', route => route.fulfill({ json: route.request().url().includes('/search') ? { results: [evidence.drug], count: 1 } : evidence }))
+  await page.goto(`/?q=Ozempic&drug=${encodeURIComponent(evidence.drug.id)}`)
+  const generate = page.getByRole('button', { name: 'Generate PDF Report', exact: true })
+  await generate.click()
+  await page.getByLabel('Name (required)').fill('Transient Reader')
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('dialog')).not.toBeVisible()
+  await expect(generate).toBeFocused()
+  await generate.click()
+  await expect(page.getByLabel('Name (required)')).toHaveValue('')
 })

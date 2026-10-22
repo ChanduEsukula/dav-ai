@@ -1,0 +1,1210 @@
+[
+  {
+    "path": "backend/app/analytics/monitor_insights.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/analytics/saved_monitor_review_priority.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/audit/audit_event.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/db/audit_repository.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/db/documentation_chunks_repository.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/db/saved_monitor_repository.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/db/scheduler_lock_repository.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/db/source_pull_repository.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/db/user_repository.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/jobs/ingest_documentation_chunks.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/jobs/run_due_saved_monitors.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/nlp/semantic_similarity_preview.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/routes/assistant.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/routes/audit_events.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/routes/auth.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/routes/cosmetic_events.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/routes/docs.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/routes/drug_ask.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/routes/drug_events.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/routes/everyday_safety.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/routes/pharma_release.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/routes/profile.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/routes/real_world_safety.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/routes/recalls.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/routes/regional_health.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/routes/saved_monitors.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/routes/semantic_similarity.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/routes/sources.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/routes/system.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/schemas/assistant.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/schemas/audit.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/schemas/audit_history.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/schemas/auth.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/schemas/cosmetic_events.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/schemas/docs.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/schemas/drug_events.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/schemas/everyday_safety.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/schemas/monitor_insights.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/schemas/profile.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/schemas/real_world_safety.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/schemas/recalls.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/schemas/regional_health.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/schemas/saved_monitors.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/schemas/semantic_similarity.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/schemas/source_pulls.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/schemas/sources.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/schemas/system.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/scoring/drug_signal_score.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/scoring/reaction_classifier.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/scoring/recall_score.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/scoring/regional_health_signal.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/scoring/source_freshness.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/assistant_guardrails.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/assistant_service.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/auth_context.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/auth_passwords.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/auth_tokens.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/drug_signal_semantic_candidates.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/foodradar_query_normalization.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/foodradar_search_intent.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/llm_provider.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/official_public_notice_search.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/openfda_client.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/openfda_cosmetic_event_client.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/openfda_drug_event_client.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/openfda_food_enforcement_client.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/pharma/ask.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/query_normalization.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/recall_semantic_candidates.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/safety_source_adapters/base.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/safety_source_adapters/cdc_foodborne_outbreaks.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/safety_source_adapters/cpsc.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/safety_source_adapters/dailymed.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/safety_source_adapters/fda_public.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/safety_source_adapters/fda_safety_communications.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/safety_source_adapters/nhtsa.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/safety_source_adapters/openfda_device.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/safety_source_adapters/openfda_device_event.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/safety_source_adapters/openfda_drug.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/safety_source_adapters/openfda_drug_label.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/safety_source_adapters/openfda_food.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/safety_source_adapters/openfda_ndc.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/safety_source_adapters/openfda_udi.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/safety_source_adapters/rxnorm.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/safety_source_adapters/usda_fsis.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/safety_source_adapters/vaers.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/scheduled_monitor_refresh.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/search_workflows/cosmetic_signal_search.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/search_workflows/drug_signal_search.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/search_workflows/everyday_safety_search.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/search_workflows/identifier_check.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/search_workflows/product_category_classifier.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/search_workflows/real_world_query_understanding.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/search_workflows/real_world_safety_search.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/search_workflows/real_world_source_planner.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/search_workflows/recall_search.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/search_workflows/regional_health_search.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/search_workflows/safety_intelligence_summary.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/search_workflows/source_freshness.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/search_workflows/source_health_contract.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/semantic_similarity_service.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/static_docs_chunking.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/static_docs_embeddings.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/static_docs_ingestion.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/static_docs_retrieval.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/static_docs_semantic_preview.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/services/usda_fsis_recall_client.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/sources/registry.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/app/trends/drug_signal_trend.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_static_docs_embeddings.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_nhtsa_vehicle_query_parser.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_real_world_query_understanding.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_recall_score.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_drug_events_route.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_documentation_chunks_migration.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_real_world_safety_route.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_source_health_contract.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_saved_monitor_repository_persistence.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_source_freshness.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_drug_signal_score.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_everyday_safety_route.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_auth_tokens.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_reports_route.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_product_category_classifier.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_regional_health_route.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_recall_semantic_candidates.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_assistant_route.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_query_normalization.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_saved_monitor_review_priority.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_openfda_drug_event_client.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_drug_signal_semantic_candidates.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_real_world_source_planner.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_static_docs_route.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_registry_schema_alignment.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_refresh_real_world_safety_snapshots_cli.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_static_docs_semantic_preview.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_system_status_route.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_foodradar_search_intent.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_audit_event.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_auth_profile_route.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_nhtsa_recall_adapter.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_scheduled_monitor_refresh.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_audit_events_route.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_system_sources_consistency.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_sources_route.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_semantic_similarity_route.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_fda_public_notice_adapter.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_regional_health_signal.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_source_pull_repository.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_reaction_classifier.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_monitor_insights.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_user_repository_persistence.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_cosmetic_events_route.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_audit_repository.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_saved_monitors_route.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_recalls_route.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_static_docs_chunking.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_scheduler_lock_repository.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_semantic_similarity_preview.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_openfda_client.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_run_due_saved_monitors_job.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_drug_signal_trend.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_semantic_similarity_service.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/test_static_docs_ingestion.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "backend/tests/pharma/test_ask.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "scripts/verify_pharma_live_ask.py",
+    "reason": "Removed public feature and its exclusive support/tests; outside the retained pharmaceutical ingestion/research dependency closure"
+  },
+  {
+    "path": "frontend/src/types/briefing.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/types/navigation.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/auth/AuthContext.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/auth/AuthContext.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/utils/productScanImageQuality.test.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/utils/productScanExtraction.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/utils/briefingGenerator.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/utils/productScanImageQuality.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/utils/safetyQueryUrl.test.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/utils/recallFormatters.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/utils/productScanExtraction.test.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/utils/queryNormalization.test.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/utils/briefingGenerator.test.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/utils/safetyRouteClassifier.test.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/utils/productScanOcr.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/utils/safetyRouteClassifier.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/utils/safetyQueryUrl.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/utils/sourceIntegrationMode.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/utils/queryNormalization.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/utils/sourceIntegrationMode.test.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/query-typeahead.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/cosmeticsignal.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/safety-area-pages.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/animations.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/ask-dav-ai.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/safety-workspace.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/source-details-disclosure.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/audit-history.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/datasources.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/signals.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/foodradar.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/recallradar.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/auth.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/hero.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/navbar.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/search-glass.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/stored-drug-catalog.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/briefing.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/public-safety-search.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/safe-insight-cards.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/faq.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/source-integration-badge.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/about.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/drugsignal.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/pages.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/operational-overview.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/universal-safety-search.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/floating-safety-report-intake.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/styles/productscan.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/UniversalSafetySearch.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/SafeInsightCards.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/RegionalHealthPulse.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/RecallRadar.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/Hero.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/LoginPage.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/Navbar.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/CosmeticSafetyPage.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/AskStoredDrug.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/FloatingSafetyReportIntake.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/FoodSafetyPage.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/SourceDetailsDisclosure.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/AuditPanel.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/PublicSafetySearchPage.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/SavedMonitorsPage.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/PharmacySafetyPage.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/FoodRadar.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/ProductScanPage.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/FloatingSafetyReportIntake.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/Signals.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/ProfilePage.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/AskDavAIChat.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/AboutPage.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/AskStoredDrug.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/InfoPage.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/AuditHistoryPage.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/SystemStatusPage.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/SystemStatusPage.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/DataSourcesPage.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/OnboardingPage.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/FoodRadar.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/OperationalOverview.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/ProductScanPage.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/SafetyBriefingPanel.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/PharmacySafetyPage.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/QueryTypeahead.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/SemaglutideRelease.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/CosmeticSignal.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/ProductScanTeaser.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/DrugSignal.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/PharmacyCatalogPage.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/CosmeticSafetyPage.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/SavedMonitorsPage.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/HelpDocsSearch.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/RecallRadar.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/AskDavAIChat.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/FoodSafetyPage.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/QueryTypeahead.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/SourceIntegrationBadge.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/SafetyWorkspace.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/SignupPage.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/OnboardingPage.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/LoginPage.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/DrugSignal.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/SignupPage.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/QueryNormalizationNotice.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/PublicSafetySearchPage.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/AuditHistoryPage.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/Bro Code.py",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/SavedMonitorsPage.css",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/FaqPage.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/CosmeticSignal.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/HelpDocsSearch.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/ProfilePage.test.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/UniversalSafetySearch.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/components/RegionalHealthPulse.tsx",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/api/savedMonitors.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/api/auditEvents.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/api/everydaySafety.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/api/sources.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/api/systemStatus.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/api/cosmeticEvents.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/api/realWorldSafety.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/api/regionalHealth.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/api/docs.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/api/assistant.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/api/profile.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/api/drugEvents.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/api/recalls.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/api/auth.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/data/faqs.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/data/infoPages.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/data/signals.ts",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/assets/hero.png",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/assets/vite.svg",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/src/assets/react.svg",
+    "reason": "Obsolete UI, API client, style, asset or exclusive test; no import from retained React entrypoint/component/client"
+  },
+  {
+    "path": "frontend/public/icons.svg",
+    "reason": "Unused legacy multi-domain SVG symbol sprite; no reference in retained source/index/manifest"
+  }
+]

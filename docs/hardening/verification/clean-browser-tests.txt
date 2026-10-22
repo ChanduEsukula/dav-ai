@@ -1,0 +1,18 @@
+
+> frontend@0.0.0 test:e2e
+> playwright test
+
+[2m[WebServer] [22m(node:50634) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:50635) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:50635) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › e2e/demo-smoke.spec.ts:5:3 › search, select and download an evidence report at 1440px (689ms)
+  ✓  2 [chromium] › e2e/demo-smoke.spec.ts:5:3 › search, select and download an evidence report at 390px (527ms)
+  ✓  3 [chromium] › e2e/demo-smoke.spec.ts:50:1 › keyboard dialog cancellation clears report details and restores focus (185ms)
+
+  3 passed (2.3s)

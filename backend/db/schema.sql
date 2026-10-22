@@ -481,3 +481,14 @@ create index if not exists idx_source_pulls_payload_hash
 
 create index if not exists idx_raw_source_snapshots_pull_id
     on raw_source_snapshots(pull_id);
+
+-- Pharmaceutical communications source (Week 2)
+INSERT INTO source_registry (source_id, source_name, endpoint, module, description, update_cadence)
+    VALUES (
+            'fda_drug_safety_communications',
+            'FDA Drug Safety Communications',
+            'https://www.fda.gov/drugs/drug-safety-and-availability/drug-safety-communications',
+            'RealWorldSafety',
+            'Maintained collection of official pharmaceutical safety communications ingested into the stored drug catalog.',
+            'Periodic refresh of configured official URLs'
+    ) ON CONFLICT (source_id) DO NOTHING;

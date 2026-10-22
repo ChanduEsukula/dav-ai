@@ -78,6 +78,7 @@ export type LabelRecord = {
   id: string
   label_set_id: string
   label_version: string | null
+  selection_status: 'SELECTED_STORED' | 'EARLIER_STORED'
   effective_date: string | null
   applicability_class: string
   match_method: string | null
@@ -150,6 +151,7 @@ export type AEIngredientRecord = {
   ingredient_name: string
   scope: 'INGREDIENT' | string
   analytics: AEAnalytics | null
+  monthly: { period: string; report_count: number; serious_report_count: number }[]
   top_reported_reactions: AEReaction[]
   coverage: IngredientCoverage
 }
@@ -227,190 +229,24 @@ export async function searchCatalog(
   ).data
 }
 
-export async function getStoredDrug(
-  id: string,
-  signal?: AbortSignal,
-) {
-  const [drug, safety, timeline] = await Promise.all([
-    apiClient.get<CatalogDrug>(
-      `/api/drugs/${encodeURIComponent(id)}`,
-      { signal },
-    ),
-    apiClient.get<DrugSafety>(
-      `/api/drugs/${encodeURIComponent(id)}/safety`,
-      { signal },
-    ),
-    apiClient.get<{ events: TimelineEvent[] }>(
-      `/api/drugs/${encodeURIComponent(id)}/timeline`,
-      { signal },
-    ),
-  ])
-
-  return {
-    drug: drug.data,
-    safety: safety.data,
-    timeline: timeline.data.events,
-  }
+export type Release = {
+  release_id: string
+  build_time_utc: string
+  ndc_observation_date: string
+  label_export_date: string
+  window_start: string
+  window_end: string
+  sources: { source_id: string; source_name: string; source_url: string | null; export_date: string | null; observed_at: string | null }[]
 }
 
-export type AskCoverage = {
-  state: 'READY' | 'PARTIAL' | 'UNKNOWN' | 'UNAVAILABLE' | string
-  reason_code: string
-  scope: string
-  as_of_date: string | null
-  source_date: string | null
-  measured_count: number | null
-  unresolved_count: number | null
+export type DrugEvidence = {
+  drug: CatalogDrug
+  recalls: DrugSafety['recalls']
+  adverse_events: DrugSafety['adverse_events']
+  release: Release
   limitations: string[]
 }
 
-export type AskDrugResponse = {
-  answer: string
-  evidence_count: number
-  limitations: string[]
-  status:
-    | 'answered'
-    | 'insufficient_evidence'
-    | 'provider_unavailable'
-    | 'validation_failed'
-  answer_mode: string
-  citations: {
-    id: string
-    record_id: string
-    type: string
-    title: string | null
-    text: string
-    source: string
-    source_record_id: string
-    source_url: string | null
-    source_date: string | null
-    source_date_type: string
-    aggregation?: {
-      scope: string
-      report_count: number
-    }
-  }[]
-  coverage: Record<string, AskCoverage>
-}
-
-export async function askStoredDrug(
-  id: string,
-  question: string,
-) {
-  return (
-    await apiClient.post<AskDrugResponse>(
-      `/api/drugs/${encodeURIComponent(id)}/ask`,
-      { question },
-    )
-  ).data
-}
-
-export type PharmaReleaseSection = {
-  text_excerpt: string
-  truncated: boolean
-}
-
-export type PharmaReleaseLabel = {
-  label_id: string
-  brand_name: string | null
-  product_ndcs: string[]
-  package_ndcs: string[]
-  rxcuis: string[]
-  application_number: string[]
-  formulation: string | null
-  label_date: string | null
-  classification: string
-  scope: string
-  ingredient_wide: boolean
-  basis: string
-  boxed_warning_present: boolean
-  bulk_source_file: string
-  sections: Partial<Record<
-    'boxed_warning'
-    | 'contraindications'
-    | 'warnings_and_cautions'
-    | 'adverse_reactions'
-    | 'drug_interactions',
-    PharmaReleaseSection
-  >>
-}
-
-export type SemaglutideRelease = {
-  schema_version: string
-  artifact_version: string
-
-  drug: {
-    display_name: string
-    canonical_name: string
-    ingredient_id: string
-    cohort_rank: number
-    cohort_version: string
-    identity_status: string
-    mapping_confidence: string
-    is_combination: boolean
-    source_product_count: number
-    product_ndc_count: number
-    associated_rxcui_count: number
-    mapping_source: string
-  }
-
-  analytics: {
-    scope: string
-    source: string
-    start_month: string
-    end_month: string
-    ingredient_reaction_month_rows: number
-    distinct_reaction_terms: number
-    months: number
-    pair_report_activity: number
-
-    monthly: {
-      period: string
-      pair_report_activity: number
-      active_reaction_terms: number
-    }[]
-
-    top_reactions: {
-      reaction: string
-      pair_report_activity: number
-      active_months: number
-    }[]
-
-    interpretation: string
-  }
-
-  regulatory_evidence: {
-    scope: string
-    verified_label_count: number
-    classification: string
-    labels: PharmaReleaseLabel[]
-    note: string
-  }
-
-  recalls: {
-    coverage_status: string
-    verified_applicable_records: number | null
-    note: string
-  }
-
-  coverage: Record<string, string>
-  limitations: string[]
-
-  sources: {
-    cohort: string
-    analytics: string
-    regulatory_audit: string
-    label_bulk_cache: string
-  }
-}
-
-export async function getSemaglutideRelease(
-  signal?: AbortSignal,
-) {
-  return (
-    await apiClient.get<SemaglutideRelease>(
-      '/api/v1/pharma/releases/semaglutide',
-      { signal },
-    )
-  ).data
+export async function getDrugEvidence(id: string, signal?: AbortSignal) {
+  return (await apiClient.get<DrugEvidence>(`/api/drugs/${encodeURIComponent(id)}/evidence`, { signal })).data
 }

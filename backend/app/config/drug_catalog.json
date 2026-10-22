@@ -1,0 +1,15 @@
+{
+  "description": "Search scope only; all identifiers and metadata come from openFDA NDC. No catalog-size limit.",
+  "drugs": [
+    "semaglutide", "tirzepatide", "metformin", "insulin glargine",
+    "empagliflozin", "dapagliflozin", "atorvastatin", "rosuvastatin",
+    "lisinopril", "amlodipine", "losartan", "metoprolol succinate",
+    "hydrochlorothiazide", "apixaban", "rivaroxaban", "warfarin sodium",
+    "amoxicillin", "azithromycin", "doxycycline", "cephalexin",
+    "sertraline", "fluoxetine", "escitalopram", "bupropion",
+    "gabapentin", "levetiracetam", "sumatriptan", "omeprazole",
+    "pantoprazole", "famotidine", "albuterol sulfate", "montelukast sodium",
+    "cetirizine hydrochloride", "loratadine", "levothyroxine sodium",
+    "prednisone", "ibuprofen", "acetaminophen", "naproxen", "ondansetron"
+  ]
+}

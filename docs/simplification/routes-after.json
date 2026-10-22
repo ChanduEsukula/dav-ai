@@ -1,0 +1,391 @@
+{
+  "/api/drugs/search": {
+    "get": {
+      "tags": [
+        "Drug Catalog"
+      ],
+      "summary": "Search Drugs",
+      "operationId": "search_drugs_api_drugs_search_get",
+      "parameters": [
+        {
+          "name": "q",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "title": "Q"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 1,
+            "default": 20,
+            "title": "Limit"
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "maximum": 100000,
+            "minimum": 0,
+            "default": 0,
+            "title": "Offset"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrugSearchResponse"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/drugs/{product_id}": {
+    "get": {
+      "tags": [
+        "Drug Catalog"
+      ],
+      "summary": "Drug Detail",
+      "operationId": "drug_detail_api_drugs__product_id__get",
+      "parameters": [
+        {
+          "name": "product_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "title": "Product Id"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrugOverview"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/drugs/{product_id}/safety": {
+    "get": {
+      "tags": [
+        "Stored Drug Safety"
+      ],
+      "summary": "Drug Safety",
+      "operationId": "drug_safety_api_drugs__product_id__safety_get",
+      "parameters": [
+        {
+          "name": "product_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "title": "Product Id"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/drugs/{product_id}/timeline": {
+    "get": {
+      "tags": [
+        "Stored Drug Safety"
+      ],
+      "summary": "Drug Timeline",
+      "operationId": "drug_timeline_api_drugs__product_id__timeline_get",
+      "parameters": [
+        {
+          "name": "product_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "title": "Product Id"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/drugs/{product_id}/safety/{section}": {
+    "get": {
+      "tags": [
+        "Stored Drug Safety"
+      ],
+      "summary": "Drug Safety Section",
+      "operationId": "drug_safety_section_api_drugs__product_id__safety__section__get",
+      "parameters": [
+        {
+          "name": "product_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "title": "Product Id"
+          }
+        },
+        {
+          "name": "section",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "enum": [
+              "labels",
+              "recalls",
+              "adverse_events",
+              "communications"
+            ],
+            "type": "string",
+            "title": "Section"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/v1/reports/pharmaceutical": {
+    "post": {
+      "tags": [
+        "PDF evidence reports"
+      ],
+      "summary": "Create Pharmaceutical Report",
+      "operationId": "create_pharmaceutical_report_api_v1_reports_pharmaceutical_post",
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PharmaceuticalReportRequest"
+            }
+          }
+        },
+        "required": true
+      },
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/pdf": {}
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/coverage": {
+    "get": {
+      "tags": [
+        "Pharmaceutical evidence"
+      ],
+      "summary": "Coverage",
+      "operationId": "coverage_api_coverage_get",
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/drugs/{product_id}/evidence": {
+    "get": {
+      "tags": [
+        "Pharmaceutical evidence"
+      ],
+      "summary": "Evidence",
+      "operationId": "evidence_api_drugs__product_id__evidence_get",
+      "parameters": [
+        {
+          "name": "product_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "title": "Product Id"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/": {
+    "get": {
+      "summary": "Root",
+      "operationId": "root__get",
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "/health": {
+    "get": {
+      "summary": "Health Check",
+      "operationId": "health_check_health_get",
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "/ready": {
+    "get": {
+      "summary": "Readiness Check",
+      "operationId": "readiness_check_ready_get",
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      }
+    }
+  }
+}
