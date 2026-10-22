@@ -4,6 +4,7 @@ import sys
 from app.agent.backend import WORKER_BYTES
 from app.agent.contracts import decode, encode
 from app.agent.tools import resolve_drug_product, search_historical_recalls
+from app.agent.source_tools import get_source_evidence
 from app.db.pharma.release_repository import FrozenPharmaReleaseRepository
 
 
@@ -21,6 +22,8 @@ def main():
             result = FrozenPharmaReleaseRepository().find_by_id(arguments["product_id"])
         elif operation == "recalls" and set(arguments) == {"product_id"}:
             result = search_historical_recalls(arguments["product_id"])
+        elif operation in {"labels_v2", "recalls_v2", "faers_v2"} and set(arguments) == {"product_id"}:
+            result = get_source_evidence(operation.removesuffix("_v2"), arguments["product_id"])
         else:
             raise ValueError("Unknown worker operation")
         output = encode({"ok": True, "result": result}, WORKER_BYTES)

@@ -21,6 +21,8 @@ class ProductSession:
         self._selected = None
         self.iterations = 0
         self.tool_calls = 0
+        self.research_attempts = {}
+        self.workflow_state = "UNSELECTED"
         self.closed = False
         self.lock = asyncio.Lock()
 
@@ -92,6 +94,7 @@ class ProductSession:
             await self._verified_product(reference)
             self.authorize(owner_id)
             self._selected = reference
+            self.workflow_state = "CONFIRMED"
             return self._public(reference)
 
     async def _verified_product(self, reference):

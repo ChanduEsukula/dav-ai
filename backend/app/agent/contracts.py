@@ -23,6 +23,9 @@ class RecallArguments(BaseModel):
 class Limits:
     max_iterations: int = 4
     max_tool_calls: int = 4
+    max_tools_per_request: int = 3
+    max_calls_per_tool: int = 1
+    max_briefing_bytes: int = 262144
     max_response_bytes: int = 65536
     max_prompt_bytes: int = 12288
     max_evidence_bytes: int = 65536
@@ -35,7 +38,8 @@ class Limits:
 
     def __post_init__(self):
         for name in ("max_iterations", "max_tool_calls", "max_response_bytes", "max_prompt_bytes",
-                     "max_evidence_bytes", "context_tokens", "prediction_tokens"):
+                     "max_evidence_bytes", "context_tokens", "prediction_tokens", "max_tools_per_request",
+                     "max_calls_per_tool", "max_briefing_bytes"):
             value = getattr(self, name)
             if type(value) is not int or not 0 < value <= 1048576:
                 raise ValueError("Invalid agent limit")
@@ -63,7 +67,7 @@ def decode(payload: bytes, limit: int):
         raise AgentRejected("invalid_json") from exc
 
 
-def tool_schema(selected_ref: str | None):
+def tool_schema(selected_ref: str | None, names: list[str] | None = None):
     if selected_ref is None:
         name, description, schema = ("resolve_drug_product", "Find candidates; a human must confirm the exact product.",
                                      QueryArguments.model_json_schema())
@@ -71,4 +75,12 @@ def tool_schema(selected_ref: str | None):
         name, description, schema = ("search_historical_recalls", "Retrieve historical records for the human-confirmed product only.",
                                      RecallArguments.model_json_schema())
         schema["properties"]["product_ref"]["enum"] = [selected_ref]
-    return [{"type": "function", "function": {"name": name, "description": description, "parameters": schema}}]
+    if names is None or selected_ref is None:
+        names = [name]
+    descriptions = {
+        "get_drug_label_evidence": "Retrieve admitted exact-product label warnings, contraindications and interactions.",
+        "get_faers_reporting_evidence": "Retrieve ingredient-level FAERS reporting associations; never NDC-specific or causal.",
+        name: description,
+    }
+    return [{"type": "function", "function": {"name": tool, "description": descriptions.get(tool, tool),
+              "parameters": schema}} for tool in names]

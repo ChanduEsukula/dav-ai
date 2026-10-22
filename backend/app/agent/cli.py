@@ -5,6 +5,7 @@ from decimal import Decimal, InvalidOperation
 import json
 import re
 import secrets
+import sys
 
 from app.agent.backend import ProcessBackend
 from app.agent.contracts import AgentRejected
@@ -64,6 +65,63 @@ def resolve_selection(user_input: str, candidates: list[dict]) -> str | None:
     return product["product_ref"]
 
 
+def format_briefing(result: dict) -> str:
+    """Human-readable source excerpts; full typed JSON remains available separately."""
+    if "schema_version" not in result:
+        return json.dumps(result, indent=2)
+    medication = result["medication"]
+    lines = [f"Research workflow: {result['status'].upper()}",
+             f"Routing: {result['routing']['mode']} (model suggestions and backend completion are recorded in JSON)",
+             format_candidate(1, medication), ""]
+    for section in result["sections"]:
+        lines.append(f"{section['category'].upper()}: {section['status'].upper()}")
+        if section["reason"]:
+            lines.append(f"  Reason: {section['reason']}")
+        card = section["evidence"]
+        if card is None:
+            continue
+        lines.append(f"  Release: {card['release']['release_id']}; coverage: {card['coverage']['state']}")
+        if section["category"] == "labels":
+            if not card["records"]:
+                lines.append("  No admitted exact-product label; missing linkage does not mean no warnings exist.")
+            for record in card["records"]:
+                lines.append(f"  Label set {record['label_set_id']}, version {record['label_version']}, effective {record['effective_date']} ({record['selection_status']}).")
+                for field in ("boxed_warning", "warnings_and_precautions", "warnings", "contraindications", "drug_interactions", "adverse_reactions"):
+                    text = record[field]
+                    if text:
+                        excerpt = text[:800]
+                        suffix = " [excerpt; full stored text available with --json]" if len(text) > 800 else ""
+                        lines.append(f"  {field} — quoted label text: {excerpt}{suffix}")
+                    else:
+                        lines.append(f"  {field}: not available in this stored label; no absence-of-risk inference.")
+                lines.append(f"  Source: {record['source_url']} (snapshot {card['source_snapshot_date']})")
+        elif section["category"] == "recalls":
+            for record in card["records"]:
+                lines.extend([f"  {record['recall_number']} — {record['classification']}: {record['reason_for_recall']}",
+                    f"  Recalling firm: {record['recalling_firm']}; relationship: {record['applicability_class']}; method: {record['match_method']}; lot scope: {record['lot_scope']}.",
+                    f"  Source: {record['source_url']} (snapshot {card['source_snapshot_date']})"])
+            if not card["records"]:
+                lines.append("  No linked records in this collection; this does not establish no historical recalls.")
+        else:
+            lines.append("  INGREDIENT-LEVEL reporting only, not observations attributed to this NDC.")
+            for record in card["records"]:
+                analytics = record["analytics"]
+                if analytics is None:
+                    lines.append(f"  {record['ingredient_name']}: analytics unavailable, not zero.")
+                    continue
+                lines.extend([f"  {record['ingredient_name']} — {analytics['report_count']} {analytics['count_unit']}; {analytics['serious_report_count']} marked serious.",
+                    f"  Reporting period: {analytics['window_start']} to {analytics['window_end']} ({analytics['date_basis']})."])
+                reactions = record["top_reported_reactions"]
+                lines.append(f"  Reaction terms (showing {min(5, len(reactions))} of {len(reactions)} stored rankings): " + "; ".join(
+                    f"{r['reaction']} (co-report activity {r['co_report_activity']})" for r in reactions[:5]))
+                lines.append(f"  Source: {record['source']['source_url']} (snapshot {record['source']['export_date']})")
+            lines.append("  Reports do not establish causation, incidence, comparative safety or individual risk; ingredient totals are not summed.")
+        lines.append("")
+    lines.append("Research limitations:")
+    lines.extend(f"- {limitation}" for limitation in result["limitations"])
+    return "\n".join(lines)
+
+
 async def run(arguments, *, session=None, agent=None, owner_id=None):
     owner = owner_id or ("local-cli:" + secrets.token_urlsafe(16))
     if session is None:
@@ -77,16 +135,29 @@ async def run(arguments, *, session=None, agent=None, owner_id=None):
             candidates = result.get("candidates", [])
             if not candidates:
                 return
-            print(format_candidates(candidates))
-            print()
+            display = sys.stderr if getattr(arguments, "json", False) else sys.stdout
+            print(format_candidates(candidates), file=display)
+            if result.get("results_may_be_incomplete"):
+                print("Search reached its limit; these candidates may be incomplete. Refine the NDC/formulation if needed.", file=display)
+            print(file=display)
             range_label = f"1-{len(candidates)}" if len(candidates) > 1 else "1"
             prompt = f"Select product number ({range_label}, Enter to cancel): "
-            reference = resolve_selection(input(prompt), candidates)
+            if getattr(arguments, "json", False):
+                print(prompt, end="", flush=True, file=sys.stderr)
+                selection = input("")
+            else:
+                selection = input(prompt)
+            reference = resolve_selection(selection, candidates)
             if not reference:
                 return
             await session.confirm(reference, owner_id=owner)
-            result = await agent.run(arguments.question, session=session, owner_id=owner)
-        print(json.dumps(result, indent=2))
+            if hasattr(arguments, "routing"):
+                result = await agent.research(arguments.question, session=session, owner_id=owner,
+                    categories=arguments.categories, routing=arguments.routing)
+            else:
+                # Preserve the v1 programmatic run() interface for existing callers.
+                result = await agent.run(arguments.question, session=session, owner_id=owner)
+        print(json.dumps(result, indent=2) if getattr(arguments, "json", False) or not hasattr(arguments, "routing") else format_briefing(result))
     except (AgentRejected, TimeoutError, EOFError) as exc:
         print(json.dumps({"status": "stopped", "reason": str(exc) or "confirmation_missing"}))
 
@@ -96,6 +167,11 @@ def main():
     parser.add_argument("--model", choices=MODELS, default=MODELS[0])
     parser.add_argument("--question", required=True)
     parser.add_argument("--query", help="Optional user-entered product search; still requires confirmation")
+    parser.add_argument("--categories", nargs="+", choices=("labels", "recalls", "faers"),
+                        help="Explicit evidence scope; otherwise literal category words in the question are used")
+    parser.add_argument("--routing", choices=("auto", "model", "deterministic"), default="auto",
+                        help="auto may complete a valid subset plan transparently; invalid calls always stop")
+    parser.add_argument("--json", action="store_true", help="Print the full typed briefing instead of concise excerpts")
     asyncio.run(run(parser.parse_args()))
 
 

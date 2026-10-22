@@ -52,6 +52,7 @@ def _project_product(product: dict[str, Any]) -> dict[str, Any]:
         "product_ndcs": product.get("product_ndcs", []),
         "package_ndcs": product.get("package_ndcs", []),
         "active_ingredients": product.get("active_ingredients", []),
+        "ingredient_ids": product.get("ingredient_ids", []),
     }
 
 

@@ -15,7 +15,7 @@ Do not assert no recalls from missing/partial coverage. FAERS associations never
 Only the listed tool is permitted. No shell, SQL, network or filesystem tools exist."""
 
 
-def parse_proposal(response, *, selected_ref, limit):
+def parse_proposal(response, *, selected_ref, limit, allowed_tools=None):
     encode(response, limit)
     if not isinstance(response, dict) or response.get("done") is not True:
         raise AgentRejected("incomplete_model_response")
@@ -32,7 +32,7 @@ def parse_proposal(response, *, selected_ref, limit):
     if not isinstance(function, dict):
         raise AgentRejected("invalid_tool_call")
     expected = "search_historical_recalls" if selected_ref else "resolve_drug_product"
-    if function.get("name") != expected:
+    if function.get("name") not in (allowed_tools if allowed_tools is not None else [expected]):
         raise AgentRejected("incorrect_tool_name")
     arguments = function.get("arguments")
     if isinstance(arguments, str):
@@ -44,12 +44,17 @@ def parse_proposal(response, *, selected_ref, limit):
         raise AgentRejected("invalid_tool_arguments") from exc
     if selected_ref and parsed["product_ref"] != selected_ref:
         raise AgentRejected("unknown_product_reference")
-    return expected, parsed
+    return function["name"], parsed
 
 
 class ResearchAgent:
     def __init__(self, client):
         self.client = client
+
+    async def research(self, question, *, session, owner_id, categories=None, routing="auto"):
+        from app.agent.workflow import ResearchWorkflow
+        return await ResearchWorkflow(self.client).run(question, session=session, owner_id=owner_id,
+                                                      categories=categories, routing=routing)
 
     async def run(self, question, *, session, owner_id):
         # The wall-clock deadline includes waiting for the session lock.
