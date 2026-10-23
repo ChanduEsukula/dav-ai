@@ -1,0 +1,151 @@
+{
+  "terraform": {
+    "required_version": ">= 1.13.5, < 2.0.0",
+    "required_providers": {
+      "google": {
+        "source": "hashicorp/google",
+        "version": "8.8.0"
+      }
+    }
+  },
+  "variable": {
+    "foundation_enabled": {
+      "type": "bool",
+      "default": false,
+      "description": "Creates PRIVATE deny-only resources if separately authorized. Does not enable evidence or public ingress."
+    },
+    "project_id": {
+      "type": "string",
+      "default": "foundation-not-configured",
+      "validation": {
+        "condition": "${can(regex(\"^[a-z][a-z0-9-]{4,28}[a-z0-9]$\", var.project_id))}",
+        "error_message": "Supply an explicitly approved existing project ID."
+      }
+    },
+    "region": {
+      "type": "string",
+      "default": "us-central1",
+      "validation": {
+        "condition": "${var.region == \"us-central1\"}",
+        "error_message": "Only the reviewed us-central1 foundation region is allowed."
+      }
+    },
+    "foundation_image": {
+      "type": "string",
+      "default": "",
+      "description": "Reviewed deny-only image in the same-project foundation registry, pinned by SHA256.",
+      "validation": {
+        "condition": "${!var.foundation_enabled || can(regex(format(\"^us-central1-docker[.]pkg[.]dev/%s/davai-foundation/deny-api@sha256:[a-f0-9]{64}$\", var.project_id), var.foundation_image))}",
+        "error_message": "Enabled foundation requires the reviewed same-project deny-api image digest."
+      }
+    }
+  },
+  "provider": {
+    "google": {
+      "project": "${var.project_id}",
+      "region": "${var.region}"
+    }
+  },
+  "resource": {
+    "google_artifact_registry_repository": {
+      "foundation": {
+        "count": "${var.foundation_enabled ? 1 : 0}",
+        "repository_id": "davai-foundation",
+        "location": "${var.region}",
+        "format": "DOCKER",
+        "description": "Private reviewed deny-only foundation images. No datasets or models.",
+        "docker_config": {
+          "immutable_tags": true
+        },
+        "lifecycle": {
+          "prevent_destroy": true
+        }
+      }
+    },
+    "google_service_account": {
+      "foundation": {
+        "count": "${var.foundation_enabled ? 1 : 0}",
+        "account_id": "davai-foundation",
+        "display_name": "Deny-only foundation; no runtime project roles"
+      }
+    },
+    "google_cloud_run_v2_service": {
+      "foundation": {
+        "count": "${var.foundation_enabled ? 1 : 0}",
+        "name": "davai-foundation-deny",
+        "location": "${var.region}",
+        "ingress": "INGRESS_TRAFFIC_INTERNAL_ONLY",
+        "invoker_iam_disabled": false,
+        "deletion_protection": true,
+        "template": {
+          "service_account": "${google_service_account.foundation[0].email}",
+          "timeout": "10s",
+          "max_instance_request_concurrency": 4,
+          "scaling": {
+            "min_instance_count": 0,
+            "max_instance_count": 1
+          },
+          "containers": [
+            {
+              "image": "${var.foundation_image}",
+              "ports": [
+                {
+                  "container_port": 8080
+                }
+              ],
+              "env": [
+                {
+                  "name": "DAVAI_ENV",
+                  "value": "staging"
+                },
+                {
+                  "name": "DAVAI_FOUNDATION_MODE",
+                  "value": "deny"
+                }
+              ],
+              "resources": {
+                "limits": {
+                  "cpu": "1",
+                  "memory": "512Mi"
+                },
+                "cpu_idle": true,
+                "startup_cpu_boost": false
+              },
+              "startup_probe": {
+                "http_get": {
+                  "path": "/health",
+                  "port": 8080
+                },
+                "initial_delay_seconds": 0,
+                "timeout_seconds": 2,
+                "period_seconds": 5,
+                "failure_threshold": 6
+              },
+              "liveness_probe": {
+                "http_get": {
+                  "path": "/health",
+                  "port": 8080
+                },
+                "timeout_seconds": 2,
+                "period_seconds": 30,
+                "failure_threshold": 3
+              }
+            }
+          ]
+        },
+        "depends_on": [
+          "google_artifact_registry_repository.foundation"
+        ],
+        "lifecycle": {
+          "prevent_destroy": true
+        }
+      }
+    }
+  },
+  "output": {
+    "foundation_enabled": {
+      "value": "${var.foundation_enabled}",
+      "description": "False by default; no services, storage, secrets, IAM bindings or APIs are provisioned in this state."
+    }
+  }
+}

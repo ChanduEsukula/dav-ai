@@ -1,0 +1,94 @@
+name: GCP foundation checks (no deployment)
+
+on:
+  pull_request:
+    paths:
+      - 'deployment/**'
+      - 'backend/tests/deployment_foundation/**'
+      - 'frontend/**'
+      - 'backend/requirements-runtime.lock'
+      - '.github/workflows/gcp-foundation.yml'
+  push:
+    branches: [main, master]
+    paths:
+      - 'deployment/**'
+      - 'backend/tests/deployment_foundation/**'
+      - 'frontend/**'
+      - 'backend/requirements-runtime.lock'
+      - '.github/workflows/gcp-foundation.yml'
+
+# This workflow has NO OIDC minting, cloud secrets, registry push or apply step.
+permissions:
+  contents: read
+
+concurrency:
+  group: foundation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy-and-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      - run: |
+          python -m pip install --require-hashes --only-binary=:all: -r backend/requirements-dev.txt
+      - run: PYTHONPATH=backend python -m pytest backend/tests/deployment_foundation backend/tests/security backend/tests/agent -q
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: '1.13.5'
+          terraform_wrapper: false
+      - name: Offline provider validation and mocked plans
+        working-directory: deployment/gcp
+        env:
+          CHECKPOINT_DISABLE: '1'
+        run: |
+          terraform init -backend=false -input=false -lockfile=readonly
+          terraform validate
+          terraform test
+      - name: Scan infrastructure configuration
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          version: v0.76.1
+          scan-type: config
+          scan-ref: deployment/gcp
+          exit-code: '1'
+          severity: HIGH,CRITICAL
+  container-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build deny-only backend and build-only UI artifact
+        env:
+          DOCKER_BUILDKIT: '1'
+        run: |
+          docker build --pull -f deployment/foundation/Dockerfile -t davai-foundation:test .
+          docker build --pull -f deployment/frontend/Dockerfile -t davai-ui-artifact:test .
+      - name: Smoke deny-only container on host loopback
+        run: |
+          set -eu
+          docker run -d --name davai-foundation-smoke --read-only --cap-drop=ALL --security-opt=no-new-privileges --memory=512m --cpus=1 --pids-limit=64 -p 127.0.0.1:18081:8080 davai-foundation:test
+          trap 'docker rm -f davai-foundation-smoke >/dev/null' EXIT
+          for _attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:18081/health >/dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:18081/health | grep -q 'foundation_alive'
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:18081/ready)" = 503
+          test "$(curl -s -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:18081/api/local/research/sessions)" = 503
+      - name: Scan deny-only image
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          version: v0.76.1
+          image-ref: davai-foundation:test
+          exit-code: '1'
+          severity: HIGH,CRITICAL
+          scanners: vuln

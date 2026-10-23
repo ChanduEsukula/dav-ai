@@ -1,0 +1,8 @@
+# Dockerfile-specific context allowlist; existing root API allowlist stays unchanged.
+**
+!deployment/
+!deployment/foundation/
+!deployment/foundation/requirements.lock
+!deployment/foundation/app.py
+!deployment/foundation/Dockerfile
+!deployment/foundation/Dockerfile.dockerignore
