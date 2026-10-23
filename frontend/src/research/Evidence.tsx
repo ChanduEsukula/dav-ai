@@ -1,13 +1,9 @@
 import type { PublicBriefing, PublicLabel, PublicRecall, PublicFaers, PublicCoverage } from './contracts'
+import { isOfficialFdaUrl } from '../utils/sourceUrl'
 
 const name = (key: string) => key.replaceAll('_', ' ')
-function Source({ url, label }: { url: string; label: string }) {
-  let valid: boolean
-  try {
-    const parsed = new URL(url)
-    if (parsed.protocol !== 'https:' || !['api.fda.gov', 'www.fda.gov', 'fda.gov', 'open.fda.gov'].includes(parsed.hostname) || parsed.username || parsed.password || (parsed.port && parsed.port !== '443')) throw Error()
-    valid = true
-  } catch { valid = false }
+export function Source({ url, label }: { url: string; label: string }) {
+  const valid = isOfficialFdaUrl(url)
   return valid ? <a href={url} target="_blank" rel="noopener noreferrer">{label} ↗</a> : <span>Source URL unavailable · {label}</span>
 }
 export function Limitations({ items }: { items: string[] }) {

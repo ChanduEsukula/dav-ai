@@ -1,16 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { getDrugEvidence, searchCatalog, type CatalogDrug, type Coverage, type DrugEvidence, type Release } from '../api/drugCatalog'
 import { generateReport } from '../api/reports'
+import { isOfficialFdaUrl } from '../utils/sourceUrl'
 
 const drugName = (drug: CatalogDrug) => drug.brand_names.join(', ') || drug.generic_name || 'Unnamed medication'
 const text = (value: string | null | undefined) => value || 'Not supplied'
 const number = (value: number) => value.toLocaleString()
 
 function isOfficialSource(url: string | null) {
-  try {
-    const parsed = new URL(url || '')
-    return parsed.protocol === 'https:' && ['api.fda.gov', 'www.fda.gov', 'fda.gov', 'open.fda.gov', 'download.open.fda.gov'].includes(parsed.hostname) && !parsed.username && !parsed.password && (!parsed.port || parsed.port === '443')
-  } catch { return false }
+  return isOfficialFdaUrl(url)
 }
 
 function Source({ url, children = 'Official FDA source' }: { url: string | null; children?: React.ReactNode }) {
