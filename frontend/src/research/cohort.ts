@@ -1,4 +1,4 @@
-import type { Candidate, PublicBriefing } from './contracts'
+import type { Candidate, PublicBriefing, PublicSection } from './contracts'
 
 export type EvidenceStatus =
   | 'Available'
@@ -10,7 +10,6 @@ export type EvidenceStatus =
 
 export interface CohortItem {
   id: string
-  product_ref?: string
   brand_names: string[]
   generic_name: string | null
   strength: string | null
@@ -34,7 +33,6 @@ export function createCohortItemFromCandidate(candidate: Candidate): CohortItem 
   const primaryNdc = candidate.product_ndcs[0] || candidate.product_ref
   return {
     id: primaryNdc,
-    product_ref: candidate.product_ref,
     brand_names: candidate.brand_names,
     generic_name: candidate.generic_name,
     strength: candidate.strength,
@@ -56,24 +54,24 @@ export function updateCohortItemWithBriefing(
   item: CohortItem,
   briefing: PublicBriefing
 ): CohortItem {
-  let labelStatus: EvidenceStatus = 'Unavailable'
-  let recallStatus: EvidenceStatus = 'Unavailable'
-  let faersStatus: EvidenceStatus = 'Unavailable'
+  // Cohort identities survive session changes; opaque references do not.
+  if (!item.product_ndcs.some(ndc => briefing.medication.product_ndcs.includes(ndc))) return item
+
+  let labelStatus: EvidenceStatus = 'Not evaluated'
+  let recallStatus: EvidenceStatus = 'Not evaluated'
+  let faersStatus: EvidenceStatus = 'Not evaluated'
+  const statuses: Record<PublicSection['status'], EvidenceStatus> = {
+    available: 'Available',
+    incomplete: 'Incomplete',
+    unavailable: 'Unavailable',
+    failed: 'Error',
+    not_requested: 'Not evaluated',
+  }
 
   briefing.sections.forEach((section) => {
-    const s = section.status.toLowerCase()
-    const mapStatus = (): EvidenceStatus => {
-      if (s === 'complete' || s === 'completed') return 'Available'
-      if (s === 'partial') return 'Partial'
-      if (s === 'incomplete') return 'Incomplete'
-      if (s === 'unavailable' || s === 'not_found') return 'Unavailable'
-      if (s === 'error') return 'Error'
-      return 'Not evaluated'
-    }
-
-    if (section.category === 'labels') labelStatus = mapStatus()
-    if (section.category === 'recalls') recallStatus = mapStatus()
-    if (section.category === 'faers') faersStatus = mapStatus()
+    if (section.category === 'labels') labelStatus = statuses[section.status]
+    if (section.category === 'recalls') recallStatus = statuses[section.status]
+    if (section.category === 'faers') faersStatus = statuses[section.status]
   })
 
   let overallStatus: EvidenceStatus = 'Partial'

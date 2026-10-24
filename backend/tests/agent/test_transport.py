@@ -75,3 +75,16 @@ def test_subprocess_is_killed_and_reaped_after_timeout(monkeypatch):
     with pytest.raises(TimeoutError):
         asyncio.run(ProcessBackend().execute("resolve", {"query": "Xanax"}, timeout=.01))
     assert process.killed and process.reaped
+
+
+def test_synthesis_uses_local_json_schema_without_tools(monkeypatch):
+    from app.agent.synthesis import Selection
+    calls=[]
+    async def request(self,path,payload):
+        calls.append((path,payload));return {'done':True}
+    monkeypatch.setattr(OllamaClient,'request',request)
+    assert asyncio.run(OllamaClient().synthesize([{'role':'user','content':'bounded'}]))=={'done':True}
+    path,payload=calls[0]
+    assert path=='/api/chat' and payload['format']==Selection.model_json_schema()
+    assert 'tools' not in payload and payload['stream'] is False
+    assert payload['options']['temperature']==0 and payload['options']['seed']==7

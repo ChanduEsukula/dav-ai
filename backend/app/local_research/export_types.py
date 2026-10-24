@@ -21,8 +21,8 @@ def typescript(schema):
     if kind == "object":
         if "properties" not in schema:
             return "Record<string, " + typescript(schema.get("additionalProperties", {})) + ">"
-        # The API serializes defaults and nullable fields; none are omitted.
-        return "{ " + "; ".join(json.dumps(k) + ": " + typescript(v)
+        # The additive answer field is optional for compatibility with older briefings.
+        return "{ " + "; ".join(json.dumps(k) + ("?: " if k == "answer" and k not in schema.get("required", []) else ": ") + typescript(v)
                                    for k, v in schema["properties"].items()) + " }"
     return {"string": "string", "integer": "number", "number": "number", "boolean": "boolean",
             "null": "null"}.get(kind, "unknown")

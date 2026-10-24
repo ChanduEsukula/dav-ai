@@ -1,3 +1,4 @@
+import { SynthesisOption } from './SynthesisOption'
 import type { Candidate, PublicBriefing } from './contracts'
 import type { Session } from './client'
 import { EverydayBriefing } from './EverydayEvidence'
@@ -22,6 +23,8 @@ interface EverydayWorkspaceProps {
   toggleCategory: (cat: string) => void
   model: string
   setModel: (val: string) => void
+  synthesize?: boolean
+  setSynthesize?: (enabled: boolean) => void
   models: string[]
   onRunResearch: () => void
   onCancelResearch: () => void
@@ -72,6 +75,8 @@ export default function EverydayWorkspace({
   selectedCategories,
   toggleCategory,
   onRunResearch,
+  synthesize,
+  setSynthesize,
   onCancelResearch,
   onResetSession,
   running,
@@ -306,6 +311,7 @@ export default function EverydayWorkspace({
                 ))}
               </div>
 
+              <SynthesisOption enabled={synthesize} onChange={setSynthesize} disabled={running || attempted || !!busy} />
               <div className="everyday-question-block">
                 <label htmlFor="everyday-question">Your Research Question (Optional):</label>
                 <textarea

@@ -31,7 +31,7 @@ export const researchApi = {
   create: (pairing: string) => request<Created>(root, pairing, {}),
   search: (s: Session, query: string) => request<Candidates>(path(s, 'resolve'), s.capability, { query }),
   confirm: (s: Session, product_ref: string) => request<Confirmed>(path(s, 'confirm'), s.capability, { product_ref }),
-  run: (s: Session, question: string, categories: string[], model: string | null) => request<Outcome>(path(s, 'research'), s.capability, { question, categories, model }),
+  run: (s: Session, question: string, categories: string[], model: string | null, synthesize = false) => request<Outcome>(path(s, 'research'), s.capability, { question, categories, model, synthesize }),
   result: (s: Session) => request<Outcome>(path(s, 'result'), s.capability),
   cancel: (s: Session) => request<Outcome>(path(s, 'cancel'), s.capability, {}),
   close: (s: Session) => request<Outcome>(path(s, 'close'), s.capability, {}),

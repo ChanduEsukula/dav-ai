@@ -48,13 +48,14 @@ def parse_proposal(response, *, selected_ref, limit, allowed_tools=None):
 
 
 class ResearchAgent:
-    def __init__(self, client):
+    def __init__(self, client, **kwargs):
         self.client = client
+        self.kwargs = kwargs
 
-    async def research(self, question, *, session, owner_id, categories=None, routing="auto"):
+    async def research(self, question, *, session, owner_id, categories=None, routing="auto", synthesize=False):
         from app.agent.workflow import ResearchWorkflow
-        return await ResearchWorkflow(self.client).run(question, session=session, owner_id=owner_id,
-                                                      categories=categories, routing=routing)
+        return await ResearchWorkflow(self.client, **self.kwargs).run(question, session=session, owner_id=owner_id,
+                                                      categories=categories, routing=routing, synthesize=synthesize)
 
     async def run(self, question, *, session, owner_id):
         # The wall-clock deadline includes waiting for the session lock.

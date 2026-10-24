@@ -19,7 +19,8 @@ from app.agent.contracts import AgentRejected, Limits
 from app.agent.model import MODELS, OllamaClient
 from app.agent.orchestrator import ResearchAgent
 from app.agent.research_contracts import (Category, Contract, ResearchBriefing, MedicationIdentity,
-    Coverage, IngredientReporting, LabelRecord, RecallRecord, LabelCard, RecallCard, FaersCard, BriefingSection)
+    Coverage, IngredientReporting, LabelRecord, RecallRecord, LabelCard, RecallCard, FaersCard, BriefingSection,
+    RagEvidence, RagPassage)
 from app.agent.state import ProductSession
 from app.db.database import is_deployed_environment
 
@@ -42,6 +43,7 @@ class Research(Contract):
     question: str = Field(min_length=1, max_length=2000)
     categories: list[Category] = Field(min_length=1, max_length=3)
     model: Literal["llama3.2:3b", "qwen3.5:4b-q4_K_M"] | None = None
+    synthesize: bool = False
 
 
 class Candidate(Contract):
@@ -119,6 +121,14 @@ class PublicFaers(FaersCard):
     coverage: PublicCoverage
 
 
+class PublicRagPassage(RagPassage):
+    pass
+
+
+class PublicRagEvidence(RagEvidence):
+    product_id: str = Field(exclude=True)
+
+
 class PublicSection(BriefingSection):
     evidence: Annotated[PublicLabel | PublicRecall | PublicFaers, Field(discriminator="type")] | None = None
 
@@ -126,6 +136,7 @@ class PublicSection(BriefingSection):
 class PublicBriefing(ResearchBriefing):
     medication: PublicMedication
     sections: list[PublicSection]
+    rag: PublicRagEvidence | None = None
 
 
 class Outcome(Contract):
@@ -363,7 +374,7 @@ def create_app(listener: socket.socket, pairing: str, *, backend_factory=Process
                 client = model_factory(body.model or MODELS[0])
                 result = await ResearchAgent(client).research(body.question, session=entry.session,
                     owner_id=entry.owner, categories=body.categories,
-                    routing="auto" if body.model else "deterministic")
+                    routing="auto" if body.model else "deterministic", synthesize=body.synthesize)
                 entry.session.authorize(entry.owner)
                 if result.get("schema_version") == "agent-research-v2":
                     briefing = ResearchBriefing.model_validate(result)

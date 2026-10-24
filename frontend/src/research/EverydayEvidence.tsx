@@ -1,9 +1,12 @@
+import { GroundedAnswerPanel } from './GroundedAnswer'
+import { labelAnchor } from './evidenceAnchors'
 import type {
   PublicBriefing,
   PublicLabel,
   PublicRecall,
   PublicFaers,
   PublicCoverage,
+  PublicRagEvidence,
 } from './contracts'
 import { Source } from './Evidence'
 
@@ -76,7 +79,7 @@ export function EverydayLabelCard({ card }: { card: PublicLabel }) {
               {fields.map(({ key, title }) => {
                 const text = record[key]
                 return (
-                  <details className="everyday-section-accordion" key={key} open={key === 'boxed_warning' && !!text}>
+                  <details id={labelAnchor(record, key)} tabIndex={-1} className="everyday-section-accordion" key={key} open={key === 'boxed_warning' && !!text}>
                     <summary className="everyday-section-summary">
                       <span className="section-title">{title}</span>
                       <span className={`section-status-tag ${text ? 'tag-available' : 'tag-missing'}`}>
@@ -273,6 +276,58 @@ export function EverydayFaersCard({ card }: { card: PublicFaers }) {
   )
 }
 
+export function EverydayRagCard({ rag }: { rag: PublicRagEvidence }) {
+  if (rag.status === 'not_configured') return null
+
+  const isSupported = rag.status === 'supported'
+  const isCandidate = rag.status === 'candidate_only'
+  const isInsufficient = rag.status === 'insufficient_evidence'
+
+  return (
+    <article className="everyday-card everyday-rag-card" aria-label="Key label excerpts from hybrid search">
+      <div className="everyday-card-header">
+        <div className="card-title-group">
+          <span className={`card-badge ${isSupported ? 'badge-label' : isCandidate ? 'badge-candidate' : 'badge-neutral'}`}>
+            {isSupported ? 'Verified Label Excerpts' : isCandidate ? 'Related Topic Excerpts (Unverified)' : 'Search Findings'}
+          </span>
+          <h3>Relevant Label Passages (Smart Search)</h3>
+        </div>
+      </div>
+
+      {isCandidate && (
+        <div className="everyday-alert alert-warning" role="alert">
+          <strong>Review Full Label Below:</strong> These passages were matched by topic similarity. They are not confirmed answers to your question. Please review the official prescribing insert sections below with your clinician.
+        </div>
+      )}
+
+      {isInsufficient && (
+        <div className="everyday-alert alert-neutral" role="status">
+          <strong>No Specific Label Statements Found:</strong>{' '}
+          {rag.reason === 'unsupported_topic'
+            ? 'The FDA label for this medication does not discuss the specific condition or question asked.'
+            : rag.reason === 'section_absent'
+              ? `The requested label section (${rag.missing_sections.join(', ')}) does not exist for this medication.`
+              : 'No matching evidence was found in the official label.'}
+        </div>
+      )}
+
+      {rag.passages.length > 0 && (
+        <div className="everyday-rag-passages">
+          {rag.passages.map((p) => (
+            <div key={p.chunk_id} className="everyday-passage-box">
+              <div className="passage-badge-row">
+                <span className="passage-citation">{p.citation_tag}</span>
+                <span className="passage-section-pill">{p.section.replace(/_/g, ' ')}</span>
+              </div>
+              <p className="passage-excerpt-text">"{p.text}"</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </article>
+  )
+}
+
 export function EverydayBriefing({ briefing }: { briefing: PublicBriefing }) {
   const headings: Record<string, string> = {
     labels: 'Drug Labeling',
@@ -295,6 +350,9 @@ export function EverydayBriefing({ briefing }: { briefing: PublicBriefing }) {
           <span className="status-val">{briefing.status.toUpperCase()}</span>
         </div>
       </div>
+
+      <GroundedAnswerPanel briefing={briefing} />
+      {briefing.rag && <EverydayRagCard rag={briefing.rag} />}
 
       <div className="everyday-cards-grid">
         {briefing.sections
@@ -338,7 +396,7 @@ export function EverydayBriefing({ briefing }: { briefing: PublicBriefing }) {
           </p>
           <p>Model selected: {briefing.routing.model_planned_tools.join(', ') || 'none'}</p>
           <p>Backend selected: {briefing.routing.backend_completed_tools.join(', ') || 'none'}</p>
-          <p>Evidence is verified and assembled by the backend. Model narrative is not used.</p>
+          <p>Evidence is verified and assembled by the backend. Optional AI-selected answers are validated separately from source evidence.</p>
         </details>
         <p className="everyday-disclaimer-footer">
           This educational evidence summary was retrieved from a frozen, read-only FDA release. It does not provide medical advice, diagnosis, or personalized treatment recommendations. Always consult a licensed healthcare professional for medical decisions.

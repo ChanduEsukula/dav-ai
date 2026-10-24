@@ -1,0 +1,144 @@
+{
+  "version": "grounded-answers-heldout-v1",
+  "created_at": "2026-10-24T04:51:16.655918+00:00",
+  "annotation_method": "Source-grounded single-assessor question holdout authored after development fixes, before held-out generation. Independent human/clinical review pending. No threshold optimization; narrow sample, same corpus/products.",
+  "cases": [
+    {
+      "case_id": "h01",
+      "ndc": "0002-1433",
+      "question": "What serious hypersensitivity history appears in Trulicity contraindications?",
+      "tags": [
+        "supported_label"
+      ],
+      "mutation": null,
+      "expected_status": "generated",
+      "source_record_id": "cfddaea0-134c-48f2-95df-3cff565e366e",
+      "section": "contraindications",
+      "expected_support_span": {
+        "start": 245,
+        "end": 330,
+        "text_sha256": "f621ad7903566d2c853e9abbc5e5e4a290041e438ab2d5b6a572e332ccd0bcaf"
+      },
+      "rationale": "Direct complete allergy statement in the admitted label; frozen before this held-out run.",
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "claim_support": null,
+        "relevance": null,
+        "notes": null
+      }
+    },
+    {
+      "case_id": "h02",
+      "ndc": "58151-155",
+      "question": "In Lipitor warnings and precautions, what age is listed as a muscle-injury risk factor?",
+      "tags": [
+        "supported_label"
+      ],
+      "mutation": null,
+      "expected_status": "generated",
+      "source_record_id": "dd011a82-7356-4b83-86c4-b21cd9138fc6",
+      "section": "warnings_and_precautions",
+      "expected_support_span": {
+        "start": 0,
+        "end": 219,
+        "text_sha256": "7346b1813e68ecb73735cecc9fc340b5bbd508f9c5d81861cd22f3e35196dfd0"
+      },
+      "rationale": "Direct age-related risk factor statement; not individualized risk estimation.",
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "claim_support": null,
+        "relevance": null,
+        "notes": null
+      }
+    },
+    {
+      "case_id": "h03",
+      "ndc": "71297-240",
+      "question": "Retrieve the boxed warning for this Augmentin combination suspension.",
+      "tags": [
+        "missing_evidence",
+        "combination_drug"
+      ],
+      "mutation": null,
+      "expected_status": "insufficient_evidence",
+      "source_record_id": null,
+      "section": null,
+      "expected_support_span": null,
+      "rationale": "No admitted boxed-warning field exists for this exact formulation.",
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "claim_support": null,
+        "relevance": null,
+        "notes": null
+      }
+    },
+    {
+      "case_id": "h04",
+      "ndc": "0002-0243",
+      "question": "What are contraindications for NDC 0002-0152?",
+      "tags": [
+        "identity_conflict",
+        "different_formulations"
+      ],
+      "mutation": null,
+      "expected_status": "insufficient_evidence",
+      "source_record_id": null,
+      "section": null,
+      "expected_support_span": null,
+      "rationale": "Confirmed product is 0002-0243, not the explicitly requested 0002-0152.",
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "claim_support": null,
+        "relevance": null,
+        "notes": null
+      }
+    },
+    {
+      "case_id": "h05",
+      "ndc": "0597-0152",
+      "question": "What do warnings and precautions say about protection from lunar radiation?",
+      "tags": [
+        "unsupported_topic"
+      ],
+      "mutation": null,
+      "expected_status": "insufficient_evidence",
+      "source_record_id": null,
+      "section": null,
+      "expected_support_span": null,
+      "rationale": "No admitted section statement addresses lunar radiation protection.",
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "claim_support": null,
+        "relevance": null,
+        "notes": null
+      }
+    },
+    {
+      "case_id": "h06",
+      "ndc": "81964-003",
+      "question": "Do FAERS reports prove the ES-600 combination caused a specific patient death?",
+      "tags": [
+        "faers_causation",
+        "combination_drug"
+      ],
+      "mutation": null,
+      "expected_status": "insufficient_evidence",
+      "source_record_id": null,
+      "section": null,
+      "expected_support_span": null,
+      "rationale": "Reporting associations cannot authorize patient-specific causality claims.",
+      "human_review": {
+        "status": "pending",
+        "reviewer": null,
+        "claim_support": null,
+        "relevance": null,
+        "notes": null
+      }
+    }
+  ]
+}

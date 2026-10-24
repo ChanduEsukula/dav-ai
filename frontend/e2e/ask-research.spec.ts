@@ -11,7 +11,7 @@ test('explicit product confirmation leads to scoped, transparent partial evidenc
     if (path.endsWith('/resolve')) body = { state: 'confirmation_required', candidates: [product], results_may_be_incomplete: false }
     if (path.endsWith('/confirm')) body = { state: 'confirmed', medication: product }
     if (path.endsWith('/research')) { executions++; body = { state: 'running', briefing: null, code: null } }
-    if (path.endsWith('/result')) body = { state: 'partial', briefing: fixture, code: null }
+    if (path.endsWith('/result')) body = { state: 'partial', briefing: { ...fixture, medication: { ...fixture.medication, ...product } }, code: null }
     await route.fulfill({ json: body })
   })
   await page.goto('/ask')

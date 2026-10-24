@@ -45,6 +45,7 @@ export default function Workspace({ mode = 'everyday' }: WorkspaceProps) {
   )
   const [selected, setSelected] = useState<string[]>(Object.keys(categories))
   const [model, setModel] = useState('')
+  const [synthesize, setSynthesize] = useState(false)
   const [busy, setBusy] = useState('')
   const [running, setRunning] = useState(false)
   const [attempted, setAttempted] = useState(false)
@@ -100,6 +101,13 @@ export default function Workspace({ mode = 'everyday' }: WorkspaceProps) {
         } else {
           setRunning(false)
           if (outcome.briefing) {
+            const medication = outcome.briefing.medication
+            if (!product || medication.product_ref !== product.product_ref
+                || medication.product_ndcs.length !== product.product_ndcs.length
+                || !product.product_ndcs.every(ndc => medication.product_ndcs.includes(ndc))) {
+              showError(new Error('product_binding_changed'))
+              return
+            }
             setResult(outcome.briefing)
             // Update matching cohort items
             if (product) {
@@ -116,7 +124,7 @@ export default function Workspace({ mode = 'everyday' }: WorkspaceProps) {
           }
         }
       } catch (err) {
-        if (!stopped) {
+        if (!stopped && current === generation.current) {
           setRunning(false)
           showError(err)
         }
@@ -142,17 +150,36 @@ export default function Workspace({ mode = 'everyday' }: WorkspaceProps) {
   }
 
   async function reset() {
+    const previous = owned.current
     generation.current++
-    if (session) await researchApi.close(session).catch(() => {})
     owned.current = null
     setSession(null)
     setProduct(null)
     setCandidates(null)
     setChoice('')
+    setIncomplete(false)
+    setModel('')
     setResult(null)
     setRunning(false)
     setAttempted(false)
     setError('')
+    if (previous) await researchApi.close(previous).catch(() => {})
+  }
+
+  const handleSelectForDeepResearch = (item: CohortItem) => {
+    void action('Preparing selected product…', async () => {
+      const ndc = item.product_ndcs[0]
+      if (!ndc) return
+      if (product?.product_ndcs.includes(ndc)) return
+      setQuery(ndc)
+      if (product || attempted || running) {
+        await reset()
+      } else {
+        setChoice('')
+        setCandidates(null)
+        setResult(null)
+      }
+    })
   }
 
   const handleSearch = () => {
@@ -167,7 +194,7 @@ export default function Workspace({ mode = 'everyday' }: WorkspaceProps) {
   }
 
   const handleConfirm = () => {
-    if (!session || !choice) return
+    if (!session || !choice || !candidates?.some(candidate => candidate.product_ref === choice)) return
     void action('Verifying exact product…', async () => {
       const confirmed = await researchApi.confirm(session, choice)
       setProduct(confirmed.medication)
@@ -176,10 +203,10 @@ export default function Workspace({ mode = 'everyday' }: WorkspaceProps) {
   }
 
   const handleRunResearch = () => {
-    if (!session) return
+    if (!session || !product || attempted || running) return
     void action('Starting bounded research…', async () => {
       setAttempted(true)
-      await researchApi.run(session, question, selected, model || null)
+      await researchApi.run(session, question, selected, model || null, synthesize)
       setRunning(true)
     })
   }
@@ -225,6 +252,8 @@ export default function Workspace({ mode = 'everyday' }: WorkspaceProps) {
     toggleCategory,
     model,
     setModel,
+    synthesize,
+    setSynthesize,
     models: session ? session.models : [],
     onRunResearch: handleRunResearch,
     onCancelResearch: handleCancelResearch,
@@ -245,6 +274,7 @@ export default function Workspace({ mode = 'everyday' }: WorkspaceProps) {
           {...sharedProps}
           cohort={cohort}
           setCohort={setCohort}
+          onSelectForDeepResearch={handleSelectForDeepResearch}
         />
       )}
     </main>

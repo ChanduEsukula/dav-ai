@@ -1,7 +1,7 @@
 """Typed Agent v2 output contracts. These describe evidence, never medical advice."""
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.services.pharma.evidence import official_source
 
@@ -252,6 +252,76 @@ class RoutingInfo(Contract):
     discarded_model_content: bool
 
 
+class RagPassage(Contract):
+    chunk_id: str
+    section: str
+    ordinal: int
+    text: str
+    source_record_id: str | None = None
+    source_url: str | None = None
+    citation_tag: str
+
+
+class RagEvidence(Contract):
+    type: Literal["hybrid_rag_evidence"] = "hybrid_rag_evidence"
+    status: Literal["supported", "candidate_only", "insufficient_evidence", "not_configured"]
+    reason: str
+    product_ref: str
+    product_id: str
+    requested_sections: list[str] = Field(default_factory=list)
+    missing_sections: list[str] = Field(default_factory=list)
+    route: str = "none"
+    verified_answer: bool = False
+    confidence: Literal["calibrated", "uncalibrated", "none"] = "none"
+    passages: list[RagPassage] = Field(default_factory=list)
+    degraded_reason: str | None = None
+    limitations: list[str] = Field(default_factory=list)
+
+
+class AnswerCitation(Contract):
+    evidence_id: str = Field(pattern=r"^E[1-9][0-9]?$")
+    category: Literal["labels"] = "labels"
+    product_ref: str
+    source_record_id: str
+    source_url: str
+    label_set_id: str
+    label_version: str
+    section: Literal["boxed_warning", "warnings_and_precautions", "warnings",
+                     "contraindications", "drug_interactions", "adverse_reactions"]
+    start: int = Field(ge=0)
+    end: int = Field(gt=0)
+    text_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    source_snapshot_date: str
+    release_id: str
+
+    @field_validator("source_url")
+    @classmethod
+    def official(cls, value):
+        return IdentitySource.official(value)
+
+
+class GroundedAnswer(Contract):
+    status: Literal["generated", "insufficient_evidence", "unavailable", "invalid_output"]
+    reason: str
+    text: str | None = Field(default=None, max_length=1200)
+    product_ref: str
+    citations: list[AnswerCitation] = Field(default_factory=list)
+    method: Literal["local_model_extractive"] = "local_model_extractive"
+    limitations: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def consistent_status(self):
+        if self.status == "generated":
+            if not self.text or not self.text.strip() or not 1 <= len(self.citations) <= 3:
+                raise ValueError("Generated answers require text and citations")
+            if (len({c.evidence_id for c in self.citations}) != len(self.citations)
+                    or any(c.product_ref != self.product_ref or c.end <= c.start for c in self.citations)):
+                raise ValueError("Answer citation binding mismatch")
+        elif self.text is not None or self.citations:
+            raise ValueError("Fallback answers cannot contain generated text or citations")
+        return self
+
+
 class ResearchBriefing(Contract):
     schema_version: Literal["agent-research-v2"] = "agent-research-v2"
     status: Literal["completed", "partial", "stopped"]
@@ -261,3 +331,6 @@ class ResearchBriefing(Contract):
     routing: RoutingInfo
     sections: list[BriefingSection]
     limitations: list[str]
+    rag: RagEvidence | None = None
+    answer: GroundedAnswer | None = None
+

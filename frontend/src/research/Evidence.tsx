@@ -1,4 +1,6 @@
-import type { PublicBriefing, PublicLabel, PublicRecall, PublicFaers, PublicCoverage } from './contracts'
+import { GroundedAnswerPanel } from './GroundedAnswer'
+import { labelAnchor } from './evidenceAnchors'
+import type { PublicBriefing, PublicLabel, PublicRecall, PublicFaers, PublicCoverage, PublicRagEvidence } from './contracts'
 import { isOfficialFdaUrl } from '../utils/sourceUrl'
 
 const name = (key: string) => key.replaceAll('_', ' ')
@@ -29,7 +31,7 @@ export function Labels({ card }: { card: PublicLabel }) {
   return <><p className="scope">Exact-product label evidence · no ingredient substitution</p><Coverage value={card.coverage} />
     {!card.records.length && <p className="critical">No admitted exact-product label is available in this frozen evidence release.</p>}
     <p>Missing labels or sections do not mean this medication has no warnings.</p>
-    {card.records.map(row => <article className="record" key={`${row.label_set_id}-${row.label_version}`}><h3>Label version {row.label_version}</h3><p>Effective {row.effective_date} · {name(row.selection_status)} · {name(row.applicability_class)}</p><p>Link: {row.match_method} · {row.matched_value}</p><Source url={row.source_url} label={`${row.source} · ${row.source_record_id}`} />{fields.map(field => <details key={field}><summary>{name(field)} · {row[field] ? 'stored text' : 'unavailable'}</summary><p className="label-text">{row[field] ?? 'This section is unavailable in the admitted stored label.'}</p></details>)}</article>)}
+    {card.records.map(row => <article className="record" key={`${row.label_set_id}-${row.label_version}`}><h3>Label version {row.label_version}</h3><p>Effective {row.effective_date} · {name(row.selection_status)} · {name(row.applicability_class)}</p><p>Link: {row.match_method} · {row.matched_value}</p><Source url={row.source_url} label={`${row.source} · ${row.source_record_id}`} />{fields.map(field => <details key={field} id={`section-${field}`}><summary>{name(field)} · {row[field] ? 'stored text' : 'unavailable'}</summary><p id={labelAnchor(row, field)} tabIndex={-1} className="label-text">{row[field] ?? 'This section is unavailable in the admitted stored label.'}</p></details>)}</article>)}
     {card.missing_sections.length > 0 && <p>Missing sections: {card.missing_sections.map(name).join(', ')}</p>}<Limitations items={card.limitations} /></>
 }
 export function Recalls({ card }: { card: PublicRecall }) {
@@ -38,9 +40,79 @@ export function Recalls({ card }: { card: PublicRecall }) {
 export function Faers({ card }: { card: PublicFaers }) {
   return <><p className="scope">Ingredient-level reporting associations</p><p className="critical">These reports are not selected-product or NDC-specific observations. They do not establish causation, incidence, comparative safety or individual risk. Never sum ingredient counts into a product total.</p><Coverage value={card.coverage} />{card.records.map(row => <article className="record" key={row.ingredient_name}><h3>{row.ingredient_name}</h3><Coverage value={row.coverage} />{row.analytics ? <><p>Reporting period: {row.analytics.window_start} – {row.analytics.window_end}</p><p>{row.analytics.count_unit} · {row.analytics.date_basis}</p><dl className="research-counts">{(['report_count', 'unique_case_count', 'serious_report_count', 'serious_known_report_count', 'death_report_count', 'hospitalization_report_count', 'disability_report_count', 'life_threatening_report_count', 'suspect_report_count', 'concomitant_report_count', 'interacting_report_count'] as const).map(key => <div key={key}><dt>{name(key)}</dt><dd>{row.analytics![key]}</dd></div>)}</dl><h4>Ranked reaction co-reporting terms</h4><ol>{row.top_reported_reactions.slice(0, 5).map(reaction => <li key={reaction.rank}>{reaction.reaction} · {reaction.co_report_activity} co-report activity · {reaction.active_months} active months</li>)}</ol>{row.top_reported_reactions.length > 5 && <details><summary>All ranked reaction terms ({row.top_reported_reactions.length})</summary><ol start={6}>{row.top_reported_reactions.slice(5).map(reaction => <li key={reaction.rank}>{reaction.reaction} · {reaction.co_report_activity} co-report activity · {reaction.active_months} active months</li>)}</ol></details>}<details><summary>Stored monthly reporting associations</summary><ul>{row.monthly.map(month => <li key={month.period}>{month.period}: {month.report_count} associations; {month.serious_report_count} serious</li>)}</ul></details><Limitations items={row.analytics.limitations} /></> : <p>Reporting analytics unavailable for this ingredient.</p>}{row.source && <><p><Source url={row.source.source_url} label={row.source.source_name} /> · Export {row.source.export_date} · Observed {row.source.observed_at ?? 'unavailable'}</p><details><summary>Stored source provenance</summary><p>Source record: {row.source.source_id}</p></details></>}</article>)}<p>{card.summary.limitation}</p><Limitations items={card.limitations} /></>
 }
+export function RagEvidencePanel({ rag }: { rag: PublicRagEvidence }) {
+  if (rag.status === 'not_configured') {
+    return null
+  }
+  const isSupported = rag.status === 'supported'
+  const isCandidate = rag.status === 'candidate_only'
+  const isInsufficient = rag.status === 'insufficient_evidence'
+
+  const statusLabel = isSupported
+    ? 'Verified Relevant Evidence'
+    : isCandidate
+      ? 'Unverified Semantic Candidates'
+      : 'Insufficient Label Evidence'
+
+  return (
+    <section className="panel rag-panel" aria-label="Hybrid RAG Label Passages">
+      <div className="research-panel-heading">
+        <div className="rag-heading-group">
+          <h2>Relevant FDA Label Passages (Hybrid RAG)</h2>
+          <span className="rag-route-tag">{rag.route.replace('_', ' ')}</span>
+        </div>
+        <span className={`rag-status-badge ${isSupported ? 'rag-badge-supported' : isCandidate ? 'rag-badge-candidate' : 'rag-badge-insufficient'}`}>
+          {statusLabel}
+        </span>
+      </div>
+
+      {isCandidate && (
+        <div className="rag-alert rag-alert-warning" role="alert">
+          <strong>Semantic Candidates Only:</strong> The passages below were retrieved by nearest-neighbor vector similarity. They are NOT verified clinical answers or medical conclusions. Full label verification is required.
+        </div>
+      )}
+
+      {isInsufficient && (
+        <div className="rag-alert rag-alert-info" role="status">
+          <strong>No Sufficient Supporting Evidence:</strong>{' '}
+          {rag.reason === 'unsupported_topic'
+            ? 'The requested topic or clinical condition was not found in the official label for this medication formulation.'
+            : rag.reason === 'section_absent'
+              ? `The requested label section (${rag.missing_sections.join(', ')}) is absent in the official FDA label for this product.`
+              : rag.reason === 'no_admitted_label'
+                ? 'No admitted FDA label is available for this product in the frozen evidence release.'
+                : `Retrieval abstained: ${rag.reason.replace(/_/g, ' ')}.`}
+        </div>
+      )}
+
+      {rag.passages.length > 0 && (
+        <div className="rag-passages-list">
+          {rag.passages.map((p) => (
+            <article className="rag-passage-card" key={p.chunk_id}>
+              <div className="rag-passage-header">
+                <span className="rag-citation-pill">{p.citation_tag}</span>
+                <a href={`#section-${p.section}`} className="rag-section-link">
+                  {name(p.section)} ↓
+                </a>
+                {p.source_url && p.source_record_id && (
+                  <Source url={p.source_url} label={`FDA SPL · ${p.source_record_id}`} />
+                )}
+              </div>
+              <p className="rag-passage-text">"{p.text}"</p>
+            </article>
+          ))}
+        </div>
+      )}
+
+      <Limitations items={rag.limitations} />
+    </section>
+  )
+}
 export function Briefing({ value }: { value: PublicBriefing }) {
   const headings = { labels: 'Drug labeling', recalls: 'Historical recalls', faers: 'FAERS reporting evidence' }
   return <section className="briefing" aria-label="Research briefing"><div className="research-result-header"><div><p className="eyebrow">Verified evidence briefing</p><h2>{value.medication.brand_names.join(', ') || value.medication.generic_name}</h2><p>{value.medication.strength} · {value.medication.dosage_form} · NDC {value.medication.product_ndcs.join(', ')}</p><p>Requested: {value.requested_categories.map(key => headings[key]).join(', ')}</p></div><strong className="research-status">{value.status}</strong></div>
+    <GroundedAnswerPanel briefing={value} />
+    {value.rag && <RagEvidencePanel rag={value.rag} />}
     <div className="research-evidence">{value.sections.filter(section => section.status !== 'not_requested').map(section => <section className="panel" key={section.category}><div className="research-panel-heading"><h2>{headings[section.category]}</h2><span>{section.status}</span></div>{section.reason && <p className="critical">{name(section.reason)}</p>}{section.evidence && <><p className="snapshot">Release: {section.evidence.release.release_id} · Schema {section.evidence.release.schema_version} · Build {section.evidence.release.build_time_utc}</p>{section.evidence.type === 'drug_label_evidence' ? <Labels card={section.evidence} /> : section.evidence.type === 'historical_recall_evidence' ? <Recalls card={section.evidence} /> : <Faers card={section.evidence} />}</>}</section>)}</div>
-    <section className="panel research-disclosures"><h2>Research limitations</h2><Limitations items={value.limitations} /><details><summary>Research execution details</summary><p>{value.routing.mode === 'model' ? 'Native model-directed tool planning' : value.routing.mode === 'deterministic' ? 'Explicit deterministic execution · no model planning' : 'Deterministic completion of an incomplete model plan'}</p><p>Model selected: {value.routing.model_planned_tools.join(', ') || 'none'}</p><p>Backend selected: {value.routing.backend_completed_tools.join(', ') || 'none'}</p><p>Evidence is verified and assembled by the backend. Model narrative is not used.</p></details></section></section>
+    <section className="panel research-disclosures"><h2>Research limitations</h2><Limitations items={value.limitations} /><details><summary>Research execution details</summary><p>{value.routing.mode === 'model' ? 'Native model-directed tool planning' : value.routing.mode === 'deterministic' ? 'Explicit deterministic execution · no model planning' : 'Deterministic completion of an incomplete model plan'}</p><p>Model selected: {value.routing.model_planned_tools.join(', ') || 'none'}</p><p>Backend selected: {value.routing.backend_completed_tools.join(', ') || 'none'}</p><p>Evidence is verified and assembled by the backend. Optional AI-selected answers are validated separately from source evidence.</p></details></section></section>
 }

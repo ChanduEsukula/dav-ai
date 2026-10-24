@@ -1,8 +1,9 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ResearchProWorkspace from './ResearchProWorkspace'
-import type { Candidate } from './contracts'
-import { MAX_COHORT_LIMIT, type CohortItem } from './cohort'
+import type { Candidate, PublicBriefing, PublicSection } from './contracts'
+import { MAX_COHORT_LIMIT, type CohortItem, createCohortItemFromCandidate, updateCohortItemWithBriefing } from './cohort'
+import fixture from './briefing.fixture.json'
 
 const makeCandidate = (id: string, name: string): Candidate => ({
   product_ref: `ref_${id}`,
@@ -59,6 +60,7 @@ describe('Research Pro Cohort Investigation Workflow', () => {
     error: '',
     cohort: [] as CohortItem[],
     setCohort,
+    onSelectForDeepResearch: vi.fn(),
   }
 
   beforeEach(() => {
@@ -74,6 +76,41 @@ describe('Research Pro Cohort Investigation Workflow', () => {
       screen.getByText(/Search on the left to add up to 50 pharmaceutical products/i)
     ).toBeInTheDocument()
     expect(screen.getByText('0 / 50 selected')).toBeInTheDocument()
+  })
+
+  it('delegates cohort selection without reusing an opaque candidate reference', () => {
+    const item = createCohortItemFromCandidate(makeCandidate('0001', 'Lipitor'))
+    render(<ResearchProWorkspace {...baseProps} product={makeCandidate('0002', 'Xanax')} cohort={[item]} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Deep Research →' }))
+    expect(baseProps.onSelectForDeepResearch).toHaveBeenCalledWith(item)
+    expect(baseProps.setChoice).not.toHaveBeenCalled()
+    expect(item).not.toHaveProperty('product_ref')
+  })
+
+  it.each<[PublicSection['status'], string]>([
+    ['available', 'Available'],
+    ['incomplete', 'Incomplete'],
+    ['unavailable', 'Unavailable'],
+    ['failed', 'Error'],
+    ['not_requested', 'Not evaluated'],
+  ])('renders backend evidence status %s as %s', (status, expected) => {
+    const candidate = makeCandidate('0001', 'Lipitor')
+    const value = {
+      ...fixture,
+      medication: { ...fixture.medication, ...candidate },
+      sections: ['labels', 'recalls', 'faers'].map(category => ({ category, status, evidence: null, reason: null })),
+    } as PublicBriefing
+    const item = updateCohortItemWithBriefing(createCohortItemFromCandidate(candidate), value)
+    render(<ResearchProWorkspace {...baseProps} cohort={[item]} />)
+    expect(within(screen.getByRole('row', { name: /Lipitor/ })).getAllByText(expected, { exact: true })).toHaveLength(3)
+  })
+
+  it('does not attach another product’s briefing or mark omitted categories unavailable', () => {
+    const item = createCohortItemFromCandidate(makeCandidate('0001', 'Lipitor'))
+    expect(updateCohortItemWithBriefing(item, fixture as PublicBriefing)).toBe(item)
+    const value = { ...fixture, medication: { ...fixture.medication, product_ndcs: item.product_ndcs }, sections: [] } as PublicBriefing
+    const updated = updateCohortItemWithBriefing(item, value)
+    expect([updated.label_status, updated.recall_status, updated.faers_status]).toEqual(['Not evaluated', 'Not evaluated', 'Not evaluated'])
   })
 
   it('adds candidate products to the cohort tray and increments count', () => {

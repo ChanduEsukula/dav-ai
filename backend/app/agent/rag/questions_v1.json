@@ -1,0 +1,400 @@
+{
+  "version": "label-questions-v1.1",
+  "annotation_method": "Single-assessor source-span annotation, authored from direct admitted-label reading before any ranking. Independent of retrieval output; not an independently human-reviewed or clinical gold standard. Minimal section-scoped support spans, not exhaustive relevance judgments. Six natural paraphrases added before any semantic-model run; original 15-case SQL pilot retained separately.",
+  "cases": [
+    {
+      "case_id": "q01",
+      "tags": [
+        "boxed_warning",
+        "section_explicit"
+      ],
+      "ndc": "0002-0152",
+      "question": "What does the boxed warning say about whether thyroid C-cell tumors occur in humans?",
+      "rationale": "Source passage selected by direct label reading before retrieval runs; explicit section scope.",
+      "relevant_spans": [
+        {
+          "source_record_id": "a5dba1a3-f7f7-4b8d-b9f1-a09dcdc1b2fc",
+          "section": "boxed_warning",
+          "start": 171,
+          "end": 381,
+          "text_sha256": "f8e76a0f45cb94b3beaf980ef2811e125c3bbaca1e04a147813a69d713266915"
+        }
+      ]
+    },
+    {
+      "case_id": "q02",
+      "tags": [
+        "contraindications",
+        "section_explicit"
+      ],
+      "ndc": "0002-0152",
+      "question": "Which family cancer history is listed in the contraindications section?",
+      "rationale": "Source passage selected by direct label reading before retrieval runs; explicit section scope.",
+      "relevant_spans": [
+        {
+          "source_record_id": "a5dba1a3-f7f7-4b8d-b9f1-a09dcdc1b2fc",
+          "section": "contraindications",
+          "start": 66,
+          "end": 127,
+          "text_sha256": "60f1c3045fb853582bdfa31f60470e2fe82ae5965281d7fc03837f8891b605a9"
+        }
+      ]
+    },
+    {
+      "case_id": "q03",
+      "tags": [
+        "drug_interactions",
+        "section_explicit"
+      ],
+      "ndc": "0002-0152",
+      "question": "In drug interactions, what is stated about oral hormonal contraceptives after initiation or dose escalation?",
+      "rationale": "Source passage selected by direct label reading before retrieval runs; explicit section scope.",
+      "relevant_spans": [
+        {
+          "source_record_id": "a5dba1a3-f7f7-4b8d-b9f1-a09dcdc1b2fc",
+          "section": "drug_interactions",
+          "start": 929,
+          "end": 1153,
+          "text_sha256": "75b184c6b4b18e806910b53041428e57051c0fb1e136ceff4dd17c5c2f35e759"
+        }
+      ]
+    },
+    {
+      "case_id": "q04",
+      "tags": [
+        "boxed_warning",
+        "similar_product_names",
+        "different_strength",
+        "section_explicit"
+      ],
+      "ndc": "0002-0243",
+      "question": "For this confirmed 5 mg Zepbound product, what does the boxed warning say about thyroid C-cell tumors in humans?",
+      "rationale": "Source passage selected by direct label reading before retrieval runs; explicit section scope.",
+      "relevant_spans": [
+        {
+          "source_record_id": "a5dba1a3-f7f7-4b8d-b9f1-a09dcdc1b2fc",
+          "section": "boxed_warning",
+          "start": 171,
+          "end": 381,
+          "text_sha256": "f8e76a0f45cb94b3beaf980ef2811e125c3bbaca1e04a147813a69d713266915"
+        }
+      ]
+    },
+    {
+      "case_id": "q05",
+      "tags": [
+        "drug_interactions",
+        "section_explicit"
+      ],
+      "ndc": "0002-1433",
+      "question": "In the interaction section, how does the gastric-emptying delay change after the first dose?",
+      "rationale": "Source passage selected by direct label reading before retrieval runs; explicit section scope.",
+      "relevant_spans": [
+        {
+          "source_record_id": "cfddaea0-134c-48f2-95df-3cff565e366e",
+          "section": "drug_interactions",
+          "start": 510,
+          "end": 589,
+          "text_sha256": "8258a72684a4bcb019a407c171ba877470ae59f261295eafba0c9f1246c20347"
+        }
+      ]
+    },
+    {
+      "case_id": "q06",
+      "tags": [
+        "adverse_reactions",
+        "section_explicit"
+      ],
+      "ndc": "0002-1433",
+      "question": "Which common adverse reactions are listed for Trulicity in its adverse reactions section?",
+      "rationale": "Source passage selected by direct label reading before retrieval runs; explicit section scope.",
+      "relevant_spans": [
+        {
+          "source_record_id": "cfddaea0-134c-48f2-95df-3cff565e366e",
+          "section": "adverse_reactions",
+          "start": 876,
+          "end": 1001,
+          "text_sha256": "429f799f4d25f4e6cf071285a565c2f07700c5d23c714a6397f22210d30b9c89"
+        }
+      ]
+    },
+    {
+      "case_id": "q07",
+      "tags": [
+        "contraindications",
+        "section_explicit"
+      ],
+      "ndc": "58151-155",
+      "question": "Which liver conditions appear in the Lipitor contraindications section?",
+      "rationale": "Source passage selected by direct label reading before retrieval runs; explicit section scope.",
+      "relevant_spans": [
+        {
+          "source_record_id": "dd011a82-7356-4b83-86c4-b21cd9138fc6",
+          "section": "contraindications",
+          "start": 22,
+          "end": 68,
+          "text_sha256": "471a4073053cbeaee76e175f45685ef8bf8bc896b5dfd95296f12e7747c5a8bd"
+        }
+      ]
+    },
+    {
+      "case_id": "q08",
+      "tags": [
+        "drug_interactions",
+        "section_explicit"
+      ],
+      "ndc": "58151-155",
+      "question": "What does the Lipitor interaction section say about grapefruit juice and muscle injury?",
+      "rationale": "Source passage selected by direct label reading before retrieval runs; explicit section scope.",
+      "relevant_spans": [
+        {
+          "source_record_id": "dd011a82-7356-4b83-86c4-b21cd9138fc6",
+          "section": "drug_interactions",
+          "start": 22,
+          "end": 209,
+          "text_sha256": "9fb9c6309d2557760822ed0e9c811f406099db754600e99767b01d0f4a6bff51"
+        }
+      ]
+    },
+    {
+      "case_id": "q09",
+      "tags": [
+        "adverse_reactions",
+        "section_explicit"
+      ],
+      "ndc": "58151-155",
+      "question": "Which common adverse reactions are listed for this Lipitor product?",
+      "rationale": "Source passage selected by direct label reading before retrieval runs; explicit section scope.",
+      "relevant_spans": [
+        {
+          "source_record_id": "dd011a82-7356-4b83-86c4-b21cd9138fc6",
+          "section": "adverse_reactions",
+          "start": 410,
+          "end": 554,
+          "text_sha256": "fb68010c80aca8111bd164e4ed95e63b972f28d47025a0440cad17de4dd02918"
+        }
+      ]
+    },
+    {
+      "case_id": "q10",
+      "tags": [
+        "contraindications",
+        "combination_formulations",
+        "section_explicit"
+      ],
+      "ndc": "71297-240",
+      "question": "For the confirmed Augmentin combination suspension, what serious allergy history is in contraindications?",
+      "rationale": "Source passage selected by direct label reading before retrieval runs; explicit section scope.",
+      "relevant_spans": [
+        {
+          "source_record_id": "18975386-c292-a0cb-e063-6294a90aed18",
+          "section": "contraindications",
+          "start": 20,
+          "end": 199,
+          "text_sha256": "b55a2541f283dc1b768ecac6d72bf6dd60befa75badabfbb8918c0ac5400fb96"
+        }
+      ]
+    },
+    {
+      "case_id": "q11",
+      "tags": [
+        "drug_interactions",
+        "combination_formulations",
+        "section_explicit"
+      ],
+      "ndc": "71297-240",
+      "question": "In Augmentin drug interactions, what is stated about allopurinol and rash?",
+      "rationale": "Source passage selected by direct label reading before retrieval runs; explicit section scope.",
+      "relevant_spans": [
+        {
+          "source_record_id": "18975386-c292-a0cb-e063-6294a90aed18",
+          "section": "drug_interactions",
+          "start": 193,
+          "end": 255,
+          "text_sha256": "659f877253b23614d7de02e6d2d6216cf4ce89889ce689eb01e6fc6f603bc983"
+        }
+      ]
+    },
+    {
+      "case_id": "q12",
+      "tags": [
+        "drug_interactions",
+        "similar_product_names",
+        "combination_formulations",
+        "section_explicit"
+      ],
+      "ndc": "81964-003",
+      "question": "In the Augmentin ES-600 interaction section, what uncertainty is stated about concurrent allopurinol?",
+      "rationale": "Source passage selected by direct label reading before retrieval runs; explicit section scope.",
+      "relevant_spans": [
+        {
+          "source_record_id": "52540f86-fb03-c7ab-e063-6394a90a8138",
+          "section": "drug_interactions",
+          "start": 1322,
+          "end": 1404,
+          "text_sha256": "5ef4cf6a0a630f77dd703ab59e93f637b89b0e86535231904e546da4be68eac9"
+        }
+      ]
+    },
+    {
+      "case_id": "q13",
+      "tags": [
+        "drug_interactions",
+        "section_explicit"
+      ],
+      "ndc": "0597-0152",
+      "question": "What does the Jardiance interaction section say can happen to lithium concentrations?",
+      "rationale": "Source passage selected by direct label reading before retrieval runs; explicit section scope.",
+      "relevant_spans": [
+        {
+          "source_record_id": "09daa78d-f417-436c-a29e-029c015ca6d6",
+          "section": "drug_interactions",
+          "start": 1012,
+          "end": 1105,
+          "text_sha256": "d94ed93a3e5cd2bf03de2cccb84acd71c1eccf72cef869e697406350893e60bf"
+        }
+      ]
+    },
+    {
+      "case_id": "q14",
+      "tags": [
+        "missing_evidence",
+        "negative"
+      ],
+      "ndc": "0009-0029",
+      "question": "What admitted exact-product label passages are available for this Xanax formulation?",
+      "relevant_spans": [],
+      "missing_section": "all",
+      "rationale": "Direct inspection: no admitted exact-product label / requested section in this frozen release; not a claim about clinical warning absence."
+    },
+    {
+      "case_id": "q15",
+      "tags": [
+        "missing_evidence",
+        "negative"
+      ],
+      "ndc": "58151-155",
+      "question": "Retrieve the boxed warning for this exact Lipitor product.",
+      "relevant_spans": [],
+      "missing_section": "boxed_warning",
+      "rationale": "Direct inspection: no admitted exact-product label / requested section in this frozen release; not a claim about clinical warning absence."
+    },
+    {
+      "case_id": "q16",
+      "tags": [
+        "drug_interactions",
+        "paraphrase"
+      ],
+      "ndc": "0002-0152",
+      "question": "Find label information about birth-control pills after starting Zepbound or increasing its dose.",
+      "rationale": "Natural wording paired with the independently selected source span; no semantic ranking used to select the judgment. Other relevant passages may be unannotated.",
+      "relevant_spans": [
+        {
+          "source_record_id": "a5dba1a3-f7f7-4b8d-b9f1-a09dcdc1b2fc",
+          "section": "drug_interactions",
+          "start": 929,
+          "end": 1153,
+          "text_sha256": "75b184c6b4b18e806910b53041428e57051c0fb1e136ceff4dd17c5c2f35e759"
+        }
+      ]
+    },
+    {
+      "case_id": "q17",
+      "tags": [
+        "drug_interactions",
+        "paraphrase"
+      ],
+      "ndc": "0002-1433",
+      "question": "Does the slowing of stomach emptying stay the same after the first Trulicity dose?",
+      "rationale": "Natural wording paired with the independently selected source span; no semantic ranking used to select the judgment. Other relevant passages may be unannotated.",
+      "relevant_spans": [
+        {
+          "source_record_id": "cfddaea0-134c-48f2-95df-3cff565e366e",
+          "section": "drug_interactions",
+          "start": 510,
+          "end": 589,
+          "text_sha256": "8258a72684a4bcb019a407c171ba877470ae59f261295eafba0c9f1246c20347"
+        }
+      ]
+    },
+    {
+      "case_id": "q18",
+      "tags": [
+        "contraindications",
+        "paraphrase"
+      ],
+      "ndc": "58151-155",
+      "question": "Find the label restrictions involving liver failure or decompensated cirrhosis for this Lipitor product.",
+      "rationale": "Natural wording paired with the independently selected source span; no semantic ranking used to select the judgment. Other relevant passages may be unannotated.",
+      "relevant_spans": [
+        {
+          "source_record_id": "dd011a82-7356-4b83-86c4-b21cd9138fc6",
+          "section": "contraindications",
+          "start": 22,
+          "end": 68,
+          "text_sha256": "471a4073053cbeaee76e175f45685ef8bf8bc896b5dfd95296f12e7747c5a8bd"
+        }
+      ]
+    },
+    {
+      "case_id": "q19",
+      "tags": [
+        "drug_interactions",
+        "combination_formulations",
+        "paraphrase"
+      ],
+      "ndc": "71297-240",
+      "question": "Find label evidence about rash when Augmentin and allopurinol are used at the same time.",
+      "rationale": "Natural wording paired with the independently selected source span; no semantic ranking used to select the judgment. Other relevant passages may be unannotated.",
+      "relevant_spans": [
+        {
+          "source_record_id": "18975386-c292-a0cb-e063-6294a90aed18",
+          "section": "drug_interactions",
+          "start": 193,
+          "end": 255,
+          "text_sha256": "659f877253b23614d7de02e6d2d6216cf4ce89889ce689eb01e6fc6f603bc983"
+        }
+      ]
+    },
+    {
+      "case_id": "q20",
+      "tags": [
+        "drug_interactions",
+        "similar_product_names",
+        "combination_formulations",
+        "paraphrase"
+      ],
+      "ndc": "81964-003",
+      "question": "What is unknown in the ES-600 label about taking allopurinol at the same time?",
+      "rationale": "Natural wording paired with the independently selected source span; no semantic ranking used to select the judgment. Other relevant passages may be unannotated.",
+      "relevant_spans": [
+        {
+          "source_record_id": "52540f86-fb03-c7ab-e063-6394a90a8138",
+          "section": "drug_interactions",
+          "start": 1322,
+          "end": 1404,
+          "text_sha256": "5ef4cf6a0a630f77dd703ab59e93f637b89b0e86535231904e546da4be68eac9"
+        }
+      ]
+    },
+    {
+      "case_id": "q21",
+      "tags": [
+        "drug_interactions",
+        "paraphrase"
+      ],
+      "ndc": "0597-0152",
+      "question": "Find what the Jardiance label says about changes in lithium blood concentrations.",
+      "rationale": "Natural wording paired with the independently selected source span; no semantic ranking used to select the judgment. Other relevant passages may be unannotated.",
+      "relevant_spans": [
+        {
+          "source_record_id": "09daa78d-f417-436c-a29e-029c015ca6d6",
+          "section": "drug_interactions",
+          "start": 1012,
+          "end": 1105,
+          "text_sha256": "d94ed93a3e5cd2bf03de2cccb84acd71c1eccf72cef869e697406350893e60bf"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,201 @@
+{
+  "version": "blind-v1",
+  "annotation_method": "Independent single-assessor retrieval-blind annotations created after freezing Phase 1D policy. Unseen fact questions paired with explicit/semantic formulations and distinct negative categories.",
+  "created_at": "2026-10-24T04:10:00.000000+00:00",
+  "policy_sha256": "f3e1230affef9972fe02f7ef0fd2a21e6155fbe504088cfadc40ccbc00593231",
+  "corpus_sha256": "2e05404bc7daff640b8bb85ab98de7c5358924558ae0063910bbb762fe0cf166",
+  "cases": [
+    {
+      "case_id": "b01",
+      "tags": ["blind", "explicit", "warnings_and_precautions"],
+      "ndc": "0002-0152",
+      "question": "In Zepbound warnings and precautions, what is stated about acute gallbladder disease?",
+      "relevant_spans": [
+        {
+          "source_record_id": "a5dba1a3-f7f7-4b8d-b9f1-a09dcdc1b2fc",
+          "section": "warnings_and_precautions",
+          "start": 387,
+          "end": 487,
+          "text_sha256": "1fdaebb20dc53dd5ce9433ab36c002e3f1eb34a91d4fd1c563448364998c0c36"
+        }
+      ],
+      "missing_section": null,
+      "rationale": "Exact clinical warning regarding gallbladder disease in Zepbound clinical trials.",
+      "group": "explicit",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "b02",
+      "tags": ["blind", "explicit", "drug_interactions"],
+      "ndc": "58151-155",
+      "question": "In Lipitor drug interactions, what is the maximum recommended dose when taken with clarithromycin?",
+      "relevant_spans": [
+        {
+          "source_record_id": "dd011a82-7356-4b83-86c4-b21cd9138fc6",
+          "section": "drug_interactions",
+          "start": 3581,
+          "end": 3681,
+          "text_sha256": "aa0eb9806681b0dd76fa7e0efa31d71dfb9b67a447527c84fa8492fcf807ef32"
+        }
+      ],
+      "missing_section": null,
+      "rationale": "Direct drug interaction specifying 20 mg maximum dose with clarithromycin.",
+      "group": "explicit",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "b03",
+      "tags": ["blind", "explicit", "warnings_and_precautions"],
+      "ndc": "0597-0152",
+      "question": "In Jardiance warnings and precautions, what should be assessed before initiating therapy regarding volume depletion?",
+      "relevant_spans": [
+        {
+          "source_record_id": "09daa78d-f417-436c-a29e-029c015ca6d6",
+          "section": "warnings_and_precautions",
+          "start": 466,
+          "end": 566,
+          "text_sha256": "d7cca520ac48924c2b577c6d8253900c8e2406cbbd718a19807f2c137e63bd20"
+        }
+      ],
+      "missing_section": null,
+      "rationale": "Clinical warning instructing volume status assessment prior to Jardiance initiation.",
+      "group": "explicit",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "b04",
+      "tags": ["blind", "semantic", "warnings_and_precautions"],
+      "ndc": "0002-0152",
+      "question": "Does tirzepatide have label warnings for gallstones or cholecystitis?",
+      "relevant_spans": [
+        {
+          "source_record_id": "a5dba1a3-f7f7-4b8d-b9f1-a09dcdc1b2fc",
+          "section": "warnings_and_precautions",
+          "start": 387,
+          "end": 487,
+          "text_sha256": "1fdaebb20dc53dd5ce9433ab36c002e3f1eb34a91d4fd1c563448364998c0c36"
+        }
+      ],
+      "missing_section": null,
+      "rationale": "Semantic paraphrase of gallbladder disease warning.",
+      "group": "semantic",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "b05",
+      "tags": ["blind", "semantic", "drug_interactions"],
+      "ndc": "58151-155",
+      "question": "Can taking clarithromycin alongside Lipitor increase the risk of severe muscle breakdown?",
+      "relevant_spans": [
+        {
+          "source_record_id": "dd011a82-7356-4b83-86c4-b21cd9138fc6",
+          "section": "drug_interactions",
+          "start": 3581,
+          "end": 3681,
+          "text_sha256": "aa0eb9806681b0dd76fa7e0efa31d71dfb9b67a447527c84fa8492fcf807ef32"
+        }
+      ],
+      "missing_section": null,
+      "rationale": "Semantic query on clarithromycin interaction table guidance.",
+      "group": "semantic",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "b06",
+      "tags": ["blind", "semantic", "warnings_and_precautions"],
+      "ndc": "0597-0152",
+      "question": "Find label guidance about low blood pressure and dehydration with empagliflozin.",
+      "relevant_spans": [
+        {
+          "source_record_id": "09daa78d-f417-436c-a29e-029c015ca6d6",
+          "section": "warnings_and_precautions",
+          "start": 466,
+          "end": 566,
+          "text_sha256": "d7cca520ac48924c2b577c6d8253900c8e2406cbbd718a19807f2c137e63bd20"
+        }
+      ],
+      "missing_section": null,
+      "rationale": "Semantic paraphrase of volume depletion and symptomatic hypotension warning.",
+      "group": "semantic",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "b07",
+      "tags": ["blind", "negative", "missing_section"],
+      "ndc": "0597-0152",
+      "question": "Retrieve the black-box warning text for this Jardiance formulation.",
+      "relevant_spans": [],
+      "missing_section": "boxed_warning",
+      "rationale": "Jardiance has no boxed warning in admitted label evidence.",
+      "group": "explicit",
+      "negative_kind": "missing_section",
+      "absent_terms": []
+    },
+    {
+      "case_id": "b08",
+      "tags": ["blind", "negative", "missing_section"],
+      "ndc": "71297-240",
+      "question": "Retrieve the black-box warning text for this Augmentin formulation.",
+      "relevant_spans": [],
+      "missing_section": "boxed_warning",
+      "rationale": "Augmentin has no boxed warning in admitted label evidence.",
+      "group": "explicit",
+      "negative_kind": "missing_section",
+      "absent_terms": []
+    },
+    {
+      "case_id": "b09",
+      "tags": ["blind", "negative", "no_label"],
+      "ndc": "0009-0029",
+      "question": "What are the contraindications for this exact Xanax formulation?",
+      "relevant_spans": [],
+      "missing_section": "all",
+      "rationale": "No admitted label record exists in frozen SQLite release for this formulation.",
+      "group": "explicit",
+      "negative_kind": "no_label",
+      "absent_terms": []
+    },
+    {
+      "case_id": "b10",
+      "tags": ["blind", "negative", "unsupported_scope"],
+      "ndc": "0002-1433",
+      "question": "What will the retail price of Trulicity be next year?",
+      "relevant_spans": [],
+      "missing_section": null,
+      "rationale": "Future pricing and non-label information are outside frozen label evidence.",
+      "group": "semantic",
+      "negative_kind": "unsupported_scope",
+      "absent_terms": []
+    },
+    {
+      "case_id": "b11",
+      "tags": ["blind", "negative", "unsupported_topic"],
+      "ndc": "0002-0152",
+      "question": "Does Zepbound prevent Alzheimer dementia?",
+      "relevant_spans": [],
+      "missing_section": null,
+      "rationale": "No admitted indexed section supports Alzheimer disease or dementia prevention.",
+      "group": "semantic",
+      "negative_kind": "unsupported_topic",
+      "absent_terms": ["alzheimer", "dementia"]
+    },
+    {
+      "case_id": "b12",
+      "tags": ["blind", "negative", "unsupported_topic"],
+      "ndc": "58151-155",
+      "question": "Can Lipitor be used to treat open-angle glaucoma?",
+      "relevant_spans": [],
+      "missing_section": null,
+      "rationale": "No admitted indexed section supports glaucoma treatment.",
+      "group": "semantic",
+      "negative_kind": "unsupported_topic",
+      "absent_terms": ["glaucoma"]
+    }
+  ]
+}

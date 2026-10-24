@@ -325,5 +325,7 @@
     "These are historical recall records linked to this product. Lot and package applicability must be evaluated separately. No linked records does not prove that the product was never recalled.",
     "Ingredient-level spontaneous FAERS reporting associations only. These are not observations attributed to the selected NDC and do not establish causation, incidence, comparative safety or individual risk. Do not sum ingredients into a product total. No denominators, risk scores or signal classifications are inferred.",
     "Never sum into product totals."
-  ]
+  ],
+  "rag": null,
+  "answer": null
 }

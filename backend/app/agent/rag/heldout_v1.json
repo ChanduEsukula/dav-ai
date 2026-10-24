@@ -1,0 +1,632 @@
+{
+  "version": "heldout-v1",
+  "annotation_method": "Single assessor, source-grounded, retrieval-blind annotations frozen before held-out retrieval. No independent human review. Minimal supporting spans, not exhaustive relevance judgments. Positive explicit/semantic pairs test the same new facts with different wording; not independent fact samples. This is question holdout on the same products and documents, not a product/source holdout.",
+  "created_at": "2026-10-24T03:51:25.619481+00:00",
+  "policy_sha256": "f3e1230affef9972fe02f7ef0fd2a21e6155fbe504088cfadc40ccbc00593231",
+  "corpus_sha256": "2e05404bc7daff640b8bb85ab98de7c5358924558ae0063910bbb762fe0cf166",
+  "cases": [
+    {
+      "case_id": "h01",
+      "tags": [
+        "boxed_warning"
+      ],
+      "ndc": "0002-0152",
+      "question": "In the Zepbound boxed warning, which neck or voice symptoms are described?",
+      "relevant_spans": [
+        {
+          "source_record_id": "a5dba1a3-f7f7-4b8d-b9f1-a09dcdc1b2fc",
+          "section": "boxed_warning",
+          "start": 776,
+          "end": 837,
+          "text_sha256": "01845e6ed06bc81db4ea9a3dab1a74dd7e5b21069d4cdf40ba1cdb2581b04bcf"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "explicit",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h02",
+      "tags": [
+        "drug_interactions",
+        "different_formulations"
+      ],
+      "ndc": "0002-0243",
+      "question": "For confirmed Zepbound 5 mg, what do drug interactions say about warfarin?",
+      "relevant_spans": [
+        {
+          "source_record_id": "a5dba1a3-f7f7-4b8d-b9f1-a09dcdc1b2fc",
+          "section": "drug_interactions",
+          "start": 735,
+          "end": 928,
+          "text_sha256": "5425c9209ffffdcc58847584e51f146866efd24c3281a3ab70fd392b9e05acf2"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "explicit",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h03",
+      "tags": [
+        "contraindications"
+      ],
+      "ndc": "0002-1433",
+      "question": "Which serious allergy appears in the Trulicity contraindications?",
+      "relevant_spans": [
+        {
+          "source_record_id": "cfddaea0-134c-48f2-95df-3cff565e366e",
+          "section": "contraindications",
+          "start": 245,
+          "end": 330,
+          "text_sha256": "f621ad7903566d2c853e9abbc5e5e4a290041e438ab2d5b6a572e332ccd0bcaf"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "explicit",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h04",
+      "tags": [
+        "warnings_and_precautions"
+      ],
+      "ndc": "0002-1433",
+      "question": "In Trulicity warnings and precautions, what led to kidney injury in most reports?",
+      "relevant_spans": [
+        {
+          "source_record_id": "cfddaea0-134c-48f2-95df-3cff565e366e",
+          "section": "warnings_and_precautions",
+          "start": 6000,
+          "end": 6160,
+          "text_sha256": "c36819c201df6edfe03673051113f6826fc518996c263b9001a7424cb0d0cea6"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "explicit",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h05",
+      "tags": [
+        "drug_interactions"
+      ],
+      "ndc": "58151-155",
+      "question": "What do Lipitor drug interactions say about digoxin concentrations?",
+      "relevant_spans": [
+        {
+          "source_record_id": "dd011a82-7356-4b83-86c4-b21cd9138fc6",
+          "section": "drug_interactions",
+          "start": 476,
+          "end": 551,
+          "text_sha256": "976a136c35b9ce869b1c0229c2477eea9c0326306077dcaf385891b27c9634aa"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "explicit",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h06",
+      "tags": [
+        "warnings_and_precautions"
+      ],
+      "ndc": "58151-155",
+      "question": "In Lipitor warnings and precautions, which age group is a muscle-injury risk factor?",
+      "relevant_spans": [
+        {
+          "source_record_id": "dd011a82-7356-4b83-86c4-b21cd9138fc6",
+          "section": "warnings_and_precautions",
+          "start": 58,
+          "end": 219,
+          "text_sha256": "f4642e6f30992162745b4f0ea28d7223c196f684bdbb54094293baaa30f0655b"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "explicit",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h07",
+      "tags": [
+        "contraindications",
+        "combination_formulations",
+        "similar_names"
+      ],
+      "ndc": "71297-240",
+      "question": "Which previous liver reaction is listed in Augmentin contraindications?",
+      "relevant_spans": [
+        {
+          "source_record_id": "18975386-c292-a0cb-e063-6294a90aed18",
+          "section": "contraindications",
+          "start": 200,
+          "end": 278,
+          "text_sha256": "a82eefc431547ae73efa8f09789bab35d768823f3a6ab242f3cd077a59e46680"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "explicit",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h08",
+      "tags": [
+        "drug_interactions",
+        "combination_formulations",
+        "similar_names"
+      ],
+      "ndc": "81964-003",
+      "question": "In ES-600 drug interactions, what effect does probenecid have on amoxicillin?",
+      "relevant_spans": [
+        {
+          "source_record_id": "52540f86-fb03-c7ab-e063-6394a90a8138",
+          "section": "drug_interactions",
+          "start": 357,
+          "end": 421,
+          "text_sha256": "1088697adbf6f50b74ff033d95ed5285e1fd6ae3d254aa64ceb8547f95f3f9a8"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "explicit",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h09",
+      "tags": [
+        "adverse_reactions"
+      ],
+      "ndc": "81964-003",
+      "question": "Which events exceeded four percent in the ES-600 adverse reactions summary?",
+      "relevant_spans": [
+        {
+          "source_record_id": "52540f86-fb03-c7ab-e063-6394a90a8138",
+          "section": "adverse_reactions",
+          "start": 556,
+          "end": 746,
+          "text_sha256": "77067be30fec1aff73a446b77e54b3ce50847db0972ea198a13a3caf2d4ce438"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "explicit",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h10",
+      "tags": [
+        "drug_interactions"
+      ],
+      "ndc": "0597-0152",
+      "question": "What do Jardiance drug interactions say diuretics can do to urine volume?",
+      "relevant_spans": [
+        {
+          "source_record_id": "09daa78d-f417-436c-a29e-029c015ca6d6",
+          "section": "drug_interactions",
+          "start": 167,
+          "end": 330,
+          "text_sha256": "35343804f3402c6757bca71b0a9078a8fbd85a3db07477c0de76b4118bc171f3"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "explicit",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h11",
+      "tags": [
+        "boxed_warning",
+        "paraphrase"
+      ],
+      "ndc": "0002-0152",
+      "question": "Which throat or voice changes should someone watch for with Zepbound?",
+      "relevant_spans": [
+        {
+          "source_record_id": "a5dba1a3-f7f7-4b8d-b9f1-a09dcdc1b2fc",
+          "section": "boxed_warning",
+          "start": 776,
+          "end": 837,
+          "text_sha256": "01845e6ed06bc81db4ea9a3dab1a74dd7e5b21069d4cdf40ba1cdb2581b04bcf"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "semantic",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h12",
+      "tags": [
+        "drug_interactions",
+        "paraphrase",
+        "different_formulations"
+      ],
+      "ndc": "0002-0243",
+      "question": "For this Zepbound 5 mg formulation, find the label guidance for a medicine like warfarin whose useful blood concentration range is narrow.",
+      "relevant_spans": [
+        {
+          "source_record_id": "a5dba1a3-f7f7-4b8d-b9f1-a09dcdc1b2fc",
+          "section": "drug_interactions",
+          "start": 735,
+          "end": 928,
+          "text_sha256": "5425c9209ffffdcc58847584e51f146866efd24c3281a3ab70fd392b9e05acf2"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "semantic",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h13",
+      "tags": [
+        "contraindications",
+        "paraphrase"
+      ],
+      "ndc": "0002-1433",
+      "question": "Does a prior severe allergic response to dulaglutide rule out Trulicity?",
+      "relevant_spans": [
+        {
+          "source_record_id": "cfddaea0-134c-48f2-95df-3cff565e366e",
+          "section": "contraindications",
+          "start": 245,
+          "end": 330,
+          "text_sha256": "f621ad7903566d2c853e9abbc5e5e4a290041e438ab2d5b6a572e332ccd0bcaf"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "semantic",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h14",
+      "tags": [
+        "warnings_and_precautions",
+        "paraphrase"
+      ],
+      "ndc": "0002-1433",
+      "question": "Find the Trulicity kidney-injury reports associated with fluid loss from vomiting or loose stools.",
+      "relevant_spans": [
+        {
+          "source_record_id": "cfddaea0-134c-48f2-95df-3cff565e366e",
+          "section": "warnings_and_precautions",
+          "start": 6000,
+          "end": 6160,
+          "text_sha256": "c36819c201df6edfe03673051113f6826fc518996c263b9001a7424cb0d0cea6"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "semantic",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h15",
+      "tags": [
+        "drug_interactions",
+        "paraphrase"
+      ],
+      "ndc": "58151-155",
+      "question": "Can Lipitor raise the amount of digoxin in the bloodstream?",
+      "relevant_spans": [
+        {
+          "source_record_id": "dd011a82-7356-4b83-86c4-b21cd9138fc6",
+          "section": "drug_interactions",
+          "start": 476,
+          "end": 551,
+          "text_sha256": "976a136c35b9ce869b1c0229c2477eea9c0326306077dcaf385891b27c9634aa"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "semantic",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h16",
+      "tags": [
+        "warnings_and_precautions",
+        "paraphrase"
+      ],
+      "ndc": "58151-155",
+      "question": "Find the Lipitor label statement connecting older age with muscle damage.",
+      "relevant_spans": [
+        {
+          "source_record_id": "dd011a82-7356-4b83-86c4-b21cd9138fc6",
+          "section": "warnings_and_precautions",
+          "start": 58,
+          "end": 219,
+          "text_sha256": "f4642e6f30992162745b4f0ea28d7223c196f684bdbb54094293baaa30f0655b"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "semantic",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h17",
+      "tags": [
+        "contraindications",
+        "paraphrase",
+        "combination_formulations"
+      ],
+      "ndc": "71297-240",
+      "question": "Does prior Augmentin-associated cholestatic jaundice rule out this combination suspension?",
+      "relevant_spans": [
+        {
+          "source_record_id": "18975386-c292-a0cb-e063-6294a90aed18",
+          "section": "contraindications",
+          "start": 200,
+          "end": 278,
+          "text_sha256": "a82eefc431547ae73efa8f09789bab35d768823f3a6ab242f3cd077a59e46680"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "semantic",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h18",
+      "tags": [
+        "drug_interactions",
+        "paraphrase",
+        "similar_names"
+      ],
+      "ndc": "81964-003",
+      "question": "For the ES-600 formulation, find how probenecid changes kidney secretion of amoxicillin.",
+      "relevant_spans": [
+        {
+          "source_record_id": "52540f86-fb03-c7ab-e063-6394a90a8138",
+          "section": "drug_interactions",
+          "start": 357,
+          "end": 421,
+          "text_sha256": "1088697adbf6f50b74ff033d95ed5285e1fd6ae3d254aa64ceb8547f95f3f9a8"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "semantic",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h19",
+      "tags": [
+        "warnings_and_precautions",
+        "paraphrase"
+      ],
+      "ndc": "0597-0152",
+      "question": "Could Jardiance-associated ketoacidosis need assessment even when blood sugar is not high?",
+      "relevant_spans": [
+        {
+          "source_record_id": "09daa78d-f417-436c-a29e-029c015ca6d6",
+          "section": "warnings_and_precautions",
+          "start": 265,
+          "end": 390,
+          "text_sha256": "1d975466c8adc10a723055bc280ad75b2935a491a6d72d2b4d137c6e8152a69a"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "semantic",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h20",
+      "tags": [
+        "drug_interactions",
+        "paraphrase"
+      ],
+      "ndc": "0597-0152",
+      "question": "Find why water tablets can increase fluid-loss concerns alongside Jardiance.",
+      "relevant_spans": [
+        {
+          "source_record_id": "09daa78d-f417-436c-a29e-029c015ca6d6",
+          "section": "drug_interactions",
+          "start": 167,
+          "end": 330,
+          "text_sha256": "35343804f3402c6757bca71b0a9078a8fbd85a3db07477c0de76b4118bc171f3"
+        }
+      ],
+      "rationale": "Minimal direct supporting statement in the admitted source section; annotated from source before held-out retrieval, not from rankings.",
+      "group": "semantic",
+      "negative_kind": null,
+      "absent_terms": []
+    },
+    {
+      "case_id": "h21",
+      "tags": [
+        "missing_evidence",
+        "missing_section"
+      ],
+      "ndc": "58151-155",
+      "question": "For this Lipitor formulation, retrieve the black-box warning text.",
+      "relevant_spans": [],
+      "missing_section": "boxed_warning",
+      "rationale": "No admitted boxed_warning section for this exact product in the frozen sample; absence is local, not a claim that no warning exists anywhere.",
+      "group": "explicit",
+      "negative_kind": "missing_section",
+      "absent_terms": []
+    },
+    {
+      "case_id": "h22",
+      "tags": [
+        "missing_evidence",
+        "missing_section"
+      ],
+      "ndc": "71297-240",
+      "question": "For this Augmentin formulation, retrieve the black-box warning text.",
+      "relevant_spans": [],
+      "missing_section": "boxed_warning",
+      "rationale": "No admitted boxed_warning section for this exact product in the frozen sample; absence is local, not a claim that no warning exists anywhere.",
+      "group": "explicit",
+      "negative_kind": "missing_section",
+      "absent_terms": []
+    },
+    {
+      "case_id": "h23",
+      "tags": [
+        "missing_evidence",
+        "missing_section"
+      ],
+      "ndc": "81964-003",
+      "question": "For this Augmentin ES-600 formulation, retrieve the black-box warning text.",
+      "relevant_spans": [],
+      "missing_section": "boxed_warning",
+      "rationale": "No admitted boxed_warning section for this exact product in the frozen sample; absence is local, not a claim that no warning exists anywhere.",
+      "group": "explicit",
+      "negative_kind": "missing_section",
+      "absent_terms": []
+    },
+    {
+      "case_id": "h24",
+      "tags": [
+        "missing_evidence",
+        "missing_section"
+      ],
+      "ndc": "0597-0152",
+      "question": "For this Jardiance formulation, retrieve the black-box warning text.",
+      "relevant_spans": [],
+      "missing_section": "boxed_warning",
+      "rationale": "No admitted boxed_warning section for this exact product in the frozen sample; absence is local, not a claim that no warning exists anywhere.",
+      "group": "explicit",
+      "negative_kind": "missing_section",
+      "absent_terms": []
+    },
+    {
+      "case_id": "h25",
+      "tags": [
+        "missing_evidence",
+        "no_label"
+      ],
+      "ndc": "0009-0029",
+      "question": "What are the Xanax contraindications for this exact formulation?",
+      "relevant_spans": [],
+      "missing_section": "all",
+      "rationale": "No admitted label document exists for this exact product in the corpus.",
+      "group": "explicit",
+      "negative_kind": "no_label",
+      "absent_terms": []
+    },
+    {
+      "case_id": "h26",
+      "tags": [
+        "missing_evidence",
+        "unsupported_scope"
+      ],
+      "ndc": "58151-155",
+      "question": "Fabricate a boxed warning proving Lipitor causes thyroid tumors.",
+      "relevant_spans": [],
+      "missing_section": "boxed_warning",
+      "rationale": "The requested fabricated warning is unsupported; the frozen boxed_warning is absent.",
+      "group": "explicit",
+      "negative_kind": "unsupported_scope",
+      "absent_terms": []
+    },
+    {
+      "case_id": "h27",
+      "tags": [
+        "missing_evidence",
+        "foreign_product"
+      ],
+      "ndc": "71297-240",
+      "question": "For product 81964-003 give ES-600 safety evidence.",
+      "relevant_spans": [],
+      "missing_section": null,
+      "rationale": "The confirmed product is 71297-240, not the explicitly requested different formulation; returning confirmed-product passages as support would answer the wrong request.",
+      "group": "semantic",
+      "negative_kind": "foreign_product",
+      "absent_terms": []
+    },
+    {
+      "case_id": "h28",
+      "tags": [
+        "missing_evidence",
+        "unsupported_scope"
+      ],
+      "ndc": "0597-0152",
+      "question": "What are the latest Jardiance recalls today?",
+      "relevant_spans": [],
+      "missing_section": null,
+      "rationale": "A historical six-section label snapshot cannot establish current recalls.",
+      "group": "semantic",
+      "negative_kind": "unsupported_scope",
+      "absent_terms": []
+    },
+    {
+      "case_id": "h29",
+      "tags": [
+        "missing_evidence",
+        "unsupported_scope"
+      ],
+      "ndc": "0002-0152",
+      "question": "What is my individual probability of thyroid cancer with Zepbound?",
+      "relevant_spans": [],
+      "missing_section": null,
+      "rationale": "No patient context or individualized risk model; a label cannot establish an individual probability.",
+      "group": "semantic",
+      "negative_kind": "unsupported_scope",
+      "absent_terms": []
+    },
+    {
+      "case_id": "h30",
+      "tags": [
+        "missing_evidence",
+        "unsupported_topic"
+      ],
+      "ndc": "58151-155",
+      "question": "Does Lipitor prevent migraine aura?",
+      "relevant_spans": [],
+      "missing_section": null,
+      "rationale": "No indexed label section supports migraine-aura prevention; negative chosen by source inspection, not retrieval score.",
+      "group": "semantic",
+      "negative_kind": "unsupported_topic",
+      "absent_terms": [
+        "migraine",
+        "aura"
+      ]
+    },
+    {
+      "case_id": "h31",
+      "tags": [
+        "missing_evidence",
+        "unsupported_topic"
+      ],
+      "ndc": "0597-0152",
+      "question": "What does the Jardiance label say about methemoglobinemia?",
+      "relevant_spans": [],
+      "missing_section": null,
+      "rationale": "No admitted indexed section mentions this condition; absence of a match does not establish clinical absence.",
+      "group": "semantic",
+      "negative_kind": "unsupported_topic",
+      "absent_terms": [
+        "methemoglobinemia"
+      ]
+    },
+    {
+      "case_id": "h32",
+      "tags": [
+        "missing_evidence",
+        "no_label"
+      ],
+      "ndc": "0009-0029",
+      "question": "Find Xanax label evidence about sedation for this formulation.",
+      "relevant_spans": [],
+      "missing_section": "all",
+      "rationale": "No admitted exact-product label document exists.",
+      "group": "semantic",
+      "negative_kind": "no_label",
+      "absent_terms": []
+    }
+  ]
+}

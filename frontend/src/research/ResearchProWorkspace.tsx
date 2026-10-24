@@ -1,3 +1,4 @@
+import { SynthesisOption } from './SynthesisOption'
 import { useMemo, useState } from 'react'
 import type { Candidate, PublicBriefing } from './contracts'
 import type { Session } from './client'
@@ -29,6 +30,8 @@ interface ResearchProWorkspaceProps {
   toggleCategory: (cat: string) => void
   model: string
   setModel: (val: string) => void
+  synthesize?: boolean
+  setSynthesize?: (enabled: boolean) => void
   models: string[]
   onRunResearch: () => void
   onCancelResearch: () => void
@@ -40,7 +43,7 @@ interface ResearchProWorkspaceProps {
   error: string
   cohort: CohortItem[]
   setCohort: React.Dispatch<React.SetStateAction<CohortItem[]>>
-  onSelectForDeepResearch?: (item: CohortItem) => void
+  onSelectForDeepResearch: (item: CohortItem) => void
 }
 
 const modelNames: Record<string, string> = {
@@ -69,6 +72,8 @@ export default function ResearchProWorkspace({
   model,
   setModel,
   onRunResearch,
+  synthesize,
+  setSynthesize,
   onCancelResearch,
   onResetSession,
   running,
@@ -78,6 +83,7 @@ export default function ResearchProWorkspace({
   error,
   cohort,
   setCohort,
+  onSelectForDeepResearch,
 }: ResearchProWorkspaceProps) {
   const [activeTab, setActiveTab] = useState<'cohort' | 'deep_research'>('cohort')
   const [cohortFilter, setCohortFilter] = useState('')
@@ -125,10 +131,8 @@ export default function ResearchProWorkspace({
   // Launch Deep Research from Cohort Item
   const handleLaunchDeepResearch = (item: CohortItem) => {
     setActiveTab('deep_research')
-    // Set search query and prompt user to confirm or run research
-    if (item.product_ref && (!product || product.product_ref !== item.product_ref)) {
-      setChoice(item.product_ref)
-    }
+    setCohortNotice(`Selected ${item.brand_names[0] || item.generic_name} (${item.product_ndcs[0]}). Changing confirmed products requires a new local session and explicit confirmation.`)
+    onSelectForDeepResearch(item)
   }
 
   // Filter and Sort Cohort
@@ -202,6 +206,7 @@ export default function ResearchProWorkspace({
             <p>
               Loopback API connection required at <code>http://127.0.0.1:8001</code>. Enter the ephemeral pairing capability issued by the local launcher.
             </p>
+            {cohortNotice && <p role="status">{cohortNotice}</p>}
           </div>
           <form
             className="pro-connect-form"
@@ -562,6 +567,7 @@ export default function ResearchProWorkspace({
                               <button
                                 type="button"
                                 className="pro-btn-table-action"
+                                disabled={!!busy || item.product_ndcs.length === 0}
                                 onClick={() => handleLaunchDeepResearch(item)}
                               >
                                 Deep Research →
@@ -726,6 +732,7 @@ export default function ResearchProWorkspace({
                       </fieldset>
                     </div>
 
+                    <SynthesisOption enabled={synthesize} onChange={setSynthesize} disabled={running || attempted || !!busy} />
                     <div className="pro-form-group">
                       <label htmlFor="pro-model-select">Execution Inference Engine:</label>
                       <select
@@ -734,7 +741,7 @@ export default function ResearchProWorkspace({
                         disabled={running || attempted}
                         onChange={(e) => setModel(e.target.value)}
                       >
-                        <option value="">Deterministic Fallback Engine (No LLM · Zero Latency)</option>
+                        <option value="">Deterministic evidence planning</option>
                         {session.models.map((m) => (
                           <option key={m} value={m}>
                             {modelNames[m] ?? m} · Local Ollama Agent

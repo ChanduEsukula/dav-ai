@@ -38,3 +38,11 @@ class OllamaClient:
             "tools": tools, "stream": False, "think": False, "keep_alive": "5m",
             "options": {"temperature": 0, "seed": 7, "num_ctx": self.limits.context_tokens,
                         "num_predict": self.limits.prediction_tokens}})
+
+    async def synthesize(self, messages):
+        # No tools and no model provisioning; same fixed local transport/limits.
+        from app.agent.synthesis import Selection
+        return await self.request("/api/chat", {"model": self.model, "messages": messages,
+            "format": Selection.model_json_schema(), "stream": False, "think": False, "keep_alive": "5m",
+            "options": {"temperature": 0, "seed": 7, "num_ctx": self.limits.context_tokens,
+                        "num_predict": self.limits.prediction_tokens}})

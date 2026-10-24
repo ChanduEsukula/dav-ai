@@ -53,14 +53,21 @@ def parse_plan(response, reference, names, limits):
 
 
 class ResearchWorkflow:
-    def __init__(self, client):
+    def __init__(self, client, *, enable_rag=True, rag_corpus_path=None, rag_index_path=None,
+                 rag_embedder=None, rag_retriever=None, **kwargs):
         self.client = client
+        self.enable_rag = enable_rag
+        self.rag_corpus_path = rag_corpus_path
+        self.rag_index_path = rag_index_path
+        self.rag_embedder = rag_embedder
+        self.rag_retriever = rag_retriever
 
-    async def run(self, question, *, session, owner_id, categories=None, routing="auto"):
+    async def run(self, question, *, session, owner_id, categories=None, routing="auto", synthesize=False):
         outcomes, requested = {}, []
         route = {"mode": "deterministic" if routing == "deterministic" else "model",
                  "model_planned_tools": [], "backend_completed_tools": [], "discarded_model_content": False}
         locked = False
+        finished = None
         try:
             session.authorize(owner_id)
             if type(question) is not str or not question.strip() or len(question) > 2000:
@@ -129,8 +136,48 @@ class ResearchWorkflow:
                         outcomes[category] = str(exc)
                     except Exception:
                         outcomes[category] = "evidence_unavailable"
-                return self._finish(session, owner_id, requested, outcomes, route)
+
+                rag_evidence = None
+                if self.enable_rag:
+                    try:
+                        product = session._candidates.get(session.selected_ref, {})
+                        from app.agent.rag_adapter import execute_hybrid_rag
+                        rag_evidence = execute_hybrid_rag(
+                            question,
+                            product,
+                            session.selected_ref,
+                            corpus_path=self.rag_corpus_path,
+                            index_path=self.rag_index_path,
+                            embedder=self.rag_embedder,
+                            retriever=self.rag_retriever,
+                        )
+                    except Exception:
+                        rag_evidence = None
+
+                finished = self._finish(session, owner_id, requested, outcomes, route, rag=rag_evidence)
+                if synthesize:
+                    from app.agent.synthesis import synthesize_answer
+                    product = await session._verified_product(session.selected_ref)
+                    finished["answer"] = await synthesize_answer(question, finished, self.client, limits,
+                        expected_product_id=product["product_id"])
+                    session.authorize(owner_id)
+                    await session._verified_product(session.selected_ref)
+                    # Optional text must never make the existing briefing fail its bound.
+                    try:
+                        encode(finished, limits.max_briefing_bytes)
+                    except AgentRejected:
+                        finished["answer"] = None
+                return finished
         except TimeoutError:
+            if finished is not None:
+                try:
+                    session.authorize(owner_id)
+                    from app.agent.synthesis import fallback
+                    finished["answer"] = fallback(session.selected_ref, "unavailable", "model_timeout")
+                    encode(finished, session.limits.max_briefing_bytes)
+                    return finished
+                except AgentRejected:
+                    pass
             if locked and outcomes:
                 for category in requested:
                     outcomes.setdefault(category, "request_timeout")
@@ -158,9 +205,9 @@ class ResearchWorkflow:
         return {"status": "stopped", "workflow_state": "STOPPED", "reason": reason, "evidence_cards": []}
 
     @staticmethod
-    def _finish(session, owner_id, requested, outcomes, route):
+    def _finish(session, owner_id, requested, outcomes, route, rag=None):
         session.authorize(owner_id)
-        result = build_briefing(session._public(session.selected_ref), requested, outcomes, route)
+        result = build_briefing(session._public(session.selected_ref), requested, outcomes, route, rag=rag)
         encode(result, session.limits.max_briefing_bytes)
         session.workflow_state = result["workflow_state"]
         return result
