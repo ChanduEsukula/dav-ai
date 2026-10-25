@@ -185,7 +185,7 @@ export default function ResearchProWorkspace({
       <header className="pro-header-bar">
         <div>
           <span role="heading" aria-level={2} className="eyebrow">
-            Ask Dav AI · Enterprise Workspace
+            Ask Dav AI · Research Pro
           </span>
           <h1>Pharmaceutical Evidence Workspace</h1>
           <p className="pro-subtitle">
@@ -207,6 +207,7 @@ export default function ResearchProWorkspace({
               Loopback API connection required at <code>http://127.0.0.1:8001</code>. Enter the ephemeral pairing capability issued by the local launcher.
             </p>
             {cohortNotice && <p role="status">{cohortNotice}</p>}
+            {error && <p role="alert" className="pro-alert-danger">{error}</p>}
           </div>
           <form
             className="pro-connect-form"
@@ -226,7 +227,7 @@ export default function ResearchProWorkspace({
                 spellCheck={false}
                 value={pairing}
                 onChange={(e) => setPairing(e.target.value)}
-                placeholder="Enter 48-byte capability (e.g., dav_pair_...)"
+                placeholder="Paste the capability from your local launcher"
                 required
               />
               <button

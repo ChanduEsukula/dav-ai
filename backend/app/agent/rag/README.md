@@ -1,5 +1,12 @@
 # FDA label passage retrieval — offline Phase 1
 
+**Historical experiment report.** Hybrid retrieval is now integrated through
+`app.agent.rag_adapter` and the confirmed-product research workflow. For current
+setup, optional-dependency availability and evaluation scope, read the
+[local demo guide](../../../../docs/ai/LOCAL_DEMO_GUIDE.md) and
+[Phase 5 readiness report](../../../../docs/ai/PHASE5_RELEASE_CANDIDATE.md).
+The original Phase 1 measurements and limitations below are preserved.
+
 This is an isolated graduate-project experiment. Neither application API nor the
 research workflow imports this package. No model generation, cloud client, new
 agent framework, frontend integration, or deployment change is included.

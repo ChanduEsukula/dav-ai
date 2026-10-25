@@ -1,107 +1,243 @@
-# Dav AI — Local Developer Demo Guide
+# Dav AI — reproducible local demonstration
 
-This guide follows the implementation at `9e78e90`: a React workspace at `/ask`, a dedicated research API on `127.0.0.1:8001`, and optional local Ollama planning. It is not a hosted application launch guide or authorization to distribute the evidence database.
+This guide describes the current Phase 3B + refined UI working tree. It uses the
+existing frozen release and local services, without changing publication or
+hosted-serving authorization. Run all repository-root commands from the checkout.
 
-## Prerequisites
+## 1. Prerequisites
 
-- An interactive terminal with `/dev/tty`. The launcher was exercised on macOS; portability to other systems is not certified here.
-- Python 3.13 and a populated root `.venv`. CI targets Python 3.13 and Node 24. The audit machine reports Python 3.13.7, Node 25.9.0 and npm 11.12.1; Node 25 is an observation, not the documented CI target.
-- Frontend dependencies installed from `frontend/package-lock.json`.
-- The authorized frozen database already available at `data/releases/dav_ai_pharma_v1/phase4b-communications-2026-10-06/pharma.sqlite` (or the existing documented local artifact configuration). It is not included in Git and no public download URL is provided. Expected size: 4,825,108,480 bytes; SHA-256: `87779eda6b06c75f10603762b18f8c66a5cb7b12ed37d47ab1bf9b4825639c71`. Keep database, metadata and manifest unchanged, with publication unvalidated.
-- For model planning only: already-running Ollama at `127.0.0.1:11434` and an installed approved model, `llama3.2:3b` or `qwen3.5:4b-q4_K_M`. Both models are not required. Explicit deterministic research works without Ollama. The selector lists only installed approved models detected by the server.
+- Python **3.13**, Node **24** (repository/CI targets). The Phase 5 host uses Python
+  3.13.7, Node 25.9.0 and npm 11.12.1; that is an observation, not a portability claim.
+- A populated `.venv` and `frontend/node_modules`, or network access for the
+  documented locked installation below. Do not replace working environments.
+- The separately authorized frozen pharmaceutical release, excluded from Git:
+  `data/releases/dav_ai_pharma_v1/phase4b-communications-2026-10-06/pharma.sqlite`.
+  Expected **4,825,108,480 bytes**, SHA-256
+  `87779eda6b06c75f10603762b18f8c66a5cb7b12ed37d47ab1bf9b4825639c71`.
+  Keep the database and publication metadata unchanged. The loader verifies it
+  and uses read-only/immutable connections. A clone alone is insufficient.
+- An interactive terminal with `/dev/tty` for the research launcher.
+- Optional: existing Ollama on `127.0.0.1:11434`, with approved installed
+  `llama3.2:3b` and/or `qwen3.5:4b-q4_K_M`. Do not download models during a demo.
+- Optional: separately provisioned local BGE-small model, compatible FAISS/BGE
+  Python environment and external corpus/index. See section 5.
 
-For a new developer environment, the repository/CI uses these dependency files and commands (dependency installation requires package-network access):
+An alternative existing database location can be selected before starting either
+backend: `export DAV_AI_PHARMA_RELEASE_DB="/path/to/authorized/pharma.sqlite"`.
+Do not combine that with managed-artifact configuration or change release metadata.
+
+For a **new** environment:
 
 ```bash
 python3.13 -m venv .venv
 .venv/bin/python -m pip install --require-hashes --only-binary=:all: -r backend/requirements-dev.txt
 .venv/bin/python -m pip check
+cd frontend
+npm ci
 ```
 
-In `frontend`, run `npm ci`. Do not recreate or replace an already populated environment unnecessarily. These setup commands do not supply the database or models. The runtime-only backend lock does not include all local agent/development dependencies. No model download is needed for deterministic execution, and this guide does not initiate one.
+Dependency installation needs network access. The runtime-only lock does not
+include every development/test tool. Do not recreate or install over an existing
+working environment solely to follow these commands.
 
-## Start in two terminals
+## 2. Start three loopback services
 
-From the repository root, in **Terminal 1**:
+Terminal A — ordinary Explorer API:
+
+```bash
+PYTHONPATH=backend .venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --no-access-log
+```
+
+Terminal B — dedicated research API:
 
 ```bash
 PYTHONPATH=backend .venv/bin/python -m app.local_research
 ```
 
-Actual terminal message:
+It prints a fresh 64-character URL-safe pairing capability directly to the
+interactive terminal. It is not an account password or a `dav_pair_...` token.
+Keep it private and the terminal open. Do not place it in a URL, screenshot, log,
+source file or browser storage. Per-session credentials are separate and held in
+browser memory. Restarting the server invalidates pairing and sessions.
 
-```text
-Local pairing capability (paste into Ask Dav AI; expires on server exit):
-<64-character URL-safe capability generated for this process>
-```
-
-The bracketed text is explanatory, not a usable credential. The launcher generates 48 random bytes and delivers their URL-safe encoding directly to `/dev/tty`; there is no `dav_pair_` prefix, hex format, readiness banner or log-file token. It disables access logging. Keep the terminal open and the capability private. The pairing capability can create more than one session until server exit; each session gets a different bearer capability.
-
-In **Terminal 2**, from the repository root:
+Terminal C — frontend:
 
 ```bash
 cd frontend
 npm run dev -- --host 127.0.0.1 --port 5173 --strictPort
 ```
 
-Open **http://127.0.0.1:5173/ask**. Do not expose either development server with a public bind or tunnel. The ordinary evidence explorer at `/` separately uses its existing backend (default port 8000); that backend is not needed for `/ask`.
+Open **http://127.0.0.1:5173/home**. Home, About, FAQ and Overview need no backend.
+The existing Explorer stays at `/`; Ask is `/ask`. Only the ordinary API uses
+`VITE_API_BASE_URL` (default `http://127.0.0.1:8000`). Research uses fixed loopback
+port 8001 and admitted Origins 5173/15173. Never broaden these gates for a demo.
 
-## Browser walkthrough
+Ollama is independently managed. Check `ollama list` or its local status before
+opting into generation. Deterministic evidence retrieval does not need Ollama.
 
-1. In the **Local pairing capability** field, paste the terminal token and click **Create local session**. This is a connection panel, not an account/login modal. Pairing input is cleared after session creation. Browser refresh loses the session credential.
-2. In **Brand, ingredient or NDC**, enter `0009-0029` and click **Search**. Review strength, dosage form, product/package NDCs and ingredients. Results are eligibility-filtered and bounded; they do not expose every stored product.
-3. Click the Xanax candidate card, then **Confirm selected product**. A singleton is still not auto-confirmed. The confirmed product is locked; use **New research session** to change products.
-4. Edit **Research question** and choose one or more of **Drug labeling**, **Historical recalls**, **FAERS reporting evidence**. These explicit categories determine scope; the question is not a request for treatment advice.
-5. Choose **Explicit deterministic execution**, or an actually installed local model under **Execution mode**. A model selection requests `auto` routing; valid incomplete plans may receive disclosed backend completion. No model is guaranteed to produce a valid plan.
-6. Click **Research selected evidence**. The UI displays a truthful running state and polls a background task. It does not stream model tokens. Runtime varies with model loading, artifact verification and source reads; there is no 2–4 second result guarantee or zero-latency deterministic mode.
-7. Inspect completed/partial results, source dates/URLs, coverage, expandable label text, ranked reactions and limitations. **Research execution details** distinguishes native model tools from backend-selected tools. The top five returned reaction terms are visible; additional returned terms and full provenance are expandable. A known UI limitation can show `Source URL unavailable` for an official download.open.fda.gov recall URL because the frontend link allowlist is narrower than the backend provenance validator. The typed evidence retains the citation; this documentation-only audit does not change that renderer.
-8. **Cancel and close session** cancels in-flight research and invalidates the session. **New research session** closes it and requires pairing and confirmation again. A refresh/disconnect does not immediately cancel an accepted task; server deadlines, expiry and cleanup remain active.
+## 3. Five-minute walkthrough
 
-![Local connection panel](screenshots/ask-local-connect.png)
+1. **Home:** show the original source-trail graphic, Everyday/Research Pro entry
+   links and Operational Overview. Open About/FAQ; demonstrate keyboard disclosures
+   or reduced-motion behavior if relevant.
+2. **Explorer:** open `/`, search `0002-0152`, choose the Zepbound formulation and
+   inspect its identity, recall coverage and ingredient reporting limitations.
+   Product availability and missing evidence are properties of the frozen release.
+3. **PDF:** choose Generate PDF Report, enter a demonstration name and optional
+   age, and download. These fields identify the report; they do not estimate risk.
+   Keep real personal details out of demonstration captures.
+4. **Everyday:** open Ask, paste the current pairing capability, create a session,
+   search `0002-0152`, select its candidate and explicitly confirm. A singleton
+   result still needs confirmation. Select Drug labeling; uncheck other categories
+   for a short label-focused run.
+5. **Question:** enter “What serious allergy appears in the Zepbound
+   contraindications?”. Optional: check Include a grounded AI answer. Everyday
+   uses deterministic tool planning; optional synthesis uses the default installed
+   Llama model. Follow a citation to the exact source section. Acceptance is not
+   an independent support judgment.
+6. **Research Pro:** switch modes without changing the confirmed product. Inspect
+   detailed provenance. Searching the cohort directory for a different product
+   closes the locked session and asks for fresh pairing; pair again, search, add
+   the product to the cohort and choose Deep Research. Re-resolve and explicitly
+   confirm it before execution. The old session must not remain usable.
+7. **Optional model planning:** Research Pro's Execution Inference Engine selects
+   an actually installed approved model. Keep Deterministic evidence planning for
+   the most reproducible source demonstration. Grounded generation has its own
+   checkbox, independent of planning mode.
+8. **Fallback:** in a fresh session, confirm Xanax `0009-0029` and ask for its
+   contraindications with synthesis enabled. This release has no admitted exact
+   label. The insufficient-evidence response retains recall/FAERS source cards when
+   requested; it does not substitute another formulation's label.
+9. **Finish:** New research session / Reset Session closes the active session.
+   Ctrl+C only the services you launched. A refresh loses browser credentials;
+   accepted server work remains subject to cancellation, deadlines and expiry.
 
-[Desktop evidence results](screenshots/ask-local-results-desktop.png) · [Mobile results](screenshots/ask-local-results-mobile.png)
+Research uses bounded background work and polling, not streamed model tokens.
+Cold artifact verification and source reads may take several seconds. The session
+lifetime is ten minutes from creation, not inactivity. Cohort rows remain Not
+ evaluated until that exact product is researched; there is no 50-product batch run.
 
-The preceding real browser verification of `0009-0029` with Qwen returned **partial**: no admitted exact-product label, incomplete historical recall coverage including `D-0161-2016`, and available alprazolam reporting evidence with 18 ingredient-report associations. This is an observed frozen-release case, not a promise for every query. Unknown/restricted lot scope remains visible. FAERS associations are not NDC-specific observations, incidence, causality, comparative safety or individual risk, and must not be summed across ingredients.
+## 4. Availability and expected fallback
 
-## CLI alternative
+| Missing condition | Expected behavior |
+|---|---|
+| Ordinary Explorer API or authorized release | Search/evidence/PDF shows an error; static supporting pages still render. |
+| Dedicated research API | Pairing fails safely; no hosted agent fallback. |
+| Ollama or approved model | Explicit deterministic retrieval still works. Optional synthesis is unavailable; source cards remain. |
+| Corpus/index | RAG is `not_configured`; explicit admitted SQL sections can still authorize extractive selection. The UI may omit an unconfigured RAG panel but retains limitations. |
+| BGE embedder only | Explicit-section SQL routing can degrade transparently; do not describe it as measured semantic retrieval. |
+| Requested label/section/support | Insufficient evidence; no substitution, fabricated claim or candidate promotion. |
+| Invalid model output / IDs | Output discarded; deterministic briefing remains. |
+| Product switch / expired session | Fresh pairing and explicit confirmation required. |
 
-The CLI takes a required question argument; it does not repeatedly prompt for a search query/question:
+Phase 5's real integration and exact limitations are in the
+[readiness report](PHASE5_RELEASE_CANDIDATE.md). The historical 7/7 pilot is
+[automated acceptance](PHASE3B_GROUNDED_ANSWER_RELIABILITY.md), not human-reviewed
+clinical support. Independent reviews remain PENDING.
+
+## 5. Optional FAISS/BGE preparation
+
+The required dev lock does **not** provision a semantic model or all optional RAG
+packages. Use a separately provisioned compatible Python environment containing
+the project dependencies, NumPy, `faiss-cpu`, `sentence-transformers` and PyTorch,
+plus an already available `BAAI/bge-small-en-v1.5` directory with safetensors.
+The loader disables model downloads and remote code. No model provisioning was
+performed in Phase 5. An offline wheelhouse/environment must be prepared before
+an offline demonstration; package availability alone does not verify compatibility.
+
+Choose durable locations **outside the repository and frozen release**. Replace
+the placeholders with paths to existing resources; use fresh corpus/index outputs:
 
 ```bash
-PYTHONPATH=backend .venv/bin/python -m app.agent.cli \
-  --query 0009-0029 \
-  --question 'Retrieve labels, historical recalls and ingredient-level FAERS evidence.' \
-  --categories labels recalls faers --routing deterministic
+export DAV_AI_RAG_PYTHON="/path/to/provisioned/rag-env/bin/python"
+export DAV_AI_BGE_MODEL_DIR="/path/to/existing/bge-small-en-v1.5"
+export DAV_AI_RAG_WORK_DIR="/path/outside/checkout/dav-ai-rag-demo"
+export DAV_AI_RAG_CORPUS_PATH="$DAV_AI_RAG_WORK_DIR/corpus.json"
+export DAV_AI_RAG_INDEX_PATH="$DAV_AI_RAG_WORK_DIR/bge-index"
+
+PYTHONPATH=backend "$DAV_AI_RAG_PYTHON" -m app.agent.rag.cli check
+PYTHONPATH=backend "$DAV_AI_RAG_PYTHON" -m app.agent.rag.cli sample --out "$DAV_AI_RAG_CORPUS_PATH"
+PYTHONPATH=backend "$DAV_AI_RAG_PYTHON" -m app.agent.rag.cli build \
+  --corpus "$DAV_AI_RAG_CORPUS_PATH" --embedding bge --engine faiss \
+  --model-dir "$DAV_AI_BGE_MODEL_DIR" --out "$DAV_AI_RAG_INDEX_PATH"
+PYTHONPATH=backend "$DAV_AI_RAG_PYTHON" -m pytest backend/tests/rag -q -rs
+PYTHONPATH=backend "$DAV_AI_RAG_PYTHON" -m app.local_research
 ```
 
-Inspect the numbered candidates and enter the intended product number at **Select product number**; empty input cancels. For installed model planning, replace `--routing deterministic` with `--routing auto --model qwen3.5:4b-q4_K_M`. Use `--routing model` to require a complete native plan. `--json` returns the full typed briefing; human-readable CLI output uses excerpts, while the browser exposes full retrieved label text. CLI sessions are process-owned and do not use browser pairing.
+Set the environment **before** starting the research process, and use the compatible
+interpreter for it: repository workers inherit that interpreter. Extraction reuses
+admitted exact-product cards; outputs refuse existing paths. Keep derived corpus
+text and model/index files private and outside Git. A mock embedding index is a
+contract-test scaffold, never a substitute for a semantic demonstration.
 
-## Evaluation and regression commands
+The [original RAG experiment README](../../backend/app/agent/rag/README.md) is
+historical; its early “not integrated” statements are not the current workflow.
+The current adapter is `backend/app/agent/rag_adapter.py` and uses the environment
+paths above. The recorded Phase 3B run used SQL admission with RAG unavailable.
 
-The framework entry point is `app.agent.evaluation.cli`. The older `research_evaluation` module is a separate six-case evaluator, not this three-mode CLI.
+## 6. Verification commands
+
+From the repository root:
 
 ```bash
-PYTHONPATH=backend .venv/bin/python -m app.agent.evaluation.cli --mode offline
-PYTHONPATH=backend .venv/bin/python -m app.agent.evaluation.cli --mode frozen_data
-PYTHONPATH=backend .venv/bin/python -m app.agent.evaluation.cli --mode model_comparison --smoke
+PYTHONPATH=backend .venv/bin/python -m pytest backend/tests -q -rs
+PYTHONPATH=backend .venv/bin/python -m pytest backend/tests/agent -q -rs
+PYTHONPATH=backend .venv/bin/python -m pytest backend/tests/rag -q -rs
+PYTHONPATH=backend .venv/bin/python -m pytest backend/tests/pharma_release \
+  -m release_artifact --require-pharma-artifact -q
 ```
 
-Mode B needs the authorized frozen release; Mode C also needs installed approved models and local Ollama. `--smoke` selects eight corpus IDs, but Mode B further filters to frozen-data cases (six smoke cases); Mode A without `--smoke` selects all 35. Omit `--smoke` for a broader live run; do not equate it to the stored eight-case benchmark. To retain new results, use explicit **new** `--output`/`--report` paths after deciding whether they are private; do not overwrite or automatically publish historical artifacts.
+In `frontend`:
 
-Backend checks are listed in the [README](../../README.md#verification). In `frontend`, existing scripts are `npm run lint`, `npm run build`, `npm test`, `npm run test:e2e`. The separate real integration harness `PYTHONPATH=backend .venv/bin/python scripts/verify_ask_research.py` requires free ports 8001/15173, installed Chromium and the real artifact. It starts and cleans up its own loopback services and may use an installed model. It is not a download or deployment command.
+```bash
+npm test -- --run
+npm run lint
+npm run build
+npx playwright test --output=/tmp/dav-ai-browser-run
+```
 
-## Troubleshooting
+Playwright uses installed browsers only. The default configuration runs Chromium;
+its ordinary journeys intercept API responses and are **mocked tests**. Firefox
+and WebKit must be separately installed/available before claiming cross-browser
+coverage. Browser downloads are not implicit in the commands above.
 
-| Symptom | Check / response |
-| --- | --- |
-| API unavailable | Start Terminal 1 interactively; confirm the launcher is running on port 8001. A normal `app.main` process does not expose agent routes. |
-| Noninteractive terminal error | Use a real terminal with `/dev/tty`; redirecting stdout is not capability delivery. |
-| Ollama offline / no approved models | Use explicit deterministic execution, or check the separately managed local runtime and `ollama list`. No model pull is required by the app. |
-| Pairing rejected | Copy the complete current terminal token; a restarted server issues a different one. Never put it in a URL or screenshot. |
-| Session expired (410) | Lifetime is ten minutes **from creation**, not inactivity. Start a new session and confirm again. |
-| Busy/capacity response (429) | One operation can run at a time and at most eight sessions are registered. Close sessions you own or wait for bounded work/expiry; do not bypass admission. |
-| Port occupied | Identify the process you own and stop it normally in its terminal, or wait. Do not blindly kill every process using a port. |
-| Origin/Host rejected (403) | Use the exact development URL. Both 127.0.0.1:5173 and localhost:5173 are admitted Origins; the API itself remains at 127.0.0.1:8001. LAN/public/other ports are denied. |
-| Hosted-serving denial | Expected protection. Do not set local environment values to bypass it. |
-| Missing/unauthorized artifact | Obtain access through the existing authorized artifact process. A Git clone is insufficient; do not regenerate the frozen release or change its publication flag. |
-| Timeout or stopped plan | Inspect the safe error and start a new session if needed. Source/model/workflow limits remain active; do not manufacture evidence or silently retry research. |
+For a **real** Explorer journey, start the existing outbound-blocked verification
+backend, use its matching frontend address, then run the dedicated config:
+
+```bash
+PORT=18000 PYTHONPATH=backend .venv/bin/python scripts/pharma_offline_server.py
+# In frontend, a separate terminal:
+VITE_API_BASE_URL=http://127.0.0.1:18000 npm run dev -- --host 127.0.0.1 --port 15173 --strictPort
+# In frontend, another terminal:
+PHARMA_OFFLINE_SMOKE=1 npx playwright test --config=playwright.pharma.config.ts --output=/tmp/dav-ai-real-explorer
+```
+
+For **real** Ask journeys against the frozen release and existing Ollama:
+
+```bash
+PYTHONPATH=backend .venv/bin/python scripts/verify_ask_research.py \
+  --output /tmp/dav-ai-real-research-next
+```
+
+The output directory must not exist. Port 8001 must be free. The harness starts and
+cleans up its own secured research API and frontend; it transfers ephemeral pairing
+only through child-process memory/environment, never a URL or log. If your own
+frontend is already running on the admitted loopback port 15173, add
+`--reuse-frontend`; it will leave that frontend running. It requires installed
+`llama3.2:3b` for Everyday generation; `--model` chooses an approved Research Pro
+planning/generation model. No pull/download endpoint is called. Captures/results go
+to the new output directory; historical repository screenshots are not overwritten.
+
+## 7. Demo-day checks and limitations
+
+Verify the authorized artifact, free ports, model status and optional semantic
+artifacts before presenting. Prefer explicit deterministic execution if model
+planning is unreliable. Use the API's existing wait bounds rather than promising
+fixed response times. Show unavailable/partial data honestly, and keep claims about
+FAISS/BGE limited to the environment and evaluation actually exercised.
+
+Do not bypass Origin/Host checks, reuse expired capabilities, disable product locks,
+change publication flags or expose loopback listeners. No clinical decisions,
+personalized risk estimates or universal safety conclusions are supported. For
+human evaluation use the [independent review checklist](INDEPENDENT_REVIEW_CHECKLIST.md)
+and write judgments to a new versioned file; preserve original packets and raw results.

@@ -144,7 +144,7 @@ export default function StoredDrugCatalog() {
   const evidence = result.value
   return <main className="explorer" id="main-content">
     <a className="skip-link" href="#search">Skip to drug search</a>
-    <header><a className="brand" href="/">Dav AI<span>Pharmaceutical evidence explorer</span></a><span className="badge">FDA source data</span></header>
+    <div className="explorer-context"><span>Pharmaceutical evidence explorer</span><span className="badge">FDA source data</span></div>
     <section className="intro" aria-labelledby="title"><p className="eyebrow">Drug recalls · Reported adverse events</p>
       <h1 id="title">Explore the evidence<br />behind your medication.</h1>
       <p>Find an exact product, review linked recall history and explore ingredient-level reporting. Download a personalized evidence report without an account.</p>

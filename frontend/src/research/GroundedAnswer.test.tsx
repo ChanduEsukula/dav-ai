@@ -86,3 +86,20 @@ it('synthesis is an explicit opt-in and cannot change during execution', () => {
   view.rerender(<SynthesisOption enabled onChange={change} disabled />)
   expect(checkbox).toBeDisabled()
 })
+
+it('opens and focuses the exact citation without smooth scrolling under reduced motion', () => {
+  const value = briefing()
+  render(<EverydayBriefing briefing={value} />)
+  const citation = value.answer!.citations[0]
+  const target = document.getElementById(labelAnchor(citation, citation.section))!
+  const scroll = vi.fn()
+  target.scrollIntoView = scroll
+  vi.stubGlobal('matchMedia', () => ({ matches: true }))
+  try {
+    fireEvent.click(screen.getByRole('link', { name: '[E1] Open contraindications source' }))
+    expect(target).toHaveFocus()
+    expect(scroll).toHaveBeenCalledWith({ block: 'center', behavior: 'instant' })
+  } finally {
+    vi.unstubAllGlobals()
+  }
+})

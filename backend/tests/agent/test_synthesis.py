@@ -6,9 +6,9 @@ import json
 
 import pytest
 
-from app.agent.contracts import Limits
+from app.agent.contracts import AgentRejected, Limits
 from app.agent.research_contracts import GroundedAnswer, RagEvidence, ResearchBriefing
-from app.agent.synthesis import admitted_units, sentence_spans, synthesize_answer, validate_selection
+from app.agent.synthesis import Unit, admitted_units, contextual_spans, sentence_spans, synthesize_answer, validate_selection
 from app.agent.workflow import ResearchWorkflow
 from app.local_research.api import PublicBriefing, Research
 from .test_research import ResearchBackend, prepared
@@ -34,7 +34,8 @@ class Model:
         data=json.loads(messages[-1]['content']);self.seen.append(deepcopy(messages))
         claim=data['untrusted_evidence'][0]
         selection={'product_ref':data['product_ref'],'product_ndcs':data['product_ndcs'],
-                   'supported':True,'claims':[{'evidence_id':claim['evidence_id'],'text':claim['text']}]}
+                   'selection_scope':data['selection_scope'], 'supported':True,
+                   'statement_ids':[claim['statement_id']]}
         if self.mutate:self.mutate(selection)
         return {'done':True,'message':{'role':'assistant','content':json.dumps(selection)}}
 
@@ -71,15 +72,15 @@ def test_opt_in_only_and_no_replacement_of_structured_evidence():
                                       'product','formulation','category','extra','false_with_claim'])
 def test_invalid_model_output_is_discarded(mutation):
     def mutate(value):
-        if mutation=='citation':value['claims'][0]['evidence_id']='E99'
-        elif mutation=='missing_citation':del value['claims'][0]['evidence_id']
-        elif mutation=='changed_text':value['claims'][0]['text']='This drug is safe and cures every disease.'
-        elif mutation=='empty':value['claims']=[]
-        elif mutation=='long':value['claims'][0]['text']='x'*2000
-        elif mutation=='many':value['claims']*=4
+        if mutation=='citation':value['statement_ids'][0]='Sinvented'
+        elif mutation=='missing_citation':del value['statement_ids']
+        elif mutation=='changed_text':value['text']='This drug is safe and cures every disease.'
+        elif mutation=='empty':value['statement_ids']=[]
+        elif mutation=='long':value['text']='x'*2000
+        elif mutation=='many':value['statement_ids']*=4
         elif mutation=='product':value['product_ref']='different-product'
         elif mutation=='formulation':value['product_ndcs']=['11111-2222']
-        elif mutation=='category':value['claims'][0]['category']='faers'
+        elif mutation=='category':value['category']='faers'
         elif mutation=='extra':value['answer']='Unsafe ungrounded narrative'
         elif mutation=='false_with_claim':value['supported']=False
     async def scenario():
@@ -239,3 +240,83 @@ def test_conjunctions_cannot_authorize_an_absent_topic():
             base,model,session.limits,expected_product_id=session._candidates[ref]['product_id'])
         assert answer['status']=='insufficient_evidence' and not model.seen
     asyncio.run(scenario())
+
+
+@pytest.mark.parametrize('mutation', ['duplicate', 'stale_scope', 'foreign_statement', 'stale_statement'])
+def test_statement_references_are_unique_and_bound_to_current_selection(mutation):
+    def mutate(value):
+        if mutation == 'duplicate': value['statement_ids'] *= 2
+        elif mutation == 'stale_scope': value['selection_scope'] = '0' * 16
+        else: value['statement_ids'] = ['S0123456789abcdef']
+    result, _, _ = asyncio.run(execute(Model(mutate)))
+    assert result['answer']['status'] == 'invalid_output'
+    assert result['answer']['text'] is None
+
+
+def test_ids_are_stable_for_source_binding_but_change_with_session_and_source():
+    async def scenario():
+        base, session, ref = await execute(enabled=False)
+        parsed = ResearchBriefing.model_validate(base)
+        pid = session._candidates[ref]['product_id']
+        units = admitted_units('Contraindications?', parsed, pid)
+        assert units[0].statement_id == admitted_units('Contraindications?', parsed, pid)[0].statement_id
+        assert units[0].statement_id == Unit(units[0].text,
+            units[0].citation.model_copy(update={'evidence_id': 'E9'})).statement_id
+        for change in ({'product_ref': 'foreign-session'}, {'label_version': '999'}, {'start': 1}):
+            foreign = Unit(units[0].text, units[0].citation.model_copy(update=change))
+            assert foreign.statement_id != units[0].statement_id
+            scope = 'a' * 16
+            response = {'done': True, 'message': {'role': 'assistant', 'content': json.dumps({
+                'product_ref': ref, 'product_ndcs': parsed.medication.product_ndcs,
+                'selection_scope': scope, 'supported': True, 'statement_ids': [foreign.statement_id]})}}
+            with pytest.raises(AgentRejected, match='unresolved_citation'):
+                validate_selection(response, parsed, units, session.limits, selection_scope=scope)
+    asyncio.run(scenario())
+
+
+@pytest.mark.parametrize('change', [{'product_ref': 'foreign'}, {'source_url': 'https://evil.example'},
+    {'release_id': 'old-release'}, {'source_record_id': 'invented'}, {'label_version': '999'},
+    {'source_snapshot_date': '2000-01-01'}, {'start': 1}, {'end': 99999}, {'text_sha256': '0'*64}])
+def test_invalid_server_citation_metadata_is_rechecked(change):
+    async def scenario():
+        base, session, ref = await execute(enabled=False)
+        parsed = ResearchBriefing.model_validate(base)
+        units = admitted_units('Contraindications?', parsed, session._candidates[ref]['product_id'])
+        unit = Unit(units[0].text, units[0].citation.model_copy(update=change))
+        scope = 'a' * 16
+        response = {'done': True, 'message': {'role': 'assistant', 'content': json.dumps({
+            'product_ref': ref, 'product_ndcs': parsed.medication.product_ndcs,
+            'selection_scope': scope, 'supported': True, 'statement_ids': [unit.statement_id]})}}
+        with pytest.raises(ValueError):
+            validate_selection(response, parsed, [unit], session.limits, selection_scope=scope)
+    asyncio.run(scenario())
+
+
+def test_python_keeps_exact_whitespace_and_required_heading_without_model_copy():
+    text = '4 CONTRAINDICATIONS Patients with a serious allergy  to alprazolam must not use this product.'
+    result, _, _ = asyncio.run(execute(backend=backend_with(text)))
+    assert result['answer']['status'] == 'generated'
+    assert text in result['answer']['text']
+    assert result['answer']['citations'][0]['start'] == 0
+
+
+def test_numbered_subsection_and_dependent_statement_keep_antecedent_exactly():
+    heading = '7.1 Example Example reduces the renal clearance of the active ingredient.'
+    dependent = 'Concurrent use with this product may result in increased blood concentrations.'
+    text = 'An unrelated preceding summary states that monitoring may be required. ( 7.4 ) ' + heading + '  ' + dependent
+    spans = list(contextual_spans(text))
+    assert any(quote == heading + '  ' + dependent for _, _, quote in spans)
+    assert all(text[start:end] == quote for start, end, quote in spans)
+    assert list(contextual_spans(dependent)) == []
+    assert list(contextual_spans('x' * 600 + '. ' + dependent)) == []
+
+
+def test_oversized_response_is_discarded_and_abstention_has_no_claims():
+    class Oversized(Model):
+        async def synthesize(self, messages):
+            return {'done': True, 'message': {'role': 'assistant', 'content': 'x' * 70000}}
+    result, _, _ = asyncio.run(execute(Oversized()))
+    assert result['answer']['status'] == 'invalid_output'
+    def abstain(value): value.update(supported=False, statement_ids=[])
+    result, _, _ = asyncio.run(execute(Model(abstain)))
+    assert result['answer']['reason'] == 'model_abstained' and result['answer']['text'] is None

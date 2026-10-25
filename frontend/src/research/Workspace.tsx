@@ -185,6 +185,11 @@ export default function Workspace({ mode = 'everyday' }: WorkspaceProps) {
   const handleSearch = () => {
     if (!session) return
     void action('Searching frozen product records…', async () => {
+      if (product) {
+        await reset()
+        setError('The previous product session was closed. Pair a new local session, then search again to select another product.')
+        return
+      }
       setChoice('')
       setCandidates(null)
       const found = await researchApi.search(session, query.trim())
@@ -266,7 +271,7 @@ export default function Workspace({ mode = 'everyday' }: WorkspaceProps) {
   }
 
   return (
-    <main className="research-workspace">
+    <main className="research-workspace" id="main-content">
       {mode === 'everyday' ? (
         <EverydayWorkspace {...sharedProps} />
       ) : (

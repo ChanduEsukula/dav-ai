@@ -7,7 +7,8 @@ function openSource(id: string) {
   const details = target.closest('details')
   if (details) details.open = true
   target.focus()
-  target.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
+  const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  target.scrollIntoView?.({ block: 'center', behavior: reduced ? 'instant' : 'smooth' })
 }
 
 export function GroundedAnswerPanel({ briefing }: { briefing: PublicBriefing }) {

@@ -154,6 +154,11 @@ test('dual-mode workflow: Everyday and Research Pro full journeys', async ({ pag
   // Search in Cohort Builder & Add to Cohort
   await page.getByLabel('Search Product by Name, Ingredient or NDC').fill('Lipitor')
   await page.getByRole('button', { name: 'Search Directory' }).click()
+  await expect(page.getByLabel('Local pairing capability')).toBeVisible()
+  await expect(page.getByRole('region', { name: 'Research briefing' })).toHaveCount(0)
+  await page.getByLabel('Local pairing capability').fill('synthetic-token-123')
+  await page.getByRole('button', { name: 'Pair Local Session' }).click()
+  await page.getByRole('button', { name: 'Search Directory' }).click()
 
   const addLipitorBtn = page.getByRole('button', { name: '+ Add to Cohort' })
   await expect(addLipitorBtn).toBeVisible()
@@ -177,12 +182,9 @@ test('dual-mode workflow: Everyday and Research Pro full journeys', async ({ pag
   // Switching the cohort product must invalidate A before B can be confirmed.
   await page.setViewportSize({ width: 1440, height: 900 })
   await page.getByRole('button', { name: 'Deep Research →' }).click()
-  await expect(page.getByLabel('Local pairing capability')).toBeVisible()
   await expect(page.getByRole('region', { name: 'Research briefing' })).toHaveCount(0)
   await expect(page.getByText('✓ Product Identity Locked')).toHaveCount(0)
   expect(executions).toEqual(['1:0009-0029'])
-  await page.getByLabel('Local pairing capability').fill('synthetic-token-123')
-  await page.getByRole('button', { name: 'Pair Local Session' }).click()
   await expect(page.getByLabel('Search Medication to Confirm:')).toHaveValue('0071-0156')
   await expect(page.getByRole('button', { name: 'Execute Deep Evidence Retrieval' })).toBeDisabled()
   await page.getByRole('button', { name: 'Find Candidate' }).click()

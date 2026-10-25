@@ -1,5 +1,8 @@
 # Phase 3: optional grounded answer prototype
 
+This is the historical Phase 3 report. See [Phase 3B reliability results](PHASE3B_GROUNDED_ANSWER_RELIABILITY.md)
+for the current statement-ID protocol, evaluation and still-PENDING independent reviews.
+
 **Implementation and automated verification complete. Independent claim-support
 and question-relevance review remain PENDING**, explicitly including g03 and h01.
 No generated claim is classified as human-supported in this report. Citation
