@@ -7,6 +7,7 @@ import EverydayWorkspace from './EverydayWorkspace'
 import ResearchProWorkspace from './ResearchProWorkspace'
 import { type CohortItem, updateCohortItemWithBriefing } from './cohort'
 import './workspace.css'
+import { ArchitectureIcon } from '../portfolio/OperationalOverview'
 
 const categories = {
   labels: 'Drug labeling',
@@ -29,9 +30,10 @@ const messages: Record<string, string> = {
 
 interface WorkspaceProps {
   mode?: ExperienceMode
+  active?: boolean
 }
 
-export default function Workspace({ mode = 'everyday' }: WorkspaceProps) {
+export default function Workspace({ mode = 'everyday', active = true }: WorkspaceProps) {
   const [pairing, setPairing] = useState('')
   const [session, setSession] = useState<Session | null>(null)
   const owned = useRef<Session | null>(null)
@@ -100,6 +102,7 @@ export default function Workspace({ mode = 'everyday' }: WorkspaceProps) {
           }, 750)
         } else {
           setRunning(false)
+          setAttempted(false)
           if (outcome.briefing) {
             const medication = outcome.briefing.medication
             if (!product || medication.product_ref !== product.product_ref
@@ -126,6 +129,7 @@ export default function Workspace({ mode = 'everyday' }: WorkspaceProps) {
       } catch (err) {
         if (!stopped && current === generation.current) {
           setRunning(false)
+          setAttempted(false)
           showError(err)
         }
       }
@@ -172,7 +176,7 @@ export default function Workspace({ mode = 'everyday' }: WorkspaceProps) {
       if (!ndc) return
       if (product?.product_ndcs.includes(ndc)) return
       setQuery(ndc)
-      if (product || attempted || running) {
+      if (product || running) {
         await reset()
       } else {
         setChoice('')
@@ -208,11 +212,19 @@ export default function Workspace({ mode = 'everyday' }: WorkspaceProps) {
   }
 
   const handleRunResearch = () => {
-    if (!session || !product || attempted || running) return
+    if (!session || !product || running || !!busy) return
     void action('Starting bounded research…', async () => {
+      generation.current++
+      setResult(null)
+      setError('')
       setAttempted(true)
-      await researchApi.run(session, question, selected, model || null, synthesize)
-      setRunning(true)
+      try {
+        await researchApi.run(session, question, selected, model || null, synthesize)
+        setRunning(true)
+      } catch (err) {
+        setAttempted(false)
+        throw err
+      }
     })
   }
 
@@ -271,7 +283,10 @@ export default function Workspace({ mode = 'everyday' }: WorkspaceProps) {
   }
 
   return (
-    <main className="research-workspace" id="main-content">
+    <main className="research-workspace" id={active ? 'main-content' : undefined} hidden={!active}>
+      <ol className="research-progress" aria-label="Research workflow">
+        {['Select Product', 'Choose Sources', 'Ask Question', 'Review Evidence'].map((step, index) => <li key={step} aria-current={(result ? 3 : product ? selected.length ? 2 : 1 : 0) === index ? 'step' : undefined}><span aria-hidden="true"><ArchitectureIcon kind={(['retrieval', 'api', 'document', 'document'] as const)[index]} /></span>{step}</li>)}
+      </ol>
       {mode === 'everyday' ? (
         <EverydayWorkspace {...sharedProps} />
       ) : (

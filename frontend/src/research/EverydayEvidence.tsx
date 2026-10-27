@@ -59,7 +59,7 @@ export function EverydayLabelCard({ card }: { card: PublicLabel }) {
       </div>
 
       <p className="everyday-card-intro">
-        FDA Structured Product Labeling contains approved medical prescribing guidance, boxed warnings, and precautions specific to this exact pharmaceutical formulation.
+        Stored exact-product label text includes the available prescribing sections, warnings and precautions. Review the original source, version and limitations.
       </p>
 
       {card.records.length === 0 ? (
@@ -110,7 +110,7 @@ export function EverydayLabelCard({ card }: { card: PublicLabel }) {
       <details className="everyday-learn-more">
         <summary>Learn more about FDA Drug Labels</summary>
         <p>
-          FDA Structured Product Labels (SPL) are official documents submitted by manufacturers and approved by the FDA. They describe approved uses, contraindications, and known side effects observed in clinical trials.
+          Read the original manufacturer-submitted label text, dates and applicability. A stored label document is not an individualized recommendation or a guarantee of complete evidence.
         </p>
       </details>
 

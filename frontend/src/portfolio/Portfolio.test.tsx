@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, expect, it } from 'vitest'
+import { afterEach, expect, it, vi } from 'vitest'
 import App from '../App'
 
 afterEach(() => { window.history.replaceState(null, '', '/'); localStorage.clear() })
@@ -7,10 +7,10 @@ afterEach(() => { window.history.replaceState(null, '', '/'); localStorage.clear
 it('restores the landing and educational source workflow without obsolete services or metrics', () => {
   window.history.replaceState(null, '', '/home')
   render(<App />)
-  expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Explore the evidence.Keep the source.')
+  expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Real FDA data. Clearer answers.')
   expect(screen.getByRole('link', { name: /Explore medications/ })).toHaveAttribute('href', '/')
-  expect(screen.getByRole('heading', { name: /product identity to traceable evidence/i })).toBeInTheDocument()
-  expect(screen.getByText('Human review required')).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: /Inside Dav AI/i })).toBeInTheDocument()
+  expect(screen.getByText(/Human review is required/)).toBeInTheDocument()
   expect(screen.queryByText(/foodsignal|saved monitors|risk score/i)).not.toBeInTheDocument()
   expect(screen.getByRole('img', { name: /Not live results/ })).toBeInTheDocument()
 })
@@ -57,3 +57,8 @@ it('provides a main-content skip target in both Ask modes', () => {
   expect(screen.getByRole('main')).toHaveAttribute('id', 'main-content')
   expect(screen.getByRole('heading', { name: 'Pharmaceutical Evidence Workspace' })).toBeInTheDocument()
 })
+
+vi.mock('../api/drugCatalog', async importOriginal => ({
+  ...await importOriginal<typeof import('../api/drugCatalog')>(),
+  getDataInventory: vi.fn().mockRejectedValue(new Error('Inventory unavailable in this UI-only test')),
+}))

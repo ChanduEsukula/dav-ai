@@ -358,7 +358,7 @@ def create_app(listener: socket.socket, pairing: str, *, backend_factory=Process
         entry = registry.auth(request, sid)
         if not entry.session.selected_ref:
             fail("confirmation_required")
-        if entry.started:
+        if entry.busy or (entry.task and not entry.task.done()):
             fail("research_already_started")
         if len(set(body.categories)) != len(body.categories) or not body.question.strip():
             fail("invalid_request", 422)
@@ -366,6 +366,9 @@ def create_app(listener: socket.socket, pairing: str, *, backend_factory=Process
         # Mark before the first await: repeated requests cannot enter concurrently.
         entry.started = True
         entry.outcome = Outcome(state="running")
+        entry.session.research_attempts.clear()
+        entry.session.tool_calls = 0
+        entry.session.iterations = 0
         async def run():
             try:
                 if body.model and body.model not in await available_models(model_factory):
@@ -389,6 +392,8 @@ def create_app(listener: socket.socket, pairing: str, *, backend_factory=Process
                 raise
             except Exception:
                 entry.outcome = Outcome(state="stopped", code="dependency_unavailable")
+            finally:
+                entry.started = False
         entry.task = asyncio.create_task(run())
         # A done callback also releases admission when cancelled before run starts.
         entry.task.add_done_callback(lambda task: registry.release(entry))

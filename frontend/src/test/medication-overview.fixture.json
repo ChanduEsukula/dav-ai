@@ -1,0 +1,1087 @@
+{
+  "query": "Xanax",
+  "match_scope": "stored_brand_alias_matches",
+  "matched_product_count": 9,
+  "truncated": false,
+  "products": [
+    {
+      "id": "product:[\"openfda_ndc_directory\",\"0009-0029_f5323eac-81d0-4096-ac15-2f25220c5c28\"]",
+      "product_id": "product:[\"openfda_ndc_directory\",\"0009-0029_f5323eac-81d0-4096-ac15-2f25220c5c28\"]",
+      "generic_name": "alprazolam",
+      "brand_names": [
+        "Xanax"
+      ],
+      "active_ingredients": [
+        "alprazolam"
+      ],
+      "ingredient_ids": [
+        "ingredient:d0657a6d7eb70938c838782b"
+      ],
+      "strength": ".25 mg/1",
+      "dosage_form": "TABLET",
+      "routes": [
+        "ORAL"
+      ],
+      "manufacturers": [
+        "PHARMACIA & UPJOHN COMPANY LLC"
+      ],
+      "product_ndcs": [
+        "0009-0029"
+      ],
+      "package_ndcs": [
+        "0009-0029-01",
+        "0009-0029-02"
+      ],
+      "rxcui": null,
+      "rxcuis": [
+        {
+          "value": "141927",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "141928",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "197321",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "197322",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "214003",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "214004",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "308047",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "308048",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        }
+      ],
+      "is_combination": false,
+      "identity_partial": true,
+      "formulation_id": "formulation:f71ff496cef7f68adc6f2165",
+      "application_number": "NDA018276",
+      "product_type": "HUMAN PRESCRIPTION DRUG",
+      "marketing_category": "NDA",
+      "consumer_classification": "NORMAL_CONSUMER_HUMAN_PRODUCT",
+      "provenance": {
+        "source": "openfda_ndc_directory",
+        "source_id": "source:[\"openfda_ndc_directory\",\"f8e9d4ca399d61b788ad5dc51d7adad1d2d99d32b02e3ca8a2e02821702b44d5\"]",
+        "source_record_id": "0009-0029_f5323eac-81d0-4096-ac15-2f25220c5c28",
+        "source_url": "https://download.open.fda.gov/drug/ndc/drug-ndc-0001-of-0001.json.zip",
+        "observed_at": "2026-09-26T15:05:08.395135+00:00"
+      }
+    },
+    {
+      "id": "product:[\"openfda_ndc_directory\",\"0009-0090_f5323eac-81d0-4096-ac15-2f25220c5c28\"]",
+      "product_id": "product:[\"openfda_ndc_directory\",\"0009-0090_f5323eac-81d0-4096-ac15-2f25220c5c28\"]",
+      "generic_name": "alprazolam",
+      "brand_names": [
+        "Xanax"
+      ],
+      "active_ingredients": [
+        "alprazolam"
+      ],
+      "ingredient_ids": [
+        "ingredient:d0657a6d7eb70938c838782b"
+      ],
+      "strength": "1 mg/1",
+      "dosage_form": "TABLET",
+      "routes": [
+        "ORAL"
+      ],
+      "manufacturers": [
+        "PHARMACIA & UPJOHN COMPANY LLC"
+      ],
+      "product_ndcs": [
+        "0009-0090"
+      ],
+      "package_ndcs": [
+        "0009-0090-04"
+      ],
+      "rxcui": null,
+      "rxcuis": [
+        {
+          "value": "141927",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "141928",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "197321",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "197322",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "214003",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "214004",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "308047",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "308048",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        }
+      ],
+      "is_combination": false,
+      "identity_partial": true,
+      "formulation_id": "formulation:74277658cdbb8742b631ea17",
+      "application_number": "NDA018276",
+      "product_type": "HUMAN PRESCRIPTION DRUG",
+      "marketing_category": "NDA",
+      "consumer_classification": "NORMAL_CONSUMER_HUMAN_PRODUCT",
+      "provenance": {
+        "source": "openfda_ndc_directory",
+        "source_id": "source:[\"openfda_ndc_directory\",\"f8e9d4ca399d61b788ad5dc51d7adad1d2d99d32b02e3ca8a2e02821702b44d5\"]",
+        "source_record_id": "0009-0090_f5323eac-81d0-4096-ac15-2f25220c5c28",
+        "source_url": "https://download.open.fda.gov/drug/ndc/drug-ndc-0001-of-0001.json.zip",
+        "observed_at": "2026-09-26T15:05:08.395135+00:00"
+      }
+    },
+    {
+      "id": "product:[\"openfda_ndc_directory\",\"0009-0094_f5323eac-81d0-4096-ac15-2f25220c5c28\"]",
+      "product_id": "product:[\"openfda_ndc_directory\",\"0009-0094_f5323eac-81d0-4096-ac15-2f25220c5c28\"]",
+      "generic_name": "alprazolam",
+      "brand_names": [
+        "Xanax"
+      ],
+      "active_ingredients": [
+        "alprazolam"
+      ],
+      "ingredient_ids": [
+        "ingredient:d0657a6d7eb70938c838782b"
+      ],
+      "strength": "2 mg/1",
+      "dosage_form": "TABLET",
+      "routes": [
+        "ORAL"
+      ],
+      "manufacturers": [
+        "PHARMACIA & UPJOHN COMPANY LLC"
+      ],
+      "product_ndcs": [
+        "0009-0094"
+      ],
+      "package_ndcs": [
+        "0009-0094-01"
+      ],
+      "rxcui": null,
+      "rxcuis": [
+        {
+          "value": "141927",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "141928",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "197321",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "197322",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "214003",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "214004",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "308047",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "308048",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        }
+      ],
+      "is_combination": false,
+      "identity_partial": true,
+      "formulation_id": "formulation:285c88b00c81c6029659c1ce",
+      "application_number": "NDA018276",
+      "product_type": "HUMAN PRESCRIPTION DRUG",
+      "marketing_category": "NDA",
+      "consumer_classification": "NORMAL_CONSUMER_HUMAN_PRODUCT",
+      "provenance": {
+        "source": "openfda_ndc_directory",
+        "source_id": "source:[\"openfda_ndc_directory\",\"f8e9d4ca399d61b788ad5dc51d7adad1d2d99d32b02e3ca8a2e02821702b44d5\"]",
+        "source_record_id": "0009-0094_f5323eac-81d0-4096-ac15-2f25220c5c28",
+        "source_url": "https://download.open.fda.gov/drug/ndc/drug-ndc-0001-of-0001.json.zip",
+        "observed_at": "2026-09-26T15:05:08.395135+00:00"
+      }
+    },
+    {
+      "id": "product:[\"openfda_ndc_directory\",\"58151-452_27062ff4-9ce3-4d8a-aeae-f4468efb623a\"]",
+      "product_id": "product:[\"openfda_ndc_directory\",\"58151-452_27062ff4-9ce3-4d8a-aeae-f4468efb623a\"]",
+      "generic_name": "alprazolam",
+      "brand_names": [
+        "Xanax"
+      ],
+      "active_ingredients": [
+        "alprazolam"
+      ],
+      "ingredient_ids": [
+        "ingredient:d0657a6d7eb70938c838782b"
+      ],
+      "strength": ".25 mg/1",
+      "dosage_form": "TABLET",
+      "routes": [
+        "ORAL"
+      ],
+      "manufacturers": [
+        "Viatris Specialty LLC"
+      ],
+      "product_ndcs": [
+        "58151-452"
+      ],
+      "package_ndcs": [
+        "58151-452-01",
+        "58151-452-05"
+      ],
+      "rxcui": null,
+      "rxcuis": [
+        {
+          "value": "141927",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "141928",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "197321",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "197322",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "214003",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "214004",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "308047",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "308048",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        }
+      ],
+      "is_combination": false,
+      "identity_partial": false,
+      "formulation_id": "formulation:f71ff496cef7f68adc6f2165",
+      "application_number": "NDA018276",
+      "product_type": "HUMAN PRESCRIPTION DRUG",
+      "marketing_category": "NDA",
+      "consumer_classification": "NORMAL_CONSUMER_HUMAN_PRODUCT",
+      "provenance": {
+        "source": "openfda_ndc_directory",
+        "source_id": "source:[\"openfda_ndc_directory\",\"f8e9d4ca399d61b788ad5dc51d7adad1d2d99d32b02e3ca8a2e02821702b44d5\"]",
+        "source_record_id": "58151-452_27062ff4-9ce3-4d8a-aeae-f4468efb623a",
+        "source_url": "https://download.open.fda.gov/drug/ndc/drug-ndc-0001-of-0001.json.zip",
+        "observed_at": "2026-09-26T15:05:08.395135+00:00"
+      }
+    },
+    {
+      "id": "product:[\"openfda_ndc_directory\",\"58151-453_27062ff4-9ce3-4d8a-aeae-f4468efb623a\"]",
+      "product_id": "product:[\"openfda_ndc_directory\",\"58151-453_27062ff4-9ce3-4d8a-aeae-f4468efb623a\"]",
+      "generic_name": "alprazolam",
+      "brand_names": [
+        "Xanax"
+      ],
+      "active_ingredients": [
+        "alprazolam"
+      ],
+      "ingredient_ids": [
+        "ingredient:d0657a6d7eb70938c838782b"
+      ],
+      "strength": ".5 mg/1",
+      "dosage_form": "TABLET",
+      "routes": [
+        "ORAL"
+      ],
+      "manufacturers": [
+        "Viatris Specialty LLC"
+      ],
+      "product_ndcs": [
+        "58151-453"
+      ],
+      "package_ndcs": [
+        "58151-453-01",
+        "58151-453-05"
+      ],
+      "rxcui": null,
+      "rxcuis": [
+        {
+          "value": "141927",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "141928",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "197321",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "197322",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "214003",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "214004",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "308047",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "308048",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        }
+      ],
+      "is_combination": false,
+      "identity_partial": false,
+      "formulation_id": "formulation:c42670fd4b516679bc84f0e0",
+      "application_number": "NDA018276",
+      "product_type": "HUMAN PRESCRIPTION DRUG",
+      "marketing_category": "NDA",
+      "consumer_classification": "NORMAL_CONSUMER_HUMAN_PRODUCT",
+      "provenance": {
+        "source": "openfda_ndc_directory",
+        "source_id": "source:[\"openfda_ndc_directory\",\"f8e9d4ca399d61b788ad5dc51d7adad1d2d99d32b02e3ca8a2e02821702b44d5\"]",
+        "source_record_id": "58151-453_27062ff4-9ce3-4d8a-aeae-f4468efb623a",
+        "source_url": "https://download.open.fda.gov/drug/ndc/drug-ndc-0001-of-0001.json.zip",
+        "observed_at": "2026-09-26T15:05:08.395135+00:00"
+      }
+    },
+    {
+      "id": "product:[\"openfda_ndc_directory\",\"58151-454_27062ff4-9ce3-4d8a-aeae-f4468efb623a\"]",
+      "product_id": "product:[\"openfda_ndc_directory\",\"58151-454_27062ff4-9ce3-4d8a-aeae-f4468efb623a\"]",
+      "generic_name": "alprazolam",
+      "brand_names": [
+        "Xanax"
+      ],
+      "active_ingredients": [
+        "alprazolam"
+      ],
+      "ingredient_ids": [
+        "ingredient:d0657a6d7eb70938c838782b"
+      ],
+      "strength": "1 mg/1",
+      "dosage_form": "TABLET",
+      "routes": [
+        "ORAL"
+      ],
+      "manufacturers": [
+        "Viatris Specialty LLC"
+      ],
+      "product_ndcs": [
+        "58151-454"
+      ],
+      "package_ndcs": [
+        "58151-454-01",
+        "58151-454-05"
+      ],
+      "rxcui": null,
+      "rxcuis": [
+        {
+          "value": "141927",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "141928",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "197321",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "197322",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "214003",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "214004",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "308047",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "308048",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        }
+      ],
+      "is_combination": false,
+      "identity_partial": false,
+      "formulation_id": "formulation:74277658cdbb8742b631ea17",
+      "application_number": "NDA018276",
+      "product_type": "HUMAN PRESCRIPTION DRUG",
+      "marketing_category": "NDA",
+      "consumer_classification": "NORMAL_CONSUMER_HUMAN_PRODUCT",
+      "provenance": {
+        "source": "openfda_ndc_directory",
+        "source_id": "source:[\"openfda_ndc_directory\",\"f8e9d4ca399d61b788ad5dc51d7adad1d2d99d32b02e3ca8a2e02821702b44d5\"]",
+        "source_record_id": "58151-454_27062ff4-9ce3-4d8a-aeae-f4468efb623a",
+        "source_url": "https://download.open.fda.gov/drug/ndc/drug-ndc-0001-of-0001.json.zip",
+        "observed_at": "2026-09-26T15:05:08.395135+00:00"
+      }
+    },
+    {
+      "id": "product:[\"openfda_ndc_directory\",\"58151-455_27062ff4-9ce3-4d8a-aeae-f4468efb623a\"]",
+      "product_id": "product:[\"openfda_ndc_directory\",\"58151-455_27062ff4-9ce3-4d8a-aeae-f4468efb623a\"]",
+      "generic_name": "alprazolam",
+      "brand_names": [
+        "Xanax"
+      ],
+      "active_ingredients": [
+        "alprazolam"
+      ],
+      "ingredient_ids": [
+        "ingredient:d0657a6d7eb70938c838782b"
+      ],
+      "strength": "2 mg/1",
+      "dosage_form": "TABLET",
+      "routes": [
+        "ORAL"
+      ],
+      "manufacturers": [
+        "Viatris Specialty LLC"
+      ],
+      "product_ndcs": [
+        "58151-455"
+      ],
+      "package_ndcs": [
+        "58151-455-01"
+      ],
+      "rxcui": null,
+      "rxcuis": [
+        {
+          "value": "141927",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "141928",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "197321",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "197322",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "214003",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "214004",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "308047",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "308048",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        }
+      ],
+      "is_combination": false,
+      "identity_partial": false,
+      "formulation_id": "formulation:285c88b00c81c6029659c1ce",
+      "application_number": "NDA018276",
+      "product_type": "HUMAN PRESCRIPTION DRUG",
+      "marketing_category": "NDA",
+      "consumer_classification": "NORMAL_CONSUMER_HUMAN_PRODUCT",
+      "provenance": {
+        "source": "openfda_ndc_directory",
+        "source_id": "source:[\"openfda_ndc_directory\",\"f8e9d4ca399d61b788ad5dc51d7adad1d2d99d32b02e3ca8a2e02821702b44d5\"]",
+        "source_record_id": "58151-455_27062ff4-9ce3-4d8a-aeae-f4468efb623a",
+        "source_url": "https://download.open.fda.gov/drug/ndc/drug-ndc-0001-of-0001.json.zip",
+        "observed_at": "2026-09-26T15:05:08.395135+00:00"
+      }
+    },
+    {
+      "id": "product:[\"openfda_ndc_directory\",\"58151-505_7ceb0a8d-f766-4806-a289-652080edf4a3\"]",
+      "product_id": "product:[\"openfda_ndc_directory\",\"58151-505_7ceb0a8d-f766-4806-a289-652080edf4a3\"]",
+      "generic_name": "alprazolam",
+      "brand_names": [
+        "Xanax XR"
+      ],
+      "active_ingredients": [
+        "alprazolam"
+      ],
+      "ingredient_ids": [
+        "ingredient:d0657a6d7eb70938c838782b"
+      ],
+      "strength": "2 mg/1",
+      "dosage_form": "TABLET, EXTENDED RELEASE",
+      "routes": [
+        "ORAL"
+      ],
+      "manufacturers": [
+        "Viatris Specialty LLC"
+      ],
+      "product_ndcs": [
+        "58151-505"
+      ],
+      "package_ndcs": [
+        "58151-505-91"
+      ],
+      "rxcui": null,
+      "rxcuis": [
+        {
+          "value": "433798",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "433799",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "433800",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "433801",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "687022",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "687023",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "687024",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "687025",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        }
+      ],
+      "is_combination": false,
+      "identity_partial": true,
+      "formulation_id": "formulation:fc6b7fa807edec2c89b2d146",
+      "application_number": "NDA021434",
+      "product_type": "HUMAN PRESCRIPTION DRUG",
+      "marketing_category": "NDA",
+      "consumer_classification": "NORMAL_CONSUMER_HUMAN_PRODUCT",
+      "provenance": {
+        "source": "openfda_ndc_directory",
+        "source_id": "source:[\"openfda_ndc_directory\",\"f8e9d4ca399d61b788ad5dc51d7adad1d2d99d32b02e3ca8a2e02821702b44d5\"]",
+        "source_record_id": "58151-505_7ceb0a8d-f766-4806-a289-652080edf4a3",
+        "source_url": "https://download.open.fda.gov/drug/ndc/drug-ndc-0001-of-0001.json.zip",
+        "observed_at": "2026-09-26T15:05:08.395135+00:00"
+      }
+    },
+    {
+      "id": "product:[\"openfda_ndc_directory\",\"58151-506_7ceb0a8d-f766-4806-a289-652080edf4a3\"]",
+      "product_id": "product:[\"openfda_ndc_directory\",\"58151-506_7ceb0a8d-f766-4806-a289-652080edf4a3\"]",
+      "generic_name": "alprazolam",
+      "brand_names": [
+        "Xanax XR"
+      ],
+      "active_ingredients": [
+        "alprazolam"
+      ],
+      "ingredient_ids": [
+        "ingredient:d0657a6d7eb70938c838782b"
+      ],
+      "strength": "3 mg/1",
+      "dosage_form": "TABLET, EXTENDED RELEASE",
+      "routes": [
+        "ORAL"
+      ],
+      "manufacturers": [
+        "Viatris Specialty LLC"
+      ],
+      "product_ndcs": [
+        "58151-506"
+      ],
+      "package_ndcs": [
+        "58151-506-91"
+      ],
+      "rxcui": null,
+      "rxcuis": [
+        {
+          "value": "433798",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "433799",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "433800",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "433801",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "687022",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "687023",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "687024",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        },
+        {
+          "value": "687025",
+          "concept_type": "UNKNOWN",
+          "is_unique_product": false,
+          "has_conflict": true
+        }
+      ],
+      "is_combination": false,
+      "identity_partial": true,
+      "formulation_id": "formulation:8a13f6f34f23faa979bf221e",
+      "application_number": "NDA021434",
+      "product_type": "HUMAN PRESCRIPTION DRUG",
+      "marketing_category": "NDA",
+      "consumer_classification": "NORMAL_CONSUMER_HUMAN_PRODUCT",
+      "provenance": {
+        "source": "openfda_ndc_directory",
+        "source_id": "source:[\"openfda_ndc_directory\",\"f8e9d4ca399d61b788ad5dc51d7adad1d2d99d32b02e3ca8a2e02821702b44d5\"]",
+        "source_record_id": "58151-506_7ceb0a8d-f766-4806-a289-652080edf4a3",
+        "source_url": "https://download.open.fda.gov/drug/ndc/drug-ndc-0001-of-0001.json.zip",
+        "observed_at": "2026-09-26T15:05:08.395135+00:00"
+      }
+    }
+  ],
+  "formulations": [
+    {
+      "formulation_id": "formulation:f71ff496cef7f68adc6f2165",
+      "product_ids": [
+        "product:[\"openfda_ndc_directory\",\"0009-0029_f5323eac-81d0-4096-ac15-2f25220c5c28\"]",
+        "product:[\"openfda_ndc_directory\",\"58151-452_27062ff4-9ce3-4d8a-aeae-f4468efb623a\"]"
+      ]
+    },
+    {
+      "formulation_id": "formulation:74277658cdbb8742b631ea17",
+      "product_ids": [
+        "product:[\"openfda_ndc_directory\",\"0009-0090_f5323eac-81d0-4096-ac15-2f25220c5c28\"]",
+        "product:[\"openfda_ndc_directory\",\"58151-454_27062ff4-9ce3-4d8a-aeae-f4468efb623a\"]"
+      ]
+    },
+    {
+      "formulation_id": "formulation:285c88b00c81c6029659c1ce",
+      "product_ids": [
+        "product:[\"openfda_ndc_directory\",\"0009-0094_f5323eac-81d0-4096-ac15-2f25220c5c28\"]",
+        "product:[\"openfda_ndc_directory\",\"58151-455_27062ff4-9ce3-4d8a-aeae-f4468efb623a\"]"
+      ]
+    },
+    {
+      "formulation_id": "formulation:c42670fd4b516679bc84f0e0",
+      "product_ids": [
+        "product:[\"openfda_ndc_directory\",\"58151-453_27062ff4-9ce3-4d8a-aeae-f4468efb623a\"]"
+      ]
+    },
+    {
+      "formulation_id": "formulation:fc6b7fa807edec2c89b2d146",
+      "product_ids": [
+        "product:[\"openfda_ndc_directory\",\"58151-505_7ceb0a8d-f766-4806-a289-652080edf4a3\"]"
+      ]
+    },
+    {
+      "formulation_id": "formulation:8a13f6f34f23faa979bf221e",
+      "product_ids": [
+        "product:[\"openfda_ndc_directory\",\"58151-506_7ceb0a8d-f766-4806-a289-652080edf4a3\"]"
+      ]
+    }
+  ],
+  "labels": {
+    "distinct_admitted_records": 1,
+    "product_label_links": 4,
+    "products_with_labels": 4
+  },
+  "recalls": {
+    "distinct_linked_records": 2,
+    "product_recall_links": 2,
+    "records": [
+      {
+        "id": "recall:[\"openfda_drug_enforcement\",\"D-0444-2026\"]",
+        "recall_number": "D-0444-2026",
+        "product_description": "Xanax XR, alprazolam, extended-release tablets, 3 mg, 60 Tablets bottles, Rx only, Distributed by: Viatris Specialty LLC, Morgantown, WV 06506, U.S.A, Made in Ireland, NDC 58151-506-91",
+        "reason_for_recall": "Failed Dissolution Specifications",
+        "classification": "Class II",
+        "reported_status": "Ongoing",
+        "recalling_firm": "Viatris, Inc.",
+        "recall_initiation_date": "2026-03-17",
+        "report_date": "2026-04-15",
+        "source_record_id": "D-0444-2026",
+        "source_url": "https://download.open.fda.gov/drug/enforcement/drug-enforcement-0001-of-0001.json.zip",
+        "product_links": [
+          {
+            "product_id": "product:[\"openfda_ndc_directory\",\"58151-506_7ceb0a8d-f766-4806-a289-652080edf4a3\"]",
+            "product_ndcs": [
+              "58151-506"
+            ],
+            "lot_scope": "UNKNOWN",
+            "lot_information": "Lot# 8177156, Exp Date: 02/28/2027",
+            "applicability_class": "AFFECTED_PACKAGE",
+            "match_method": "EXACT_PACKAGE_NDC",
+            "matched_value": "58151-506-91"
+          }
+        ]
+      },
+      {
+        "id": "recall:[\"openfda_drug_enforcement\",\"D-0161-2016\"]",
+        "recall_number": "D-0161-2016",
+        "product_description": "Xanax (alprazolam) tablets, 0.25 mg, 100-count bottle, Rx only, Distributed by Pharmacia & Upjohn Co. Division of Pfizer Inc, NY, NY 10017, NDC 0009-0029-01",
+        "reason_for_recall": "Subpotent Drug",
+        "classification": "Class II",
+        "reported_status": "Terminated",
+        "recalling_firm": "Pfizer Inc.",
+        "recall_initiation_date": "2015-09-24",
+        "report_date": "2015-11-04",
+        "source_record_id": "D-0161-2016",
+        "source_url": "https://download.open.fda.gov/drug/enforcement/drug-enforcement-0001-of-0001.json.zip",
+        "product_links": [
+          {
+            "product_id": "product:[\"openfda_ndc_directory\",\"0009-0029_f5323eac-81d0-4096-ac15-2f25220c5c28\"]",
+            "product_ndcs": [
+              "0009-0029"
+            ],
+            "lot_scope": "UNKNOWN",
+            "lot_information": "Lot # C111054; Exp. 02/16",
+            "applicability_class": "AFFECTED_PACKAGE",
+            "match_method": "EXACT_PACKAGE_NDC",
+            "matched_value": "0009-0029-01"
+          }
+        ]
+      }
+    ]
+  },
+  "ingredients": [
+    {
+      "ingredient_id": "ingredient:d0657a6d7eb70938c838782b",
+      "ingredient_name": "alprazolam",
+      "report_count": 18,
+      "count_unit": "deduplicated ingredient-report associations",
+      "window_start": "2020-01-01",
+      "window_end": "2026-06-30",
+      "source": {
+        "source_name": "openfda_drug_event",
+        "source_url": "https://api.fda.gov/drug/event.json",
+        "export_date": "2026-09-23"
+      },
+      "coverage": {
+        "ingredient_id": "ingredient:d0657a6d7eb70938c838782b",
+        "state": "READY",
+        "reason_code": "SCOPED_INGREDIENT_ANALYTICS_AVAILABLE",
+        "scope": "DEDUPLICATED_INGREDIENT_REPORT_ANALYTICS",
+        "as_of_date": "2026-09-26",
+        "source_date": "2026-09-23",
+        "measured_count": 1,
+        "unresolved_count": null,
+        "limitations": [
+          "Descriptive FAERS-derived ingredient co-reporting associations; not patient counts.",
+          "A report can contain multiple drugs, ingredients and reactions; ingredient totals cannot be summed into globally unique report counts or product totals.",
+          "Outcome counts describe reports marked serious or containing the specified outcome flag.",
+          "This is a current normalized/revised research snapshot filtered by parsed receipt dates; it does not recreate the public data at historical cutoffs.",
+          "Exact frozen ingredient IDs retain separate salt, hydrate and solvate identities; unresolved source mentions and reporting completeness are not measured.",
+          "Reaction co_report_activity is distinct from deduplicated report_count; each report may contribute to multiple reaction terms.",
+          "Only observed ingredient-month rows are stored; an absent bin is not an observed zero."
+        ]
+      },
+      "reactions": [
+        {
+          "reaction": "off label use",
+          "co_report_activity": 3,
+          "rank": 1
+        },
+        {
+          "reaction": "drug ineffective",
+          "co_report_activity": 2,
+          "rank": 2
+        },
+        {
+          "reaction": "headache",
+          "co_report_activity": 2,
+          "rank": 3
+        },
+        {
+          "reaction": "insomnia",
+          "co_report_activity": 2,
+          "rank": 4
+        },
+        {
+          "reaction": "palpitations",
+          "co_report_activity": 2,
+          "rank": 5
+        }
+      ]
+    }
+  ],
+  "release": {
+    "release_id": "dav-ai-pharma-v1-phase4b-communications-20261006",
+    "contract_id": "dav-ai-pharma-release-v1",
+    "policy_version": "1.0.0",
+    "schema_version": "dav-ai-pharma-sqlite-v1.phase2-identity1.phase3b-recalls1.phase4a-ae1",
+    "build_version": "phase4b-communications-0.1.0",
+    "build_time_utc": "2026-10-06T22:12:24.015723+00:00",
+    "ndc_observation_date": "2026-09-26",
+    "label_export_date": "2026-09-25",
+    "window_start": "2020-01-01",
+    "window_end": "2026-06-30",
+    "publication_authorized": false,
+    "sources": [
+      {
+        "source_id": "source:[\"fda_drug_safety_communications\",\"[\\\"data/pharma_recovery/davai_recovery.dump\\\",\\\"2213621015\\\",\\\"1790434302188618271\\\",\\\"6d05ee6c71114ef3e301a53e9b1a98c01fb0eee649d13074049ee6e7a1fb94d5\\\"]\"]",
+        "source_name": "fda_drug_safety_communications",
+        "source_url": "https://www.fda.gov/drugs/drug-safety-and-availability/drug-safety-communications",
+        "export_date": null,
+        "observed_at": null
+      },
+      {
+        "source_id": "source:[\"openfda_drug_enforcement\",\"4fd1a8f0f22892252966e6d5923d8d8a03c8d697c9050bfddfaa2fd25f91f9e2\"]",
+        "source_name": "openfda_drug_enforcement",
+        "source_url": "https://download.open.fda.gov/drug/enforcement/drug-enforcement-0001-of-0001.json.zip",
+        "export_date": "2026-09-25",
+        "observed_at": "2026-09-26T15:07:41.940634+00:00"
+      },
+      {
+        "source_id": "source:[\"openfda_drug_event\",\"[\\\"a8d7654d2c2aaaa4ecd530745dafd2c9b23885f451c7d11b21dca2bee5250adc\\\",\\\"ad2838f2ef19de0d4531888a12d2a24e91c374c58e8e63872aca7ad40d98554a\\\",\\\"5fb9157bb38f9d9c8418d6e6ff126212ec5f63e5d223457e4419cf601bc08da3\\\"]\"]",
+        "source_name": "openfda_drug_event",
+        "source_url": "https://api.fda.gov/drug/event.json",
+        "export_date": "2026-09-23",
+        "observed_at": "2026-09-26T15:05:17.664454+00:00"
+      },
+      {
+        "source_id": "source:[\"openfda_drug_label\",\"3f2a00b793176b411f8df071f43e1df07e08b995c3c0db8b274660dead854d0c\"]",
+        "source_name": "openfda_drug_label",
+        "source_url": "https://api.fda.gov/drug/label.json",
+        "export_date": "2026-09-25",
+        "observed_at": null
+      },
+      {
+        "source_id": "source:[\"openfda_ndc_directory\",\"f8e9d4ca399d61b788ad5dc51d7adad1d2d99d32b02e3ca8a2e02821702b44d5\"]",
+        "source_name": "openfda_ndc_directory",
+        "source_url": "https://download.open.fda.gov/drug/ndc/drug-ndc-0001-of-0001.json.zip",
+        "export_date": "2026-09-26",
+        "observed_at": "2026-09-26T15:05:08.395135+00:00"
+      },
+      {
+        "source_id": "source:[\"openfda_ndc_directory\",\"identity:ad2838f2ef19de0d4531888a12d2a24e91c374c58e8e63872aca7ad40d98554a\"]",
+        "source_name": "openfda_ndc_directory",
+        "source_url": null,
+        "export_date": null,
+        "observed_at": "2026-09-26T15:05:08.395135+00:00"
+      }
+    ],
+    "limitations": [
+      "Missing linked recalls do not establish that a drug has never been recalled. Recall coverage is partial.",
+      "Adverse-event counts are ingredient-level reporting associations, not product-specific counts, incidence, causality, comparative safety, or personal risk.",
+      "Spontaneous reporting can be incomplete, duplicated, biased, and revised. Reports do not establish that the medication caused a reaction.",
+      "Ingredient counts must not be summed into a product total, including for combination products.",
+      "Name and age identify the report only. This report provides no diagnosis, treatment recommendation, or age-specific risk estimate."
+    ]
+  },
+  "limitations": [
+    "Discovery overview only. Select and confirm an exact product before product-scoped research.",
+    "Counts describe returned matching eligible products in this frozen release, not complete brand or ingredient history.",
+    "Stored brand-base aliases can include extended-release forms. Products, formulations and labelers remain separate.",
+    "Recall records are deduplicated by sealed recall_id, not summed across NDCs. A record is not necessarily a unique FDA recall event.",
+    "Historical links do not establish current status or applicability to every package or lot. No linked records is not evidence of no recalls.",
+    "FAERS ingredients are listed once by sealed ingredient_id. Never sum ingredients into a product total; associations do not establish causation, incidence or individual risk.",
+    "Label documents are deduplicated only after the existing consumer-admission checks. Missing label evidence does not mean no warnings exist."
+  ]
+}

@@ -154,7 +154,8 @@ def test_missing_incompatible_and_tampered_release_fail_closed(tmp_path, monkeyp
 
 def test_removed_routes_are_absent_from_contract():
     paths = app.openapi()["paths"]
-    assert len(paths) == 11
+    assert len(paths) == 13
+    assert '/api/medications/overview' in paths and '/api/coverage/inventory' in paths
     assert not any(any(word in p for word in ("auth", "ask", "monitor", "cosmetic", "assistant", "semaglutide")) for p in paths)
     assert URL in paths
 

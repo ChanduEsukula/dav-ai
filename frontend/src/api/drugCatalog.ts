@@ -250,3 +250,78 @@ export type DrugEvidence = {
 export async function getDrugEvidence(id: string, signal?: AbortSignal) {
   return (await apiClient.get<DrugEvidence>(`/api/drugs/${encodeURIComponent(id)}/evidence`, { signal })).data
 }
+
+
+export async function getDrugLabels(id: string, signal?: AbortSignal) {
+  const result = (await apiClient.get<DrugSafety['labels'] & { drug_id: string }>(
+    `/api/drugs/${encodeURIComponent(id)}/safety/labels`, { signal })).data
+  if (result.drug_id !== id || !Array.isArray(result.records)) throw new Error('Label product binding mismatch')
+  return { ...result, records: result.records.filter(record => record.applicability_class === 'EXACT_PRODUCT'
+    && record.evidence_scope === 'PRODUCT' && ['SELECTED_STORED', 'EARLIER_STORED'].includes(record.selection_status)) }
+}
+
+export type MedicationOverview = {
+  query: string
+  match_scope: 'stored_brand_alias_matches' | 'bounded_catalog_search_matches'
+  matched_product_count: number
+  truncated: boolean
+  products: CatalogDrug[]
+  formulations: { formulation_id: string | null; product_ids: string[] }[]
+  labels: { distinct_admitted_records: number; product_label_links: number; products_with_labels: number }
+  recalls: { distinct_linked_records: number; product_recall_links: number; records: {
+    id: string; recall_number: string; product_description: string; reason_for_recall: string;
+    classification: string | null; reported_status: string | null; recalling_firm: string | null;
+    recall_initiation_date: string | null; report_date: string | null; source_record_id: string; source_url: string | null;
+    product_links: { product_id: string; product_ndcs: string[]; lot_scope: string; lot_information: string | null; applicability_class: string; match_method: string | null; matched_value: string | null }[]
+  }[] }
+  ingredients: {
+    ingredient_id: string; ingredient_name: string; report_count: number | null; count_unit: string | null;
+    window_start: string | null; window_end: string | null; coverage: IngredientCoverage;
+    source: { source_name: string; source_url: string | null; export_date: string | null } | null;
+    reactions: { reaction: string; co_report_activity: number; rank: number }[]
+  }[]
+  release: Release & { publication_authorized: false }
+  limitations: string[]
+}
+export type DataInventory = {
+  release: Release & { publication_authorized: false }
+  metrics: { key: string; label: string; value: number; definition: string; source: string; window: string }[]
+  limitations: string[]
+}
+export async function getMedicationOverview(query: string, signal?: AbortSignal): Promise<MedicationOverview> {
+  const result = (await apiClient.get<MedicationOverview>('/api/medications/overview', { params: { q: query }, signal })).data
+  if (!result || result.query !== query || !Array.isArray(result.products) || !Array.isArray(result.formulations)
+    || !Array.isArray(result.ingredients) || !Array.isArray(result.recalls?.records)
+    || !Number.isSafeInteger(result.matched_product_count) || result.matched_product_count !== result.products.length
+    || result.products.length > 100 || result.release?.publication_authorized !== false
+    || !['stored_brand_alias_matches', 'bounded_catalog_search_matches'].includes(result.match_scope)) {
+    throw new Error('Medication overview scope could not be verified')
+  }
+  const productIds = new Set(result.products.map(product => product.id))
+  if (productIds.size !== result.products.length
+    || result.formulations.some(group => group.product_ids.some(id => !productIds.has(id)))
+    || new Set(result.recalls.records.map(row => row.id)).size !== result.recalls.records.length
+    || result.recalls.distinct_linked_records !== result.recalls.records.length
+    || result.recalls.records.some(row => row.product_links.some(link => !productIds.has(link.product_id)))
+    || new Set(result.ingredients.map(row => row.ingredient_id)).size !== result.ingredients.length) {
+    throw new Error('Medication overview contains inconsistent identities')
+  }
+  return result
+}
+export async function getDataInventory(signal?: AbortSignal): Promise<DataInventory> {
+  const result = (await apiClient.get<DataInventory>('/api/coverage/inventory', { signal })).data
+  return validateDataInventory(result)
+}
+export function validateDataInventory(result: DataInventory): DataInventory {
+  if (!result || !Array.isArray(result.metrics) || !Array.isArray(result.limitations)
+    || result.release?.publication_authorized !== false || !Array.isArray(result.release.sources)
+    || typeof result.release.build_time_utc !== 'string'
+    || !/^\d{4}-\d{2}-\d{2}/.test(result.release.build_time_utc)
+    || !['window_start', 'window_end', 'release_id'].every(key => typeof result.release[key as keyof typeof result.release] === 'string')
+    || !['labels', 'recalls', 'analytics'].every(key => result.metrics.filter(metric => metric.key === key).length === 1)
+    || result.metrics.some(metric => !Number.isSafeInteger(metric.value) || metric.value < 0
+      || !['key', 'label', 'definition', 'source', 'window'].every(key => typeof metric[key as keyof typeof metric] === 'string'))) {
+    throw new Error('Stored inventory could not be verified')
+  }
+  return result
+}

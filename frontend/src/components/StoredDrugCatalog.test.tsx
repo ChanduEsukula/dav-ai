@@ -1,12 +1,12 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import StoredDrugCatalog from './StoredDrugCatalog'
-import { getDrugEvidence, searchCatalog } from '../api/drugCatalog'
+import { getDrugEvidence, getDrugLabels, searchCatalog } from '../api/drugCatalog'
 import type { DrugEvidence } from '../api/drugCatalog'
 import { generateReport } from '../api/reports'
 import fixture from '../test/evidence.json'
 
-vi.mock('../api/drugCatalog', () => ({ searchCatalog: vi.fn(), getDrugEvidence: vi.fn() }))
+vi.mock('../api/drugCatalog', () => ({ searchCatalog: vi.fn(), getDrugEvidence: vi.fn(), getDrugLabels: vi.fn() }))
 vi.mock('../api/reports', () => ({ generateReport: vi.fn() }))
 const evidence = fixture as DrugEvidence
 
@@ -15,6 +15,7 @@ beforeEach(() => {
   window.history.replaceState(null, '', '/')
   vi.mocked(searchCatalog).mockResolvedValue({ results: [evidence.drug], count: 1 })
   vi.mocked(getDrugEvidence).mockResolvedValue(evidence)
+  vi.mocked(getDrugLabels).mockResolvedValue({ drug_id: evidence.drug.id, records: [], latest_records: [], coverage: evidence.recalls.coverage })
   HTMLDialogElement.prototype.showModal = function () { this.setAttribute('open', '') }
   HTMLDialogElement.prototype.close = function () { this.removeAttribute('open') }
 })
@@ -22,7 +23,7 @@ beforeEach(() => {
 async function select() {
   fireEvent.change(screen.getByLabelText('Brand, generic name, active ingredient or NDC'), { target: { value: 'Ozempic' } })
   fireEvent.click(screen.getByRole('button', { name: 'Search drugs' }))
-  fireEvent.click(await screen.findByRole('button', { name: /OZEMPIC/i }))
+  fireEvent.click(await screen.findByRole('button', { name: /^Select .*NDC/i }))
   return screen.findByRole('button', { name: 'Generate PDF Report' })
 }
 
@@ -36,6 +37,7 @@ describe('pharmaceutical explorer', () => {
     expect(screen.getByText(/Manufacturer not independently verified/)).toBeInTheDocument()
     expect(screen.getAllByText(/never been recalled/).length).toBeGreaterThan(0)
     expect(screen.getAllByText(/ingredient-report associations/).length).toBeGreaterThan(0)
+    fireEvent.click(screen.getByRole('button', { name: 'Expand Reported adverse events' }))
     fireEvent.click(screen.getByText('Monthly reporting trends'))
     expect(screen.getByText(evidence.adverse_events.records[0].monthly[0].period.slice(0, 7))).toBeInTheDocument()
   })
@@ -84,7 +86,7 @@ describe('pharmaceutical explorer', () => {
     vi.mocked(generateReport).mockRejectedValue(new Error('limit'))
     render(<StoredDrugCatalog />)
     fireEvent.click(await select())
-    expect(screen.getByText(/Missing data is not a zero count/)).toBeInTheDocument()
+    expect(screen.getAllByText(/Missing data is not a zero count/)[0]).toBeInTheDocument()
     fireEvent.change(screen.getByLabelText('Name (required)'), { target: { value: 'Test Reader' } })
     fireEvent.click(screen.getByRole('button', { name: 'Generate and download' }))
     expect(await screen.findByRole('alert')).toHaveTextContent('PDF could not be generated')

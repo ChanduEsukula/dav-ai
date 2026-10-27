@@ -126,7 +126,7 @@ def card_status(card):
     return "available"
 
 
-def build_briefing(public_product, requested, outcomes, routing, rag=None):
+def build_briefing(public_product, requested, outcomes, routing, rag=None, question=None):
     sections, limitations, releases = [], [*LIMITATIONS,
         "Not medical advice, individualized guidance or FDA endorsement. Data is frozen, not live."], set()
     for category in TOOLS:
@@ -153,7 +153,7 @@ def build_briefing(public_product, requested, outcomes, routing, rag=None):
     status = "completed" if completed else "partial" if any_evidence else "stopped"
     if rag is not None and getattr(rag, "limitations", None):
         limitations.extend(rag.limitations)
-    return ResearchBriefing(status=status, workflow_state={"completed": "COMPLETE", "partial": "PARTIAL", "stopped": "STOPPED"}[status],
+    return ResearchBriefing(question=question, status=status, workflow_state={"completed": "COMPLETE", "partial": "PARTIAL", "stopped": "STOPPED"}[status],
         medication=MedicationIdentity.model_validate(public_product), requested_categories=list(requested),
         routing=RoutingInfo.model_validate(routing), sections=sections,
         limitations=list(dict.fromkeys(limitations)), rag=rag).model_dump()

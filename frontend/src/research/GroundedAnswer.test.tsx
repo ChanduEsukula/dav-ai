@@ -39,6 +39,7 @@ for (const mode of ['Everyday', 'Research Pro']) {
       const value = briefing()
       display(value)
       const answer = screen.getByRole('region', { name: 'AI-generated answer' })
+      expect(screen.getByRole('heading', { name: 'AI-generated answer' })).toBeInTheDocument()
       const link = screen.getByRole('link', { name: '[E1] Open contraindications source' })
       const cite = value.answer!.citations[0]
       const target = document.getElementById(labelAnchor(cite, cite.section))!
@@ -56,6 +57,9 @@ for (const mode of ['Everyday', 'Research Pro']) {
         const value = briefing()
         value.answer = { ...value.answer!, status, text: null, citations: [] }
         display(value)
+        expect(screen.getByRole('region', { name: 'Research Answer & Evidence Summary' })).toBeInTheDocument()
+        expect(screen.getByRole('heading', { name: 'Research Answer & Evidence Summary' })).toBeInTheDocument()
+        expect(screen.queryByRole('region', { name: 'AI-generated answer' })).not.toBeInTheDocument()
         expect(screen.getByRole('status')).toHaveTextContent(/structured evidence/i)
         expect(screen.queryByRole('link', { name: /Open contraindications source/ })).not.toBeInTheDocument()
         expect(screen.getByText('Patients with a serious allergy must not use this product.')).toBeInTheDocument()
@@ -65,8 +69,19 @@ for (const mode of ['Everyday', 'Research Pro']) {
       const value = briefing()
       value.answer!.product_ref = 'different-confirmation'
       display(value)
+      expect(screen.getByRole('heading', { name: 'Research Answer & Evidence Summary' })).toBeInTheDocument()
+      expect(screen.getByRole('region', { name: 'Research Answer & Evidence Summary' })).toBeInTheDocument()
       expect(screen.getByRole('status')).toHaveTextContent('failed validation')
       expect(screen.queryByText(/The stored contraindications section states/)).not.toBeInTheDocument()
+    })
+    it('uses the evidence-summary heading when a generated answer has an unresolved citation', () => {
+      const value = briefing()
+      value.answer!.citations[0].source_record_id = 'missing-record'
+      display(value)
+      expect(screen.getByRole('region', { name: 'Research Answer & Evidence Summary' })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: 'Research Answer & Evidence Summary' })).toBeInTheDocument()
+      expect(screen.getByRole('status')).toHaveTextContent('failed validation')
+      expect(screen.queryByRole('link', { name: /Open contraindications source/ })).not.toBeInTheDocument()
     })
     it('supports older briefings without an answer field', () => {
       const value = briefing(); delete value.answer

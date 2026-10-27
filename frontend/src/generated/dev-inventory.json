@@ -1,0 +1,121 @@
+{
+  "release": {
+    "release_id": "dav-ai-pharma-v1-phase4b-communications-20261006",
+    "contract_id": "dav-ai-pharma-release-v1",
+    "policy_version": "1.0.0",
+    "schema_version": "dav-ai-pharma-sqlite-v1.phase2-identity1.phase3b-recalls1.phase4a-ae1",
+    "build_version": "phase4b-communications-0.1.0",
+    "build_time_utc": "2026-10-06T22:12:24.015723+00:00",
+    "ndc_observation_date": "2026-09-26",
+    "label_export_date": "2026-09-25",
+    "window_start": "2020-01-01",
+    "window_end": "2026-06-30",
+    "publication_authorized": false,
+    "sources": [
+      {
+        "source_name": "fda_drug_safety_communications",
+        "source_url": "https://www.fda.gov/drugs/drug-safety-and-availability/drug-safety-communications",
+        "export_date": null,
+        "observed_at": null,
+        "source_id": "public-source-1"
+      },
+      {
+        "source_name": "openfda_drug_enforcement",
+        "source_url": "https://download.open.fda.gov/drug/enforcement/drug-enforcement-0001-of-0001.json.zip",
+        "export_date": "2026-09-25",
+        "observed_at": "2026-09-26T15:07:41.940634+00:00",
+        "source_id": "public-source-2"
+      },
+      {
+        "source_name": "openfda_drug_event",
+        "source_url": "https://api.fda.gov/drug/event.json",
+        "export_date": "2026-09-23",
+        "observed_at": "2026-09-26T15:05:17.664454+00:00",
+        "source_id": "public-source-3"
+      },
+      {
+        "source_name": "openfda_drug_label",
+        "source_url": "https://api.fda.gov/drug/label.json",
+        "export_date": "2026-09-25",
+        "observed_at": null,
+        "source_id": "public-source-4"
+      },
+      {
+        "source_name": "openfda_ndc_directory",
+        "source_url": "https://download.open.fda.gov/drug/ndc/drug-ndc-0001-of-0001.json.zip",
+        "export_date": "2026-09-26",
+        "observed_at": "2026-09-26T15:05:08.395135+00:00",
+        "source_id": "public-source-5"
+      },
+      {
+        "source_name": "openfda_ndc_directory",
+        "source_url": null,
+        "export_date": null,
+        "observed_at": "2026-09-26T15:05:08.395135+00:00",
+        "source_id": "public-source-6"
+      }
+    ],
+    "limitations": [
+      "Missing linked recalls do not establish that a drug has never been recalled. Recall coverage is partial.",
+      "Adverse-event counts are ingredient-level reporting associations, not product-specific counts, incidence, causality, comparative safety, or personal risk.",
+      "Spontaneous reporting can be incomplete, duplicated, biased, and revised. Reports do not establish that the medication caused a reaction.",
+      "Ingredient counts must not be summed into a product total, including for combination products.",
+      "Name and age identify the report only. This report provides no diagnosis, treatment recommendation, or age-specific risk estimate."
+    ]
+  },
+  "metrics": [
+    {
+      "key": "labels",
+      "label": "Stored label documents",
+      "value": 83684,
+      "definition": "Rows in labels, including retained context/withheld documents. Not all are admitted exact-product evidence.",
+      "source": "release_manifest.table_counts_json.labels",
+      "window": "Label export 2026-09-25; document dates vary"
+    },
+    {
+      "key": "products",
+      "label": "Searchable product records",
+      "value": 95426,
+      "definition": "products rows with eligibility_mode=NORMAL_CONSUMER; NDC strengths and labelers stay separate.",
+      "source": "products.eligibility_mode",
+      "window": "NDC observation 2026-09-26"
+    },
+    {
+      "key": "recalls",
+      "label": "Stored recall records",
+      "value": 17974,
+      "definition": "Rows in recalls. Includes records without consumer product links; not a count of recall events or all FDA recalls.",
+      "source": "release_manifest.table_counts_json.recalls",
+      "window": "Historical dates vary; source vintage shown below"
+    },
+    {
+      "key": "analytics",
+      "label": "Ingredients with analytics",
+      "value": 3174,
+      "definition": "One ae_summary row per ingredient_id. This counts analytical rows, not reports, patients or side effects.",
+      "source": "release_manifest.table_counts_json.ae_summary",
+      "window": "2020-01-01 to 2026-06-30"
+    },
+    {
+      "key": "product_ndc",
+      "label": "Distinct product NDCs",
+      "value": 115585,
+      "definition": "Distinct preserved identifier values across runtime products, including regulatory-only records; not equivalent medication counts.",
+      "source": "product_identifiers WHERE identifier_type='PRODUCT_NDC'",
+      "window": "NDC observation 2026-09-26"
+    },
+    {
+      "key": "package_ndc",
+      "label": "Distinct package NDCs",
+      "value": 218852,
+      "definition": "Distinct preserved identifier values across runtime products, including regulatory-only records; not equivalent medication counts.",
+      "source": "product_identifiers WHERE identifier_type='PACKAGE_NDC'",
+      "window": "NDC observation 2026-09-26"
+    }
+  ],
+  "limitations": [
+    "Manifest counts describe the sealed runtime corpus, not comprehensive FDA coverage or clinical completeness.",
+    "Dates and scopes differ by dataset. FAERS activity, ingredient-report associations and patient counts are different units.",
+    "No brand-wide FAERS or product safety score is inferred. Publication authorization remains false."
+  ]
+}

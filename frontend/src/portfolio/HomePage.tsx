@@ -1,39 +1,82 @@
-import OperationalOverview from './OperationalOverview'
+import { motion, MotionConfig } from 'motion/react'
 import { saveExperienceModePreference } from '../components/experienceState'
+import { EvidenceIcon, type EvidenceKind } from './EvidenceIcon'
+import ImmersiveOrb from './scene/ImmersiveOrb'
+import DataInventory from './DataInventory'
+import { ArchitecturePreview } from './OperationalOverview'
+import type { ExperienceMode } from '../components/experienceState'
+import { useMotionPreference } from './useMotionPreference'
 
-export default function HomePage() {
-  return <main id="main-content" className="portfolio-home">
-    <section className="hero" aria-labelledby="home-title">
-      <div className="hero-copy page-entrance">
-        <p className="eyebrow">Pharmaceutical intelligence · An academic AI project</p>
-        <h1 id="home-title">Explore the evidence.<br />Keep the source.</h1>
-        <p className="subtitle">From an exact medication to a clearer view of its labels, recall history and reported events. Research with local AI, and follow every answer back to the evidence.</p>
-        <div className="portfolio-actions"><a className="portfolio-primary" href="/">Explore medications <span aria-hidden="true">↗</span></a><a className="portfolio-secondary" href="/ask">Ask Dav AI <span aria-hidden="true">→</span></a></div>
-        <p className="hero-trust-line">Frozen FDA source data · Product confirmation · Not medical advice</p>
-        <a className="portfolio-text-link" href="#workflow">See how the research works ↓</a>
+const evidence: { kind: EvidenceKind; title: string; detail: string; description: string }[] = [
+  { kind: 'labels', title: 'FDA drug labels', detail: 'Exact-product evidence', description: 'Read admitted label text, with its source, version and limitations.' },
+  { kind: 'recalls', title: 'Historical recalls', detail: 'Product links. Lot limits.', description: 'Explore linked historical records. A match does not establish that every lot was affected.' },
+  { kind: 'faers', title: 'FAERS reporting', detail: 'Ingredient-level associations', description: 'Explore reported events. Reports do not establish causation, incidence or personal risk.' },
+]
+
+export default function HomePage({ mode = 'everyday' }: { mode?: ExperienceMode }) {
+  const pro = mode === 'research_pro'
+  const reduced = useMotionPreference()
+  const reveal = { initial: { opacity: reduced ? 1 : 0, y: reduced ? 0 : 14 }, animate: { opacity: 1, y: 0 },
+    transition: { duration: reduced ? 0 : .8, ease: 'easeOut' as const } }
+  const hover = reduced ? undefined : { y: -3 }
+  return <MotionConfig reducedMotion={reduced ? 'always' : 'never'}><main id="main-content" className="immersive-main">
+    <section className="immersive-hero" aria-labelledby="home-title">
+      <div className="immersive-horizon" aria-hidden="true" />
+      <div className="immersive-hero-grid">
+        <motion.div className="immersive-copy" {...reveal}>
+          <p className="immersive-eyebrow"><span aria-hidden="true" /> {pro ? 'Research Pro · source-scoped investigation' : 'Stored FDA evidence, explained'}</p>
+          <h1 id="home-title">{pro ? 'Deeper evidence.' : 'Real FDA data.'}<br />{' '}<span>{pro ? 'Greater insight.' : 'Clearer answers.'}</span></h1>
+          <p className="immersive-intro">{pro ? 'Inspect medication families, exact-product provenance, recall applicability and ingredient-level reporting in a bounded research workspace.' : 'Explore stored FDA drug labels, historical recall records, and ingredient-level adverse-event reports. Inspect the original evidence behind every supported finding.'}</p>
+          <div className="immersive-actions">
+            <motion.a href="/" className="immersive-primary" whileHover={hover} whileFocus={reduced ? undefined : { scale: 1.02 }}>Explore medications <span aria-hidden="true">↗</span></motion.a>
+            <motion.a href="/ask" className="immersive-secondary" whileHover={hover} whileFocus={reduced ? undefined : { scale: 1.02 }}>Ask Dav AI <span aria-hidden="true">→</span></motion.a>
+          </div>
+          <form action="/" method="get" role="search" aria-label="Find a medication" className="immersive-search">
+            <label htmlFor="home-medication" className="immersive-sr-only">Medication name or NDC</label>
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 5 5" /></svg>
+            <input id="home-medication" name="q" type="search" placeholder="Medication name or NDC" required maxLength={200} autoComplete="off" />
+            <motion.button type="submit" aria-label="Search medications" whileHover={reduced ? undefined : { scale: 1.04 }} whileTap={reduced ? undefined : { scale: .97 }}><span aria-hidden="true">→</span></motion.button>
+          </form>
+          <p className="immersive-trust">Frozen FDA/openFDA sources <span aria-hidden="true">·</span> Not medical advice</p>
+        </motion.div>
+        <motion.div className="immersive-scene" {...reveal} transition={{ ...reveal.transition, delay: reduced ? 0 : .12 }}>
+          <ImmersiveOrb mode={mode} />
+        </motion.div>
       </div>
-      <div className="hero-visual" role="img" aria-label="Illustration: confirmed product connects to label, recall and reporting evidence with source provenance. Not live results.">
-        <div className="gradient-orb orb-a" aria-hidden="true" /><div className="gradient-orb orb-b" aria-hidden="true" />
-        <div className="dashboard-card main-card" aria-hidden="true">
-          <div className="card-header"><span /><span /><span /></div>
-          <p className="illustration-eyebrow">The evidence trail</p>
-          <div className="illustration-product"><svg viewBox="0 0 48 48"><rect x="10" y="17" width="28" height="14" rx="7" transform="rotate(-38 24 24)" /><path d="M19 16l10 16" /></svg><div><small>Start with identity</small><strong>One confirmed product</strong></div></div>
-          <div className="illustration-sources"><span>Drug labeling <i>↗</i></span><span>Historical recalls <i>↗</i></span><span>Reporting evidence <i>↗</i></span></div>
-          <p className="illustration-caption">Source text · Dates · Limitations</p>
-        </div>
-        <div className="floating-card card-one" aria-hidden="true"><small>Identity first</small><strong>Exact product + NDC</strong></div>
-        <div className="floating-card card-two" aria-hidden="true"><small>Grounded selection</small><strong>Quotes, with citations</strong></div>
-        <div className="floating-card card-three" aria-hidden="true"><small>Always traceable</small><strong>Follow the source</strong></div>
+      <motion.div className="immersive-evidence" {...reveal} transition={{ ...reveal.transition, delay: reduced ? 0 : .2 }}>
+        {evidence.map(item => <motion.a key={item.kind} href="#explore-data" className={`immersive-evidence-card evidence-${item.kind}`} whileHover={hover}>
+          <span className="immersive-icon"><EvidenceIcon kind={item.kind} /></span>
+          <span><strong>{item.title}</strong><small>{item.detail}</small></span>
+          <span className="evidence-card-arrow" aria-hidden="true">↗</span>
+        </motion.a>)}
+      </motion.div>
+      <a href="#explore-data" className="immersive-scroll">Explore the platform <span aria-hidden="true">↓</span></a>
+    </section>
+
+    <DataInventory mode={mode} />
+    <section className="immersive-section capability-section" aria-labelledby="capability-title">
+      <p className="immersive-eyebrow">What the application does</p><h2 id="capability-title">Evidence tools with explicit boundaries.</h2>
+      <div className="capability-grid">{[
+        ['labels', 'Identify an exact product', 'Compare NDCs, recorded labelers, strengths and dosage forms. Similar names remain separate.'],
+        ['recalls', 'Inspect historical recall reasons', 'Read linked records, dates, classifications and lot limitations.'],
+        ['faers', 'Review reporting associations', 'Ingredient-level reporting charts retain their source window and count units.'],
+        ['labels', 'Research within local controls', 'Optional local synthesis uses admitted label statements, citations and an authorized session.'],
+      ].map(([kind, title, copy]) => <article className="glass-card" key={title}><EvidenceIcon kind={kind as EvidenceKind} /><h3>{title}</h3><p>{copy}</p></article>)}</div>
+    </section>
+    <section className="immersive-section immersive-perspectives" aria-labelledby="perspectives-title">
+      <div><p className="immersive-eyebrow">Explore your way</p><h2 id="perspectives-title">Guided or technical.<br />{' '}The same source boundaries.</h2></div>
+      <div className="immersive-lanes">
+        {[
+          { mode: 'everyday' as const, name: 'Everyday', title: 'Guided exploration.', copy: 'Larger controls, plain-language summaries, simple charts and suggested questions.' },
+          { mode: 'research_pro' as const, name: 'Research Pro', title: 'Technical investigation.', copy: 'Cohort organization, exact-product identifiers, provenance, retrieval details and evidence display filters.' },
+        ].map(item => <motion.a key={item.mode} href="/ask" className={`immersive-lane lane-${item.mode}`} whileHover={hover}
+          onClick={() => saveExperienceModePreference(item.mode)}>
+          <span className="immersive-lane-name">{item.name}</span><h3>{item.title}</h3><p>{item.copy}</p><strong>Open {item.name} <span aria-hidden="true">↗</span></strong>
+        </motion.a>)}
       </div>
     </section>
-    <section className="portfolio-lanes section-reveal" aria-labelledby="lanes-title">
-      <div className="portfolio-section-heading"><p className="eyebrow">Choose your perspective</p><h2 id="lanes-title">The same evidence.<br />A workspace that fits.</h2><p>Two reading experiences, with the same source boundaries.</p></div>
-      <div className="portfolio-lane-grid">
-        <a href="/ask" onClick={() => saveExperienceModePreference('everyday')} className="portfolio-lane lane-everyday"><span className="lane-symbol" aria-hidden="true">↗</span><small>Everyday</small><h3>A little more clarity.</h3><p>Confirm your medication, ask a focused question and explore evidence one step at a time.</p><strong>Open Everyday <span aria-hidden="true">→</span></strong></a>
-        <a href="/ask" onClick={() => saveExperienceModePreference('research_pro')} className="portfolio-lane lane-pro"><span className="lane-symbol" aria-hidden="true">⌘</span><small>Research Pro</small><h3>A closer look at the source.</h3><p>Organize a research cohort and inspect product-specific evidence, provenance and coverage.</p><strong>Open Research Pro <span aria-hidden="true">→</span></strong></a>
-      </div>
-    </section>
-    <OperationalOverview />
-    <section className="portfolio-closing section-reveal"><p className="eyebrow">Evidence before conclusions</p><h2>A useful starting point.<br />An open trail back.</h2><p>Exact quotes are a starting point for review. Source completeness, clinical context and relevance still need human judgment.</p><a className="portfolio-text-link" href="/about">Why we built Dav AI →</a></section>
-  </main>
+
+    <section className="immersive-section architecture-preview-section" aria-labelledby="engineering-title"><p className="immersive-eyebrow">How Dav AI is engineered</p><h2 id="engineering-title">From FDA snapshots to source-linked outputs.</h2><ArchitecturePreview /><a href="/overview" className="immersive-text-link">Explore the architecture →</a></section>
+    <section className="immersive-section compact-home-limitations"><details><summary>Evidence limitations — read before drawing conclusions</summary><ul><li>Stored snapshots are not a live safety feed.</li><li>Historical recall links may not establish package or lot applicability.</li><li>FAERS reports do not establish causation, incidence or individual patient risk.</li><li>Missing data does not mean an event or warning never existed.</li><li>Dav AI is not FDA approved and does not provide individualized medical advice. Human review is required.</li></ul></details></section>
+  </main></MotionConfig>
 }

@@ -154,7 +154,7 @@ class ResearchWorkflow:
                     except Exception:
                         rag_evidence = None
 
-                finished = self._finish(session, owner_id, requested, outcomes, route, rag=rag_evidence)
+                finished = self._finish(session, owner_id, requested, outcomes, route, rag=rag_evidence, question=question)
                 if synthesize:
                     from app.agent.synthesis import synthesize_answer
                     product = await session._verified_product(session.selected_ref)
@@ -182,7 +182,7 @@ class ResearchWorkflow:
                 for category in requested:
                     outcomes.setdefault(category, "request_timeout")
                 try:
-                    return self._finish(session, owner_id, requested, outcomes, route)
+                    return self._finish(session, owner_id, requested, outcomes, route, question=question)
                 except AgentRejected:
                     pass
             if locked:
@@ -205,9 +205,9 @@ class ResearchWorkflow:
         return {"status": "stopped", "workflow_state": "STOPPED", "reason": reason, "evidence_cards": []}
 
     @staticmethod
-    def _finish(session, owner_id, requested, outcomes, route, rag=None):
+    def _finish(session, owner_id, requested, outcomes, route, rag=None, question=None):
         session.authorize(owner_id)
-        result = build_briefing(session._public(session.selected_ref), requested, outcomes, route, rag=rag)
+        result = build_briefing(session._public(session.selected_ref), requested, outcomes, route, rag=rag, question=question)
         encode(result, session.limits.max_briefing_bytes)
         session.workflow_state = result["workflow_state"]
         return result

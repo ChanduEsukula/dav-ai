@@ -99,7 +99,7 @@ export default function EverydayWorkspace({
     {
       id: 'faers',
       title: 'FAERS reporting evidence',
-      desc: 'Ingredient-level postmarket safety signals from the FAERS reporting system.',
+      desc: 'Ingredient-level reporting associations from FAERS; not causal safety signals.',
     },
   ]
 
@@ -301,7 +301,7 @@ export default function EverydayWorkspace({
                       <input
                         type="checkbox"
                         checked={selectedCategories.includes(opt.id)}
-                        disabled={running || attempted}
+                        disabled={running || !!busy}
                         onChange={() => toggleCategory(opt.id)}
                       />
                       {opt.title}
@@ -311,7 +311,11 @@ export default function EverydayWorkspace({
                 ))}
               </div>
 
-              <SynthesisOption enabled={synthesize} onChange={setSynthesize} disabled={running || attempted || !!busy} />
+              <SynthesisOption enabled={synthesize} onChange={setSynthesize} disabled={running || !!busy} />
+              <div className="suggested-questions" aria-label="Suggested research questions">
+                <span>Try a source-focused question</span>
+                {['What label warnings are available?', 'What historical recall records are available?', 'What ingredient-level FAERS reports are available?'].map(suggestion => <button type="button" key={suggestion} disabled={running || !!busy} onClick={() => setQuestion(suggestion)}>{suggestion}</button>)}
+              </div>
               <div className="everyday-question-block">
                 <label htmlFor="everyday-question">Your Research Question (Optional):</label>
                 <textarea
@@ -319,7 +323,7 @@ export default function EverydayWorkspace({
                   rows={2}
                   maxLength={1000}
                   value={question}
-                  disabled={running || attempted}
+                  disabled={running || !!busy}
                   onChange={(e) => setQuestion(e.target.value)}
                   placeholder="e.g. What recalls or safety warnings exist for this drug?"
                 />
@@ -329,7 +333,7 @@ export default function EverydayWorkspace({
                 <button
                   type="button"
                   className="everyday-btn-primary run-research-btn"
-                  disabled={!product || selectedCategories.length === 0 || running || attempted || !!busy}
+                  disabled={!product || selectedCategories.length === 0 || running || !!busy}
                   onClick={onRunResearch}
                 >
                   {running ? 'Running Local Research…' : 'Research selected evidence'}

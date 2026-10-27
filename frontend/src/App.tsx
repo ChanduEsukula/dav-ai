@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import StoredDrugCatalog from './components/StoredDrugCatalog'
 import Workspace from './research/Workspace'
-import ExperienceSelector from './components/ExperienceSelector'
+import GlassNavigation from './components/GlassNavigation'
 import {
   type ExperienceMode,
   getInitialExperienceMode,
@@ -14,63 +14,82 @@ import FaqPage from './portfolio/FaqPage'
 import OperationalOverview from './portfolio/OperationalOverview'
 import './portfolio/portfolio.css'
 import './polish.css'
+import './components/site-nav.css'
+import './portfolio/immersive.css'
+import './unified-glass.css'
+import './dual-experience.css'
+import './readability.css'
 
 export default function App() {
   const [mode, setMode] = useState<ExperienceMode>(getInitialExperienceMode)
-  const ask = window.location.pathname === '/ask'
-  const legacyPage = new URLSearchParams(window.location.search).get('page')
+  const [location, setLocation] = useState(() => window.location.pathname + window.location.search)
+  const address = new URL(location, window.location.origin)
+  const ask = address.pathname === '/ask'
+  const legacyPage = address.searchParams.get('page')
   const route = legacyPage === 'operational-overview' ? '/overview'
-    : ['home', 'about', 'faq'].includes(legacyPage ?? '') ? `/${legacyPage}` : window.location.pathname
+    : ['home', 'about', 'faq'].includes(legacyPage ?? '') ? `/${legacyPage}` : address.pathname
   const portfolio = ['/home', '/overview', '/about', '/faq'].includes(route)
-  const [menuOpen, setMenuOpen] = useState(false)
+  const [homeFeedback, setHomeFeedback] = useState(false)
+  const feedbackTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  useEffect(() => {
+    const pop = () => setLocation(window.location.pathname + window.location.search)
+    window.addEventListener('popstate', pop)
+    return () => { window.removeEventListener('popstate', pop); clearTimeout(feedbackTimer.current) }
+  }, [])
+
+  function navigate(url: URL) {
+    window.history.pushState(null, '', url.pathname + url.search + url.hash)
+    setLocation(url.pathname + url.search)
+    setMode(getInitialExperienceMode())
+    window.dispatchEvent(new PopStateEvent('popstate'))
+    requestAnimationFrame(() => {
+      if (url.hash) document.getElementById(url.hash.slice(1))?.scrollIntoView({ block: 'start' })
+      else window.scrollTo({ top: 0, behavior: 'instant' })
+    })
+  }
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', mode)
   }, [mode])
 
   useEffect(() => {
-    const titles: Record<string, string> = { '/home': 'Pharmaceutical intelligence', '/about': 'About', '/faq': 'FAQ', '/overview': 'Operational Overview', '/ask': 'Ask Dav AI' }
+    const titles: Record<string, string> = { '/home': 'Real FDA data. Clearer answers.', '/about': 'About', '/faq': 'FAQ', '/overview': 'Operational Overview', '/ask': 'Ask Dav AI' }
     document.title = `${titles[route] ?? 'Evidence Explorer'} · Dav AI`
   }, [route])
 
   return (
-    <div className={`app-container${portfolio ? ' portfolio' : ''}`} data-theme={portfolio ? 'everyday' : mode}>
+    <div onClick={event => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+      const anchor = (event.target as HTMLElement).closest<HTMLAnchorElement>('a[href]')
+      if (!anchor || anchor.target || anchor.hasAttribute('download')) return
+      const url = new URL(anchor.href)
+      if (url.origin !== window.location.origin) return
+      if (url.pathname === window.location.pathname && url.search === window.location.search && url.hash) return
+      event.preventDefault()
+      if (route === '/home' && url.pathname === '/home') {
+        setHomeFeedback(true); clearTimeout(feedbackTimer.current)
+        feedbackTimer.current = setTimeout(() => setHomeFeedback(false), 1600)
+        return
+      }
+      if (ask && url.pathname === '/ask') return
+      navigate(url)
+    }} onSubmit={event => {
+      const form = event.target as HTMLFormElement
+      if (event.defaultPrevented || form.getAttribute('action') !== '/' || form.method !== 'get') return
+      event.preventDefault()
+      const url = new URL('/', window.location.origin)
+      url.searchParams.set('q', String(new FormData(form).get('q') || '').trim())
+      navigate(url)
+    }} className={`app-container glass-site${homeFeedback ? ' home-feedback' : ''}${portfolio ? ' portfolio' : ''}${route === '/home' ? ' immersive-home' : ''}`} data-theme={mode}>
       <a className="site-skip-link" href="#main-content">Skip to main content</a>
-      <header className="app-nav-bar workspace-nav" onKeyDown={event => {
-        if (event.key === 'Escape' && menuOpen) {
-          setMenuOpen(false)
-          event.currentTarget.querySelector<HTMLButtonElement>('.site-menu-toggle')?.focus()
-        }
-      }}>
-        <div className="app-brand-group">
-          <a className="app-brand-link" href="/home" aria-label="Dav AI home">
-            Dav AI
-            <span className="app-brand-subtitle">
-              {portfolio ? 'Pharmaceutical intelligence' : mode === 'everyday' ? 'Medication Guide' : 'Evidence Research Pro'}
-            </span>
-          </a>
+      <GlassNavigation route={portfolio || ask ? route : '/'} mode={mode} onChange={setMode} />
+      {homeFeedback && <span className="home-feedback-note" role="status">You’re on Home</span>}
 
-          <button type="button" className="site-menu-toggle" aria-expanded={menuOpen} aria-controls="site-navigation" onClick={() => setMenuOpen(value => !value)}>Menu <span aria-hidden="true">{menuOpen ? '−' : '+'}</span></button>
-          <nav id="site-navigation" aria-label="Workspace navigation" className={`app-route-links${menuOpen ? ' is-open' : ''}`}>
-            <a href="/home" aria-current={route === '/home' ? 'page' : undefined}>Home</a>
-            <a href="/" aria-current={!ask && !portfolio ? 'page' : undefined}>
-              Evidence explorer
-            </a>
-            <a href="/ask" aria-current={ask ? 'page' : undefined}>
-              Ask Dav AI
-            </a>
-            <a href="/about" aria-current={route === '/about' ? 'page' : undefined}>About</a>
-            <a href="/faq" aria-current={route === '/faq' ? 'page' : undefined}>FAQ</a>
-          </nav>
-        </div>
-
-        {!portfolio && <ExperienceSelector mode={mode} onChange={setMode} />}
-      </header>
-
-      {route === '/home' ? <HomePage /> : route === '/about' ? <AboutPage /> : route === '/faq' ? <FaqPage />
-        : route === '/overview' ? <main id="main-content" className="portfolio-overview"><div className="portfolio-page-heading page-entrance"><p className="eyebrow">Operational Overview</p><h1>Research you can follow.</h1><p>A view of the workflow and its boundaries, from identity to original source.</p></div><OperationalOverview /></main>
-        : ask ? <Workspace mode={mode} /> : <StoredDrugCatalog />}
-      {portfolio && <footer className="portfolio-footer"><a className="portfolio-footer-brand" href="/home">Dav AI <span>Evidence, with perspective.</span></a><nav aria-label="Supporting pages"><a href="/overview">Operational Overview</a><a href="/about">About</a><a href="/faq">FAQ</a><a href="/">Evidence Explorer</a></nav><p>A graduate AI portfolio project. Frozen source data. Not medical advice.</p></footer>}
+      {route === '/home' ? <HomePage mode={mode} /> : route === '/about' ? <AboutPage /> : route === '/faq' ? <FaqPage />
+        : route === '/overview' ? <main id="main-content" className="portfolio-overview"><div className="portfolio-page-heading page-entrance"><p className="eyebrow">Operational Overview</p><h1>How Dav AI Works</h1><p>From FDA source snapshots to a read-only database, bounded retrieval and cited outputs.</p></div><OperationalOverview mode={mode} /></main>
+        : ask ? null : <StoredDrugCatalog mode={mode} />}
+      <Workspace mode={mode} active={ask} />
+      {portfolio && <footer className="portfolio-footer"><a className="portfolio-footer-brand" href="/home">Dav AI <span>Evidence, with perspective.</span></a><nav aria-label="Supporting pages"><a href="/overview">Operational Overview</a><a href="/about">About</a><a href="/faq">FAQ</a><a href="/">Evidence Explorer</a></nav><p>Frozen FDA/openFDA source data. Not FDA approved. Not medical advice.</p></footer>}
     </div>
   )
 }

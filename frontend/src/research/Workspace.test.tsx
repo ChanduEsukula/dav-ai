@@ -259,3 +259,99 @@ it('closes a locked session before a new cohort directory search and requires fr
   expect(researchApi.search).toHaveBeenLastCalledWith(fresh, 'Augmentin')
   expect(researchApi.confirm).toHaveBeenCalledTimes(1)
 })
+
+it('permits changing categories, question, and synthesis after a completed run in the same session', async () => {
+  const user = await confirm()
+  const runBtn = screen.getByRole('button', { name: 'Research selected evidence' })
+  await user.click(runBtn)
+  expect(researchApi.run).toHaveBeenCalledTimes(1)
+  expect(await screen.findByRole('region', { name: 'Research briefing' })).toBeVisible()
+
+  // Controls should be re-enabled after run completion
+  const labelCheck = screen.getByLabelText('Drug labeling')
+  expect(labelCheck).not.toBeDisabled()
+  const questionBox = screen.getByLabelText('Your Research Question (Optional):')
+  expect(questionBox).not.toBeDisabled()
+  const synthesisCheck = screen.getByLabelText(/Include a grounded AI answer/)
+  expect(synthesisCheck).not.toBeDisabled()
+  expect(runBtn).not.toBeDisabled()
+
+  // Modify settings: uncheck drug labeling, change question, toggle synthesis
+  await user.click(labelCheck)
+  await user.clear(questionBox)
+  await user.type(questionBox, 'Updated question on recalls and safety')
+  await user.click(synthesisCheck)
+
+  const briefing2 = { ...briefing, sections: [
+    { category: 'labels', status: 'not_requested', evidence: null, reason: null },
+    { category: 'recalls', status: 'available', evidence: briefing.sections[1].evidence, reason: null },
+    { category: 'faers', status: 'available', evidence: briefing.sections[2].evidence, reason: null },
+  ] } as PublicBriefing
+  vi.mocked(researchApi.result).mockResolvedValueOnce({ state: 'partial', briefing: briefing2, code: null })
+
+  // Re-run research on the same session
+  await user.click(runBtn)
+  expect(researchApi.run).toHaveBeenCalledTimes(2)
+  expect(vi.mocked(researchApi.run).mock.calls[1][1]).toBe('Updated question on recalls and safety')
+  expect(vi.mocked(researchApi.run).mock.calls[1][2]).toEqual(['recalls', 'faers'])
+  expect(vi.mocked(researchApi.run).mock.calls[1][4]).toBe(true)
+
+  // Product identity remains locked and no new session was created
+  expect(screen.getByText('Confirmed product')).toBeVisible()
+  expect(researchApi.create).toHaveBeenCalledTimes(1)
+})
+
+it('clears prior result during a new run so old answers do not impersonate results for the new question', async () => {
+  let finishRun2!: (value: Awaited<ReturnType<typeof researchApi.result>>) => void
+  const user = await confirm()
+  const runBtn = screen.getByRole('button', { name: 'Research selected evidence' })
+  await user.click(runBtn)
+  expect(await screen.findByRole('region', { name: 'Research briefing' })).toBeVisible()
+
+  // Configure run 2 to be in-flight
+  vi.mocked(researchApi.result).mockReturnValueOnce(new Promise(resolve => { finishRun2 = resolve }))
+  await user.click(runBtn)
+
+  // Previous briefing should be cleared immediately upon starting new run
+  expect(screen.queryByRole('region', { name: 'Research briefing' })).not.toBeInTheDocument()
+  expect(await screen.findByText('Research is running locally')).toBeVisible()
+
+  // Finish run 2
+  await act(async () => { finishRun2({ state: 'partial', briefing, code: null }) })
+  expect(await screen.findByRole('region', { name: 'Research briefing' })).toBeVisible()
+})
+
+it('permits re-running research in Research Pro with updated intent and categories within the same session', async () => {
+  const { user } = await prepareCohort()
+  await user.click(screen.getByRole('button', { name: /Deep Single-Product Research/ }))
+  const runBtn = screen.getByRole('button', { name: 'Execute Deep Evidence Retrieval' })
+  await user.click(runBtn)
+  expect(await screen.findByRole('region', { name: 'Research briefing' })).toBeVisible()
+
+  // Controls in Research Pro should be enabled after run completion
+  const questionBox = screen.getByLabelText('Research Question / Query Intent:')
+  expect(questionBox).not.toBeDisabled()
+  const synthesisCheck = screen.getByLabelText(/Include a grounded AI answer/)
+  expect(synthesisCheck).not.toBeDisabled()
+  expect(runBtn).not.toBeDisabled()
+
+  // Modify question and enable synthesis
+  await user.clear(questionBox)
+  await user.type(questionBox, 'Investigating known adverse event reports')
+  await user.click(synthesisCheck)
+
+  // Run 2
+  await user.click(runBtn)
+  expect(researchApi.run).toHaveBeenCalledTimes(2)
+  expect(vi.mocked(researchApi.run).mock.calls[1][1]).toBe('Investigating known adverse event reports')
+  expect(vi.mocked(researchApi.run).mock.calls[1][4]).toBe(true)
+  expect(researchApi.create).toHaveBeenCalledTimes(1)
+})
+
+it('fills an Everyday suggested question without starting research or changing confirmation', async () => {
+  const user = await confirm()
+  await user.click(screen.getByRole('button', { name: 'What historical recall records are available?' }))
+  expect(screen.getByLabelText('Your Research Question (Optional):')).toHaveValue('What historical recall records are available?')
+  expect(screen.getByText('Confirmed product')).toBeInTheDocument()
+  expect(researchApi.run).not.toHaveBeenCalled()
+})

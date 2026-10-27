@@ -1,239 +1,52 @@
-type FlowItem = {
-  number: string
-  title: string
-  subtitle: string
-  detail: string
-  icon: 'problem' | 'search' | 'route' | 'network' | 'layers' | 'report'
-  tone: 'teal' | 'blue' | 'purple' | 'green' | 'pink'
-  position: 'top-left' | 'middle-left' | 'bottom-left' | 'top-right' | 'middle-right' | 'bottom-right'
+import { useState } from 'react'
+import { motion } from 'motion/react'
+import type { ExperienceMode } from '../components/experienceState'
+import { useMotionPreference } from './useMotionPreference'
+
+type Kind = 'api' | 'processing' | 'database' | 'retrieval' | 'document'
+export function ArchitectureIcon({ kind }: { kind: Kind }) {
+  return <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+    {kind === 'database' ? <><ellipse cx="24" cy="10" rx="15" ry="6" /><path d="M9 10v27c0 4 30 4 30 0V10M9 23c0 8 30 8 30 0M9 35c0 8 30 8 30 0" /></>
+      : kind === 'processing' ? <><circle cx="24" cy="24" r="12" /><circle cx="24" cy="24" r="5" />{Array.from({ length: 8 }, (_, i) => <path key={i} d="M24 5v6" transform={`rotate(${i * 45} 24 24)`} />)}</>
+        : kind === 'api' ? <><rect x="5" y="8" width="38" height="32" rx="6" /><path d="M5 17h38M11 12h.1M16 12h.1M19 24l-5 5 5 5M29 24l5 5-5 5" /></>
+          : kind === 'retrieval' ? <><circle cx="20" cy="20" r="12" /><path d="m29 29 12 12M15 20h10M20 15v10" /></>
+            : <><path d="M12 5h16l9 9v29H12V5ZM28 5v10h9M18 23h12M18 29h12M18 35h8" /></>}
+  </svg>
 }
 
-type SourceGroup = {
-  label: string
-  detail: string
-}
-
-type BoundaryItem = {
-  label: string
-  icon: 'records' | 'privacy' | 'advice' | 'verdict'
-}
-
-const flowItems: FlowItem[] = [
-  { number: '01', title: 'Find the exact product', subtitle: 'Identity first', detail: 'Search a brand, ingredient or NDC. Check strength, dosage form and package identifiers.', icon: 'search', tone: 'teal', position: 'top-left' },
-  { number: '02', title: 'Confirm before research', subtitle: 'Human confirmation', detail: 'Explicitly confirm one product. Similar names and different formulations stay separate.', icon: 'route', tone: 'blue', position: 'middle-left' },
-  { number: '03', title: 'Retrieve admitted evidence', subtitle: 'SQL + Hybrid RAG', detail: 'Structured source reads and optional BGE/FAISS retrieval stay scoped to the confirmed product.', icon: 'network', tone: 'purple', position: 'bottom-left' },
-  { number: '04', title: 'Check evidence boundaries', subtitle: 'Source admission', detail: 'Exact-product labels, package recall scope and ingredient-level reporting retain their distinct limits.', icon: 'layers', tone: 'green', position: 'top-right' },
-  { number: '05', title: 'Select source statements', subtitle: 'Optional local AI', detail: 'The local model selects admitted statement IDs. Python restores exact quotes, headings and citations.', icon: 'problem', tone: 'pink', position: 'middle-right' },
-  { number: '06', title: 'Follow the source', subtitle: 'Review + provenance', detail: 'Open cited label text, inspect source dates and limitations, or export an Explorer evidence PDF.', icon: 'report', tone: 'blue', position: 'bottom-right' },
+const technical = [
+  { title: 'FDA source snapshots', subtitle: 'FDA / openFDA', kind: 'api' as Kind, detail: 'Preserved NDC directory identities, SPL drug-label text, enforcement recall records and ingredient-level FAERS analytics. Each source has its own vintage; the application is not a live FDA feed.', source: 'scripts/pharma_release/sources.py · app/services/pharma/evidence.py' },
+  { title: 'Ingestion and validation', subtitle: 'Offline release pipeline', kind: 'processing' as Kind, detail: 'Offline builders normalize preserved identifiers, extract label sections and validate product/ingredient/formulation applicability, eligibility and source provenance. Packaging creates the frozen release and its manifest. This is separate from serving requests.', source: 'scripts/pharma_release/ · release contract, schema and validation modules' },
+  { title: 'Frozen SQLite database', subtitle: 'Read-only evidence store', kind: 'database' as Kind, detail: 'The sealed SQLite release stores products, identifiers, product-to-label/recall links, coverage, source descriptors and ingredient analytics. Runtime reads use immutable/read-only connections, checksum verification and existing serving authorization. No PostgreSQL fallback serves pharmaceutical evidence.', source: 'app/db/pharma/release_connection.py · release_repository.py' },
+  { title: 'API and bounded retrieval', subtitle: 'FastAPI · Pydantic · optional RAG', kind: 'retrieval' as Kind, detail: 'FastAPI exposes typed read endpoints. Exact-product research requires an authorized local session and explicit confirmation. A bounded Python workflow retrieves source-scoped evidence. Optional BGE/FAISS retrieval needs external corpus/index artifacts; it is not guaranteed to be configured.', source: 'app/routes/ · app/local_research/ · app/agent/workflow.py · rag_adapter.py' },
+  { title: 'Cited outputs and export', subtitle: 'React · TypeScript · optional Ollama', kind: 'document' as Kind, detail: 'React renders structured evidence and conservative partial results. Optional local Ollama synthesis selects admitted statement IDs; Python reconstructs exact quotes and validates citations. Invalid output is discarded. The existing PDF service exports source evidence, dates and limitations.', source: 'app/agent/synthesis.py · app/services/report_pdf.py · frontend/src/research/' },
 ]
+const everyday = [technical[0], technical[1], { ...technical[2], title: 'Evidence application', subtitle: 'Database, search and local research', detail: technical[2].detail + ' ' + technical[3].detail }, { ...technical[4], title: 'Findings you can inspect', subtitle: 'Source links and supported reports' }]
 
-const sourceGroups: SourceGroup[] = [
-  { label: 'Product directory', detail: 'NDC, strength, dosage form and ingredients' },
-  { label: 'Drug labeling', detail: 'Admitted exact-product label sections' },
-  { label: 'Historical recalls', detail: 'Product/package links with lot limitations' },
-  { label: 'FAERS reporting', detail: 'Ingredient associations, never causal risk' },
-]
-
-const boundaryItems: BoundaryItem[] = [
-  { label: 'Frozen source data', icon: 'records' },
-  { label: 'Local research sessions', icon: 'privacy' },
-  { label: 'Not medical advice', icon: 'advice' },
-  { label: 'Human review required', icon: 'verdict' },
-]
-
-function FlowIcon({ icon }: { icon: FlowItem['icon'] }) {
-  if (icon === 'problem') {
-    return (
-      <svg viewBox="0 0 48 48" focusable="false">
-        <rect x="8" y="9" width="12" height="12" rx="3" />
-        <rect x="28" y="7" width="12" height="12" rx="3" />
-        <rect x="10" y="28" width="12" height="12" rx="3" />
-        <rect x="30" y="29" width="10" height="10" rx="3" />
-        <path d="M20 15h8M16 21v7M22 34h8M34 19v10" />
-      </svg>
-    )
-  }
-
-  if (icon === 'search') {
-    return (
-      <svg viewBox="0 0 48 48" focusable="false">
-        <circle cx="21" cy="21" r="12" />
-        <path d="M30 30l10 10" />
-        <path d="M16 21h10M21 16v10" />
-      </svg>
-    )
-  }
-
-  if (icon === 'route') {
-    return (
-      <svg viewBox="0 0 48 48" focusable="false">
-        <circle cx="12" cy="24" r="4" />
-        <circle cx="36" cy="12" r="4" />
-        <circle cx="36" cy="36" r="4" />
-        <path d="M16 24h7c5 0 5-12 9-12" />
-        <path d="M16 24h7c5 0 5 12 9 12" />
-        <path d="M23 24h7" />
-      </svg>
-    )
-  }
-
-  if (icon === 'network') {
-    return (
-      <svg viewBox="0 0 48 48" focusable="false">
-        <ellipse cx="24" cy="12" rx="13" ry="6" />
-        <path d="M11 12v22c0 3.3 5.8 6 13 6s13-2.7 13-6V12" />
-        <path d="M11 23c0 3.3 5.8 6 13 6s13-2.7 13-6" />
-        <path d="M9 36l-4 4M39 36l4 4M24 40v5" />
-      </svg>
-    )
-  }
-
-  if (icon === 'layers') {
-    return (
-      <svg viewBox="0 0 48 48" focusable="false">
-        <path d="M24 7l17 9-17 9-17-9 17-9z" />
-        <path d="M7 24l17 9 17-9" />
-        <path d="M7 32l17 9 17-9" />
-      </svg>
-    )
-  }
-
-  return (
-    <svg viewBox="0 0 48 48" focusable="false">
-      <path d="M14 6h15l7 7v29H14V6z" />
-      <path d="M29 6v8h7" />
-      <path d="M19 22h14M19 29h14M19 36h9" />
-      <path d="M9 14h5M9 22h5M9 30h5" />
-    </svg>
-  )
+export function ArchitecturePreview() {
+  return <div className="architecture-preview" aria-label="FDA data to source-linked outputs">{[
+    ['api', 'FDA snapshots'], ['processing', 'Validate'], ['database', 'Frozen SQLite'], ['retrieval', 'Retrieve'], ['document', 'Cited outputs'],
+  ].map(([kind, label]) => <div key={label}><ArchitectureIcon kind={kind as Kind} /><span>{label}</span></div>)}</div>
 }
 
-function BoundaryIcon({ icon }: { icon: BoundaryItem['icon'] }) {
-  if (icon === 'records') {
-    return (
-      <svg viewBox="0 0 24 24" focusable="false">
-        <path d="M7 3.5h7l4 4v13H7v-17z" />
-        <path d="M14 3.5v4.5h4" />
-        <path d="M10 12h5M10 16h4" />
-      </svg>
-    )
-  }
-
-  if (icon === 'privacy') {
-    return (
-      <svg viewBox="0 0 24 24" focusable="false">
-        <path d="M12 3.5l7 3v5.3c0 4-2.8 7.2-7 8.7-4.2-1.5-7-4.7-7-8.7V6.5l7-3z" />
-        <rect x="8.75" y="11" width="6.5" height="5.25" rx="1.4" />
-        <path d="M10.5 11V9.8a1.5 1.5 0 0 1 3 0V11" />
-      </svg>
-    )
-  }
-
-  if (icon === 'advice') {
-    return (
-      <svg viewBox="0 0 24 24" focusable="false">
-        <path d="M5.5 5.5h13v9h-7l-4 3.5v-3.5h-2v-9z" />
-        <path d="M8.5 9h7M8.5 12h4.5" />
-      </svg>
-    )
-  }
-
-  return (
-    <svg viewBox="0 0 24 24" focusable="false">
-      <path d="M6 5.5h12v13H6v-13z" />
-      <path d="M9 9h6M9 12h4" />
-      <path d="M8.5 16.2l2 1.8 5-5" />
-      <path d="M5 19l14-14" />
-    </svg>
-  )
+function FlowNode({ stage, index, pro }: { stage: typeof technical[number]; index: number; pro: boolean }) {
+  const [active, setActive] = useState(false)
+  const reduced = useMotionPreference()
+  return <motion.article className={`flow-stage architecture-${stage.kind}${active ? ' is-active' : ''}`} initial={false}
+    whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true, amount: .4 }} onViewportEnter={() => setActive(true)}>
+    <span className="flow-node-icon" style={{ transitionDelay: reduced ? '0s' : `${index * .15}s` }}><ArchitectureIcon kind={stage.kind} /></span>
+    <span className="flow-node-number">0{index + 1}</span><h3>{stage.title}</h3><p title={stage.detail}>{stage.subtitle}</p>
+    <details><summary>Explore this stage <span aria-hidden="true">+</span></summary><p>{stage.detail}</p>{pro && <code className="architecture-source">{stage.source}</code>}</details>
+  </motion.article>
 }
 
-function OperationalOverview() {
-  return (
-    <section id="workflow" className="operational-flow section-reveal" aria-labelledby="operational-flow-title">
-      <div className="operational-flow__shell">
-        <div className="operational-flow__header">
-          <div>
-            <p className="operational-flow__eyebrow">Operational view</p>
-            <h2 id="operational-flow-title">From product identity to traceable evidence</h2>
-            <p>
-              Pharmaceutical information is spread across labels, recall records and
-              reporting datasets. Dav AI brings those sources into one bounded research
-              workflow, keeping product identity and evidence limitations visible.
-            </p>
-          </div>
-
-          <div className="operational-flow__trust" aria-label="Safety and privacy boundaries">
-            {boundaryItems.map((item) => (
-              <span className="operational-flow__trust-item" key={item.label}>
-                <span className="operational-flow__trust-icon" aria-hidden="true">
-                  <BoundaryIcon icon={item.icon} />
-                </span>
-                {item.label}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div
-          className="operational-flow__architecture"
-          aria-label="Dav AI pharmaceutical research workflow"
-        >
-          <div className="operational-flow__core" aria-hidden="true">
-            <span className="operational-flow__core-ring"></span>
-            <span className="operational-flow__core-label">DavAI</span>
-            <span className="operational-flow__core-subtitle">evidence workflow</span>
-          </div>
-
-          {flowItems.map((item) => (
-            <article
-              className={`operational-flow__card operational-flow__card--${item.tone} operational-flow__card--${item.position}`}
-              key={item.number}
-            >
-              <span className="operational-flow__number">{item.number}</span>
-
-              <span className="operational-flow__icon" aria-hidden="true">
-                <FlowIcon icon={item.icon} />
-              </span>
-
-              <div className="operational-flow__copy">
-                <span>{item.subtitle}</span>
-                <strong>{item.title}</strong>
-                <p>{item.detail}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        <div className="operational-flow__source-fabric" aria-label="Evidence sources">
-          <div className="operational-flow__source-header">
-            <span>Evidence sources</span>
-            <p>Stored FDA/openFDA sources; not a live safety feed.</p>
-          </div>
-
-          <div className="operational-flow__source-grid">
-            {sourceGroups.map((source) => (
-              <article key={source.label}>
-                <strong>{source.label}</strong>
-                <p>{source.detail}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-
-        <div className="operational-flow__bottom">
-          <span className="operational-flow__live">
-            <i aria-hidden="true"></i>
-            Exact product · scoped evidence · traceable citations
-          </span>
-
-          <span className="operational-flow__boundary-note">
-            Verify with original sources. Public records support review, not advice or verdicts.
-          </span>
-        </div>
-      </div>
-    </section>
-  )
+export default function OperationalOverview({ mode = 'everyday' }: { mode?: ExperienceMode }) {
+  const pro = mode === 'research_pro'
+  return <section className={`evidence-flow architecture-flow${pro ? ' is-technical' : ''}`} id="workflow" aria-labelledby="operational-flow-title">
+    <div className="flow-introduction"><p className="eyebrow">{pro ? 'Verified repository architecture' : 'How the application is built'}</p><h2 id="operational-flow-title">{pro ? 'Data pipeline, serving layer and research controls.' : 'FDA data → processing → evidence application → cited findings.'}</h2><p>{pro ? 'The offline build path, read-only serving path and optional local AI are distinct components.' : 'Open each stage to see how stored source data becomes evidence you can inspect.'}</p></div>
+    <div className="flow-nodes">{(pro ? technical : everyday).map((stage, index) => <FlowNode key={stage.title} stage={stage} index={index} pro={pro} />)}</div>
+    <div className="architecture-optionals"><article><ArchitectureIcon kind="retrieval" /><strong>Optional retrieval</strong><p>BGE embeddings and FAISS passage retrieval require a separately configured local corpus and index. Candidate passages do not independently authorize an answer.</p></article><article><ArchitectureIcon kind="processing" /><strong>Optional local synthesis</strong><p>Ollama selects admitted statement IDs. Python restores exact source quotes and citations. Deterministic reads and PDF exports do not require model synthesis.</p></article></div>
+    <div className="flow-boundaries"><span>Sealed read-only SQLite</span><span>Capability-authenticated local research</span><span>Source admission and provenance</span><span>Publication not authorized</span></div>
+    <p className="flow-footnote">Architecture explanation, not live execution progress. React/TypeScript is the presentation layer; FastAPI/Pydantic and the bounded Python workflow enforce the research contract. This diagram makes no claim that optional artifacts are currently configured.</p>
+  </section>
 }
-
-export default OperationalOverview

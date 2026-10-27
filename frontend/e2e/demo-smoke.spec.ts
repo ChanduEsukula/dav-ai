@@ -20,7 +20,7 @@ for (const width of [1440, 390]) {
     await page.goto('/')
     await page.getByLabel('Brand, generic name, active ingredient or NDC').fill('Ozempic')
     await page.getByRole('button', { name: 'Search drugs' }).click()
-    await page.getByRole('button', { name: /OZEMPIC/i }).click()
+    await page.getByRole('button', { name: /^Select .*NDC/i }).click()
     await expect(page.getByRole('heading', { name: 'Recall history', exact: true })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Reported adverse events', exact: true })).toBeVisible()
     const recall = await page.getByRole('region', { name: 'Recall history', exact: true }).boundingBox()

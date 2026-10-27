@@ -19,6 +19,7 @@ from app.routes.drug_safety import router as drug_safety_router
 from app.routes.drugs import router as drugs_router
 from app.routes.reports import router as reports_router
 from app.routes.evidence import router as evidence_router
+from app.routes.medications import router as medications_router
 
 
 logger = logging.getLogger("dav_ai.request")
@@ -144,6 +145,7 @@ app.include_router(drugs_router)
 app.include_router(drug_safety_router)
 app.include_router(reports_router)
 app.include_router(evidence_router)
+app.include_router(medications_router)
 
 
 @app.get("/")

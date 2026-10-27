@@ -21,8 +21,8 @@ def typescript(schema):
     if kind == "object":
         if "properties" not in schema:
             return "Record<string, " + typescript(schema.get("additionalProperties", {})) + ">"
-        # The additive answer field is optional for compatibility with older briefings.
-        return "{ " + "; ".join(json.dumps(k) + ("?: " if k == "answer" and k not in schema.get("required", []) else ": ") + typescript(v)
+        # Additive answer and question fields remain optional for older briefings.
+        return "{ " + "; ".join(json.dumps(k) + ("?: " if k in {"answer", "question"} and k not in schema.get("required", []) else ": ") + typescript(v)
                                    for k, v in schema["properties"].items()) + " }"
     return {"string": "string", "integer": "number", "number": "number", "boolean": "boolean",
             "null": "null"}.get(kind, "unknown")

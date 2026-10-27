@@ -1,0 +1,28 @@
+.glass-select-field { display:flex; flex-direction:column; gap:6px; min-width:0; }
+.glass-select-label { font-size:var(--type-label,14px); line-height:1.45; font-weight:600; color:var(--text-muted); }
+.glass-site[data-theme] .glass-select-trigger { display:flex; justify-content:space-between; align-items:center; gap:12px; width:100%; min-height:46px; padding:10px 14px; text-align:left; border-radius:18px; background:linear-gradient(130deg,#a7f7f310,#031e2ed9); border:1px solid var(--mode-edge); color:#f5fbff; font:inherit; font-size:var(--type-control,15px); }
+.glass-select-trigger>span:first-child { overflow-wrap:anywhere; }
+.glass-select-trigger>span:last-child { flex-shrink:0; display:flex; }
+.glass-site[data-theme='research_pro'] .glass-select-trigger { min-height:42px; background:linear-gradient(130deg,#b5a2ff14,#0a1030dc); }
+.glass-site[data-theme] .glass-select-trigger:is(:hover,[data-state='open']) { border-color:var(--mode-accent); box-shadow:0 0 16px var(--mode-panel); }
+.glass-select-trigger:focus-visible { outline:2px solid var(--mode-accent); outline-offset:3px; }
+/* Portaled to body: explicitly supply palette/type tokens outside the app's isolated layers. */
+.glass-select-menu { --select-accent:#a7f7f3; --select-highlight:#78e9e524; --select-border:#8de8e87a; z-index:1000; width:var(--radix-select-trigger-width); min-width: min(220px,calc(100vw - 24px)); max-width:calc(100vw - 24px); max-height:min(340px,var(--radix-select-content-available-height)); color:#f5fbff; background:linear-gradient(145deg,#123c48f5,#062a36f5); border:1px solid var(--select-border); border-radius:18px; padding:6px; box-shadow:inset 0 1px 0 #ffffff19,0 18px 48px #000b18a6,0 0 20px #62e7df12; backdrop-filter:blur(24px); font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:15px; line-height:1.45; transform-origin:var(--radix-select-content-transform-origin); }
+.glass-select-menu[data-mode='research_pro'] { --select-accent:#d5c6ff; --select-highlight:#aa8aff2e; --select-border:#b5a2ff80; background:linear-gradient(145deg,#202247f7,#10152ff7); box-shadow:inset 0 1px 0 #ffffff19,0 18px 48px #000918a6,0 0 20px #a080ff16; }
+.glass-select-menu[data-state='open'] { animation:glass-select-in 150ms ease-out; }
+.glass-select-menu[data-state='closed'] { animation:glass-select-out 150ms ease-in; }
+.glass-select-viewport { padding:2px; }
+.glass-select-option { position:relative; display:flex; align-items:center; min-height:44px; padding:10px 36px 10px 12px; border-radius:12px; cursor:default; outline:none; user-select:none; overflow-wrap:anywhere; }
+.glass-select-menu[data-mode='research_pro'] .glass-select-option { min-height:38px; padding-block:8px; }
+.glass-select-option[data-state='checked'] { color:var(--select-accent); background:var(--select-highlight); }
+.glass-select-option[data-highlighted] { background:var(--select-highlight); outline:1px solid var(--select-border); outline-offset:-1px; }
+.glass-select-check { position:absolute; right:10px; display:flex; color:var(--select-accent); }
+.glass-select-scroll { display:flex; justify-content:center; align-items:center; height:24px; color:var(--select-accent); }
+@keyframes glass-select-in { from { opacity:0; transform:translateY(-4px) scale(.98); } to { opacity:1; transform:translateY(0) scale(1); } }
+@keyframes glass-select-out { from { opacity:1; transform:translateY(0) scale(1); } to { opacity:0; transform:translateY(-4px) scale(.98); } }
+.product-filters .advanced-product-filters { grid-column:1/-1; border:1px solid var(--glass-border); border-radius:18px; background:var(--mode-panel); padding:0 14px; }
+.advanced-product-filters>summary { padding:12px 0; }
+.advanced-filter-toolbar { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; padding:0 0 14px; }
+.glass-site[data-theme] .advanced-filter-toolbar label { margin:0; min-width:0; }
+.glass-site[data-theme] .advanced-filter-toolbar input { margin-top:6px; min-height:42px; }
+@media(prefers-reduced-motion:reduce) { .glass-select-menu[data-state] { animation:none; } }

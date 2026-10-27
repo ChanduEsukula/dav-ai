@@ -1,8 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
-import { getDrugEvidence, searchCatalog, type CatalogDrug, type Coverage, type DrugEvidence, type Release } from '../api/drugCatalog'
+import { getDrugEvidence, getDrugLabels, getMedicationOverview, searchCatalog, type CatalogDrug, type Coverage, type DrugEvidence, type Release } from '../api/drugCatalog'
 import { generateReport } from '../api/reports'
 import { isOfficialFdaUrl } from '../utils/sourceUrl'
+import { CompactProducts, MedicationSummary } from './MedicationDiscovery'
+import type { ExperienceMode } from './experienceState'
+import { EvidencePanel } from './EvidencePanel'
+import { FaersSummary, LabelSummary, RecallSummary } from './ExplorerSummaries'
+import { EvidenceIcon, type EvidenceKind } from '../portfolio/EvidenceIcon'
 
+const labelFields = ['boxed_warning', 'warnings_and_precautions', 'warnings', 'contraindications', 'adverse_reactions', 'drug_interactions'] as const
 const drugName = (drug: CatalogDrug) => drug.brand_names.join(', ') || drug.generic_name || 'Unnamed medication'
 const text = (value: string | null | undefined) => value || 'Not supplied'
 const number = (value: number) => value.toLocaleString()
@@ -55,7 +61,7 @@ function useRemote<T>(key: string, load: (key: string, signal: AbortSignal) => P
   useEffect(() => {
     if (!key) return
     const controller = new AbortController()
-    load(key, controller.signal).then(value => {
+    Promise.resolve().then(() => load(key, controller.signal)).then(value => {
       if (!controller.signal.aborted) setState({ key, value })
     }).catch(() => {
       if (!controller.signal.aborted) setState({ key, error: 'Evidence could not be loaded. The release may be unavailable. Please try again.' })
@@ -66,6 +72,8 @@ function useRemote<T>(key: string, load: (key: string, signal: AbortSignal) => P
     loading: !!key && (state.key !== key || (!state.value && !state.error)) }
 }
 const loadEvidence = (key: string, signal: AbortSignal) => getDrugEvidence(JSON.parse(key).id, signal)
+const loadOverview = (key: string, signal: AbortSignal) => getMedicationOverview(JSON.parse(key).q, signal)
+const loadLabels = (key: string, signal: AbortSignal) => getDrugLabels(JSON.parse(key).id, signal)
 const loadSearch = (key: string, signal: AbortSignal) => {
   const { q, offset } = JSON.parse(key) as { q: string; offset: number }
   return searchCatalog(q, offset, signal)
@@ -117,7 +125,8 @@ function ReportDialog({ evidence }: { evidence: DrugEvidence }) {
   </>
 }
 
-export default function StoredDrugCatalog() {
+export default function StoredDrugCatalog({ mode = 'everyday' }: { mode?: ExperienceMode }) {
+  const [evidenceFocus, setEvidenceFocus] = useState('all')
   const [location, setLocation] = useState(() => window.location.search)
   const [retry, setRetry] = useState(0)
   const params = new URLSearchParams(location)
@@ -138,16 +147,19 @@ export default function StoredDrugCatalog() {
     window.history.pushState(null, '', url)
     setLocation(url.search)
   }
-  const searchKey = query ? JSON.stringify({ q: query, offset, retry }) : ''
+  const searchKey = query && !selected ? JSON.stringify({ q: query, offset, retry }) : ''
   const results = useRemote(searchKey, loadSearch)
+  const overview = useRemote(query && !selected ? JSON.stringify({ q: query, retry }) : '', loadOverview)
   const result = useRemote(selected ? JSON.stringify({ id: selected, retry }) : '', loadEvidence)
-  const evidence = result.value
-  return <main className="explorer" id="main-content">
+  const labelResult = useRemote(selected ? JSON.stringify({ id: selected, retry }) : '', loadLabels)
+  const evidence = result.value?.drug.id === selected ? result.value : undefined
+  const labels = labelResult.value
+  return <main className={`explorer${query ? ' has-query' : ''}`} id="main-content">
     <a className="skip-link" href="#search">Skip to drug search</a>
     <div className="explorer-context"><span>Pharmaceutical evidence explorer</span><span className="badge">FDA source data</span></div>
-    <section className="intro" aria-labelledby="title"><p className="eyebrow">Drug recalls · Reported adverse events</p>
-      <h1 id="title">Explore the evidence<br />behind your medication.</h1>
-      <p>Find an exact product, review linked recall history and explore ingredient-level reporting. Download a personalized evidence report without an account.</p>
+    <section className={`intro${selected ? ' is-selected' : ''}`} aria-labelledby="title"><p className="eyebrow">Drug recalls · Reported adverse events</p>
+      <h1 id="title">Explore the evidence<br />{' '}behind your medication.</h1>
+      <p>{mode === 'everyday' ? 'Start with a medication name. Review the stored evidence across matching products, then choose a strength and formulation.' : 'Discover stored brand aliases and formulation groups, inspect deduplicated record coverage, then select an exact product for provenance and export.'}</p>
       <form className="search" role="search" onSubmit={event => {
         event.preventDefault()
         const q = String(new FormData(event.currentTarget).get('q') || '').trim()
@@ -156,36 +168,49 @@ export default function StoredDrugCatalog() {
         <div><input key={query} id="search" name="q" defaultValue={query} placeholder="e.g. Xanax, alprazolam or an NDC" required maxLength={200} /><button className="primary">Search drugs</button></div>
       </form>
     </section>
+    {!selected && !query && <div className="explorer-placeholder-grid" aria-label="Available evidence categories">
+      {([['labels', 'FDA Drug Labeling', 'Admitted exact-product sections'], ['recalls', 'Historical Recalls', 'Product links with lot limitations'], ['faers', 'FAERS Reporting', 'Ingredient-level reporting associations']] as const).map(([kind, title, detail]) => <article key={kind} className="glass-card"><span className="immersive-icon"><EvidenceIcon kind={kind as EvidenceKind} /></span><h2>{title}</h2><p>{detail}</p><span className="placeholder-art" aria-hidden="true" /></article>)}
+    </div>}
     {results.loading && <p role="status">Searching the stored drug catalog…</p>}
     {results.error && <p role="alert">{results.error} <button onClick={() => setRetry(v => v + 1)}>Retry search</button></p>}
-    {results.value && <section aria-labelledby="selection-heading" className="selection">
-      <h2 id="selection-heading">Select an exact product</h2>
-      <p>Verify labeler, formulation and NDC. Similar names can refer to different products.</p>
-      {!results.value.results.length && <p>No matching products in this stored release. Try another brand, ingredient or identifier.</p>}
-      <ul className="products">{results.value.results.map(drug => <li key={drug.id}>
-        <button aria-pressed={selected === drug.id} onClick={() => navigate(query, drug.id, offset)}>
-          <strong>{drugName(drug)}</strong><span>{text(drug.generic_name)} · {text(drug.strength)} · {text(drug.dosage_form)}</span>
-          <span>Labeler: {drug.manufacturers.join(', ') || 'Not supplied'} · NDC: {drug.product_ndcs.join(', ') || 'Not supplied'}</span>
-        </button>
-      </li>)}</ul>
-      <div className="actions">{offset > 0 && <button onClick={() => navigate(query, '', offset - 20)}>Previous products</button>}
-        {results.value.results.length === 20 && <button onClick={() => navigate(query, '', offset + 20)}>More products</button>}</div>
-    </section>}
+    {!selected && overview.loading && <p role="status">Assembling the medication overview from matching stored products…</p>}
+    {!selected && overview.value && overview.value.matched_product_count > 0 && <MedicationSummary value={overview.value} mode={mode} />}
+    {!selected && overview.error && <p className="overview-unavailable">Medication-level totals could not be verified. Select a product to inspect its stored evidence.</p>}
+    {!selected && (overview.value?.products.length || (overview.error && results.value?.results.length)) ? <CompactProducts key={query} products={overview.value?.products ?? results.value!.results} query={query} mode={mode} onSelect={product => navigate(query, product.id, offset)} /> : null}
+    {!selected && (overview.value?.matched_product_count === 0 || results.value?.results.length === 0) && !overview.loading && <p>No matching products in this stored release. Try another brand, ingredient or identifier.</p>}
     {result.loading && <p role="status">Loading verified product evidence…</p>}
     {result.error && <p role="alert">{result.error} <button onClick={() => setRetry(v => v + 1)}>Retry evidence</button></p>}
     {evidence && <>
       <section className="identity" aria-labelledby="drug-heading">
         <div><p className="eyebrow">Selected medication</p><h2 id="drug-heading">{drugName(evidence.drug)}</h2>
           <p>{text(evidence.drug.generic_name)} · {text(evidence.drug.strength)} · {text(evidence.drug.dosage_form)} · {evidence.drug.routes.join(', ')}</p>
+          <p>Product NDC: {evidence.drug.product_ndcs.join(', ') || 'Not supplied'}</p>
+          <details className="identity-details"><summary>Product identity and provenance</summary>
           <p>Active ingredients: {evidence.drug.active_ingredients.join(', ') || 'Not supplied'}</p>
           <p>NDC-listed labeler: {evidence.drug.manufacturers.join(', ') || 'Not supplied'}. Manufacturer not independently verified.</p>
           <p>Product NDC: {evidence.drug.product_ndcs.join(', ') || 'Not supplied'} · Package NDC: {evidence.drug.package_ndcs.join(', ') || 'Not supplied'}</p>
           {evidence.drug.identity_partial && <p>Identity is partial. Verify the exact package and formulation.</p>}
-          <Source url={evidence.drug.provenance.source_url} />
-        </div><ReportDialog key={evidence.drug.id} evidence={evidence} />
+          <Source url={evidence.drug.provenance.source_url} /></details>
+        </div><div className="identity-actions"><button onClick={() => navigate(query)}>Change selected product</button><ReportDialog key={evidence.drug.id} evidence={evidence} /></div>
       </section>
-      <div className="evidence-panels">
-        <section className="panel" aria-labelledby="recall-heading"><p className="eyebrow">Product-linked evidence</p><h2 id="recall-heading">Recall history</h2>
+      {mode === 'research_pro' && <div className="evidence-display-controls"><label>Evidence focus<select value={evidenceFocus} onChange={event => setEvidenceFocus(event.target.value)}><option value="all">All evidence sources</option><option value="labels">Drug labeling</option><option value="recalls">Historical recalls</option><option value="faers">FAERS reporting</option></select></label><p>Display filter only. Release {evidence.release.release_id} · Sources and coverage remain below.</p></div>}
+      <div className="evidence-panels" data-focus={mode === 'research_pro' ? evidenceFocus : 'all'} key={evidence.drug.id}>
+        <EvidencePanel kind="labels" title="Drug labeling" scope="Exact-product labels" summary={<LabelSummary labels={labels} />}>
+          {labelResult.loading && <p role="status">Loading admitted label evidence…</p>}
+          {labelResult.error && <p role="alert">Label evidence could not be loaded. <button onClick={() => setRetry(value => value + 1)}>Retry labels</button></p>}
+          {labels && <><CoverageNote coverage={labels.coverage} />
+            {!labels.records.length && <p>No admitted exact-product label is available in this release. Missing labels do not mean no warnings exist.</p>}
+            {labels.records.map(record => <article className="record" key={record.id}>
+              <h3>Label version {record.label_version ?? 'Not supplied'}</h3>
+              <p>{record.selection_status} · Effective: {text(record.effective_date)} · Set: {record.label_set_id}</p>
+              <p>Applicability: {record.applicability_class} · Evidence scope: {record.evidence_scope}</p>
+              {labelFields.map(field => <details key={field}><summary>{field.replaceAll('_', ' ')}</summary><p className="label-text">{record[field] || 'No stored text for this section. Absence is not evidence that no warnings exist.'}</p></details>)}
+              <details><summary>Section states and matching provenance</summary><p>Match: {record.match_method} · {record.matched_value}</p>
+                {Object.entries(record.section_states).map(([key, state]) => <p key={key}>{key}: {state.state} · {state.reason_code}</p>)}</details>
+              <p>Source record: {record.source_record_id}</p><Source url={record.source_url} />
+            </article>)}</>}
+        </EvidencePanel>
+        <EvidencePanel kind="recalls" title="Recall history" scope="Product-linked evidence" summary={<RecallSummary evidence={evidence} />}>
           <CoverageNote coverage={evidence.recalls.coverage} />
           {!evidence.recalls.records.length && <p>No verified linked records in this release. This does not establish that the drug has never been recalled.</p>}
           {evidence.recalls.records.map(recall => <article key={recall.id} className="record">
@@ -197,8 +222,8 @@ export default function StoredDrugCatalog() {
             <p>Applicability: {recall.applicability_class} · Matched identifier: {text(recall.matched_value)}</p>
             <p>Source record: {recall.source_record_id}</p><Source url={recall.source_url} />
           </article>)}
-        </section>
-        <section className="panel" aria-labelledby="ae-heading"><p className="eyebrow">Ingredient-level reporting</p><h2 id="ae-heading">Reported adverse events</h2>
+        </EvidencePanel>
+        <EvidencePanel kind="faers" title="Reported adverse events" scope="Ingredient-level reporting" summary={<FaersSummary evidence={evidence} />}>
           <CoverageNote coverage={evidence.adverse_events.coverage} />
           <p>{evidence.adverse_events.summary.limitation}</p>
           {evidence.adverse_events.records.map(ingredient => <article key={ingredient.ingredient_id} className="record">
@@ -218,7 +243,7 @@ export default function StoredDrugCatalog() {
               <ul>{ingredient.analytics.limitations.map((v, i) => <li key={i}>{v}</li>)}</ul>
             </> : <p>No stored analytics available for this ingredient. Missing data is not a zero count.</p>}
           </article>)}
-        </section>
+        </EvidencePanel>
       </div>
       <section className="sources" aria-labelledby="source-heading"><h2 id="source-heading">Sources and data freshness</h2>
         <p>Release: {evidence.release.release_id}</p><p>Built: {evidence.release.build_time_utc} · NDC observed: {evidence.release.ndc_observation_date}</p>

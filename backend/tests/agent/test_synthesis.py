@@ -172,6 +172,8 @@ def test_run_deadline_retains_already_built_briefing_and_reports_synthesis_timeo
         async def synthesize(self,messages):await asyncio.sleep(1)
     result,_,_=asyncio.run(execute(Slow(),limits=replace(Limits(),run_timeout=.04,model_timeout=.2)))
     assert result['sections'][0]['evidence'] and result['answer']['reason']=='model_timeout'
+    assert result['question'] == 'What are the contraindications?'
+    assert ResearchBriefing.model_validate(result).question == result['question']
 
 
 def test_expiry_during_synthesis_and_cancellation_discard_response():
@@ -320,3 +322,24 @@ def test_oversized_response_is_discarded_and_abstention_has_no_claims():
     def abstain(value): value.update(supported=False, statement_ids=[])
     result, _, _ = asyncio.run(execute(Model(abstain)))
     assert result['answer']['reason'] == 'model_abstained' and result['answer']['text'] is None
+
+
+def test_completed_briefing_preserves_submitted_question():
+    question = 'What historical recalls and label warnings are available?'
+
+    async def scenario():
+        result, _, _ = await execute(
+            question=question,
+            enabled=False,
+        )
+        assert result['question'] == question
+        validated = ResearchBriefing.model_validate(result)
+        assert validated.question == question
+
+    asyncio.run(scenario())
+
+
+def test_older_briefing_without_question_remains_valid():
+    result, _, _ = asyncio.run(execute(enabled=False))
+    result.pop('question')
+    assert ResearchBriefing.model_validate(result).question is None

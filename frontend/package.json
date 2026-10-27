@@ -14,9 +14,13 @@
     "test:e2e:release": "playwright test --config=playwright.pharma.config.ts"
   },
   "dependencies": {
+    "@radix-ui/react-select": "^2.4.1",
+    "@react-three/fiber": "9.8.2",
     "axios": "^1.20.0",
+    "motion": "14.7.1",
     "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "react-dom": "^19.2.5",
+    "three": "0.186.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -27,6 +31,7 @@
     "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@types/three": "0.186.0",
     "@vitejs/plugin-react": "^6.0.1",
     "eslint": "^10.2.1",
     "eslint-plugin-react-hooks": "^7.1.1",

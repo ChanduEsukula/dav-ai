@@ -1,4 +1,5 @@
 import type { PublicBriefing } from './contracts'
+import { PartialEvidenceSummary } from './PartialEvidenceSummary'
 import { labelAnchor } from './evidenceAnchors'
 
 function openSource(id: string) {
@@ -29,8 +30,11 @@ export function GroundedAnswerPanel({ briefing }: { briefing: PublicBriefing }) 
     : answer.status === 'unavailable'
       ? 'AI synthesis is unavailable. The structured evidence remains available below.'
       : 'AI output failed validation and was discarded. Review the structured evidence below.'
-  return <section className="panel everyday-card grounded-answer" aria-label="AI-generated answer">
-    <h2>AI-generated answer</h2>
+  const heading = generated
+    ? 'AI-generated answer'
+    : 'Research Answer & Evidence Summary'
+  return <section className="panel everyday-card grounded-answer" aria-label={heading}>
+    <h2>{heading}</h2>
     {generated ? <>
       <p>AI-selected summary using quoted label statements. This is separate from the original FDA source cards.</p>
       <p>{answer.text!.split(/(\[E\d+\])/).map((part, index) => {
@@ -40,7 +44,14 @@ export function GroundedAnswerPanel({ briefing }: { briefing: PublicBriefing }) 
         return <a key={index} href={`#${target}`} onClick={() => openSource(target)}
           aria-label={`${part} Open ${citation.section.replaceAll('_', ' ')} source`}>{part}</a>
       })}</p>
-    </> : <p role="status">{fallback}</p>}
+    </> : (
+      <>
+        <p role="status">{fallback}</p>
+        {answer.status === 'insufficient_evidence' && (
+          <PartialEvidenceSummary briefing={briefing} />
+        )}
+      </>
+    )}
     <p>Citation checks do not establish factual support or clinical completeness. Not individualized medical advice.</p>
     <details><summary>Answer provenance and limitations</summary>
       {generated && <ul>{answer.citations.map(c => <li key={c.evidence_id}>

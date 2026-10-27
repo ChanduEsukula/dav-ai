@@ -323,6 +323,7 @@ class GroundedAnswer(Contract):
 
 
 class ResearchBriefing(Contract):
+    question: str | None = Field(default=None, max_length=2000)
     schema_version: Literal["agent-research-v2"] = "agent-research-v2"
     status: Literal["completed", "partial", "stopped"]
     workflow_state: Literal["COMPLETE", "PARTIAL", "STOPPED"]

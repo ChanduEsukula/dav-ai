@@ -696,13 +696,13 @@ export default function ResearchProWorkspace({
                         rows={3}
                         maxLength={2000}
                         value={question}
-                        disabled={running || attempted}
+                        disabled={running || !!busy}
                         onChange={(e) => setQuestion(e.target.value)}
                       />
                     </div>
 
                     <div className="pro-form-group">
-                      <fieldset disabled={running || attempted} className="pro-fieldset">
+                      <fieldset disabled={running || !!busy} className="pro-fieldset">
                         <legend>Evidence Categories</legend>
                         <div className="pro-checkbox-grid">
                           <label className="pro-checkbox-label">
@@ -733,13 +733,13 @@ export default function ResearchProWorkspace({
                       </fieldset>
                     </div>
 
-                    <SynthesisOption enabled={synthesize} onChange={setSynthesize} disabled={running || attempted || !!busy} />
+                    <SynthesisOption enabled={synthesize} onChange={setSynthesize} disabled={running || !!busy} />
                     <div className="pro-form-group">
                       <label htmlFor="pro-model-select">Execution Inference Engine:</label>
                       <select
                         id="pro-model-select"
                         value={model}
-                        disabled={running || attempted}
+                        disabled={running || !!busy}
                         onChange={(e) => setModel(e.target.value)}
                       >
                         <option value="">Deterministic evidence planning</option>
@@ -760,7 +760,7 @@ export default function ResearchProWorkspace({
                       <button
                         type="submit"
                         className="pro-btn-cyan run-btn-pro"
-                        disabled={!product || selectedCategories.length === 0 || !question.trim() || running || attempted || !!busy}
+                        disabled={!product || selectedCategories.length === 0 || !question.trim() || running || !!busy}
                       >
                         {running ? 'Executing Bounded Agent…' : 'Execute Deep Evidence Retrieval'}
                       </button>

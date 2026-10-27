@@ -1,0 +1,78 @@
+/* Shared type scale: geometry and palettes stay in the existing glass system. */
+:root { --navigation-clearance: 164px; }
+html { scroll-padding-block-start: var(--navigation-clearance); scroll-padding-block-end: 24px; }
+.glass-site {
+  --type-body: 16px;
+  --type-table: 15px;
+  --type-control: 15px;
+  --type-label: 14px;
+  --type-meta: 13px;
+  --type-card: 20px;
+  --type-leading: 1.6;
+  --text-muted: #c1d9e2;
+  --text-subtle: #b7d1dd;
+  --muted: var(--text-muted);
+  --brand-light: #a7f7f3;
+  font-size: var(--type-body);
+}
+.glass-site[data-theme='research_pro'] { --type-body: 15px; --text-muted: #cfcee8; --text-subtle: #c1c1df; --muted: var(--text-muted); --brand-light: #c9b9ff; }
+.glass-site[data-theme] :is(main,footer) :is(p,li,dd) { font-size: var(--type-body); line-height: var(--type-leading); }
+.glass-site[data-theme] :is(input,select,textarea,button) { font-size: var(--type-control); }
+.glass-site[data-theme] :is(label,.product-filters label,.evidence-display-controls label) { font-size: var(--type-label); line-height: 1.45; }
+.glass-site[data-theme] :is(small,code,.eyebrow,.immersive-eyebrow,.summary-limit,.summary-scope,.summary-window,.ingredient-scope,.compact-helper,.inventory-release,.inventory-provenance,.discovery-limitations,.flow-footnote,.architecture-source,.research-progress,.snapshot,.immersive-trust,.orb-caption,.portfolio-footer p,.creator-links a>span:first-child) { font-size: var(--type-meta); line-height: 1.5; }
+.glass-site[data-theme] :is(.eyebrow,.immersive-eyebrow) { letter-spacing: .1em; }
+.glass-site[data-theme] :is(.card,.panel,.everyday-card,.pro-panel,.glass-card) h3,
+.glass-site[data-theme] :is(.evidence-panel-heading h2,.about-grid article h2,.capability-grid h3,.flow-stage h3,.creator-card h3,.architecture-optionals strong) { font-size: var(--type-card); line-height: 1.3; }
+.glass-site[data-theme] :is(.about-hero p,.faq-hero p,.section-heading-row>p,.about-grid p,.about-section p,.creator-card p,.capability-grid p,.immersive-lane p,.compact-home-limitations li,.architecture-optionals p,.flow-stage>p) { color: var(--text-muted); }
+.glass-site[data-theme] :is(.architecture-preview>div,.inventory-grid small,.inventory-grid span,.evidence-bar,.evidence-bar strong,.evidence-bar span,.recall-reason-preview,.recall-reason-preview small,.summary-number small,.summary-associations small,.compact-product-row small,.medication-discovery-heading>p,.selection-heading-row>p,.creator-links strong,.flow-boundaries span) { font-size: var(--type-meta); line-height: 1.5; }
+.glass-site[data-theme] :is(.summary-limit,.summary-scope,.summary-window,.ingredient-scope,.compact-helper,.discovery-limitations,.flow-footnote,.snapshot,.immersive-trust,.recall-reason-preview small,.compact-product-row small) { color: var(--text-muted); }
+.glass-site[data-theme] .summary-number { font-size: 32px; line-height: 1.15; }
+.glass-site[data-theme] .summary-associations { font-size: 22px; line-height: 1.25; }
+.glass-site[data-theme] .technical-products-table :is(th,td),
+.glass-site[data-theme] .compact-product-row :is(strong,p,button) { font-size: var(--type-table); line-height: 1.45; }
+.glass-site[data-theme] .technical-products-table :is(small,summary,.product-provenance-row td) { font-size: var(--type-meta); }
+.glass-site[data-theme] .technical-products-table :is(th,td) { overflow-wrap: anywhere; padding: 10px 12px; }
+.glass-site[data-theme] .technical-products-table button { white-space: normal; min-height: 40px; }
+.glass-site[data-theme] .compact-product-row { gap: 12px; padding: 12px 0; }
+.glass-site[data-theme] .compact-product-row>details { font-size: var(--type-meta); }
+.glass-site[data-theme] :is(.product-filters input,.product-filters select) { font-size: var(--type-control); }
+.glass-site[data-theme] :is(summary,.evidence-expand,.suggested-questions button,.architecture-preview span) { font-size: var(--type-label); line-height: 1.5; }
+.glass-site[data-theme] .evidence-panel-heading { min-height: 76px; }
+/* Text wraps naturally; short summaries keep aligned expansion controls. */
+.glass-site[data-theme] .evidence-panel-summary { height: auto; min-height: 260px; max-height: none; overflow: visible; }
+.glass-site[data-theme] .evidence-panels { align-items: stretch; }
+.glass-site[data-theme] .evidence-glass-panel { display: flex; flex-direction: column; }
+.glass-site[data-theme] .evidence-panel-summary { flex: 1; }
+.glass-site[data-theme] :is(.technical-product-table-wrap,.compact-product-row>div,.research-workspace,.pro-panel,.everyday-panel,.product-filters label) { min-width: 0; }
+/* One shared navigation size; the compact emblem has no enclosing brand border. */
+.glass-site[data-theme] .workspace-nav :is(.app-route-links a,.experience-toggle-btn,.site-menu-toggle) { font-size: var(--type-label); }
+.glass-site[data-theme] .workspace-nav .app-brand-link { display: inline-flex; align-items: center; gap: 10px; font-size: 27px; line-height: 1; letter-spacing: -.055em; border: 0; border-radius: 8px; padding: 4px 0; background: transparent; color: #f5fbff; }
+.brand-emblem { position: relative; display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 34px; border-radius: 50%; overflow: hidden; color: var(--brand-light); background: radial-gradient(circle at 30% 20%,#ffffff24,#ffffff03 65%); box-shadow: inset 0 1px 1px #ffffff55,0 0 14px color-mix(in srgb,var(--brand-light) 12%,transparent); transition: box-shadow .25s ease; }
+.brand-emblem svg { width: 32px; height: 32px; stroke: currentColor; stroke-width: 1.15; }
+.brand-core,.brand-satellite { fill: currentColor; stroke: none; }
+.brand-emblem::after { content: ''; position: absolute; inset: -25% -65%; background: linear-gradient(115deg,transparent 40%,#ffffff70 50%,transparent 60%); transform: translateX(100%); animation: brand-light-sweep 1.2s ease-out both; pointer-events: none; }
+@keyframes brand-light-sweep { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+.glass-site .app-brand-link:is(:hover,:focus-visible) .brand-emblem { box-shadow: inset 0 1px 1px #ffffff70,0 0 20px color-mix(in srgb,var(--brand-light) 35%,transparent); }
+.glass-site .app-brand-link:focus-visible { outline: 2px solid var(--brand-light); outline-offset: 6px; }
+/* Native anchors and browser focus use the actual measured header height. */
+.glass-site[data-theme] :is([id],summary,input,button,textarea,select,a) { scroll-margin-block-start: 0; }
+.glass-site[data-theme] .workspace-nav { flex-shrink: 0; }
+.home-feedback-note { top: var(--navigation-clearance); }
+/* Three collection metrics and a single separate coverage indicator. */
+.glass-site[data-theme] .inventory-grid { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 18px; }
+.glass-site[data-theme] .inventory-metric { display: flex; flex-direction: column; gap: 10px; padding: 24px; min-width: 0; }
+.glass-site[data-theme] .inventory-metric h3 { margin: 4px 0; }
+.glass-site[data-theme] .inventory-value { font-size: clamp(32px,3vw,42px); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.glass-site[data-theme] .inventory-metric>p { font-size: var(--type-meta); margin: 4px 0; color: var(--text-muted); }
+.inventory-metric details { margin-top: auto; }
+.inventory-metric details p,.inventory-provenance p { overflow-wrap: anywhere; }
+.inventory-coverage { display: flex; align-items: start; gap: 16px; margin: 18px 0; border: 1px solid var(--glass-border); background: var(--glass-surface); padding: 20px 24px; border-radius: 20px; }
+.coverage-seal { font-size: 28px; color: var(--brand-light); }
+.glass-site[data-theme] .inventory-coverage p { font-size: var(--type-meta); color: var(--text-muted); margin: 6px 0 0; }
+.inventory-status { margin-top: 18px; }
+@media(max-width:1260px) { .glass-site[data-theme] .workspace-nav .app-route-links { max-height: calc(100dvh - var(--navigation-clearance) - 20px); overflow-y: auto; overscroll-behavior: contain; } }
+@media(max-width:900px) { .glass-site[data-theme] .evidence-panel-summary { min-height: 0; } }
+@media(max-width:640px) { .glass-site[data-theme] .inventory-grid { grid-template-columns: 1fr; }.glass-site[data-theme] .inventory-metric { padding: 20px; }.glass-site[data-theme] .medication-discovery-heading>p { max-width: none; }.glass-site[data-theme] .technical-products-table :is(th,td) { padding: 5px 4px; }.glass-site[data-theme] .compact-product-row { grid-template-columns: minmax(0,1fr) auto; }.glass-site[data-theme] .compact-product-row button { max-width: 110px; }.glass-site[data-theme] .evidence-panel-heading { min-height: 62px; }.brand-emblem { width: 30px; height: 30px; flex-basis: 30px; }.brand-emblem svg { width: 29px; height: 29px; }.glass-site[data-theme] .workspace-nav .app-brand-link { gap: 8px; font-size: 25px; } }
+@media(prefers-reduced-motion:reduce) { .brand-emblem::after { animation: none; display: none; }.brand-emblem { transition: none; } }
+.glass-site[data-theme] .product-filters { display: grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); }
+.glass-site[data-theme] .product-filters :is(input,select) { min-width: 0; max-width: 100%; }

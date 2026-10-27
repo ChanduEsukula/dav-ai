@@ -51,7 +51,6 @@ export default function ExperienceSelector({ mode, onChange }: ExperienceSelecto
           onKeyDown={(e) => handleKeyDown(e, 'everyday')}
           title="Switch to Everyday: Simple, consumer-friendly medication information"
         >
-          <span className="mode-icon-indicator" aria-hidden="true">🌱</span>
           <span>Everyday</span>
           {mode === 'everyday' && (
             <span className="mode-active-indicator" aria-hidden="true" />
@@ -66,7 +65,6 @@ export default function ExperienceSelector({ mode, onChange }: ExperienceSelecto
           onKeyDown={(e) => handleKeyDown(e, 'research_pro')}
           title="Switch to Research Pro: Professional multi-product cohort research workspace"
         >
-          <span className="mode-icon-indicator" aria-hidden="true">🔬</span>
           <span>Research Pro</span>
           {mode === 'research_pro' && (
             <span className="mode-active-indicator" aria-hidden="true" />

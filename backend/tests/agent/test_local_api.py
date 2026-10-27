@@ -78,18 +78,26 @@ def test_complete_lifecycle_and_wire_projection(model):
         async with client() as (c, registry):
             sid, headers = await created(c)
             await confirmed(c, sid, headers)
-            body = {'question': 'Evidence?', 'categories': ['labels', 'recalls', 'faers'], 'model': model}
+            body = {'question': '  Evidence? α\n  ', 'categories': ['labels', 'recalls', 'faers'], 'model': model}
             started = await c.post(f'{ROOT}/{sid}/research', json=body, headers=headers)
             assert started.json()['state'] == 'running'
             result = await done(c, sid, headers)
             assert result['state'] == 'completed', result
+            assert result['briefing']['question'] == body['question']
             assert result['briefing']['routing']['mode'] == ('model' if model else 'deterministic')
             payload = str(result)
             for key in ["'product_id'", "'formulation_id'", "'ingredient_ids'", "'ingredient_id'", "'id'"]:
                 assert key not in payload
             assert result['briefing']['sections'][2]['evidence']['summary']['product_report_total'] is None
             assert registry.active == 0
-            assert (await c.post(f'{ROOT}/{sid}/research', json=body, headers=headers)).status_code == 409
+            body2 = {'question': 'Recalls only?', 'categories': ['recalls'], 'model': model}
+            started2 = await c.post(f'{ROOT}/{sid}/research', json=body2, headers=headers)
+            assert started2.json()['state'] == 'running'
+            result2 = await done(c, sid, headers)
+            assert result2['state'] == 'completed', result2
+            assert result2['briefing']['question'] == body2['question']
+            assert result['briefing']['question'] == body['question']
+            assert result2['briefing']['sections'][1]['status'] == 'available'
             assert (await c.post(f'{ROOT}/{sid}/close', json={}, headers=headers)).json()['state'] == 'closed'
             assert not registry.entries
     asyncio.run(scenario())
@@ -325,4 +333,71 @@ def test_slow_request_body_is_bounded_before_validation():
             assert response.status_code == 408
             assert response.json()['detail']['code'] == 'request_timeout'
             assert not registry.entries and registry.active == 0
+    asyncio.run(scenario())
+
+
+def test_sequential_research_runs_permit_changing_categories_and_synthesis_in_same_session():
+    async def scenario():
+        async with client() as (c, registry):
+            sid, headers = await created(c)
+            ref = await confirmed(c, sid, headers)
+            # Run 1: Deterministic recalls only
+            body1 = {'question': 'Recalls only?', 'categories': ['recalls'], 'synthesize': False}
+            res1 = await c.post(f'{ROOT}/{sid}/research', json=body1, headers=headers)
+            assert res1.json()['state'] == 'running'
+            outcome1 = await done(c, sid, headers)
+            assert outcome1['state'] == 'completed'
+            assert outcome1['briefing']['sections'][1]['status'] == 'available'
+            assert outcome1['briefing']['sections'][0]['status'] == 'not_requested'
+            assert outcome1['briefing']['answer'] is None
+
+            # Attempting to re-confirm or re-resolve is denied; product remains locked
+            assert (await c.post(f'{ROOT}/{sid}/confirm', json={'product_ref': ref}, headers=headers)).status_code == 409
+            assert (await c.post(f'{ROOT}/{sid}/resolve', json={'query': 'Lipitor'}, headers=headers)).status_code == 409
+
+            # Run 2: In same session, switch to labels only with synthesis enabled
+            body2 = {'question': 'Contraindications?', 'categories': ['labels'], 'synthesize': True}
+            res2 = await c.post(f'{ROOT}/{sid}/research', json=body2, headers=headers)
+            assert res2.json()['state'] == 'running'
+            outcome2 = await done(c, sid, headers)
+            assert outcome2['state'] in {'completed', 'partial'}
+            assert outcome2['briefing']['sections'][0]['status'] == 'available'
+            assert outcome2['briefing']['sections'][1]['status'] == 'not_requested'
+            # Answer is present (generated or insufficient_evidence fallback)
+            assert outcome2['briefing']['answer'] is not None
+
+            # Close session
+            assert (await c.post(f'{ROOT}/{sid}/close', json={}, headers=headers)).json()['state'] == 'closed'
+            assert not registry.entries
+    asyncio.run(scenario())
+
+
+@pytest.mark.parametrize('failure', ['tool_timeout', 'run_timeout'])
+def test_partial_api_briefing_preserves_exact_question_on_timeout(failure):
+    """Real workflow and both schema projections preserve the submitted text."""
+    async def scenario():
+        backend = ResearchBackend()
+        original = backend.execute
+
+        async def slow(operation, arguments, **kwargs):
+            if operation == 'faers_v2':
+                await asyncio.sleep(.3)
+            return await original(operation, arguments, **kwargs)
+
+        backend.execute = slow
+        limits = replace(Limits(), run_timeout=.15 if failure == 'run_timeout' else 2,
+                         tool_timeout=.02 if failure == 'tool_timeout' else 1)
+        async with client(backend=backend, limits=limits) as (c, _):
+            sid, headers = await created(c)
+            await confirmed(c, sid, headers)
+            question = '  What historical recalls and FAERS reports are available?\nExact text: α  '
+            response = await c.post(f'{ROOT}/{sid}/research', headers=headers, json={
+                'question': question, 'categories': ['labels', 'recalls', 'faers']})
+            assert response.status_code == 200
+            result = await done(c, sid, headers)
+            assert result['state'] == 'partial', result
+            assert result['briefing']['question'] == question
+            assert result['briefing']['sections'][0]['evidence'] is not None
+            assert result['briefing']['sections'][2]['reason'] == (
+                'request_timeout' if failure == 'run_timeout' else 'tool_timeout')
     asyncio.run(scenario())

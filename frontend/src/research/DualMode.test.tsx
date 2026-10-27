@@ -58,13 +58,12 @@ describe('Dual-Mode Experience (Everyday & Research Pro)', () => {
 
   it('preserves mode preference when navigating between routes', () => {
     localStorage.setItem(STORAGE_KEY_EXPERIENCE_MODE, 'research_pro')
-    const { rerender } = render(<App />)
+    render(<App />)
 
     expect(document.documentElement).toHaveAttribute('data-theme', 'research_pro')
 
     // Navigate to explorer
-    window.history.replaceState(null, '', '/')
-    rerender(<App />)
+    fireEvent.click(screen.getByRole('navigation', { name: 'Workspace navigation' }).querySelector('a[href="/"]')!)
 
     // Theme remains research_pro
     expect(document.documentElement).toHaveAttribute('data-theme', 'research_pro')

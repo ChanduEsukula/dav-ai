@@ -44,7 +44,7 @@ for (const status of ['generated', 'unavailable'] as const) {
     const option = page.getByRole('checkbox', { name: /Include a grounded AI answer/ })
     await expect(option).not.toBeChecked(); await option.check()
     await page.getByRole('button', { name: 'Research selected evidence' }).click()
-    await expect(page.getByRole('region', { name: 'AI-generated answer' })).toBeVisible()
+    await expect(page.getByRole('region', { name: status === 'generated' ? 'AI-generated answer' : 'Research Answer & Evidence Summary' })).toBeVisible()
     expect(enabled).toBe(true)
     if (status === 'generated') {
       await page.getByRole('link', { name: '[E1] Open contraindications source' }).click()
@@ -52,7 +52,7 @@ for (const status of ['generated', 'unavailable'] as const) {
     } else await expect(page.getByText('AI synthesis is unavailable. The structured evidence remains available below.')).toBeVisible()
     await page.getByRole('button', { name: /research pro/i }).click()
     await page.getByRole('button', { name: /Deep Single-Product Research/ }).click()
-    await expect(page.getByRole('region', { name: 'AI-generated answer' })).toBeVisible()
+    await expect(page.getByRole('region', { name: status === 'generated' ? 'AI-generated answer' : 'Research Answer & Evidence Summary' })).toBeVisible()
     if (status === 'generated') {
       await page.getByRole('link', { name: '[E1] Open contraindications source' }).click()
       await expect(page.locator('details[open] .label-text').filter({ hasText: text })).toBeVisible()

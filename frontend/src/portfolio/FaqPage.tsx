@@ -1,5 +1,5 @@
 const faqs = [
-  ['Is Dav AI FDA approved?', 'No. Dav AI is an academic portfolio project using stored public FDA/openFDA evidence. It is not FDA approved and does not claim to be a regulated medical device.'],
+  ['Is Dav AI FDA approved?', 'No. Dav AI uses stored public FDA/openFDA evidence. It is not FDA approved and does not claim to be a regulated medical device.'],
   ['Is this medical advice?', 'No. Dav AI does not diagnose, prescribe, recommend treatment or tell you to start, stop or change a medication. Consult a qualified clinician or pharmacist for medical decisions.'],
   ['Where does the evidence come from?', 'The frozen pharmaceutical release contains NDC product identities, admitted drug labels, historical recall records and ingredient-level FAERS reporting data. Source dates, provenance and limitations are shown with the evidence. The app is not a live safety feed.'],
   ['Why must I confirm an exact product?', 'Similar names can refer to different strengths, dosage forms or packages. Ask Dav AI requires an explicit product confirmation before retrieving evidence. Check the NDC and formulation against the product you intend to research.'],
@@ -15,7 +15,7 @@ export default function FaqPage() {
   return <main id="main-content" className="portfolio-page faq-page">
     <section className="faq-hero page-entrance"><p className="eyebrow">Frequently asked questions</p><h1>Clear answers.<br />Visible boundaries.</h1><p>What Dav AI does, how its evidence works, and what you can—and cannot—conclude.</p></section>
     <div className="faq-list">{faqs.map(([question, answer]) => <details className="faq-item section-reveal" key={question}>
-      <summary><span>{question}</span><strong aria-hidden="true">⌄</strong></summary><p>{answer}</p>
+      <summary><span>{question}</span><strong className="faq-toggle-icon" aria-hidden="true" /></summary><p>{answer}</p>
     </details>)}</div>
     <p className="portfolio-bottom-note">Start with the source. <a href="/">Open the Evidence Explorer →</a></p>
   </main>
