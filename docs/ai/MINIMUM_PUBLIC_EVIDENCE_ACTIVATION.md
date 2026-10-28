@@ -135,3 +135,89 @@ Expected: 200, 200, 200, **403**, **403**. Verify selected-product `/evidence` a
 - Never set Render to local, flip the false artifact metadata, disable the gate or repair the SQLite file to recover service.
 - A code rollback changes the application digest. Either remain closed or explicitly reapprove/sign the intended previous image. Old grants cannot authorize different code. An unexpired grant for the identical code/service remains valid under this operator-managed model; do not restore one unintentionally.
 - The existing local PDF/research workflows are unchanged and remain private. No hosted pairing/model endpoint is part of activation or rollback.
+
+## Public catalog query performance correction (base `2176032`)
+
+The production deadline is being spent executing catalog SQL, not repeatedly
+hashing the artifact. On the frozen, unanalyzed release, the prior identifier
+query starts from all eligible products because it omits the leading
+`identifier_type` index column. Ingredient lookup also starts from products;
+prefix lookup scans product names; the brand overview join needlessly visits
+products before narrowing names. A successful readiness query does not exercise
+these plans.
+
+The correction uses only existing `identifiers_lookup`,
+`product_ingredients_reverse` and `names_lookup` indexes, explicitly orders the
+joins, and seeks a binary prefix range over sealed lowercase names. It preserves
+identifier/name/ingredient discovery priority, escaped literal LIKE matching,
+eligibility, ordering, pagination, admission rules and evidence units. The schema
+CHECK guarantees `entity_id=product_id` for product aliases. No ANALYZE, new index,
+database mutation, connection pool, cached authorization, longer deadline or new
+infrastructure is required.
+
+Measured locally with a read-only pinned artifact, no external network, UID/GID
+1000, a 512 MiB memory limit and 0.1 CPU quota:
+
+| Internal HTTP check | Before | After |
+| --- | --- | --- |
+| Xanax search, two reads | 503, 8.96 / 8.01 s | 200, 0.842 / 0.094 s |
+| Xanax overview, two reads | 200, 5.502 / 3.291 s | 200, 0.021 / 0.010 s |
+| Readiness | 200 | 200 |
+| Private research / PDF | 403 | 403 |
+
+The reported Render overview 503 was **not** reproduced on this machine; its
+slow product-first SQL plan was reproduced and removed. Timings are a constrained
+local sample, not a Render latency guarantee. The before run used the existing
+v3 signed authorization. The after container used a test-only authorization mock
+because changed runtime source requires a new operator-signed digest. Separate
+HTTP tests exercise the real signature gate using the existing synthetic test
+fixture, the pinned release and production middleware.
+
+Warm connection opening was approximately 0.00015–0.00033 s; release validation
+0.0005–0.0006 s; measured response serialization 0.00027–0.00035 s. Warm checksum
+checks hit the existing identity-keyed cache. Cold artifact hashing is separate
+startup work: about 4 s at 0.5 CPU and 70–81 s in the heavily throttled 0.1 CPU
+runs. This remains mandatory, once per unchanged file identity per process.
+The constrained container reached its 512 MiB cgroup limit (including file
+cache), with zero OOM/OOM-kill events. Keep one worker and the existing admission
+limits; cold startup time and actual Render latency still need operator checks.
+
+Reproduce regression verification from the repository root:
+
+```bash
+PYTHONPATH=backend .venv/bin/python -m pytest \
+  backend/tests/pharma_release/test_catalog_query_performance.py \
+  backend/tests/pharma_release/test_medication_overview.py \
+  backend/tests/security/test_production_activation.py \
+  backend/tests/security/test_render_secret_parent.py \
+  --require-pharma-artifact -q
+git diff --check
+```
+
+Deployment procedure (operator only, after separate approval):
+
+1. Review and approve exactly the query changes and tests; leave Maintenance Mode
+   enabled and Auto-Deploy off. No deadline, environment or database change is
+   necessary for this correction.
+2. Build the exact reviewed source-only candidate using step 1 above and record
+   `python -m app.security.production_authorization digest` from that image.
+   Do not overwrite the known-good local image while preparing the candidate.
+3. Using the **existing** offline operator key and unchanged Render service ID
+   `srv-d7se2h1j2pic73f02nn0`, sign a fresh, expiring approval for that application
+   digest using step 2 above. Never reuse v3 for different source bytes or change
+   the artifact hash/publication metadata. Do not create another operator key.
+4. Only after deployment approval, make the reviewed source available through the
+   existing release process, provision both newly signed Secret Files and deploy
+   that exact candidate. Secret-file saves can trigger deployment: coordinate
+   their installation with the candidate while maintenance stays enabled.
+5. Wait for startup verification, then run step 4's loopback checks. Repeat search
+   and overview at least three times, paced to respect the unchanged rate limit;
+   capture status and elapsed time with curl `--write-out '%{http_code} %{time_total}\n'`.
+   Both must return 200 with nine matching products, two deduplicated historical
+   recall records, original reasons and ingredient-level warnings. Readiness must
+   stay 200 and research/PDF POSTs 403. Confirm no worker restarts/OOM and latency
+   comfortably below the eight-second SQL deadline on the real Render instance.
+6. Do not disable Maintenance Mode without a separate explicit decision. If
+   verification fails, retain maintenance and use the existing rollback/revocation
+   procedure above; restoring `2176032` also requires its matching unexpired
+   approval or fresh explicit signing for that exact digest.

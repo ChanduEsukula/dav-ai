@@ -13,6 +13,14 @@ def _normalize_name(value: str) -> str:
     return " ".join(value.strip().lower().split())
 
 
+def _prefix_end(value: str) -> str | None:
+    """Exclusive binary bound for a prefix in the sealed lowercase name index."""
+    for index in range(len(value) - 1, -1, -1):
+        if ord(value[index]) < 0x10FFFF:
+            return value[:index] + chr(ord(value[index]) + 1)
+    return None
+
+
 def _normalize_identifier(value: str) -> str:
     return re.sub(r"\s+", "", value.strip())
 
@@ -70,13 +78,17 @@ class FrozenPharmaReleaseRepository:
         with closing(connect_release()) as con:
             product_ids: list[str] = []
 
+            # Match the leading index columns before joining eligible products.
+            # CROSS JOIN prevents a product-first scan on the unanalyzed frozen DB.
+            # All three identifier types are the schema's complete allowed set.
             # 1. Exact identifier matches first.
             identifier_rows = con.execute(
                 """
                 SELECT DISTINCT pi.product_id
-                FROM product_identifiers pi
-                JOIN products p ON p.product_id = pi.product_id
-                WHERE pi.value = ?
+                FROM product_identifiers pi INDEXED BY identifiers_lookup
+                CROSS JOIN products p ON p.product_id = pi.product_id
+                WHERE pi.identifier_type IN ('PRODUCT_NDC', 'PACKAGE_NDC', 'RXCUI')
+                  AND pi.value = ?
                   AND p.eligibility_mode = 'NORMAL_CONSUMER'
                 ORDER BY pi.product_id
                 LIMIT ?
@@ -111,9 +123,10 @@ class FrozenPharmaReleaseRepository:
             ingredient_rows = con.execute(
                 """
                 SELECT DISTINCT pi.product_id
-                FROM product_ingredients pi
-                JOIN ingredients i ON i.ingredient_id = pi.ingredient_id
-                JOIN products p ON p.product_id = pi.product_id
+                FROM ingredients i
+                CROSS JOIN product_ingredients pi INDEXED BY product_ingredients_reverse
+                  ON pi.ingredient_id = i.ingredient_id
+                CROSS JOIN products p ON p.product_id = pi.product_id
                 WHERE (lower(i.canonical_name) = ? OR lower(i.canonical_name) LIKE ? ESCAPE '\\')
                   AND p.eligibility_mode = 'NORMAL_CONSUMER'
                 ORDER BY pi.product_id LIMIT ?
@@ -124,21 +137,28 @@ class FrozenPharmaReleaseRepository:
                 if row["product_id"] not in product_ids:
                     product_ids.append(row["product_id"])
 
-            # 3. Prefix-name search for user-friendly catalog browsing.
+            # 3. Range-seek the sealed lowercase names index; LIKE still escapes
+            # user metacharacters. entity_id == product_id is a schema CHECK.
+            # Explicit join order avoids scanning every eligible product.
             if len(product_ids) < limit + offset:
+                upper_bound = _prefix_end(normalized_name)
+                upper_clause = "AND sn.normalized_name < ?" if upper_bound is not None else ""
                 prefix_rows = con.execute(
-                    """
-                    SELECT DISTINCT sn.product_id
-                    FROM search_names sn
-                    JOIN products p ON p.product_id = sn.product_id
+                    f"""
+                    SELECT DISTINCT sn.entity_id AS product_id
+                    FROM search_names sn INDEXED BY names_lookup
+                    CROSS JOIN products p ON p.product_id = sn.entity_id
                     WHERE sn.entity_type = 'PRODUCT'
-                      AND sn.product_id IS NOT NULL
+                      AND sn.normalized_name >= ?
+                      {upper_clause}
                       AND sn.normalized_name LIKE ? ESCAPE '\\'
                       AND p.eligibility_mode = 'NORMAL_CONSUMER'
-                    ORDER BY sn.normalized_name, sn.product_id
+                    ORDER BY sn.normalized_name, sn.entity_id
                     LIMIT ?
                     """,
                     (
+                        normalized_name,
+                        *((upper_bound,) if upper_bound is not None else ()),
                         self._escape_like(normalized_name) + "%",
                         limit + offset,
                     ),

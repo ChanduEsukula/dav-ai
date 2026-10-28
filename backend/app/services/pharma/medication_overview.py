@@ -16,7 +16,8 @@ def medication_overview(query: str):
         # Stored brand-base aliases may include XR. Each original product and
         # formulation remains distinct; ingredient search is a different scope.
         rows = con.execute("""
-            SELECT DISTINCT p.* FROM products p JOIN search_names sn ON sn.product_id=p.product_id
+            SELECT DISTINCT p.* FROM search_names sn INDEXED BY names_lookup
+            CROSS JOIN products p ON p.product_id=sn.entity_id
             WHERE sn.entity_type='PRODUCT' AND sn.normalized_name=?
               AND sn.name_role IN ('BRAND','BRAND_BASE') AND p.eligibility_mode='NORMAL_CONSUMER'
             ORDER BY p.product_id LIMIT ?
