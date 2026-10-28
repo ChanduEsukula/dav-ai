@@ -1,0 +1,217 @@
+"""Focused Render demonstration activation tests; all signing keys are ephemeral test fixtures."""
+import asyncio
+import base64
+from contextlib import closing
+from datetime import datetime, timedelta, timezone
+import hashlib
+import json
+import sqlite3
+
+import httpx
+import pytest
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from fastapi.testclient import TestClient
+
+from app.security import production_authorization as auth
+from app.security.validation import AuthorizationRejected
+from app.services import public_evidence as boundary
+from app.db.pharma import release_connection as release
+from scripts import sign_public_evidence_approval as signer
+
+@pytest.fixture
+def grant(tmp_path, monkeypatch):
+    for key in ('DAVAI_ENV','APP_ENV','ENVIRONMENT','PYTHON_ENV','RENDER','DAV_AI_PHARMA_RELEASE_DB','DAV_AI_PHARMA_ARTIFACT_ROOT'):
+        monkeypatch.delenv(key,raising=False)
+    key=Ed25519PrivateKey.generate()
+    keypath=tmp_path/'synthetic.pem'
+    keypath.write_bytes(key.private_bytes(serialization.Encoding.PEM,serialization.PrivateFormat.PKCS8,serialization.NoEncryption()))
+    keypath.chmod(0o600)
+    review=tmp_path/'review.txt';review.write_text('Synthetic test-only operator decision')
+    auth.application_digest.cache_clear()
+    result=signer.issue(keypath,review,auth.application_digest(),'srv-test','test-approval',tmp_path/'files',1)
+    monkeypatch.setattr(auth,'POLICY_FILE',tmp_path/'files/dav-ai-public-policy.json')
+    monkeypatch.setattr(auth,'GRANT_FILE',tmp_path/'files/dav-ai-public-approval.json')
+    monkeypatch.setenv('DAVAI_ENV','production');monkeypatch.setenv('RENDER','true')
+    monkeypatch.setenv('RENDER_SERVICE_ID','srv-test');monkeypatch.setenv('DAV_AI_PUBLIC_KEY_SHA256',result['signing_key_sha256'])
+    return key
+
+
+def rewrite(grant, **changes):
+    envelope=json.loads(auth.GRANT_FILE.read_bytes())
+    claims=json.loads(base64.b64decode(envelope['payload_base64']))
+    claims.update(changes)
+    raw=json.dumps(claims).encode()
+    auth.GRANT_FILE.write_text(json.dumps({'payload_base64':base64.b64encode(raw).decode(),
+                                          'signature_base64':base64.b64encode(grant.sign(raw)).decode()}))
+
+
+def test_signed_operator_grant_accepts_only_current_scope(grant):
+    assert auth.require_production_authorization().approval_id=='test-approval'
+    assert all(operation.startswith('GET ') for operation in auth.READ_OPERATIONS)
+    assert 'POST /api/v1/reports/pharmaceutical' not in auth.READ_OPERATIONS
+
+@pytest.mark.parametrize('change',[
+ {'database_sha256':'f'*64},{'application_sha256':'0'*64},{'review_bundle_sha256':'1'*64},
+ {'deployment_id':'srv-other'},{'audience':'private'},{'purpose':'private-staging'},
+ {'operations':list(auth.READ_OPERATIONS)+['POST /api/local/research/sessions']},
+ {'operations':list(auth.READ_OPERATIONS)+['POST /api/v1/reports/pharmaceutical']},
+ {'expires_at':'2020-01-01T00:00:00Z'},
+ {'expires_at':(datetime.now(timezone.utc)+timedelta(days=2)).isoformat()},
+])
+def test_even_authentically_signed_wrong_grant_denies(grant,change):
+    rewrite(grant,**change)
+    with pytest.raises(AuthorizationRejected): auth.require_production_authorization()
+
+@pytest.mark.parametrize('name,value', [('DAV_AI_PUBLIC_KEY_SHA256','0'*64),('RENDER_SERVICE_ID','srv-other'),
+ ('DAVAI_ENV','staging'),('RENDER','false'),('APP_ENV','preview'),('PYTHON_ENV','local')])
+def test_wrong_operator_pin_or_environment_denies(grant,monkeypatch,name,value):
+    monkeypatch.setenv(name,value)
+    with pytest.raises(AuthorizationRejected): auth.require_production_authorization()
+
+
+def test_missing_tampered_unsafe_and_symlink_documents_deny(grant,tmp_path):
+    original=auth.GRANT_FILE.read_bytes()
+    auth.GRANT_FILE.unlink()
+    with pytest.raises(AuthorizationRejected): auth.require_production_authorization()
+    auth.GRANT_FILE.write_bytes(original.replace(b'payload_base64',b'changed_base64'))
+    with pytest.raises(AuthorizationRejected): auth.require_production_authorization()
+    auth.GRANT_FILE.write_bytes(original)
+    auth.GRANT_FILE.chmod(0o666)
+    with pytest.raises(AuthorizationRejected): auth.require_production_authorization()
+    auth.GRANT_FILE.chmod(0o600)
+    target=tmp_path/'saved';target.write_bytes(original)
+    auth.GRANT_FILE.unlink();auth.GRANT_FILE.symlink_to(target)
+    with pytest.raises(AuthorizationRejected): auth.require_production_authorization()
+
+
+def test_forged_signature_denies(grant):
+    envelope=json.loads(auth.GRANT_FILE.read_bytes())
+    envelope['signature_base64']=base64.b64encode(b'x'*64).decode()
+    auth.GRANT_FILE.write_text(json.dumps(envelope))
+    with pytest.raises(AuthorizationRejected): auth.require_production_authorization()
+
+
+def test_real_readonly_connection_uses_gate_and_interrupts_expired_queries(grant,tmp_path,monkeypatch):
+    path=tmp_path/'synthetic.sqlite'
+    with closing(sqlite3.connect(path)) as con:
+        for table in release.REQUIRED_TABLES-{'release_manifest'}: con.execute(f'CREATE TABLE {table}(fixture TEXT)')
+        con.execute('CREATE TABLE release_manifest(release_id,contract_id,policy_version,build_version)')
+        con.execute('INSERT INTO release_manifest VALUES(?,?,?,?)',(auth.RELEASE_ID,'dav-ai-pharma-release-v1','1.0.0','test'))
+        con.execute('PRAGMA user_version=4');con.commit()
+    path.chmod(0o444)
+    sha=hashlib.sha256(path.read_bytes()).hexdigest()
+    monkeypatch.setattr(release,'EXPECTED_SHA256',sha);monkeypatch.setattr(release,'EXPECTED_BYTES',path.stat().st_size)
+    monkeypatch.setenv('DAV_AI_PHARMA_RELEASE_DB',str(path))
+    rewrite(grant,database_sha256=sha)
+    with closing(release.connect_release()) as con:
+        assert con.execute('PRAGMA query_only').fetchone()[0]==1
+        with pytest.raises(sqlite3.OperationalError): con.execute('CREATE TABLE forbidden(x)')
+    token=boundary.QUERY_DEADLINE.set(0)
+    try:
+        # Use a nonzero expired monotonic deadline (0 is the no-request fallback).
+        boundary.QUERY_DEADLINE.set(0.001)
+        with closing(release.connect_release()) as con:
+            with pytest.raises(sqlite3.OperationalError,match='interrupted'):
+                con.execute('WITH RECURSIVE t(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM t WHERE n<1000000) SELECT sum(n) FROM t').fetchone()
+    finally: boundary.QUERY_DEADLINE.reset(token)
+    path.chmod(0o644)
+    with pytest.raises(release.PharmaceuticalReleaseUnavailable): release.connect_release()
+
+
+def run_requests(inner, paths, monkeypatch=None):
+    async def scenario():
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=boundary.PublicEvidenceMiddleware(inner)),base_url='https://demo.test') as client:
+            return [await client.request(method,path) for method,path in paths]
+    return asyncio.run(scenario())
+
+async def data(scope,receive,send):
+    from starlette.responses import JSONResponse
+    await JSONResponse({'source_id':'source:data/pharma_recovery/private.dump','source_url':'https://api.fda.gov/drug/event.json','data':'valid'})(scope,receive,send)
+
+
+def test_public_read_succeeds_and_internal_acquisition_id_is_opaque(grant):
+    response=run_requests(data,[('GET','/api/drugs/search?q=Xanax')])[0]
+    assert response.status_code==200 and response.json()['data']=='valid'
+    assert response.json()['source_id'].startswith('source:') and 'pharma_recovery' not in response.text
+    assert response.headers['cache-control']=='no-store'
+    assert response.json()['source_url']=='https://api.fda.gov/drug/event.json'
+
+@pytest.mark.parametrize('method,path', [('POST','/api/local/research/sessions'),('POST','/api/v1/reports/pharmaceutical'),
+ ('GET','/api/drugs/id/safety/communications'),('GET','/api/drugs/id/safety'),('GET','/api/drugs/id/timeline'),('GET','/docs')])
+def test_unapproved_routes_stay_denied_with_valid_grant(grant,method,path):
+    assert run_requests(data,[(method,path)])[0].status_code==403
+
+@pytest.mark.parametrize('path',['/api/drugs/search?q=x','/api/drugs/search?q=xx&limit=21',
+ '/api/drugs/search?q=xx&offset=1001','/api/drugs/search?q=xx&q=yy'])
+def test_queries_are_bounded(grant,path):
+    assert run_requests(data,[('GET',path)])[0].status_code in {400,422}
+
+
+def test_global_burst_limit_and_live_removal(grant):
+    responses=run_requests(data,[('GET','/api/drugs/search?q=Xanax')]*11)
+    assert [r.status_code for r in responses[:10]]==[200]*10
+    assert responses[10].status_code==429 and responses[10].headers['retry-after']=='5'
+    async def remove(scope,receive,send):
+        auth.GRANT_FILE.unlink()
+        await data(scope,receive,send)
+    response=run_requests(remove,[('GET','/api/drugs/search?q=Xanax')])[0]
+    assert response.status_code==503 and 'valid' not in response.text
+
+
+def test_errors_response_size_and_deadline_are_safe(grant,monkeypatch):
+    async def broken(scope,receive,send): raise RuntimeError('private exception content')
+    response=run_requests(broken,[('GET','/api/drugs/search?q=Xanax')])[0]
+    assert response.status_code==503 and 'private' not in response.text
+    monkeypatch.setattr(boundary,'MAX_RESPONSE_BYTES',10)
+    assert run_requests(data,[('GET','/api/drugs/search?q=Xanax')])[0].status_code==503
+    monkeypatch.setattr(boundary,'MAX_RESPONSE_BYTES',2048)
+    async def late(scope,receive,send):
+        boundary.QUERY_DEADLINE.set(0.001)
+        await data(scope,receive,send)
+    assert run_requests(late,[('GET','/api/drugs/search?q=Xanax')])[0].status_code==503
+
+
+def test_two_reads_and_one_overview_admission_are_nonblocking(grant):
+    async def slow(scope,receive,send):
+        await asyncio.sleep(.03)
+        await data(scope,receive,send)
+    async def scenario(path,count):
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=boundary.PublicEvidenceMiddleware(slow)),base_url='https://demo.test') as client:
+            return [r.status_code for r in await asyncio.gather(*[client.get(path) for _ in range(count)])]
+    assert sorted(asyncio.run(scenario('/api/drugs/search?q=Xanax',3)))==[200,200,429]
+    assert sorted(asyncio.run(scenario('/api/medications/overview?q=Xanax',2)))==[200,429]
+
+
+@pytest.mark.release_artifact
+def test_signed_render_scope_serves_the_pinned_artifact_without_research_or_pdf(grant):
+    from app.main import app
+    app.middleware_stack=None
+    try:
+        with TestClient(app) as client:
+            assert client.get('/ready').status_code==200
+            result=client.get('/api/medications/overview?q=Xanax')
+            assert result.status_code==200
+            value=result.json()
+            assert value['matched_product_count']==9 and value['recalls']['distinct_linked_records']==2
+            assert value['release']['publication_authorized'] is False
+            assert 'pharma_recovery' not in result.text
+            product=value['products'][0]['id']
+            assert client.get(f'/api/drugs/{product}/evidence').status_code==200
+            assert client.get(f'/api/drugs/{product}/safety/labels').status_code==200
+            assert client.post('/api/v1/reports/pharmaceutical',json={}).status_code==403
+            assert client.post('/api/local/research/sessions',json={}).status_code==403
+    finally: app.middleware_stack=None
+
+
+def test_denial_is_private_cors_safe_and_liveness_is_not_permission(grant,monkeypatch):
+    monkeypatch.setenv('ALLOWED_ORIGINS','https://approved.example')
+    auth.GRANT_FILE.unlink()
+    async def scenario():
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=boundary.PublicEvidenceMiddleware(data)),base_url='https://demo.test') as client:
+            response=await client.get('/api/drugs/search?q=Xanax',headers={'Origin':'https://approved.example'})
+            assert response.status_code==503
+            assert response.headers['access-control-allow-origin']=='https://approved.example'
+            assert response.headers['cache-control']=='no-store'
+            assert (await client.get('/health')).status_code==200
+    asyncio.run(scenario())

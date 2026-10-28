@@ -7,6 +7,8 @@ import sqlite3
 from functools import lru_cache
 from pathlib import Path
 from threading import Lock
+import time
+import stat
 
 from app.db.database import is_deployed_environment
 
@@ -72,21 +74,26 @@ def connect_release() -> sqlite3.Connection:
 
     Local development is permitted.
 
-    Deployed environments are denied until a verified
-    artifact activation and publication authorization
-    mechanism has been implemented.
+    Deployed environments require an operator-signed, short-lived demonstration
+    grant in addition to the original pinned artifact and immutable read checks.
     """
 
-    if is_deployed_environment():
-        raise PharmaceuticalReleaseUnavailable(
-            "Pharmaceutical release is not authorized "
-            "for deployed environments"
-        )
+    deployed = is_deployed_environment()
+    if deployed:
+        from app.security.production_authorization import require_production_authorization
+        try:
+            require_production_authorization()
+        except Exception:
+            raise PharmaceuticalReleaseUnavailable("Pharmaceutical release is not authorized for deployed environments") from None
 
     connection = None
 
     try:
         path = release_database_path()
+        if deployed:
+            mode = path.lstat().st_mode
+            if not stat.S_ISREG(mode) or mode & 0o222:
+                raise PharmaceuticalReleaseUnavailable("Production artifact must be an immutable regular file")
         signature = artifact_signature(path)
         if signature[2] != EXPECTED_BYTES:
             raise PharmaceuticalReleaseUnavailable("Unexpected pharmaceutical artifact size")
@@ -104,9 +111,17 @@ def connect_release() -> sqlite3.Connection:
         connection.execute("PRAGMA query_only = ON")
         connection.execute("PRAGMA foreign_keys = ON")
 
+        if deployed:
+            from app.services.public_evidence import QUERY_DEADLINE
+            deadline = min(QUERY_DEADLINE.get() or time.monotonic() + 10, time.monotonic() + 8)
+            connection.set_progress_handler(lambda: int(time.monotonic() >= deadline), 1000)
+
         _validate_release(connection)
         if artifact_signature(path) != signature:
             raise PharmaceuticalReleaseUnavailable("Pharmaceutical artifact replaced while opening")
+
+        if deployed:
+            require_production_authorization()
 
         return connection
 

@@ -19,7 +19,7 @@ def test_source_only_context_imports_all_public_routes_but_never_research(tmp_pa
         shutil.copyfile(source, destination)
     assert not (tmp_path / 'app/local_research').exists()
     assert not (tmp_path / 'app/agent').exists()
-    assert not (tmp_path / 'app/security').exists()
+    assert (tmp_path / 'app/security/production_authorization.py').exists()
     code = '''
 import sys, json
 sys.path.insert(0, sys.argv[1])
@@ -37,3 +37,12 @@ print(json.dumps({'routes': len(paths), 'public_context_import': 'passed'}))
                             capture_output=True, text=True, timeout=30)
     assert result.returncode == 0, result.stderr
     assert json.loads(result.stdout)['public_context_import'] == 'passed'
+
+
+def test_every_unignored_directory_reexcludes_children_before_file_allowlist():
+    # Docker !directory/ also unignores descendants. Explicitly re-deny children
+    # before the exact file exceptions, so research/backups cannot enter COPY.
+    lines=(ROOT/'.dockerignore').read_text().splitlines()
+    for index,line in enumerate(lines):
+        if line.startswith('!') and line.endswith('/'):
+            assert lines[index+1]==line[1:]+'*'

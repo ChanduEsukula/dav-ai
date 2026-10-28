@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from app.services.report_limits import ReportPrivacyMiddleware
+from app.services.public_evidence import PublicEvidenceMiddleware
 
 from app.db.database import is_deployed_environment
 from app.db.pharma.release_connection import (
@@ -41,7 +42,7 @@ def get_allowed_origins() -> list[str]:
 class PharmaceuticalAPI(FastAPI):
     def build_middleware_stack(self):
         # Wrap ServerErrorMiddleware too: even unexpected 500s must be private.
-        return ReportPrivacyMiddleware(super().build_middleware_stack())
+        return PublicEvidenceMiddleware(ReportPrivacyMiddleware(super().build_middleware_stack()))
 
 
 @asynccontextmanager
@@ -52,6 +53,12 @@ async def application_lifespan(application):
         try:
             connection = connect_release()
             connection.close()
+            if is_deployed_environment():
+                from app.security.production_authorization import require_production_authorization
+                grant = require_production_authorization()
+                logging.getLogger("uvicorn.error").info(
+                    "public_evidence_authorization_verified approval_sha256=%s", grant.payload_sha256
+                )
         except Exception:
             logger.error("pharmaceutical_startup_refused")
             raise RuntimeError("Pharmaceutical startup refused: artifact unavailable or serving unauthorized") from None

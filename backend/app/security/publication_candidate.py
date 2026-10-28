@@ -1,8 +1,8 @@
-"""Offline PUBLIC approval candidate validation. NEVER imported by the serving API.
+"""Signed PUBLIC approval validation and the original offline candidate policy.
 
-A positive result is not a serving capability. Policy and rollback-resistant
-state must be independently provisioned; there is no environment/file loader,
-activation endpoint, live trust root or exception to deployed-mode denial here.
+The offline candidate retains its independently witnessed state requirement.
+The shared signature verifier also supports the explicitly operator-managed,
+short-lived demonstration grant; its runtime gate is in production_authorization.
 """
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -10,7 +10,9 @@ import hashlib
 import re
 
 from cryptography.exceptions import InvalidSignature
-from app.security.trusted_state import TrustPolicy, StateStore, _read, _record
+from app.security.trusted_state import TrustPolicy, StateStore, LifecycleKey, _read, _record
+from collections.abc import Mapping
+from types import MappingProxyType
 from app.security.validation import AuthorizationRejected, check_signature_input, parse_document, parse_timestamp, utc_time
 
 PURPOSE = 'dav-ai-public-evidence-v1'
@@ -58,6 +60,50 @@ def validate_publication_candidate(*, payload: bytes, signature: bytes,
             or frozenset(record['revoked_approval_ids']) != checkpoint.revoked_approval_ids
             or frozenset(record['revoked_signing_key_ids']) != checkpoint.revoked_signing_key_ids):
         raise AuthorizationRejected('Trusted state inconsistent')
+    claims = validate_signed_publication_claims(payload=payload, signature=signature, policy=policy, now=current)
+    if (claims['approval_id'] in checkpoint.revoked_approval_ids
+            or claims['key_id'] in checkpoint.revoked_signing_key_ids):
+        raise AuthorizationRejected('Public approval or signer revoked')
+    if _read(store, trust) != checkpoint:
+        raise AuthorizationRejected('Trusted state changed during public decision')
+    return {'approval_id': claims['approval_id'], 'approval_payload_sha256': hashlib.sha256(payload).hexdigest(),
+            'review_bundle_sha256': policy.review_bundle_sha256,
+            'candidate_verified': True, 'publication_authorized': False}
+
+
+@dataclass(frozen=True)
+class PublicSignaturePolicy:
+    """Operator-provisioned signature policy for the narrow expiring demo grant."""
+    release_id: str
+    database_sha256: str
+    deployment_id: str
+    application_sha256: str
+    review_bundle_sha256: str
+    approval_keys: Mapping[str, LifecycleKey]
+
+    def __post_init__(self):
+        if any(type(value) is not str or not re.fullmatch('[0-9a-f]{64}', value)
+               for value in (self.database_sha256, self.application_sha256, self.review_bundle_sha256)):
+            raise ValueError('Exact grant digests required')
+        if any(type(value) is not str or not value.strip() for value in (self.release_id, self.deployment_id)):
+            raise ValueError('Exact grant identity required')
+        keys = dict(self.approval_keys)
+        if not keys or any(type(k) is not str or not k or not isinstance(v, LifecycleKey) for k,v in keys.items()):
+            raise ValueError('Explicit operator signing keys required')
+        object.__setattr__(self, 'approval_keys', MappingProxyType(keys))
+
+
+def validate_signed_publication_claims(*, payload: bytes, signature: bytes, policy: PublicCandidatePolicy | PublicSignaturePolicy,
+                                       now: datetime, operations=OPERATIONS) -> dict:
+    """Shared signature/scope verifier; caller supplies the independently provisioned policy.
+
+    The offline candidate additionally requires its original witnessed revocation state.
+    The minimal operator-managed deployment uses an expiring signed grant instead.
+    """
+    if not isinstance(policy, (PublicCandidatePolicy, PublicSignaturePolicy)):
+        raise AuthorizationRejected("Trusted signature policy required")
+    current = utc_time(now)
+    trust = policy.trust if isinstance(policy, PublicCandidatePolicy) else policy
     claims = parse_document(payload, limit=8192, label='public approval', duplicate='Duplicate public approval field')
     if set(claims) != FIELDS:
         raise AuthorizationRejected('Unexpected public approval claims')
@@ -78,17 +124,10 @@ def validate_publication_candidate(*, payload: bytes, signature: bytes,
                 'environment': 'production', 'audience': 'public'}
     if any(claims[field] != value for field, value in expected.items()):
         raise AuthorizationRejected('Public approval scope mismatch')
-    if claims['operations'] != list(OPERATIONS):
+    if claims['operations'] != list(operations):
         raise AuthorizationRejected('Unapproved public operation scope')
     issued, expires = parse_timestamp(claims['issued_at']), parse_timestamp(claims['expires_at'])
     if not issued <= current < expires or expires <= issued or expires - issued > timedelta(hours=24):
         raise AuthorizationRejected('Invalid public approval validity window')
     key.check(issued, expires, current)
-    if (claims['approval_id'] in checkpoint.revoked_approval_ids
-            or claims['key_id'] in checkpoint.revoked_signing_key_ids):
-        raise AuthorizationRejected('Public approval or signer revoked')
-    if _read(store, trust) != checkpoint:
-        raise AuthorizationRejected('Trusted state changed during public decision')
-    return {'approval_id': claims['approval_id'], 'approval_payload_sha256': hashlib.sha256(payload).hexdigest(),
-            'review_bundle_sha256': policy.review_bundle_sha256,
-            'candidate_verified': True, 'publication_authorized': False}
+    return claims
