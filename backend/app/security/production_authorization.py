@@ -23,6 +23,7 @@ from app.security.validation import AuthorizationRejected, parse_document, parse
 
 POLICY_FILE = Path('/etc/secrets/dav-ai-public-policy.json')
 GRANT_FILE = Path('/etc/secrets/dav-ai-public-approval.json')
+RENDER_SECRET_ROOT = Path('/etc/secrets')
 RELEASE_ID = 'dav-ai-pharma-v1-phase4b-communications-20261006'
 # Deliberately no PDF, communications, timeline, aggregate safety or research authority.
 READ_OPERATIONS = (
@@ -49,10 +50,12 @@ def operator_document(path):
     followed. Each real directory/file is opened relative to a pinned directory
     descriptor with NOFOLLOW; links, canonical paths and identities must remain
     unchanged through the bounded read. Symlink mode bits are not file access
-    permissions; real files/directories must not be group/world writable.
+    permissions. Only Render's root-owned sticky parent may be writable: all
+    protected entries must then be root-owned, so non-root callers cannot rename
+    them. Generation directories and files must remain non-group/world-writable.
     """
     path = Path(path)
-    identity = lambda x: (x.st_dev,x.st_ino,x.st_mode,x.st_size,x.st_mtime_ns,x.st_ctime_ns)
+    identity = lambda x: (x.st_dev,x.st_ino,x.st_mode,x.st_uid,x.st_gid,x.st_size,x.st_mtime_ns,x.st_ctime_ns)
     directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_NONBLOCK
     file_flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK
     try:
@@ -60,7 +63,10 @@ def operator_document(path):
             raise AuthorizationRejected('Invalid operator document path')
         root = path.parent
         root_before = root.lstat()
-        if not stat.S_ISDIR(root_before.st_mode) or root_before.st_mode & 0o022:
+        sticky_root = (root == RENDER_SECRET_ROOT and root_before.st_uid == 0
+                       and bool(root_before.st_mode & stat.S_ISVTX)
+                       and path.name in {'dav-ai-public-policy.json','dav-ai-public-approval.json'})
+        if not stat.S_ISDIR(root_before.st_mode) or (root_before.st_mode & 0o022 and not sticky_root):
             raise AuthorizationRejected('Unsafe operator directory')
         canonical_root = root.resolve(strict=True)
         with ExitStack() as stack:
@@ -68,7 +74,10 @@ def operator_document(path):
                 fd = os.open(name,directory_flags,dir_fd=parent)
                 stack.callback(os.close,fd)
                 info = os.fstat(fd)
-                if not stat.S_ISDIR(info.st_mode) or info.st_mode & 0o022:
+                is_sticky_parent = parent is None and sticky_root and info.st_uid == 0 and info.st_mode & stat.S_ISVTX
+                if (not stat.S_ISDIR(info.st_mode)
+                        or (info.st_mode & 0o022 and not is_sticky_parent)
+                        or (sticky_root and info.st_uid != 0)):
                     raise AuthorizationRejected('Unsafe operator directory')
                 return fd, info
 
@@ -78,6 +87,8 @@ def operator_document(path):
             directories = [(root_fd,canonical_root,opened_root)]
             links = []
             leaf = os.stat(path.name,dir_fd=root_fd,follow_symlinks=False)
+            if sticky_root and leaf.st_uid != 0:
+                raise AuthorizationRejected('Untrusted operator entry owner')
             parent_fd, canonical_parent = root_fd, canonical_root
             if stat.S_ISLNK(leaf.st_mode):
                 if path.name not in {'dav-ai-public-policy.json','dav-ai-public-approval.json'}:
@@ -87,6 +98,8 @@ def operator_document(path):
                     raise AuthorizationRejected('Unexpected operator symlink target')
                 links.append((path.name,leaf,target))
                 data_info = os.stat('..data',dir_fd=root_fd,follow_symlinks=False)
+                if sticky_root and data_info.st_uid != 0:
+                    raise AuthorizationRejected('Untrusted operator generation owner')
                 generation = '..data'
                 if stat.S_ISLNK(data_info.st_mode):
                     generation = os.readlink('..data',dir_fd=root_fd)
@@ -100,7 +113,8 @@ def operator_document(path):
                 directories.append((parent_fd,canonical_parent,opened_parent))
 
             before = os.stat(path.name,dir_fd=parent_fd,follow_symlinks=False)
-            if not stat.S_ISREG(before.st_mode) or before.st_mode & 0o022:
+            if (not stat.S_ISREG(before.st_mode) or before.st_mode & 0o022
+                    or (sticky_root and before.st_uid != 0)):
                 raise AuthorizationRejected('Unsafe operator document')
             fd = os.open(path.name,file_flags,dir_fd=parent_fd)
             stream = stack.enter_context(os.fdopen(fd,'rb'))
