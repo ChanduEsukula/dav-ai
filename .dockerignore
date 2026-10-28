@@ -20,11 +20,13 @@
 !backend/app/routes/drugs.py
 !backend/app/routes/drug_safety.py
 !backend/app/routes/evidence.py
+!backend/app/routes/medications.py
 !backend/app/routes/reports.py
 !backend/app/schemas/
 !backend/app/schemas/__init__.py
 !backend/app/schemas/drugs.py
 !backend/app/schemas/reports.py
+!backend/app/schemas/medication_overview.py
 !backend/app/services/
 !backend/app/services/__init__.py
 !backend/app/services/report_pdf.py
@@ -32,6 +34,7 @@
 !backend/app/services/pharma/
 !backend/app/services/pharma/__init__.py
 !backend/app/services/pharma/evidence.py
+!backend/app/services/pharma/medication_overview.py
 **/__pycache__
 **/*.pyc
 **/.env*
