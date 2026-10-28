@@ -361,3 +361,85 @@ def test_render_layout_does_not_weaken_existing_authorization(grant,monkeypatch,
     elif failure=='key_pin': monkeypatch.setenv('DAV_AI_PUBLIC_KEY_SHA256','0'*64)
     else: monkeypatch.setenv('DAVAI_ENV','staging')
     with pytest.raises(AuthorizationRejected): auth.require_production_authorization()
+
+
+@pytest.fixture
+def annual_grant(grant,tmp_path,monkeypatch):
+    """Use only the existing synthetic fixture key; never an operator approval."""
+    output=tmp_path/'annual-files'
+    receipt=signer.issue(tmp_path/'synthetic.pem',tmp_path/'review.txt',auth.application_digest(),
+                         'srv-test','test-annual-approval',output,8760)
+    monkeypatch.setattr(auth,'POLICY_FILE',output/'dav-ai-public-policy.json')
+    monkeypatch.setattr(auth,'GRANT_FILE',output/'dav-ai-public-approval.json')
+    return grant,receipt
+
+
+def annual_window():
+    envelope=json.loads(auth.GRANT_FILE.read_bytes())
+    claims=json.loads(base64.b64decode(envelope['payload_base64']))
+    return datetime.fromisoformat(claims['issued_at']),datetime.fromisoformat(claims['expires_at'])
+
+
+def test_365_day_grant_and_policy_cover_the_entire_year(annual_grant):
+    issued,expires=annual_window()
+    policy=json.loads(auth.POLICY_FILE.read_bytes())
+    assert expires-issued==timedelta(days=365)
+    assert datetime.fromisoformat(policy['not_before'])==issued
+    assert datetime.fromisoformat(policy['not_after'])==expires
+    assert annual_grant[1]['expires_at']==policy['not_after']
+    for now in (issued,issued+timedelta(days=180),expires-timedelta(microseconds=1)):
+        assert auth.require_production_authorization(now=now).approval_id=='test-annual-approval'
+
+
+@pytest.mark.parametrize('hours',[0,8761])
+def test_signer_rejects_out_of_range_lifetime_before_reading_key(tmp_path,hours):
+    with pytest.raises(ValueError,match='1–8760'):
+        signer.issue(tmp_path/'no-key',tmp_path/'no-review','a'*64,'srv-test','test',tmp_path/'unused',hours)
+    assert not (tmp_path/'unused').exists()
+
+
+def test_authentically_signed_over_year_grant_denies_even_with_longer_key_window(annual_grant):
+    key,_=annual_grant
+    issued,_=annual_window()
+    policy=json.loads(auth.POLICY_FILE.read_bytes())
+    policy['not_after']=(issued+timedelta(days=366)).isoformat()
+    auth.POLICY_FILE.write_text(json.dumps(policy))
+    rewrite(key,expires_at=(issued+timedelta(days=365,seconds=1)).isoformat())
+    with pytest.raises(AuthorizationRejected) as error:
+        auth.require_production_authorization(now=issued)
+    assert 'validity window' in str(error.value.__cause__)
+
+
+@pytest.mark.parametrize('offset',[timedelta(0),timedelta(seconds=1)])
+def test_annual_approval_denies_at_and_after_expiry(annual_grant,offset):
+    _,expires=annual_window()
+    with pytest.raises(AuthorizationRejected):auth.require_production_authorization(now=expires+offset)
+
+
+@pytest.mark.parametrize('field',['not_before','not_after'])
+def test_annual_approval_must_fit_inside_signing_key_window(annual_grant,field):
+    issued,expires=annual_window()
+    policy=json.loads(auth.POLICY_FILE.read_bytes())
+    policy[field]=(issued+timedelta(seconds=1) if field=='not_before' else expires-timedelta(seconds=1)).isoformat()
+    auth.POLICY_FILE.write_text(json.dumps(policy))
+    with pytest.raises(AuthorizationRejected) as error:
+        auth.require_production_authorization(now=issued+timedelta(days=180))
+    assert 'signing key validity interval' in str(error.value.__cause__)
+
+
+@pytest.mark.parametrize('failure',['signature','service'])
+def test_annual_grant_preserves_signature_and_deployment_binding(annual_grant,monkeypatch,failure):
+    if failure=='signature':
+        envelope=json.loads(auth.GRANT_FILE.read_bytes())
+        envelope['signature_base64']=base64.b64encode(b'x'*64).decode()
+        auth.GRANT_FILE.write_text(json.dumps(envelope))
+    else:monkeypatch.setenv('RENDER_SERVICE_ID','srv-other')
+    issued,_=annual_window()
+    with pytest.raises(AuthorizationRejected):auth.require_production_authorization(now=issued)
+
+
+@pytest.mark.parametrize('generation_link',[False,True])
+def test_annual_grant_preserves_render_projected_files(annual_grant,generation_link):
+    issued,expires=annual_window()
+    render_secret_layout(auth.POLICY_FILE.parent,generation_link=generation_link)
+    assert auth.require_production_authorization(now=expires-timedelta(seconds=1)).approval_id=='test-annual-approval'

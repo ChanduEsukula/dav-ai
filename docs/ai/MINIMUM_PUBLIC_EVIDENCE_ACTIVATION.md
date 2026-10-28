@@ -40,7 +40,7 @@ Source URLs, dates, applicability, counts and warnings remain intact. Only publi
 
 This intentionally implements the requested **minimum operator-managed demonstration model**, rather than deploying the earlier external-witness architecture. Its trust root is the operator-controlled Render environment/Secret Files plus an independently verified public-key fingerprint. An environment boolean, a manifest flag, a request header or a signed grant from an unpinned key cannot activate it. The offline signing key never enters Git, Vite or Render.
 
-A valid signature must bind the exact pinned artifact/release, running image's Python-source digest, operator review-bundle digest, exact Render service ID, public production audience, fixed read scope and a lifetime of at most 24 hours. Startup and every connection/request validate it; responses are withheld if approval changes/expires during processing. Preview/staging/conflicting environment markers remain denied.
+A valid signature must bind the exact pinned artifact/release, running image's Python-source digest, operator review-bundle digest, exact Render service ID, public production audience, fixed read scope and a lifetime of at most 365 days (8760 hours). Startup and every connection/request validate it; responses are withheld if approval changes/expires during processing. Preview/staging/conflicting environment markers remain denied.
 
 The earlier offline candidate validator still requires its original independently witnessed revocation state. It has not been silently weakened or turned into a runtime bypass. This new demo gate instead uses expiration and operator revocation through Maintenance Mode plus grant/pin removal and restart. It does **not** claim independently witnessed anti-rollback, continuous external revocation or protection from a compromised Render operator account. An unexpired grant can be restored by that trusted operator; expiry remains enforced. Renewing grants is an explicit operator action, not an automatic self-approval loop.
 
@@ -70,7 +70,7 @@ Record the resulting 64-character application digest. Use the digest from the **
 
 ### 2. Sign offline, outside the repository
 
-Use an existing operator-owned Ed25519 PEM private key (mode 0600). If a new operator key is needed, create it in a protected directory outside the repository with `umask 077` and `openssl genpkey -algorithm ED25519 -out operator.pem`; never paste its contents into the repository, service environment or dashboard.
+Use the existing operator-owned Ed25519 PEM private key (mode 0600), kept outside the repository. Do not generate another operator key or paste its contents into the repository, service environment or dashboard.
 
 Create a short approval record outside the repository documenting the noncommercial academic demonstration, pinned artifact hash, approved read-only scope and intended Render service. This is the review-bundle file below. Then, from the repo root, fill the operator-owned absolute paths and the real Render service ID:
 
@@ -79,13 +79,13 @@ PYTHONPATH=backend .venv/bin/python scripts/sign_public_evidence_approval.py \
   --private-key /SECURE_OPERATOR_DIRECTORY/operator.pem \
   --review-bundle /SECURE_OPERATOR_DIRECTORY/approval-record.txt \
   --application-sha256 APPLICATION_DIGEST_FROM_STEP_1 \
-  --render-service-id ACTUAL_RENDER_SERVICE_ID \
+  --render-service-id srv-d7se2h1j2pic73f02nn0 \
   --approval-id dav-ai-academic-demo-APPROVAL_IDENTIFIER \
-  --hours 24 \
+  --hours 8760 \
   --output /SECURE_OPERATOR_DIRECTORY/NEW_APPROVAL_OUTPUT_DIRECTORY
 ```
 
-The output directory must not exist. The signer returns the public `signing_key_sha256`, approval payload digest and expiry; preserve these receipts and the signed files privately as the operator's approval evidence. No private-key material is printed or copied into the output. Choose `--hours 1` through `24`; no longer lifetime is accepted.
+The output directory must not exist. The signer returns the public `signing_key_sha256`, approval payload digest and expiry; preserve these receipts and the signed files privately as the operator's approval evidence. No private-key material is printed or copied into the output. Choose `--hours 1` through `8760` (default `8760`); no longer lifetime is accepted. This is exactly 365 elapsed days, not a calendar-year calculation. The signer sets the policy signing-key window (`not_before`/`not_after`) and signed grant window (`issued_at`/`expires_at`) to the same interval, so neither expires early. The validator still requires the complete grant interval to fit inside the key window.
 
 ### 3. Provision only these Render values
 
@@ -130,7 +130,7 @@ Expected: 200, 200, 200, **403**, **403**. Verify selected-product `/evidence` a
 
 ### 5. Renewal and rollback
 
-- Grants expire after at most 24 hours. Renewal: sign a new grant/policy into a new output directory for the **same approved image digest and actual service ID**, using the existing offline key; replace the two Secret Files through an explicitly approved controlled deploy. Keep a receipt for the new approval. If renewal is missed, business reads/readiness fail closed; health is only liveness, and a subsequent restart refuses startup.
+- Grants expire after at most 365 days (8760 hours). Renewal: sign a new grant/policy into a new output directory for the **same approved image digest and actual service ID**, using the existing offline key and `--hours 8760`; replace the two Secret Files through an explicitly approved controlled deploy. Keep a receipt for the new approval. If renewal is missed, business reads/readiness fail closed; health is only liveness, and a subsequent restart refuses startup.
 - Immediate rollback/revocation: enable/retain Maintenance Mode first. Remove the grant Secret File or the `DAV_AI_PUBLIC_KEY_SHA256` pin and restart/redeploy through the approved operator process. Verify business access/readiness is 503. Secret-file edits are not assumed to hot-reload in Render; Maintenance Mode is the immediate public cutoff.
 - Never set Render to local, flip the false artifact metadata, disable the gate or repair the SQLite file to recover service.
 - A code rollback changes the application digest. Either remain closed or explicitly reapprove/sign the intended previous image. Old grants cannot authorize different code. An unexpired grant for the identical code/service remains valid under this operator-managed model; do not restore one unintentionally.
@@ -221,3 +221,54 @@ Deployment procedure (operator only, after separate approval):
    verification fails, retain maintenance and use the existing rollback/revocation
    procedure above; restoring `2176032` also requires its matching unexpired
    approval or fresh explicit signing for that exact digest.
+
+
+## One-year public approval update
+
+The public signer and public signature validator share a maximum lifetime of
+`8760` hours (365 days); the signer defaults to that lifetime. Private staging
+approvals and witnessed revocation-checkpoint lifetimes retain their existing
+limits. Existing shorter public approvals remain valid only until their original
+expiry and only for their original application digest; this change cannot extend
+an existing signature. No real approval is signed by implementing or testing it.
+
+Operator deployment order for this update:
+
+1. Review the exact runtime change and obtain explicit commit/push/deployment
+   authorization. Retain/enable Maintenance Mode and keep Auto-Deploy off for
+   the coordinated code-and-approval replacement. Do not alter the SQLite
+   artifact, eight-second query deadline, read scope or rate limits.
+2. Build and fingerprint the final source-only image with step 1 above. This
+   validator change alters the application digest; record the new digest before
+   signing and do not edit runtime source afterward.
+3. Update the offline approval record to explicitly approve the 365-day
+   noncommercial demonstration. Run step 2's signing command with `--hours 8760`,
+   the existing private key, new image digest, exact service ID and a new approval
+   ID/output directory. This writes both the matching public policy and signed
+   approval; it does not activate anything. Record the receipt and absolute UTC
+   expiry. Never upload the private key.
+4. Through an explicitly approved controlled deployment, deploy that exact source
+   and replace **both** Render Secret Files. The existing key fingerprint remains
+   unchanged when reusing the same key; verify it against the signer receipt.
+   Preserve existing production settings, database path and Render-provided
+   service identity. Secret-file saves may trigger deployment; coordinate the
+   replacement while maintenance remains enabled. A mismatched image/grant
+   refuses startup until the matching pair is installed.
+5. Verify the startup authorization receipt and run all internal HTTP checks in
+   step 4 above: readiness/search/overview 200, research/PDF POSTs 403. Confirm
+   the recorded policy `not_after` and signed approval `expires_at` match and
+   cover 365 days from issuance without printing/uploading private material.
+   Disabling Maintenance Mode requires a separate explicit approval.
+6. Schedule operator renewal before the recorded expiry (for example, 30 days
+   beforehand). Re-review scope, artifact, service and current image digest; sign
+   into a fresh output directory with the existing key and replace both public
+   files through an approved controlled deployment. Renewal is never automatic.
+   Any backend source change during the year also requires fresh approval for
+   its exact digest. At expiry, requests and startup still fail closed.
+7. For revocation or failed verification, retain/enable Maintenance Mode first;
+   remove the grant or public-key pin and restart/redeploy as described above.
+   For a code rollback, restore only a reviewed image and matching explicitly
+   approved policy/grant, or remain closed. A still-unexpired older grant remains
+   usable for its identical approved code/service under this operator-managed
+   model; prevent accidental restoration when revoking it. Never change artifact
+   metadata, time checks or environment mode to recover availability.

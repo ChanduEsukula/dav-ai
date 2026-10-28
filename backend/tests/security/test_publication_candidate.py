@@ -58,7 +58,7 @@ def test_authentic_review_candidate_is_not_public_serving_authorization(case):
     ('release_id','foreign'),('database_sha256','d'*64),('deployment_id','cloned'),
     ('application_sha256','e'*64),('review_bundle_sha256','f'*64),('key_id','self-signed'),
     ('operations',list(OPERATIONS)+['POST /api/local/research/sessions']),('operations',list(OPERATIONS[:-1])),
-    ('expires_at',(NOW+timedelta(days=2)).isoformat()),('issued_at',(NOW+timedelta(seconds=1)).isoformat())])
+    ('expires_at',(NOW+timedelta(days=366)).isoformat()),('issued_at',(NOW+timedelta(seconds=1)).isoformat())])
 def test_even_signed_wrong_scope_or_excess_authority_denies(case, field, value):
     with pytest.raises(AuthorizationRejected):
         decide(case, claims={**case[4],field:value})

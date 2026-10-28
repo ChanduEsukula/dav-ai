@@ -2,7 +2,7 @@
 
 The offline candidate retains its independently witnessed state requirement.
 The shared signature verifier also supports the explicitly operator-managed,
-short-lived demonstration grant; its runtime gate is in production_authorization.
+expiring demonstration grant; its runtime gate is in production_authorization.
 """
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -14,6 +14,8 @@ from app.security.trusted_state import TrustPolicy, StateStore, LifecycleKey, _r
 from collections.abc import Mapping
 from types import MappingProxyType
 from app.security.validation import AuthorizationRejected, check_signature_input, parse_document, parse_timestamp, utc_time
+
+MAX_PUBLIC_APPROVAL_HOURS = 365 * 24
 
 PURPOSE = 'dav-ai-public-evidence-v1'
 OPERATIONS = (
@@ -127,7 +129,7 @@ def validate_signed_publication_claims(*, payload: bytes, signature: bytes, poli
     if claims['operations'] != list(operations):
         raise AuthorizationRejected('Unapproved public operation scope')
     issued, expires = parse_timestamp(claims['issued_at']), parse_timestamp(claims['expires_at'])
-    if not issued <= current < expires or expires <= issued or expires - issued > timedelta(hours=24):
+    if not issued <= current < expires or expires <= issued or expires - issued > timedelta(hours=MAX_PUBLIC_APPROVAL_HOURS):
         raise AuthorizationRejected('Invalid public approval validity window')
     key.check(issued, expires, current)
     return claims

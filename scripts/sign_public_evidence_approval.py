@@ -17,11 +17,12 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from app.security.production_authorization import READ_OPERATIONS, RELEASE_ID
 from app.db.pharma.release_connection import EXPECTED_SHA256
-from app.security.publication_candidate import PURPOSE
+from app.security.publication_candidate import PURPOSE, MAX_PUBLIC_APPROVAL_HOURS
 
 
-def issue(private_key_path, review_path, application_sha256, deployment_id, approval_id, output, hours=24):
-    if not 1<=hours<=24: raise ValueError('Grant lifetime must be 1–24 hours')
+def issue(private_key_path, review_path, application_sha256, deployment_id, approval_id, output, hours=MAX_PUBLIC_APPROVAL_HOURS):
+    if not 1<=hours<=MAX_PUBLIC_APPROVAL_HOURS:
+        raise ValueError(f'Grant lifetime must be 1–{MAX_PUBLIC_APPROVAL_HOURS} hours')
     if len(application_sha256)!=64 or any(c not in '0123456789abcdef' for c in application_sha256):
         raise ValueError('Use the digest from the exact built runtime image')
     if not deployment_id or not approval_id: raise ValueError('Explicit service and approval identity required')
@@ -58,7 +59,8 @@ if __name__=='__main__':
     parser.add_argument('--render-service-id',required=True)
     parser.add_argument('--approval-id',required=True)
     parser.add_argument('--output',required=True)
-    parser.add_argument('--hours',type=int,default=24)
+    parser.add_argument('--hours',type=int,default=MAX_PUBLIC_APPROVAL_HOURS,
+                        help=f'Approval and signing-policy lifetime: 1–{MAX_PUBLIC_APPROVAL_HOURS} hours (default: %(default)s)')
     args=parser.parse_args()
     print(json.dumps(issue(args.private_key,args.review_bundle,args.application_sha256,
         args.render_service_id,args.approval_id,args.output,args.hours),indent=2))
