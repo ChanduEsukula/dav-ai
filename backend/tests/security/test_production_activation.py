@@ -215,3 +215,149 @@ def test_denial_is_private_cors_safe_and_liveness_is_not_permission(grant,monkey
             assert response.headers['cache-control']=='no-store'
             assert (await client.get('/health')).status_code==200
     asyncio.run(scenario())
+
+
+def render_secret_layout(root, *, generation_link=True):
+    """Render/Kubernetes projected-volume layout; no real secret files are used."""
+    directory=root/'..2026_10_28_01_02_03.123456789' if generation_link else root/'..data'
+    directory.mkdir(mode=0o755)
+    for filename in ('dav-ai-public-policy.json','dav-ai-public-approval.json'):
+        (root/filename).rename(directory/filename)
+        (root/filename).symlink_to('..data/'+filename)
+    if generation_link: (root/'..data').symlink_to(directory.name)
+    return directory
+
+
+@pytest.mark.parametrize('generation_link',[False,True])
+def test_render_projected_secret_layout_preserves_signed_authorization(grant,generation_link):
+    render_secret_layout(auth.POLICY_FILE.parent,generation_link=generation_link)
+    assert auth.require_production_authorization().approval_id=='test-approval'
+
+
+@pytest.mark.parametrize('target',[
+    '/etc/passwd','../outside.json','..data/../dav-ai-public-policy.json',
+    './..data/dav-ai-public-policy.json','..data/dav-ai-public-approval.json',
+    '..other/dav-ai-public-policy.json',
+])
+def test_unexpected_leaf_symlink_targets_fail_closed(grant,target):
+    render_secret_layout(auth.POLICY_FILE.parent)
+    auth.POLICY_FILE.unlink();auth.POLICY_FILE.symlink_to(target)
+    with pytest.raises(AuthorizationRejected): auth.require_production_authorization()
+
+
+@pytest.mark.parametrize('target',['/tmp','../outside','./..generation','..','..data','..generation/nested'])
+def test_unexpected_data_symlink_targets_fail_closed(grant,target):
+    root=auth.POLICY_FILE.parent
+    render_secret_layout(root)
+    (root/'..data').unlink();(root/'..data').symlink_to(target)
+    with pytest.raises(AuthorizationRejected): auth.require_production_authorization()
+
+
+@pytest.mark.parametrize('unsafe',['root','generation','file','generation_symlink','file_symlink','directory','fifo','missing'])
+def test_render_targets_require_safe_regular_files_and_real_directories(grant,tmp_path,unsafe):
+    root=auth.POLICY_FILE.parent
+    generation=render_secret_layout(root)
+    target=generation/auth.POLICY_FILE.name
+    if unsafe=='root': root.chmod(0o777)
+    elif unsafe=='generation': generation.chmod(0o777)
+    elif unsafe=='file': target.chmod(0o666)
+    elif unsafe=='generation_symlink':
+        saved=root/'..saved';generation.rename(saved);generation.symlink_to(saved.name)
+    elif unsafe=='file_symlink':
+        saved=generation/'saved.json';target.rename(saved);target.symlink_to(saved.name)
+    elif unsafe=='directory': target.unlink();target.mkdir()
+    elif unsafe=='fifo':
+        import os
+        target.unlink();os.mkfifo(target)
+    elif unsafe=='missing': target.unlink()
+    with pytest.raises(AuthorizationRejected): auth.require_production_authorization()
+
+
+def test_root_symlink_and_explicit_path_traversal_are_rejected(grant,tmp_path):
+    render_secret_layout(auth.POLICY_FILE.parent)
+    alias=tmp_path/'alias';alias.symlink_to(auth.POLICY_FILE.parent,target_is_directory=True)
+    with pytest.raises(AuthorizationRejected): auth.operator_document(alias/auth.POLICY_FILE.name)
+    with pytest.raises(AuthorizationRejected):
+        auth.operator_document(auth.POLICY_FILE.parent/'..'/'files'/auth.POLICY_FILE.name)
+
+
+@pytest.mark.parametrize('change',['data_link','leaf_link','generation_directory','final_file_before_open'])
+def test_render_target_changes_during_open_are_rejected(grant,monkeypatch,change):
+    import os
+    root=auth.POLICY_FILE.parent
+    generation=render_secret_layout(root)
+    replacement=root/'..replacement'
+    replacement.mkdir()
+    for filename in ('dav-ai-public-policy.json','dav-ai-public-approval.json'):
+        (replacement/filename).write_bytes((generation/filename).read_bytes())
+    actual_open=os.open
+    mutated=[]
+    def racing_open(path,flags,*args,**kwargs):
+        if path==auth.POLICY_FILE.name and kwargs.get('dir_fd') is not None and not mutated:
+            mutated.append(True)
+            if change=='data_link':
+                pending=root/'..pending';pending.symlink_to(replacement.name);os.replace(pending,root/'..data')
+            elif change=='leaf_link':
+                auth.POLICY_FILE.unlink();auth.POLICY_FILE.symlink_to('..data/'+auth.GRANT_FILE.name)
+            elif change=='generation_directory':
+                generation.rename(root/'..old');replacement.rename(generation)
+            else:
+                pending=generation/'replacement.json';pending.write_bytes((generation/path).read_bytes())
+                os.replace(pending,generation/path)
+        return actual_open(path,flags,*args,**kwargs)
+    monkeypatch.setattr(os,'open',racing_open)
+    with pytest.raises(AuthorizationRejected): auth.operator_document(auth.POLICY_FILE)
+    assert mutated
+
+
+@pytest.mark.parametrize('change',['contents','permissions','replace_file','data_link'])
+def test_render_target_changes_during_read_are_rejected(grant,monkeypatch,change):
+    import os
+    from contextlib import contextmanager
+    root=auth.POLICY_FILE.parent
+    generation=render_secret_layout(root)
+    target=generation/auth.POLICY_FILE.name
+    replacement=root/'..replacement';replacement.mkdir()
+    for filename in ('dav-ai-public-policy.json','dav-ai-public-approval.json'):
+        (replacement/filename).write_bytes((generation/filename).read_bytes())
+    actual_fdopen=os.fdopen
+    @contextmanager
+    def racing_fdopen(fd,*args,**kwargs):
+        with actual_fdopen(fd,*args,**kwargs) as stream:
+            class Reader:
+                def fileno(self): return stream.fileno()
+                def read(self,*args):
+                    value=stream.read(*args)
+                    if change=='contents': target.write_bytes(target.read_bytes()+b' ')
+                    elif change=='permissions': target.chmod(0o666)
+                    elif change=='replace_file':
+                        pending=generation/'new.json';pending.write_bytes(target.read_bytes());os.replace(pending,target)
+                    else:
+                        pending=root/'..pending';pending.symlink_to(replacement.name);os.replace(pending,root/'..data')
+                    return value
+            yield Reader()
+    monkeypatch.setattr(os,'fdopen',racing_fdopen)
+    with pytest.raises(AuthorizationRejected): auth.operator_document(auth.POLICY_FILE)
+
+
+def test_render_secret_bytes_retain_parser_bounds(grant):
+    generation=render_secret_layout(auth.POLICY_FILE.parent)
+    target=generation/auth.POLICY_FILE.name
+    for raw in (b'{"duplicate":1,"duplicate":2}', b' '*16385):
+        target.write_bytes(raw)
+        with pytest.raises(AuthorizationRejected): auth.operator_document(auth.POLICY_FILE)
+
+
+@pytest.mark.parametrize('failure',['signature','code_digest','service_id','expiration','key_pin','production_mode'])
+def test_render_layout_does_not_weaken_existing_authorization(grant,monkeypatch,failure):
+    render_secret_layout(auth.POLICY_FILE.parent)
+    if failure=='signature':
+        envelope=json.loads(auth.GRANT_FILE.read_bytes())
+        envelope['signature_base64']=base64.b64encode(b'x'*64).decode()
+        auth.GRANT_FILE.write_text(json.dumps(envelope))
+    elif failure=='code_digest': rewrite(grant,application_sha256='0'*64)
+    elif failure=='service_id': monkeypatch.setenv('RENDER_SERVICE_ID','srv-other')
+    elif failure=='expiration': rewrite(grant,expires_at='2020-01-01T00:00:00Z')
+    elif failure=='key_pin': monkeypatch.setenv('DAV_AI_PUBLIC_KEY_SHA256','0'*64)
+    else: monkeypatch.setenv('DAVAI_ENV','staging')
+    with pytest.raises(AuthorizationRejected): auth.require_production_authorization()

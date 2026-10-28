@@ -5,6 +5,7 @@ fingerprint. The offline private key is never present in the service. Revocation
 is secret-file removal/replacement + maintenance/restart, NOT an external witness.
 """
 import base64
+from contextlib import ExitStack
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from functools import lru_cache
@@ -12,6 +13,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import stat
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
@@ -41,18 +43,87 @@ def application_digest():
 
 
 def operator_document(path):
-    # Fixed secret-file locations, no symlinks, writable-by-other files or unbounded reads.
-    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
-    with os.fdopen(fd,'rb') as stream:
-        before = os.fstat(stream.fileno())
-        if not stat.S_ISREG(before.st_mode) or before.st_mode & 0o022:
-            raise AuthorizationRejected('Unsafe operator document')
-        raw = stream.read(16385)
-        after = os.fstat(stream.fileno())
-        current = path.lstat()
-        identity = lambda x: (x.st_dev,x.st_ino,x.st_mode,x.st_size,x.st_mtime_ns,x.st_ctime_ns)
-        if identity(before) != identity(after) or identity(before) != identity(current):
-            raise AuthorizationRejected('Operator document changed')
+    """Read a fixed document or Render's exact projected Secret File layout.
+
+    Only filename -> ..data/filename and optional ..data -> ..generation are
+    followed. Each real directory/file is opened relative to a pinned directory
+    descriptor with NOFOLLOW; links, canonical paths and identities must remain
+    unchanged through the bounded read. Symlink mode bits are not file access
+    permissions; real files/directories must not be group/world writable.
+    """
+    path = Path(path)
+    identity = lambda x: (x.st_dev,x.st_ino,x.st_mode,x.st_size,x.st_mtime_ns,x.st_ctime_ns)
+    directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_NONBLOCK
+    file_flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK
+    try:
+        if not path.is_absolute() or '..' in path.parts:
+            raise AuthorizationRejected('Invalid operator document path')
+        root = path.parent
+        root_before = root.lstat()
+        if not stat.S_ISDIR(root_before.st_mode) or root_before.st_mode & 0o022:
+            raise AuthorizationRejected('Unsafe operator directory')
+        canonical_root = root.resolve(strict=True)
+        with ExitStack() as stack:
+            def open_directory(name, parent=None):
+                fd = os.open(name,directory_flags,dir_fd=parent)
+                stack.callback(os.close,fd)
+                info = os.fstat(fd)
+                if not stat.S_ISDIR(info.st_mode) or info.st_mode & 0o022:
+                    raise AuthorizationRejected('Unsafe operator directory')
+                return fd, info
+
+            root_fd, opened_root = open_directory(canonical_root)
+            if identity(root_before) != identity(opened_root):
+                raise AuthorizationRejected('Operator directory changed')
+            directories = [(root_fd,canonical_root,opened_root)]
+            links = []
+            leaf = os.stat(path.name,dir_fd=root_fd,follow_symlinks=False)
+            parent_fd, canonical_parent = root_fd, canonical_root
+            if stat.S_ISLNK(leaf.st_mode):
+                if path.name not in {'dav-ai-public-policy.json','dav-ai-public-approval.json'}:
+                    raise AuthorizationRejected('Unexpected operator symlink')
+                target = os.readlink(path.name,dir_fd=root_fd)
+                if target != '..data/'+path.name:
+                    raise AuthorizationRejected('Unexpected operator symlink target')
+                links.append((path.name,leaf,target))
+                data_info = os.stat('..data',dir_fd=root_fd,follow_symlinks=False)
+                generation = '..data'
+                if stat.S_ISLNK(data_info.st_mode):
+                    generation = os.readlink('..data',dir_fd=root_fd)
+                    if not re.fullmatch(r'\.\.[A-Za-z0-9][A-Za-z0-9_.-]{0,252}',generation) or generation == '..data':
+                        raise AuthorizationRejected('Unexpected operator generation target')
+                    links.append(('..data',data_info,generation))
+                elif not stat.S_ISDIR(data_info.st_mode):
+                    raise AuthorizationRejected('Unsafe operator generation')
+                parent_fd, opened_parent = open_directory(generation,root_fd)
+                canonical_parent = canonical_root/generation
+                directories.append((parent_fd,canonical_parent,opened_parent))
+
+            before = os.stat(path.name,dir_fd=parent_fd,follow_symlinks=False)
+            if not stat.S_ISREG(before.st_mode) or before.st_mode & 0o022:
+                raise AuthorizationRejected('Unsafe operator document')
+            fd = os.open(path.name,file_flags,dir_fd=parent_fd)
+            stream = stack.enter_context(os.fdopen(fd,'rb'))
+            if identity(before) != identity(os.fstat(stream.fileno())):
+                raise AuthorizationRejected('Operator document changed while opening')
+            raw = stream.read(16385)
+            if (identity(before) != identity(os.fstat(stream.fileno()))
+                    or identity(before) != identity(os.stat(path.name,dir_fd=parent_fd,follow_symlinks=False))):
+                raise AuthorizationRejected('Operator document changed')
+            for name, info, target in links:
+                if (identity(info) != identity(os.stat(name,dir_fd=root_fd,follow_symlinks=False))
+                        or os.readlink(name,dir_fd=root_fd) != target):
+                    raise AuthorizationRejected('Operator symlink changed')
+            for directory_fd, canonical, info in directories:
+                if (identity(info) != identity(os.fstat(directory_fd))
+                        or identity(info) != identity(canonical.lstat())):
+                    raise AuthorizationRejected('Operator directory changed')
+            if (root.resolve(strict=True) != canonical_root
+                    or identity(root.lstat()) != identity(opened_root)
+                    or path.resolve(strict=True) != canonical_parent/path.name):
+                raise AuthorizationRejected('Operator canonical path changed')
+    except (OSError, RuntimeError) as exc:
+        raise AuthorizationRejected('Unsafe or changing operator document') from exc
     return parse_document(raw,limit=16384,label='operator document',duplicate='Duplicate operator field')
 
 
